@@ -2,11 +2,6 @@ namespace ObsDotnetSocket.DataTypes {
   using MessagePack;
 
   [MessagePackObject]
-  public class IdentifyMessage : OpcodeMessage<Identify> {
-    public IdentifyMessage(Identify data) : base(1, data) { }
-  }
-
-  [MessagePackObject]
   public class Identify : IOpcodeMessage {
     [IgnoreMember]
     public int Op => 1;

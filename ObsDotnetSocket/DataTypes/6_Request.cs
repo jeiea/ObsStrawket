@@ -1,13 +1,6 @@
 namespace ObsDotnetSocket.DataTypes {
   using MessagePack;
 
-
-  [MessagePackObject]
-  public class RequestMessage : OpcodeMessage<Request> {
-    public RequestMessage(Request data) : base(6, data) { }
-  }
-
-
   [MessagePackObject]
   public class Request : IOpcodeMessage {
     [IgnoreMember]

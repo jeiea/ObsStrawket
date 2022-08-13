@@ -2,11 +2,6 @@ namespace ObsDotnetSocket.DataTypes {
   using MessagePack;
 
   [MessagePackObject]
-  public class HelloMessage : OpcodeMessage<Hello> {
-    public HelloMessage(Hello data) : base(0, data) { }
-  }
-
-  [MessagePackObject]
   public class Hello : IOpcodeMessage {
     [IgnoreMember]
     public int Op => 0;
