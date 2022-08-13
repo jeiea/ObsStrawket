@@ -2,7 +2,7 @@ namespace ObsDotnetSocket.DataTypes {
   using System;
 
   [Flags]
-  public enum EventSubscriptions {
+  public enum EventSubscription {
     None = 0,
     General = 1 << 0,
     Config = 1 << 1,

@@ -24,7 +24,7 @@ namespace ObsDotnetSocket {
       Uri? uri = null,
       CancellationToken? token = null,
       string? password = null,
-      EventSubscriptions events = EventSubscriptions.All
+      EventSubscription events = EventSubscription.All
     ) {
       var socket = new ClientWebSocket();
       socket.Options.AddSubProtocol("obswebsocket.msgpack");

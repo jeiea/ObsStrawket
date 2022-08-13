@@ -13,6 +13,6 @@ namespace ObsDotnetSocket.DataTypes {
     public string? Authentication { get; set; }
 
     [Key("eventSubscriptions")]
-    public EventSubscriptions EventSubscriptions { get; set; }
+    public EventSubscription EventSubscriptions { get; set; }
   }
 }
