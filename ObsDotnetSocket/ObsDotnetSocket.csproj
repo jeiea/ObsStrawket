@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<RootNamespace>ObsDotnetSocket</RootNamespace>
+		<Nullable>enable</Nullable>
+		<LangVersion>9.0</LangVersion>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="MessagePack" Version="2.4.35" />
+		<PackageReference Include="MessagePackAnalyzer" Version="2.4.35">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="System.Net.WebSockets" Version="4.3.0" />
+	</ItemGroup>
+</Project>
