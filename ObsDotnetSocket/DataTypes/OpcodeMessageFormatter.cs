@@ -3,6 +3,7 @@ namespace ObsDotnetSocket.DataTypes {
   using MessagePack.Formatters;
   using MessagePack.Resolvers;
   using System;
+  using System.Linq;
 
   class UnexpectedProtocolException : Exception {
     public UnexpectedProtocolException(string? message = null) : base(message ?? "It's not seem to be obs websocket message") { }
@@ -15,34 +16,27 @@ namespace ObsDotnetSocket.DataTypes {
     private readonly IMessagePackFormatter<Identify> _identifyFormatter = _resolver.GetFormatter<Identify>();
     private readonly IMessagePackFormatter<Identified> _identifiedFormatter = _resolver.GetFormatter<Identified>();
     private readonly IMessagePackFormatter<Reidentify> _reidentifyFormatter = _resolver.GetFormatter<Reidentify>();
-    private readonly IMessagePackFormatter<Event<object?>> _eventFormatter = _resolver.GetFormatter<Event<object?>>();
     private readonly IMessagePackFormatter<Request> _requestFormatter = _resolver.GetFormatter<Request>();
     private readonly IMessagePackFormatter<RequestResponse> _requestResponseFormatter = _resolver.GetFormatter<RequestResponse>();
 
     public IOpcodeMessage Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
-      int propertyCount = reader.ReadMapHeader();
-      if (propertyCount != 2) {
-        throw new UnexpectedProtocolException();
-      }
-
+      reader.ReadMapHeader();
       int opcode = FormatterUtil.SeekByKey(reader, "op").ReadInt32();
-      string key = reader.ReadString();
-      if (key != "d") {
-        throw new UnexpectedProtocolException();
-      }
+      FormatterUtil.SeekByKey(ref reader, "d");
 
-      IOpcodeMessage data = opcode switch {
+      var data = opcode switch {
         (int)WebSocketOpCode.Hello => _helloFormatter.Deserialize(ref reader, options),
         (int)WebSocketOpCode.Identify => _identifyFormatter.Deserialize(ref reader, options),
         (int)WebSocketOpCode.Identified => _identifiedFormatter.Deserialize(ref reader, options),
         (int)WebSocketOpCode.Reidentify => _reidentifyFormatter.Deserialize(ref reader, options),
-        (int)WebSocketOpCode.Event => _eventFormatter.Deserialize(ref reader, options),
+        (int)WebSocketOpCode.Event => EventMessageFormatter.Instance.Deserialize(ref reader, options),
         (int)WebSocketOpCode.Request => _requestFormatter.Deserialize(ref reader, options),
         (int)WebSocketOpCode.RequestResponse => _requestResponseFormatter.Deserialize(ref reader, options),
         // TODO: not implemented
         _ => new OpcodeMessage<object>((WebSocketOpCode)opcode, StandardResolver.Instance.GetFormatter<object>().Deserialize(ref reader, options)),
       };
 
+      // Ignore "op"
       reader.Skip();
       reader.Skip();
 
@@ -59,16 +53,51 @@ namespace ObsDotnetSocket.DataTypes {
     }
   }
 
+  class EventMessageFormatter : IMessagePackFormatter<IOpcodeMessage> {
+    public static readonly EventMessageFormatter Instance = new();
+
+    public IOpcodeMessage Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
+      var peeker = reader.CreatePeekReader();
+      peeker.ReadMapHeader();
+
+      string eventType = FormatterUtil.SeekByKey(peeker, "eventType").ReadString();
+      var types = new Type[] {
+        typeof(StreamStateChanged),
+        typeof(RecordStateChanged),
+      };
+      var dict = types.ToDictionary(t => t.Name, t => t);
+      if (dict.TryGetValue(eventType, out var type)) {
+        return (MessagePackSerializer.Deserialize(type, ref reader, options) as IOpcodeMessage)!;
+      }
+      else {
+        return MessagePackSerializer.Deserialize<Event>(ref reader, options);
+      }
+    }
+
+    public void Serialize(ref MessagePackWriter writer, IOpcodeMessage value, MessagePackSerializerOptions options) {
+      writer.WriteMapHeader(2);
+      writer.Write("op");
+      writer.Write((int)value.Op);
+      writer.Write("d");
+
+      MessagePackSerializer.Serialize(value.GetType(), ref writer, value, options);
+    }
+  }
+
   internal static class FormatterUtil {
+    public static MessagePackReader SeekByKey(ref MessagePackReader reader, string key) {
+      while (true) {
+        string cursor = reader.ReadString();
+        if (cursor == key) {
+          return reader;
+        }
+        reader.Skip();
+      }
+    }
+
     public static MessagePackReader SeekByKey(MessagePackReader reader, string key) {
       var peeker = reader.CreatePeekReader();
-      while (true) {
-        string cursor = peeker.ReadString();
-        if (cursor == key) {
-          return peeker;
-        }
-        peeker.Skip();
-      }
+      return SeekByKey(ref peeker, key);
     }
   }
 }
