@@ -20,26 +20,24 @@ namespace ObsDotnetSocket.DataTypes {
     private readonly IMessagePackFormatter<RequestResponse> _requestResponseFormatter = _resolver.GetFormatter<RequestResponse>();
 
     public IOpcodeMessage Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
-      reader.ReadMapHeader();
-      int opcode = FormatterUtil.SeekByKey(reader, "op").ReadInt32();
-      FormatterUtil.SeekByKey(ref reader, "d");
+      var picker = reader.CreatePeekReader();
+      picker.ReadMapHeader();
+      int opcode = FormatterUtil.SeekByKey(picker, "op").ReadInt32();
+      FormatterUtil.SeekByKey(ref picker, "d");
 
       var data = opcode switch {
-        (int)WebSocketOpCode.Hello => _helloFormatter.Deserialize(ref reader, options),
-        (int)WebSocketOpCode.Identify => _identifyFormatter.Deserialize(ref reader, options),
-        (int)WebSocketOpCode.Identified => _identifiedFormatter.Deserialize(ref reader, options),
-        (int)WebSocketOpCode.Reidentify => _reidentifyFormatter.Deserialize(ref reader, options),
-        (int)WebSocketOpCode.Event => EventMessageFormatter.Instance.Deserialize(ref reader, options),
-        (int)WebSocketOpCode.Request => _requestFormatter.Deserialize(ref reader, options),
-        (int)WebSocketOpCode.RequestResponse => _requestResponseFormatter.Deserialize(ref reader, options),
+        (int)WebSocketOpCode.Hello => _helloFormatter.Deserialize(ref picker, options),
+        (int)WebSocketOpCode.Identify => _identifyFormatter.Deserialize(ref picker, options),
+        (int)WebSocketOpCode.Identified => _identifiedFormatter.Deserialize(ref picker, options),
+        (int)WebSocketOpCode.Reidentify => _reidentifyFormatter.Deserialize(ref picker, options),
+        (int)WebSocketOpCode.Event => EventMessageFormatter.Instance.Deserialize(ref picker, options),
+        (int)WebSocketOpCode.Request => _requestFormatter.Deserialize(ref picker, options),
+        (int)WebSocketOpCode.RequestResponse => _requestResponseFormatter.Deserialize(ref picker, options),
         // TODO: not implemented
-        _ => new OpcodeMessage<object>((WebSocketOpCode)opcode, StandardResolver.Instance.GetFormatter<object>().Deserialize(ref reader, options)),
+        _ => new OpcodeMessage<object>((WebSocketOpCode)opcode, StandardResolver.Instance.GetFormatter<object>().Deserialize(ref picker, options)),
       };
 
-      // Ignore "op"
       reader.Skip();
-      reader.Skip();
-
       return data;
     }
 
