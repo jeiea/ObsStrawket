@@ -1,6 +1,6 @@
-using System;
-
 namespace ObsDotnetSocket.DataTypes {
+  using System;
+
   [Flags]
   public enum EventSubscriptions {
     None = 0,
