@@ -4,7 +4,7 @@ namespace ObsDotnetSocket.DataTypes {
   [MessagePackObject]
   public class Identify : IOpcodeMessage {
     [IgnoreMember]
-    public int Op => 1;
+    public WebSocketOpCode Op => WebSocketOpCode.Identify;
 
     [Key("rpcVersion")]
     public int RpcVersion { get; set; }

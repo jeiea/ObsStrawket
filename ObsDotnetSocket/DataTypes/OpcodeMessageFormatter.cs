@@ -21,22 +21,22 @@ namespace ObsDotnetSocket.DataTypes {
         throw new Exception("It's not seem to be obs websocket message");
       }
 
-      ushort opcode = PeekOp(ref reader, options);
+      int opcode = PeekOp(ref reader, options);
       string key = reader.ReadString();
       if (key != "d") {
         throw new Exception("It's not seem to be obs websocket message");
       }
 
       IOpcodeMessage data = opcode switch {
-        0 => _helloFormatter.Deserialize(ref reader, options),
-        1 => _identifyFormatter.Deserialize(ref reader, options),
-        2 => _identifiedFormatter.Deserialize(ref reader, options),
-        3 => _reidentifyFormatter.Deserialize(ref reader, options),
-        5 => _eventFormatter.Deserialize(ref reader, options),
-        6 => _requestFormatter.Deserialize(ref reader, options),
-        7 => _requestResponseFormatter.Deserialize(ref reader, options),
+        (int)WebSocketOpCode.Hello => _helloFormatter.Deserialize(ref reader, options),
+        (int)WebSocketOpCode.Identify => _identifyFormatter.Deserialize(ref reader, options),
+        (int)WebSocketOpCode.Identified => _identifiedFormatter.Deserialize(ref reader, options),
+        (int)WebSocketOpCode.Reidentify => _reidentifyFormatter.Deserialize(ref reader, options),
+        (int)WebSocketOpCode.Event => _eventFormatter.Deserialize(ref reader, options),
+        (int)WebSocketOpCode.Request => _requestFormatter.Deserialize(ref reader, options),
+        (int)WebSocketOpCode.RequestResponse => _requestResponseFormatter.Deserialize(ref reader, options),
         // TODO: not implemented
-        _ => new OpcodeMessage<object>(opcode, StandardResolver.Instance.GetFormatter<object>().Deserialize(ref reader, options)),
+        _ => new OpcodeMessage<object>((WebSocketOpCode)opcode, StandardResolver.Instance.GetFormatter<object>().Deserialize(ref reader, options)),
       };
 
       reader.Skip();
@@ -45,7 +45,7 @@ namespace ObsDotnetSocket.DataTypes {
       return data;
     }
 
-    private static ushort PeekOp(ref MessagePackReader reader, MessagePackSerializerOptions options) {
+    private static int PeekOp(ref MessagePackReader reader, MessagePackSerializerOptions options) {
       var peeker = reader.CreatePeekReader();
       while (true) {
         string key = peeker.ReadString();
@@ -59,7 +59,7 @@ namespace ObsDotnetSocket.DataTypes {
     public void Serialize(ref MessagePackWriter writer, IOpcodeMessage value, MessagePackSerializerOptions options) {
       writer.WriteMapHeader(2);
       writer.Write("op");
-      writer.Write(value.Op);
+      writer.Write((int)value.Op);
       writer.Write("d");
 
       switch (value) {

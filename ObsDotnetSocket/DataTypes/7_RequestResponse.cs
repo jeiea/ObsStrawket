@@ -4,7 +4,7 @@ namespace ObsDotnetSocket.DataTypes {
   [MessagePackObject]
   public class RequestResponse : IOpcodeMessage {
     [IgnoreMember]
-    public int Op => 7;
+    public WebSocketOpCode Op => WebSocketOpCode.RequestResponse;
 
     [Key("requestType")]
     public string RequestType { get; set; } = "";

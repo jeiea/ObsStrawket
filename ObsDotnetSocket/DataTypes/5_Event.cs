@@ -4,7 +4,7 @@ namespace ObsDotnetSocket.DataTypes {
   [MessagePackObject]
   public class Event : IOpcodeMessage {
     [IgnoreMember]
-    public int Op => 5;
+    public WebSocketOpCode Op => WebSocketOpCode.Event;
 
     [Key("eventType")]
     public string EventType { get; set; } = "";
