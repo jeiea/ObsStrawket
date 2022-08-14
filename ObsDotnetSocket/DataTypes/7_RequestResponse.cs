@@ -1,8 +1,9 @@
 namespace ObsDotnetSocket.DataTypes {
   using MessagePack;
+  using System.Collections.Generic;
 
   [MessagePackObject]
-  public class RequestResponse : IOpcodeMessage {
+  public class RequestResponse<T> : IOpcodeMessage where T : new() {
     [IgnoreMember]
     public WebSocketOpCode Op => WebSocketOpCode.RequestResponse;
 
@@ -12,7 +13,29 @@ namespace ObsDotnetSocket.DataTypes {
     [Key("requestId")]
     public string RequestId { get; set; } = "";
 
-    [Key("requestData")]
-    public object? RequestData { get; set; }
+    [Key("requestStatus")]
+    public RequestStatus RequestStatus { get; set; } = new();
+
+    [IgnoreMember]
+    public virtual T ResponseData { get; set; } = new();
+  }
+
+  [MessagePackObject]
+  public class RequestResponse : RequestResponse<Dictionary<string, object?>> {
+    [Key("responseData")]
+    public override Dictionary<string, object?> ResponseData { get; set; } = new();
+  }
+
+
+  [MessagePackObject]
+  public class RequestStatus {
+    [Key("result")]
+    public bool Result { get; set; }
+
+    [Key("code")]
+    public RequestStatusCode Code { get; set; }
+
+    [Key("comment")]
+    public string? Comment { get; set; }
   }
 }
