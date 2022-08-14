@@ -15,15 +15,12 @@ namespace ObsDotnetSocket.DataTypes {
 
     [Key("requestStatus")]
     public RequestStatus RequestStatus { get; set; } = new();
-
-    [IgnoreMember]
-    public virtual T ResponseData { get; set; } = new();
   }
 
   [MessagePackObject]
   public class RequestResponse : RequestResponse<Dictionary<string, object?>> {
     [Key("responseData")]
-    public override Dictionary<string, object?> ResponseData { get; set; } = new();
+    public Dictionary<string, object?>? ResponseData { get; set; }
   }
 
 

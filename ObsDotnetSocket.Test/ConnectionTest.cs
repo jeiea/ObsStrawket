@@ -7,44 +7,55 @@ namespace ObsDotnetSocket.Test {
 
   public class ConnectionTest {
     [Fact]
-    public async Task TestHelloAsync() {
+    public async Task TestAgainstObsAsync() {
       var cancellation = new CancellationTokenSource();
       try {
-        //_ = RunServerAsync(cancellation.Token);
-        var connection = await Connection.ConnectAsync(
-          new Uri("ws://127.0.0.1:4455"),
-          password: "ahrEYXzXKytCIlpI"
-        ).ConfigureAwait(false);
-        await connection.SendAsync(new Request() {
-          RequestId = "2521a51c-7040-4830-8181-492ab5477545",
-          RequestType = "GetVersion"
-        }).ConfigureAwait(false);
-        var result = (RequestResponse)await connection.ReceiveAsync().ConfigureAwait(false);
-        if (result.ResponseData["availableRequests"] is not object[] availableRequests) {
-          Assert.Fail("availableRequests not parsed");
-          throw new Exception();
-        }
-        Assert.True(availableRequests[0] is string, "availableRequests are not string");
+        await RunClientAsync(new Uri("ws://127.0.0.1:4455"), cancellation.Token).ConfigureAwait(false);
       }
-      finally {
+      catch {
         cancellation.Cancel();
       }
     }
 
-    private static Task RunServerAsync(CancellationToken token) {
+    [Fact]
+    public async Task TestAgainstMockServerAsync() {
+      var cancellation = new CancellationTokenSource();
+      try {
+        var server = RunMockServerAsync(cancellation.Token).ConfigureAwait(false);
+        await RunClientAsync(new Uri("ws://127.0.0.1:44550"), cancellation.Token).ConfigureAwait(false);
+        await server;
+      }
+      catch {
+        cancellation.Cancel();
+      }
+    }
+
+    private static async Task RunClientAsync(Uri uri, CancellationToken token) {
+      var connection = await Connection.ConnectAsync(uri, "ahrEYXzXKytCIlpI", token).ConfigureAwait(false);
+      await connection.SendAsync(new Request() {
+        RequestId = "2521a51c-7040-4830-8181-492ab5477545",
+        RequestType = "GetVersion"
+      }, token).ConfigureAwait(false);
+      var result = (RequestResponse)await connection.ReceiveAsync(token).ConfigureAwait(false);
+      if (result.ResponseData!["availableRequests"] is not object[] availableRequests) {
+        Assert.Fail("availableRequests not parsed");
+        throw new Exception();
+      }
+      Assert.True(availableRequests[0] is string, "availableRequests are not string");
+    }
+
+    private static Task RunMockServerAsync(CancellationToken token) {
       token.ThrowIfCancellationRequested();
 
       var httpListener = new HttpListener();
       httpListener.Prefixes.Add("http://127.0.0.1:44550/");
       httpListener.Start();
 
-      return RunEventLoopAsync(httpListener, token);
+      return RunOneshotServerAsync(httpListener, token);
     }
 
-    private static async Task RunEventLoopAsync(HttpListener httpListener, CancellationToken token) {
+    private static async Task RunOneshotServerAsync(HttpListener httpListener, CancellationToken token) {
       token.ThrowIfCancellationRequested();
-
-      using var _ = httpListener;
 
       var buffer = new ArraySegment<byte>(new byte[1024]);
 
@@ -57,7 +68,7 @@ namespace ObsDotnetSocket.Test {
       var webSocketContext = await context.AcceptWebSocketAsync(null).ConfigureAwait(false);
       token.ThrowIfCancellationRequested();
 
-      var socket = webSocketContext.WebSocket;
+      using var socket = webSocketContext.WebSocket;
       var binary = WebSocketMessageType.Binary;
       await socket.SendAsync(MessagePackSerializer.ConvertFromJson(@"{
   ""op"": 0,
@@ -99,16 +110,10 @@ namespace ObsDotnetSocket.Test {
   ""op"": 6,
   ""d"": {
     ""requestType"": ""GetVersion"",
-    ""requestId"": ""2521a51c-7040-4830-8181-492ab5477545""
+    ""requestId"": ""2521a51c-7040-4830-8181-492ab5477545"",
+    ""requestData"":null
   }
 }", json);
-
-      await socket.SendAsync(MessagePackSerializer.ConvertFromJson(@"{
-  ""op"": 7,
-  ""d"": {
-  }
-}", cancellationToken: token), binary, true, token).ConfigureAwait(false);
-      token.ThrowIfCancellationRequested();
 
       await socket.SendAsync(MessagePackSerializer.ConvertFromJson(@"{
   ""op"": 7,
@@ -146,6 +151,11 @@ namespace ObsDotnetSocket.Test {
   }
 }", cancellationToken: token), binary, true, token).ConfigureAwait(false);
       token.ThrowIfCancellationRequested();
+
+      await socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, null, token).ConfigureAwait(false);
+      token.ThrowIfCancellationRequested();
+
+      httpListener.Close();
     }
   }
 }

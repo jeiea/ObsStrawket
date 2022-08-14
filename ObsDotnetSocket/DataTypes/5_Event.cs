@@ -1,5 +1,6 @@
 namespace ObsDotnetSocket.DataTypes {
   using MessagePack;
+  using System.Collections.Generic;
 
   [MessagePackObject]
   public class Event<T> : IOpcodeMessage {
@@ -14,12 +15,12 @@ namespace ObsDotnetSocket.DataTypes {
   }
 
   [MessagePackObject]
-  public class Event : Event<object?> {
+  public class Event : Event<Dictionary<string, object?>?> {
     [IgnoreMember]
     public override string EventType { get; set; } = "";
 
     [Key("eventData")]
-    public object? EventData { get; set; }
+    public Dictionary<string, object?>? EventData { get; set; }
   }
 
   public class GeneralEvent<T> : Event<T> {

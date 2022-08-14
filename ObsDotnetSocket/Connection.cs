@@ -22,8 +22,8 @@ namespace ObsDotnetSocket {
 
     public static async Task<Connection> ConnectAsync(
       Uri? uri = null,
-      CancellationToken? token = null,
       string? password = null,
+      CancellationToken? token = null,
       EventSubscription events = EventSubscription.All
     ) {
       var socket = new ClientWebSocket();
