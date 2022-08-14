@@ -31,7 +31,7 @@ namespace ObsDotnetSocket {
       await socket.ConnectAsync(uri ?? defaultUri, token ?? CancellationToken.None).ConfigureAwait(false);
 
       var connection = new Connection(socket);
-      var hello = await connection.ReceiveAsync<Hello>().ConfigureAwait(false);
+      var hello = (Hello)await connection.ReceiveAsync().ConfigureAwait(false);
       if (hello.RpcVersion > _supportedRpcVersion) {
         // TODO: Log
       }
@@ -43,7 +43,7 @@ namespace ObsDotnetSocket {
       };
       await connection.SendAsync(identify).ConfigureAwait(false);
       try {
-        var identified = await connection.ReceiveAsync<Identified>();
+        var identified = (Identified)await connection.ReceiveAsync();
       }
       catch (Exception ex) {
         throw ex;
@@ -57,15 +57,7 @@ namespace ObsDotnetSocket {
 
     public string? CloseDescription { get => _socket.CloseStatusDescription; }
 
-    public async Task<T> ReceiveAsync<T>(CancellationToken? cancellation = null) where T : IOpcodeMessage {
-      var result = await ReceiveInternalAsync(cancellation);
-      if (result is not T value) {
-        throw new Exception($"Expected {typeof(T)} retrieval, actual: {result.GetType()}");
-      }
-      return value;
-    }
-
-    public async Task<IOpcodeMessage> ReceiveInternalAsync(CancellationToken? cancellation = null) {
+    public async Task<IOpcodeMessage> ReceiveAsync(CancellationToken? cancellation = null) {
       _receiveBuffer.Reset();
 
       var token = cancellation ?? CancellationToken.None;

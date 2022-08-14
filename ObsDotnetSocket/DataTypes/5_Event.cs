@@ -13,7 +13,7 @@ namespace ObsDotnetSocket.DataTypes {
     public EventSubscription EventIntent { get; set; }
   }
 
-  [MessagePackObject()]
+  [MessagePackObject]
   public class Event : Event<object?> {
     [IgnoreMember]
     public override string EventType { get; set; } = "";
@@ -29,17 +29,35 @@ namespace ObsDotnetSocket.DataTypes {
   }
 
   [MessagePackObject]
-  public class ExitStarted : OutputEvent<ExitStarted> { }
+  public class ExitStarted : OutputsEvent<ExitStarted> { }
 
 
-  public class OutputEvent<T> : Event<T> {
-    public OutputEvent() {
+  public class TransitionsEvent<T> : Event<T> {
+    public TransitionsEvent() {
+      EventIntent = EventSubscription.Transitions;
+    }
+  }
+
+  [MessagePackObject]
+  public class SceneTransitionStarted : OutputsEvent<SceneTransitionStarted> {
+    [Key("transitionName")]
+    public string TransitionName { get; set; } = "";
+  }
+
+  [MessagePackObject]
+  public class SceneTransitionEnded : OutputsEvent<SceneTransitionEnded> {
+    [Key("transitionName")]
+    public string TransitionName { get; set; } = "";
+  }
+
+  public class OutputsEvent<T> : Event<T> {
+    public OutputsEvent() {
       EventIntent = EventSubscription.Outputs;
     }
   }
 
   [MessagePackObject]
-  public class StreamStateChanged : OutputEvent<StreamStateChanged> {
+  public class StreamStateChanged : OutputsEvent<StreamStateChanged> {
     [Key("outputActive")]
     public bool OutputActive { get; set; }
 
@@ -48,7 +66,7 @@ namespace ObsDotnetSocket.DataTypes {
   }
 
   [MessagePackObject]
-  public class RecordStateChanged : OutputEvent<RecordStateChanged> {
+  public class RecordStateChanged : OutputsEvent<RecordStateChanged> {
     [Key("outputActive")]
     public bool OutputActive { get; set; }
 
