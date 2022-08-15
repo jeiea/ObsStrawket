@@ -16,22 +16,34 @@ namespace ObsDotnetSocket.DataTypes {
   ///     }
   ///   }
   /// }</code></example>
+  public interface IRequest : IOpcodeMessage {
+    public string RequestType { get; }
+
+    public string RequestId { get; set; }
+  }
+
   [MessagePackObject]
-  public class Request<T> : IOpcodeMessage {
+  public class Request : IRequest {
     [IgnoreMember]
-    public WebSocketOpCode Op => WebSocketOpCode.Request;
+    public WebSocketOpCode Op => WebSocketOpCode.Event;
 
     [Key("requestType")]
-    public virtual string RequestType { get => GetType().Name; set { } }
+    public string RequestType { get => GetType().Name; }
 
     [Key("requestId")]
     public string RequestId { get; set; } = "";
   }
 
   [MessagePackObject]
-  public class Request : Request<Dictionary<string, object?>?> {
+  public class RawRequest : IRequest {
     [IgnoreMember]
-    public override string RequestType { get; set; } = "";
+    public WebSocketOpCode Op => WebSocketOpCode.Event;
+
+    [Key("requestType")]
+    public string RequestType { get => GetType().Name; }
+
+    [Key("requestId")]
+    public string RequestId { get; set; } = "";
 
     [Key("requestData")]
     public Dictionary<string, object?>? RequestData { get; set; }

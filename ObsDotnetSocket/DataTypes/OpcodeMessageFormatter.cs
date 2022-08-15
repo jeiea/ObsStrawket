@@ -2,6 +2,7 @@ namespace ObsDotnetSocket.DataTypes {
   using MessagePack;
   using MessagePack.Formatters;
   using MessagePack.Resolvers;
+  using ObsDotnetSocket.DataTypes.Predefineds;
   using System;
   using System.Collections.Generic;
   using System.Linq;
@@ -56,8 +57,77 @@ namespace ObsDotnetSocket.DataTypes {
     public static readonly EventMessageFormatter Instance = new();
 
     private static readonly Dictionary<string, Type> _eventNameToTypes = new Type[] {
-      typeof(StreamStateChanged),
-      typeof(RecordStateChanged),
+     // General Events,
+    typeof(ExitStarted),
+    typeof(VendorEvent),
+
+    // Config Events,
+    typeof(CurrentSceneCollectionChanging),
+    typeof(CurrentSceneCollectionChanged),
+    typeof(SceneCollectionListChanged),
+    typeof(CurrentProfileChanging),
+    typeof(CurrentProfileChanged),
+    typeof(ProfileListChanged),
+
+    // Scenes Events,
+    typeof(SceneCreated),
+    typeof(SceneRemoved),
+    typeof(SceneNameChanged),
+    typeof(CurrentProgramSceneChanged),
+    typeof(CurrentPreviewSceneChanged),
+    typeof(SceneListChanged),
+
+    // Inputs Events,
+    typeof(InputCreated),
+    typeof(InputRemoved),
+    typeof(InputNameChanged),
+    typeof(InputActiveStateChanged),
+    typeof(InputShowStateChanged),
+    typeof(InputMuteStateChanged),
+    typeof(InputVolumeChanged),
+    typeof(InputAudioBalanceChanged),
+    typeof(InputAudioSyncOffsetChanged),
+    typeof(InputAudioTracksChanged),
+    typeof(InputAudioMonitorTypeChanged),
+    typeof(InputVolumeMeters),
+
+    // Transitions Events,
+    typeof(CurrentSceneTransitionChanged),
+    typeof(CurrentSceneTransitionDurationChanged),
+    typeof(SceneTransitionStarted),
+    typeof(SceneTransitionEnded),
+    typeof(SceneTransitionVideoEnded),
+
+    // Filters Events,
+    typeof(SourceFilterListReindexed),
+    typeof(SourceFilterCreated),
+    typeof(SourceFilterRemoved),
+    typeof(SourceFilterNameChanged),
+    typeof(SourceFilterEnableStateChanged),
+
+    // Scene Items Events,
+    typeof(SceneItemCreated),
+    typeof(SceneItemRemoved),
+    typeof(SceneItemListReindexed),
+    typeof(SceneItemEnableStateChanged),
+    typeof(SceneItemLockStateChanged),
+    typeof(SceneItemSelected),
+    typeof(SceneItemTransformChanged),
+
+    // Outputs Events,
+    typeof(StreamStateChanged),
+    typeof(RecordStateChanged),
+    typeof(ReplayBufferStateChanged),
+    typeof(VirtualcamStateChanged),
+    typeof(ReplayBufferSaved),
+
+    // Media Inputs Events,
+    typeof(MediaInputPlaybackStarted),
+    typeof(MediaInputPlaybackEnded),
+    typeof(MediaInputActionTriggered),
+
+    // Ui Events,
+    typeof(StudioModeStateChanged),
     }.ToDictionary(t => t.Name, t => t);
 
     public IOpcodeMessage Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
@@ -71,7 +141,7 @@ namespace ObsDotnetSocket.DataTypes {
         return (MessagePackSerializer.Deserialize(type, ref peeker, options) as IOpcodeMessage)!;
       }
       else {
-        return MessagePackSerializer.Deserialize<KnownEvent>(ref peeker, options);
+        return MessagePackSerializer.Deserialize<Event>(ref peeker, options);
       }
     }
 

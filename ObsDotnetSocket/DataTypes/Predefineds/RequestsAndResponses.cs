@@ -1,22 +1,22 @@
-namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
+namespace ObsDotnetSocket.DataTypes.Predefineds {
   using MessagePack;
   using ObsDotnetSocket.DataTypes;
   using System.Collections.Generic;
   /*
   Generated file
-  input: raw text of https://github.com/obsproject/obs-websocket/blob/master/docs/generated/protocol.md#general-requests
-  process: https://gchq.github.io/CyberChef/#recipe=Find_/_Replace(%7B'option':'Regex','string':'%5E%23%23%20(%5C%5Cw%2B)%20(%5C%5Cw%2B)?%20?Requests'%7D,'public%20class%20$1$2Request%3CT%3E%20:%20Request%3CT%3E%20%7B%20%7D%5C%5Cnpublic%20class%20$1$2RequestResponse%3CT%3E%20:%20RequestResponse%3CT%3E%20%7B%20%7D%5C%5Cn',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'(?:%5E%7C%5C%5Cn)%23%23%23%20(.*?)%5C%5Cn%5C%5Cn(.*?)%5C%5Cn-%20Complexity.*?%5C%5Cn(.*?)%5C%5Cn%5C%5Cn(.*?)(?:---%5C%5Cn%7C(?%3Dpublic)%7C$)'%7D,'///%20%3Csummary%3E%5C%5Cn///%20$2%5C%5Cn$3%5C%5Cn///%20%3C/summary%3E%5C%5Cnpublic%20class%20$1%20:%20Request%3C$1%3E%20%7B%5C%5Cn$4%5C%5Cn%7D%5C%5Cn',true,false,false,true)Find_/_Replace(%7B'option':'Regex','string':'%5C%5Cn%5C%5C%7C%20Name.*?%5C%5Cn.*?%5C%5Cn'%7D,'',true,false,false,true)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20Array%26lt;(.*?)%26gt;%20%5C%5C%7C'%7D,'%7C%20$1%5B%5D%20%7C',true,false,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20String%5C%5Cb'%7D,'%7C%20string',true,false,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20Any%5C%5Cb'%7D,'%7C%20object?',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20Boolean%5C%5Cb'%7D,'%7C%20bool',true,false,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20Object(%5C%5C%5B%5C%5C%5D)?%20%5C%5C%7C'%7D,'%7C%20Dictionary%3Cstring,%20object?%3E$1%20%7C',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20(%5B%5E%7C%5D*?)%5C%5C%5B%5C%5C%5D%20%5C%5C%7C'%7D,'%7C%20List%3C$1%3E%20%7C',true,false,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20Number%20%5C%5C%7C(?%3D.*?(?:index%7Coffset%7Cmilli%7Cframe%7Cnumerator%7Cdenominator%7Cpixel%7Cwidth%7Cheight%7Cquality%7C%5C%5Cbid%5C%5Cb%7Cnumber%20of%7Cversion%7Cduration))'%7D,'%7C%20int%20%7C',true,true,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20Number%20%5C%5C%7C'%7D,'%7C%20double%20%7C',true,true,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5Cn%5C%5C*%5C%5C*Request%20Fields:%5C%5C*%5C%5C*'%7D,'',true,false,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5Cnpublic%20class%20(%5C%5Cw%2B)%20((?:(?!%5C%5Cn%5C%5C%7D).)*?%5C%5Cn)%5C%5C*%5C%5C*Response%20Fields:%5C%5C*%5C%5C*%5C%5Cn(.*?)%5C%5Cn%5C%5C%7D'%7D,'%5C%5Cnpublic%20class%20$1%20$2%7D%5C%5Cnpublic%20class%20$1Response%20:%20RequestResponse%3C$1Response%3E%20%7B%5C%5Cn$3%7D%5C%5Cn',true,false,false,true)Find_/_Replace(%7B'option':'Regex','string':'(?%3C%3Dpublic%20class%20(%5C%5Cw%2B)%3CT%3E.*?)(public%20class%20%5C%5Cw%2B%20:%20)%5C%5Cw%2B(%3C%5C%5Cw%2B%3E)'%7D,'$2$1$3',true,false,false,true)Find_/_Replace(%7B'option':'Regex','string':'%5C%5Cn%5C%5C%7C%20(%5C%5C?)?(%5B%5C%5Cw.%5D%2B)%20%5C%5C%7C%20(.*?)%20%5C%5C%7C%20(.*?)%20%5C%5C%7C(?%3D%5C%5Cn)'%7D,'%5C%5Cn///%20%3Csummary%3E%5C%5Cn///%20$4%5C%5Cn///%20%3C/summary%3E%5C%5Cn%5BKey(%22$2%22)%5D%5C%5Cnpublic%20$3$1%20$2%20%7B%20get;%20set;%20%7D',true,false,false,true)Find_/_Replace(%7B'option':'Regex','string':'%5E(public%20(?:List%7CDictionary)%3C.*?%3E%20%5C%5Cw%2B%20.*?%5C%5C%7D)'%7D,'$1%20%3D%20new();',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5E(public%20string%20%5C%5Cw%2B%20.*?%5C%5C%7D)'%7D,'$1%20%3D%20%22%22;',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5E(?!///%20)(%5B%5E%5C%5Cn%5D%2B)(?%3D(?:(?!%3Csummary%3E).)*?%3C/summary%3E)'%7D,'///%20$1',true,false,true,true)Find_/_Replace(%7B'option':'Regex','string':'%5E(///%20(?!%5C%5C%3C).*?)%5C%5Cn'%7D,'$1%3Cbr%20/%3E%5C%5Cn',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7B%5C%5Cn%5C%5C%7D'%7D,'%7B%20%7D',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5Cn%2B'%7D,'%5C%5Cn',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5E%5C%5C%7D%5C%5Cn'%7D,'%7D%5C%5Cn%5C%5Cn',true,false,true,false)Subsection('%5C%5Cw%2B%20%5C%5C%7B',true,true,false)To_Upper_case('Word')Regular_expression('User%20defined','',true,false,true,false,false,false,'Highlight%20matches')
+  input: https://raw.githubusercontent.com/obsproject/obs-websocket/master/docs/generated/protocol.md
+  process: https://gchq.github.io/CyberChef/#recipe=Find_/_Replace(%7B'option':'Regex','string':'%5E.*?(?%3D%5C%5Cn%23%23%20General%20Requests)'%7D,'',true,false,false,true)Find_/_Replace(%7B'option':'Regex','string':'%5E%23%23%20(%5C%5Cw%2B)%20(%5C%5Cw%2B)?%20?Requests'%7D,'public%20class%20$1$2Request%20:%20Request%20%7B%5C%5Cn%7D%5C%5Cnpublic%20class%20$1$2RequestResponse%20:%20RequestResponse%20%7B%5C%5Cn%7D%5C%5Cn',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'(?:%5E%7C%5C%5Cn)%23%23%23%20(.*?)%5C%5Cn%5C%5Cn(.*?)%5C%5Cn-%20Complexity.*?%5C%5Cn(.*?)%5C%5Cn%5C%5Cn(.*?)(?:---%5C%5Cn%7C(?%3Dpublic)%7C$)'%7D,'///%20%3Csummary%3E%5C%5Cn///%20$2%5C%5Cn$3%5C%5Cn///%20%3C/summary%3E%5C%5Cnpublic%20class%20$1%20%7B%5C%5Cn$4%5C%5Cn%7D%5C%5Cn',true,false,false,true)Find_/_Replace(%7B'option':'Regex','string':'%5C%5Cn%5C%5C%7C%20Name.*?%5C%5Cn.*?%5C%5Cn'%7D,'',true,false,false,true)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20Array%26lt;(.*?)%26gt;%20%5C%5C%7C'%7D,'%7C%20$1%5B%5D%20%7C',true,false,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20String%5C%5Cb'%7D,'%7C%20string',true,false,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20Any%5C%5Cb'%7D,'%7C%20object?',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20Boolean%5C%5Cb'%7D,'%7C%20bool',true,false,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20Object(%5C%5C%5B%5C%5C%5D)?%20%5C%5C%7C'%7D,'%7C%20Dictionary%3Cstring,%20object?%3E$1%20%7C',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20(%5B%5E%7C%5D*?)%5C%5C%5B%5C%5C%5D%20%5C%5C%7C'%7D,'%7C%20List%3C$1%3E%20%7C',true,false,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20Number%20%5C%5C%7C(?%3D.*?(?:index%7Coffset%7Cmilli%7Cframe%7Cnumerator%7Cdenominator%7Cpixel%7Cwidth%7Cheight%7Cquality%7C%5C%5Cbid%5C%5Cb%7Cnumber%20of%7Cversion%7Cduration))'%7D,'%7C%20int%20%7C',true,true,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20Number%20%5C%5C%7C'%7D,'%7C%20double%20%7C',true,true,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5Cn%5C%5C*%5C%5C*Request%20Fields:%5C%5C*%5C%5C*'%7D,'',true,false,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5Cnpublic%20class%20(%5C%5Cw%2B)%20((?:(?!%5C%5Cn%5C%5C%7D).)*?%5C%5Cn)%5C%5C*%5C%5C*Response%20Fields:%5C%5C*%5C%5C*%5C%5Cn(.*?)%5C%5Cn%5C%5C%7D'%7D,'%5C%5Cnpublic%20class%20$1%20$2%7D%5C%5Cnpublic%20class%20$1Response%20%7B%5C%5Cn$3%7D%5C%5Cn',true,false,false,true)Find_/_Replace(%7B'option':'Regex','string':'(?%3C%3Dpublic%20class%20(%5C%5Cw%2B)%20:%20Request%20%5C%5C%7B%5C%5Cn%5C%5C%7D.*?)(public%20class%20%5C%5Cw%2B?(Response)?)%20%5C%5C%7B'%7D,'$2%20:%20$1$3%20%7B',true,false,false,true)Find_/_Replace(%7B'option':'Regex','string':'%5C%5Cn%5C%5C%7C%20(%5C%5C?)?(%5B%5C%5Cw.%5D%2B)%20%5C%5C%7C%20(.*?)%20%5C%5C%7C%20(.*?)%20%5C%5C%7C(?%3D%5C%5Cn)'%7D,'%5C%5Cn///%20%3Csummary%3E%5C%5Cn///%20$4%5C%5Cn///%20%3C/summary%3E%5C%5Cn%5BKey(%22$2%22)%5D%5C%5Cnpublic%20$3$1%20$2%20%7B%20get;%20set;%20%7D',true,false,false,true)Find_/_Replace(%7B'option':'Regex','string':'%5E(public%20(?:List%7CDictionary)%3C.*?%3E%20%5C%5Cw%2B%20.*?%5C%5C%7D)'%7D,'$1%20%3D%20new();',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5E(public%20string%20%5C%5Cw%2B%20.*?%5C%5C%7D)'%7D,'$1%20%3D%20%22%22;',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5E(?!///%20)(%5B%5E%5C%5Cn%5D%2B)(?%3D(?:(?!%3Csummary%3E).)*?%3C/summary%3E)'%7D,'///%20$1',true,false,true,true)Find_/_Replace(%7B'option':'Regex','string':'%5E(///%20(?!%5C%5C%3C).*?)%5C%5Cn'%7D,'$1%3Cbr%20/%3E%5C%5Cn',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7B%5C%5Cn%5C%5C%7D'%7D,'%7B%20%7D',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5Cn%2B'%7D,'%5C%5Cn',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5E%5C%5C%7D%5C%5Cn'%7D,'%7D%5C%5Cn%5C%5Cn',true,false,true,false)Subsection('%5C%5Cw%2B%20%5C%5C%7B',true,true,false)To_Upper_case('Word')Regular_expression('User%20defined','',false,false,true,false,false,false,'Highlight%20matches')
   */
 
-  public class GeneralRequest<T> : Request<T> { }
-  public class GeneralRequestResponse<T> : RequestResponse<T> { }
+  public class GeneralRequest : Request { }
+  public class GeneralRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets data about the current plugin and RPC version.<br />
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetVersion : GeneralRequestResponse<GetVersion> { }
-  public class GetVersionResponse : GeneralRequestResponse<GetVersionResponse> {
+  public class GetVersion : GeneralRequest { }
+  public class GetVersionResponse : GeneralRequestResponse {
     /// <summary>
     /// Current OBS Studio version<br />
     /// </summary>
@@ -59,8 +59,8 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetStats : GeneralRequestResponse<GetStats> { }
-  public class GetStatsResponse : GeneralRequestResponse<GetStatsResponse> {
+  public class GetStats : GeneralRequest { }
+  public class GetStatsResponse : GeneralRequestResponse {
     /// <summary>
     /// Current CPU usage in percent<br />
     /// </summary>
@@ -123,7 +123,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class BroadcastCustomEvent : GeneralRequestResponse<BroadcastCustomEvent> {
+  public class BroadcastCustomEvent : GeneralRequest {
     /// <summary>
     /// Data payload to emit to all receivers | None | N/A<br />
     /// </summary>
@@ -138,7 +138,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class CallVendorRequest : GeneralRequestResponse<CallVendorRequest> {
+  public class CallVendorRequest : GeneralRequest {
     /// <summary>
     /// Name of the vendor to use | None | N/A<br />
     /// </summary>
@@ -156,7 +156,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public Dictionary<string, object?>? RequestData { get; set; }
   }
 
-  public class CallVendorRequestResponse : GeneralRequestResponse<CallVendorRequestResponse> {
+  public class CallVendorRequestResponse : GeneralRequestResponse {
     /// <summary>
     /// Echoed of `vendorName`<br />
     /// </summary>
@@ -179,8 +179,8 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetHotkeyList : GeneralRequestResponse<GetHotkeyList> { }
-  public class GetHotkeyListResponse : GeneralRequestResponse<GetHotkeyListResponse> {
+  public class GetHotkeyList : GeneralRequest { }
+  public class GetHotkeyListResponse : GeneralRequestResponse {
     /// <summary>
     /// Array of hotkey names<br />
     /// </summary>
@@ -193,7 +193,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class TriggerHotkeyByName : GeneralRequestResponse<TriggerHotkeyByName> {
+  public class TriggerHotkeyByName : GeneralRequest {
     /// <summary>
     /// Name of the hotkey to trigger | None | N/A<br />
     /// </summary>
@@ -206,7 +206,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class TriggerHotkeyByKeySequence : GeneralRequestResponse<TriggerHotkeyByKeySequence> {
+  public class TriggerHotkeyByKeySequence : GeneralRequest {
     /// <summary>
     /// The OBS key ID to use. See https://github.com/obsproject/obs-studio/blob/master/libobs/obs-hotkeys.h | None | Not pressed<br />
     /// </summary>
@@ -224,7 +224,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class Sleep : GeneralRequestResponse<Sleep> {
+  public class Sleep : GeneralRequest {
     /// <summary>
     /// Number of milliseconds to sleep for (if `SERIAL_REALTIME` mode) | >= 0, <= 50000 | N/A<br />
     /// </summary>
@@ -237,14 +237,14 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public int SleepFrames { get; set; }
   }
 
-  public class ConfigRequest<T> : Request<T> { }
-  public class ConfigRequestResponse<T> : RequestResponse<T> { }
+  public class ConfigRequest : Request { }
+  public class ConfigRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets the value of a "slot" from the selected persistent data realm.<br />
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetPersistentData : ConfigRequestResponse<GetPersistentData> {
+  public class GetPersistentData : ConfigRequest {
     /// <summary>
     /// The data realm to select. `OBS_WEBSOCKET_DATA_REALM_GLOBAL` or `OBS_WEBSOCKET_DATA_REALM_PROFILE` | None | N/A<br />
     /// </summary>
@@ -257,7 +257,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string SlotName { get; set; } = "";
   }
 
-  public class GetPersistentDataResponse : ConfigRequestResponse<GetPersistentDataResponse> {
+  public class GetPersistentDataResponse : ConfigRequestResponse {
     /// <summary>
     /// Value associated with the slot. `null` if not set<br />
     /// </summary>
@@ -270,7 +270,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetPersistentData : ConfigRequestResponse<SetPersistentData> {
+  public class SetPersistentData : ConfigRequest {
     /// <summary>
     /// The data realm to select. `OBS_WEBSOCKET_DATA_REALM_GLOBAL` or `OBS_WEBSOCKET_DATA_REALM_PROFILE` | None | N/A<br />
     /// </summary>
@@ -293,8 +293,8 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetSceneCollectionList : ConfigRequestResponse<GetSceneCollectionList> { }
-  public class GetSceneCollectionListResponse : ConfigRequestResponse<GetSceneCollectionListResponse> {
+  public class GetSceneCollectionList : ConfigRequest { }
+  public class GetSceneCollectionListResponse : ConfigRequestResponse {
     /// <summary>
     /// The name of the current scene collection<br />
     /// </summary>
@@ -313,7 +313,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetCurrentSceneCollection : ConfigRequestResponse<SetCurrentSceneCollection> {
+  public class SetCurrentSceneCollection : ConfigRequest {
     /// <summary>
     /// Name of the scene collection to switch to | None | N/A<br />
     /// </summary>
@@ -327,7 +327,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class CreateSceneCollection : ConfigRequestResponse<CreateSceneCollection> {
+  public class CreateSceneCollection : ConfigRequest {
     /// <summary>
     /// Name for the new scene collection | None | N/A<br />
     /// </summary>
@@ -340,8 +340,8 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetProfileList : ConfigRequestResponse<GetProfileList> { }
-  public class GetProfileListResponse : ConfigRequestResponse<GetProfileListResponse> {
+  public class GetProfileList : ConfigRequest { }
+  public class GetProfileListResponse : ConfigRequestResponse {
     /// <summary>
     /// The name of the current profile<br />
     /// </summary>
@@ -359,7 +359,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetCurrentProfile : ConfigRequestResponse<SetCurrentProfile> {
+  public class SetCurrentProfile : ConfigRequest {
     /// <summary>
     /// Name of the profile to switch to | None | N/A<br />
     /// </summary>
@@ -372,7 +372,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class CreateProfile : ConfigRequestResponse<CreateProfile> {
+  public class CreateProfile : ConfigRequest {
     /// <summary>
     /// Name for the new profile | None | N/A<br />
     /// </summary>
@@ -385,7 +385,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class RemoveProfile : ConfigRequestResponse<RemoveProfile> {
+  public class RemoveProfile : ConfigRequest {
     /// <summary>
     /// Name of the profile to remove | None | N/A<br />
     /// </summary>
@@ -398,7 +398,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetProfileParameter : ConfigRequestResponse<GetProfileParameter> {
+  public class GetProfileParameter : ConfigRequest {
     /// <summary>
     /// Category of the parameter to get | None | N/A<br />
     /// </summary>
@@ -411,7 +411,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string ParameterName { get; set; } = "";
   }
 
-  public class GetProfileParameterResponse : ConfigRequestResponse<GetProfileParameterResponse> {
+  public class GetProfileParameterResponse : ConfigRequestResponse {
     /// <summary>
     /// Value associated with the parameter. `null` if not set and no default<br />
     /// </summary>
@@ -429,7 +429,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetProfileParameter : ConfigRequestResponse<SetProfileParameter> {
+  public class SetProfileParameter : ConfigRequest {
     /// <summary>
     /// Category of the parameter to set | None | N/A<br />
     /// </summary>
@@ -453,8 +453,8 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetVideoSettings : ConfigRequestResponse<GetVideoSettings> { }
-  public class GetVideoSettingsResponse : ConfigRequestResponse<GetVideoSettingsResponse> {
+  public class GetVideoSettings : ConfigRequest { }
+  public class GetVideoSettingsResponse : ConfigRequestResponse {
     /// <summary>
     /// Numerator of the fractional FPS value<br />
     /// </summary>
@@ -493,7 +493,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetVideoSettings : ConfigRequestResponse<SetVideoSettings> {
+  public class SetVideoSettings : ConfigRequest {
     /// <summary>
     /// Numerator of the fractional FPS value | >= 1 | Not changed<br />
     /// </summary>
@@ -531,8 +531,8 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetStreamServiceSettings : ConfigRequestResponse<GetStreamServiceSettings> { }
-  public class GetStreamServiceSettingsResponse : ConfigRequestResponse<GetStreamServiceSettingsResponse> {
+  public class GetStreamServiceSettings : ConfigRequest { }
+  public class GetStreamServiceSettingsResponse : ConfigRequestResponse {
     /// <summary>
     /// Stream service type, like `rtmp_custom` or `rtmp_common`<br />
     /// </summary>
@@ -551,7 +551,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetStreamServiceSettings : ConfigRequestResponse<SetStreamServiceSettings> {
+  public class SetStreamServiceSettings : ConfigRequest {
     /// <summary>
     /// Type of stream service to apply. Example: `rtmp_common` or `rtmp_custom` | None | N/A<br />
     /// </summary>
@@ -564,15 +564,15 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public Dictionary<string, object?> StreamServiceSettings { get; set; } = new();
   }
 
-  public class SourcesRequest<T> : Request<T> { }
-  public class SourcesRequestResponse<T> : RequestResponse<T> { }
+  public class SourcesRequest : Request { }
+  public class SourcesRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets the active and show state of a source.<br />
   /// **Compatible with inputs and scenes.**<br />
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetSourceActive : SourcesRequestResponse<GetSourceActive> {
+  public class GetSourceActive : SourcesRequest {
     /// <summary>
     /// Name of the source to get the active state of | None | N/A<br />
     /// </summary>
@@ -580,7 +580,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string SourceName { get; set; } = "";
   }
 
-  public class GetSourceActiveResponse : SourcesRequestResponse<GetSourceActiveResponse> {
+  public class GetSourceActiveResponse : SourcesRequestResponse {
     /// <summary>
     /// Whether the source is showing in Program<br />
     /// </summary>
@@ -601,7 +601,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetSourceScreenshot : SourcesRequestResponse<GetSourceScreenshot> {
+  public class GetSourceScreenshot : SourcesRequest {
     /// <summary>
     /// Name of the source to take a screenshot of | None | N/A<br />
     /// </summary>
@@ -629,7 +629,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public int? ImageCompressionQuality { get; set; }
   }
 
-  public class GetSourceScreenshotResponse : SourcesRequestResponse<GetSourceScreenshotResponse> {
+  public class GetSourceScreenshotResponse : SourcesRequestResponse {
     /// <summary>
     /// Base64-encoded screenshot<br />
     /// </summary>
@@ -645,7 +645,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SaveSourceScreenshot : SourcesRequestResponse<SaveSourceScreenshot> {
+  public class SaveSourceScreenshot : SourcesRequest {
     /// <summary>
     /// Name of the source to take a screenshot of | None | N/A<br />
     /// </summary>
@@ -678,7 +678,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public int? ImageCompressionQuality { get; set; }
   }
 
-  public class SaveSourceScreenshotResponse : SourcesRequestResponse<SaveSourceScreenshotResponse> {
+  public class SaveSourceScreenshotResponse : SourcesRequestResponse {
     /// <summary>
     /// Base64-encoded screenshot<br />
     /// </summary>
@@ -686,15 +686,15 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string ImageData { get; set; } = "";
   }
 
-  public class ScenesRequest<T> : Request<T> { }
-  public class ScenesRequestResponse<T> : RequestResponse<T> { }
+  public class ScenesRequest : Request { }
+  public class ScenesRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets an array of all scenes in OBS.<br />
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetSceneList : ScenesRequestResponse<GetSceneList> { }
-  public class GetSceneListResponse : ScenesRequestResponse<GetSceneListResponse> {
+  public class GetSceneList : ScenesRequest { }
+  public class GetSceneListResponse : ScenesRequestResponse {
     /// <summary>
     /// Current program scene<br />
     /// </summary>
@@ -718,8 +718,8 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetGroupList : ScenesRequestResponse<GetGroupList> { }
-  public class GetGroupListResponse : ScenesRequestResponse<GetGroupListResponse> {
+  public class GetGroupList : ScenesRequest { }
+  public class GetGroupListResponse : ScenesRequestResponse {
     /// <summary>
     /// Array of group names<br />
     /// </summary>
@@ -732,8 +732,8 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetCurrentProgramScene : ScenesRequestResponse<GetCurrentProgramScene> { }
-  public class GetCurrentProgramSceneResponse : ScenesRequestResponse<GetCurrentProgramSceneResponse> {
+  public class GetCurrentProgramScene : ScenesRequest { }
+  public class GetCurrentProgramSceneResponse : ScenesRequestResponse {
     /// <summary>
     /// Current program scene<br />
     /// </summary>
@@ -746,7 +746,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetCurrentProgramScene : ScenesRequestResponse<SetCurrentProgramScene> {
+  public class SetCurrentProgramScene : ScenesRequest {
     /// <summary>
     /// Scene to set as the current program scene | None | N/A<br />
     /// </summary>
@@ -760,8 +760,8 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetCurrentPreviewScene : ScenesRequestResponse<GetCurrentPreviewScene> { }
-  public class GetCurrentPreviewSceneResponse : ScenesRequestResponse<GetCurrentPreviewSceneResponse> {
+  public class GetCurrentPreviewScene : ScenesRequest { }
+  public class GetCurrentPreviewSceneResponse : ScenesRequestResponse {
     /// <summary>
     /// Current preview scene<br />
     /// </summary>
@@ -775,7 +775,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetCurrentPreviewScene : ScenesRequestResponse<SetCurrentPreviewScene> {
+  public class SetCurrentPreviewScene : ScenesRequest {
     /// <summary>
     /// Scene to set as the current preview scene | None | N/A<br />
     /// </summary>
@@ -788,7 +788,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class CreateScene : ScenesRequestResponse<CreateScene> {
+  public class CreateScene : ScenesRequest {
     /// <summary>
     /// Name for the new scene | None | N/A<br />
     /// </summary>
@@ -801,7 +801,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class RemoveScene : ScenesRequestResponse<RemoveScene> {
+  public class RemoveScene : ScenesRequest {
     /// <summary>
     /// Name of the scene to remove | None | N/A<br />
     /// </summary>
@@ -814,7 +814,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetSceneName : ScenesRequestResponse<SetSceneName> {
+  public class SetSceneName : ScenesRequest {
     /// <summary>
     /// Name of the scene to be renamed | None | N/A<br />
     /// </summary>
@@ -832,7 +832,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetSceneSceneTransitionOverride : ScenesRequestResponse<GetSceneSceneTransitionOverride> {
+  public class GetSceneSceneTransitionOverride : ScenesRequest {
     /// <summary>
     /// Name of the scene | None | N/A<br />
     /// </summary>
@@ -840,7 +840,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string SceneName { get; set; } = "";
   }
 
-  public class GetSceneSceneTransitionOverrideResponse : ScenesRequestResponse<GetSceneSceneTransitionOverrideResponse> {
+  public class GetSceneSceneTransitionOverrideResponse : ScenesRequestResponse {
     /// <summary>
     /// Name of the overridden scene transition, else `null`<br />
     /// </summary>
@@ -858,7 +858,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetSceneSceneTransitionOverride : ScenesRequestResponse<SetSceneSceneTransitionOverride> {
+  public class SetSceneSceneTransitionOverride : ScenesRequest {
     /// <summary>
     /// Name of the scene | None | N/A<br />
     /// </summary>
@@ -876,14 +876,14 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public int? TransitionDuration { get; set; }
   }
 
-  public class InputsRequest<T> : Request<T> { }
-  public class InputsRequestResponse<T> : RequestResponse<T> { }
+  public class InputsRequest : Request { }
+  public class InputsRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets an array of all inputs in OBS.<br />
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetInputList : InputsRequestResponse<GetInputList> {
+  public class GetInputList : InputsRequest {
     /// <summary>
     /// Restrict the array to only inputs of the specified kind | None | All kinds included<br />
     /// </summary>
@@ -891,7 +891,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string? InputKind { get; set; }
   }
 
-  public class GetInputListResponse : InputsRequestResponse<GetInputListResponse> {
+  public class GetInputListResponse : InputsRequestResponse {
     /// <summary>
     /// Array of inputs<br />
     /// </summary>
@@ -904,7 +904,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetInputKindList : InputsRequestResponse<GetInputKindList> {
+  public class GetInputKindList : InputsRequest {
     /// <summary>
     /// True == Return all kinds as unversioned, False == Return with version suffixes (if available) | None | false<br />
     /// </summary>
@@ -912,7 +912,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public bool? Unversioned { get; set; }
   }
 
-  public class GetInputKindListResponse : InputsRequestResponse<GetInputKindListResponse> {
+  public class GetInputKindListResponse : InputsRequestResponse {
     /// <summary>
     /// Array of input kinds<br />
     /// </summary>
@@ -925,8 +925,8 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetSpecialInputs : InputsRequestResponse<GetSpecialInputs> { }
-  public class GetSpecialInputsResponse : InputsRequestResponse<GetSpecialInputsResponse> {
+  public class GetSpecialInputs : InputsRequest { }
+  public class GetSpecialInputsResponse : InputsRequestResponse {
     /// <summary>
     /// Name of the Desktop Audio input<br />
     /// </summary>
@@ -964,7 +964,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class CreateInput : InputsRequestResponse<CreateInput> {
+  public class CreateInput : InputsRequest {
     /// <summary>
     /// Name of the scene to add the input to as a scene item | None | N/A<br />
     /// </summary>
@@ -992,7 +992,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public bool? SceneItemEnabled { get; set; }
   }
 
-  public class CreateInputResponse : InputsRequestResponse<CreateInputResponse> {
+  public class CreateInputResponse : InputsRequestResponse {
     /// <summary>
     /// ID of the newly created scene item<br />
     /// </summary>
@@ -1006,7 +1006,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class RemoveInput : InputsRequestResponse<RemoveInput> {
+  public class RemoveInput : InputsRequest {
     /// <summary>
     /// Name of the input to remove | None | N/A<br />
     /// </summary>
@@ -1019,7 +1019,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetInputName : InputsRequestResponse<SetInputName> {
+  public class SetInputName : InputsRequest {
     /// <summary>
     /// Current input name | None | N/A<br />
     /// </summary>
@@ -1037,7 +1037,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetInputDefaultSettings : InputsRequestResponse<GetInputDefaultSettings> {
+  public class GetInputDefaultSettings : InputsRequest {
     /// <summary>
     /// Input kind to get the default settings for | None | N/A<br />
     /// </summary>
@@ -1045,7 +1045,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string InputKind { get; set; } = "";
   }
 
-  public class GetInputDefaultSettingsResponse : InputsRequestResponse<GetInputDefaultSettingsResponse> {
+  public class GetInputDefaultSettingsResponse : InputsRequestResponse {
     /// <summary>
     /// Object of default settings for the input kind<br />
     /// </summary>
@@ -1059,7 +1059,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetInputSettings : InputsRequestResponse<GetInputSettings> {
+  public class GetInputSettings : InputsRequest {
     /// <summary>
     /// Name of the input to get the settings of | None | N/A<br />
     /// </summary>
@@ -1067,7 +1067,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string InputName { get; set; } = "";
   }
 
-  public class GetInputSettingsResponse : InputsRequestResponse<GetInputSettingsResponse> {
+  public class GetInputSettingsResponse : InputsRequestResponse {
     /// <summary>
     /// Object of settings for the input<br />
     /// </summary>
@@ -1085,7 +1085,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetInputSettings : InputsRequestResponse<SetInputSettings> {
+  public class SetInputSettings : InputsRequest {
     /// <summary>
     /// Name of the input to set the settings of | None | N/A<br />
     /// </summary>
@@ -1108,7 +1108,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetInputMute : InputsRequestResponse<GetInputMute> {
+  public class GetInputMute : InputsRequest {
     /// <summary>
     /// Name of input to get the mute state of | None | N/A<br />
     /// </summary>
@@ -1116,7 +1116,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string InputName { get; set; } = "";
   }
 
-  public class GetInputMuteResponse : InputsRequestResponse<GetInputMuteResponse> {
+  public class GetInputMuteResponse : InputsRequestResponse {
     /// <summary>
     /// Whether the input is muted<br />
     /// </summary>
@@ -1129,7 +1129,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetInputMute : InputsRequestResponse<SetInputMute> {
+  public class SetInputMute : InputsRequest {
     /// <summary>
     /// Name of the input to set the mute state of | None | N/A<br />
     /// </summary>
@@ -1147,7 +1147,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class ToggleInputMute : InputsRequestResponse<ToggleInputMute> {
+  public class ToggleInputMute : InputsRequest {
     /// <summary>
     /// Name of the input to toggle the mute state of | None | N/A<br />
     /// </summary>
@@ -1155,7 +1155,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string InputName { get; set; } = "";
   }
 
-  public class ToggleInputMuteResponse : InputsRequestResponse<ToggleInputMuteResponse> {
+  public class ToggleInputMuteResponse : InputsRequestResponse {
     /// <summary>
     /// Whether the input has been muted or unmuted<br />
     /// </summary>
@@ -1168,7 +1168,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetInputVolume : InputsRequestResponse<GetInputVolume> {
+  public class GetInputVolume : InputsRequest {
     /// <summary>
     /// Name of the input to get the volume of | None | N/A<br />
     /// </summary>
@@ -1176,7 +1176,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string InputName { get; set; } = "";
   }
 
-  public class GetInputVolumeResponse : InputsRequestResponse<GetInputVolumeResponse> {
+  public class GetInputVolumeResponse : InputsRequestResponse {
     /// <summary>
     /// Volume setting in mul<br />
     /// </summary>
@@ -1194,7 +1194,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetInputVolume : InputsRequestResponse<SetInputVolume> {
+  public class SetInputVolume : InputsRequest {
     /// <summary>
     /// Name of the input to set the volume of | None | N/A<br />
     /// </summary>
@@ -1217,7 +1217,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetInputAudioBalance : InputsRequestResponse<GetInputAudioBalance> {
+  public class GetInputAudioBalance : InputsRequest {
     /// <summary>
     /// Name of the input to get the audio balance of | None | N/A<br />
     /// </summary>
@@ -1225,7 +1225,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string InputName { get; set; } = "";
   }
 
-  public class GetInputAudioBalanceResponse : InputsRequestResponse<GetInputAudioBalanceResponse> {
+  public class GetInputAudioBalanceResponse : InputsRequestResponse {
     /// <summary>
     /// Audio balance value from 0.0-1.0<br />
     /// </summary>
@@ -1238,7 +1238,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetInputAudioBalance : InputsRequestResponse<SetInputAudioBalance> {
+  public class SetInputAudioBalance : InputsRequest {
     /// <summary>
     /// Name of the input to set the audio balance of | None | N/A<br />
     /// </summary>
@@ -1257,7 +1257,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetInputAudioSyncOffset : InputsRequestResponse<GetInputAudioSyncOffset> {
+  public class GetInputAudioSyncOffset : InputsRequest {
     /// <summary>
     /// Name of the input to get the audio sync offset of | None | N/A<br />
     /// </summary>
@@ -1265,7 +1265,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string InputName { get; set; } = "";
   }
 
-  public class GetInputAudioSyncOffsetResponse : InputsRequestResponse<GetInputAudioSyncOffsetResponse> {
+  public class GetInputAudioSyncOffsetResponse : InputsRequestResponse {
     /// <summary>
     /// Audio sync offset in milliseconds<br />
     /// </summary>
@@ -1278,7 +1278,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetInputAudioSyncOffset : InputsRequestResponse<SetInputAudioSyncOffset> {
+  public class SetInputAudioSyncOffset : InputsRequest {
     /// <summary>
     /// Name of the input to set the audio sync offset of | None | N/A<br />
     /// </summary>
@@ -1300,7 +1300,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetInputAudioMonitorType : InputsRequestResponse<GetInputAudioMonitorType> {
+  public class GetInputAudioMonitorType : InputsRequest {
     /// <summary>
     /// Name of the input to get the audio monitor type of | None | N/A<br />
     /// </summary>
@@ -1308,7 +1308,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string InputName { get; set; } = "";
   }
 
-  public class GetInputAudioMonitorTypeResponse : InputsRequestResponse<GetInputAudioMonitorTypeResponse> {
+  public class GetInputAudioMonitorTypeResponse : InputsRequestResponse {
     /// <summary>
     /// Audio monitor type<br />
     /// </summary>
@@ -1321,7 +1321,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetInputAudioMonitorType : InputsRequestResponse<SetInputAudioMonitorType> {
+  public class SetInputAudioMonitorType : InputsRequest {
     /// <summary>
     /// Name of the input to set the audio monitor type of | None | N/A<br />
     /// </summary>
@@ -1339,7 +1339,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetInputAudioTracks : InputsRequestResponse<GetInputAudioTracks> {
+  public class GetInputAudioTracks : InputsRequest {
     /// <summary>
     /// Name of the input | None | N/A<br />
     /// </summary>
@@ -1347,7 +1347,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string InputName { get; set; } = "";
   }
 
-  public class GetInputAudioTracksResponse : InputsRequestResponse<GetInputAudioTracksResponse> {
+  public class GetInputAudioTracksResponse : InputsRequestResponse {
     /// <summary>
     /// Object of audio tracks and associated enable states<br />
     /// </summary>
@@ -1360,7 +1360,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetInputAudioTracks : InputsRequestResponse<SetInputAudioTracks> {
+  public class SetInputAudioTracks : InputsRequest {
     /// <summary>
     /// Name of the input | None | N/A<br />
     /// </summary>
@@ -1379,7 +1379,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetInputPropertiesListPropertyItems : InputsRequestResponse<GetInputPropertiesListPropertyItems> {
+  public class GetInputPropertiesListPropertyItems : InputsRequest {
     /// <summary>
     /// Name of the input | None | N/A<br />
     /// </summary>
@@ -1392,7 +1392,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string PropertyName { get; set; } = "";
   }
 
-  public class GetInputPropertiesListPropertyItemsResponse : InputsRequestResponse<GetInputPropertiesListPropertyItemsResponse> {
+  public class GetInputPropertiesListPropertyItemsResponse : InputsRequestResponse {
     /// <summary>
     /// Array of items in the list property<br />
     /// </summary>
@@ -1406,7 +1406,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class PressInputPropertiesButton : InputsRequestResponse<PressInputPropertiesButton> {
+  public class PressInputPropertiesButton : InputsRequest {
     /// <summary>
     /// Name of the input | None | N/A<br />
     /// </summary>
@@ -1419,16 +1419,16 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string PropertyName { get; set; } = "";
   }
 
-  public class TransitionsRequest<T> : Request<T> { }
-  public class TransitionsRequestResponse<T> : RequestResponse<T> { }
+  public class TransitionsRequest : Request { }
+  public class TransitionsRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets an array of all available transition kinds.<br />
   /// Similar to `GetInputKindList`<br />
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetTransitionKindList : TransitionsRequestResponse<GetTransitionKindList> { }
-  public class GetTransitionKindListResponse : TransitionsRequestResponse<GetTransitionKindListResponse> {
+  public class GetTransitionKindList : TransitionsRequest { }
+  public class GetTransitionKindListResponse : TransitionsRequestResponse {
     /// <summary>
     /// Array of transition kinds<br />
     /// </summary>
@@ -1441,8 +1441,8 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetSceneTransitionList : TransitionsRequestResponse<GetSceneTransitionList> { }
-  public class GetSceneTransitionListResponse : TransitionsRequestResponse<GetSceneTransitionListResponse> {
+  public class GetSceneTransitionList : TransitionsRequest { }
+  public class GetSceneTransitionListResponse : TransitionsRequestResponse {
     /// <summary>
     /// Name of the current scene transition. Can be null<br />
     /// </summary>
@@ -1465,8 +1465,8 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetCurrentSceneTransition : TransitionsRequestResponse<GetCurrentSceneTransition> { }
-  public class GetCurrentSceneTransitionResponse : TransitionsRequestResponse<GetCurrentSceneTransitionResponse> {
+  public class GetCurrentSceneTransition : TransitionsRequest { }
+  public class GetCurrentSceneTransitionResponse : TransitionsRequestResponse {
     /// <summary>
     /// Name of the transition<br />
     /// </summary>
@@ -1505,7 +1505,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetCurrentSceneTransition : TransitionsRequestResponse<SetCurrentSceneTransition> {
+  public class SetCurrentSceneTransition : TransitionsRequest {
     /// <summary>
     /// Name of the transition to make active | None | N/A<br />
     /// </summary>
@@ -1518,7 +1518,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetCurrentSceneTransitionDuration : TransitionsRequestResponse<SetCurrentSceneTransitionDuration> {
+  public class SetCurrentSceneTransitionDuration : TransitionsRequest {
     /// <summary>
     /// Duration in milliseconds | >= 50, <= 20000 | N/A<br />
     /// </summary>
@@ -1531,7 +1531,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetCurrentSceneTransitionSettings : TransitionsRequestResponse<SetCurrentSceneTransitionSettings> {
+  public class SetCurrentSceneTransitionSettings : TransitionsRequest {
     /// <summary>
     /// Settings object to apply to the transition. Can be `{}` | None | N/A<br />
     /// </summary>
@@ -1550,8 +1550,8 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetCurrentSceneTransitionCursor : TransitionsRequestResponse<GetCurrentSceneTransitionCursor> { }
-  public class GetCurrentSceneTransitionCursorResponse : TransitionsRequestResponse<GetCurrentSceneTransitionCursorResponse> {
+  public class GetCurrentSceneTransitionCursor : TransitionsRequest { }
+  public class GetCurrentSceneTransitionCursorResponse : TransitionsRequestResponse {
     /// <summary>
     /// Cursor position, between 0.0 and 1.0<br />
     /// </summary>
@@ -1564,7 +1564,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class TriggerStudioModeTransition : TransitionsRequestResponse<TriggerStudioModeTransition> {
+  public class TriggerStudioModeTransition : TransitionsRequest {
   }
 
   /// <summary>
@@ -1573,7 +1573,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetTBarPosition : TransitionsRequestResponse<SetTBarPosition> {
+  public class SetTBarPosition : TransitionsRequest {
     /// <summary>
     /// New position | >= 0.0, <= 1.0 | N/A<br />
     /// </summary>
@@ -1586,14 +1586,14 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public bool? Release { get; set; }
   }
 
-  public class FiltersRequest<T> : Request<T> { }
-  public class FiltersRequestResponse<T> : RequestResponse<T> { }
+  public class FiltersRequest : Request { }
+  public class FiltersRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets an array of all of a source's filters.<br />
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetSourceFilterList : FiltersRequestResponse<GetSourceFilterList> {
+  public class GetSourceFilterList : FiltersRequest {
     /// <summary>
     /// Name of the source | None | N/A<br />
     /// </summary>
@@ -1601,7 +1601,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string SourceName { get; set; } = "";
   }
 
-  public class GetSourceFilterListResponse : FiltersRequestResponse<GetSourceFilterListResponse> {
+  public class GetSourceFilterListResponse : FiltersRequestResponse {
     /// <summary>
     /// Array of filters<br />
     /// </summary>
@@ -1614,7 +1614,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetSourceFilterDefaultSettings : FiltersRequestResponse<GetSourceFilterDefaultSettings> {
+  public class GetSourceFilterDefaultSettings : FiltersRequest {
     /// <summary>
     /// Filter kind to get the default settings for | None | N/A<br />
     /// </summary>
@@ -1622,7 +1622,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string FilterKind { get; set; } = "";
   }
 
-  public class GetSourceFilterDefaultSettingsResponse : FiltersRequestResponse<GetSourceFilterDefaultSettingsResponse> {
+  public class GetSourceFilterDefaultSettingsResponse : FiltersRequestResponse {
     /// <summary>
     /// Object of default settings for the filter kind<br />
     /// </summary>
@@ -1635,7 +1635,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class CreateSourceFilter : FiltersRequestResponse<CreateSourceFilter> {
+  public class CreateSourceFilter : FiltersRequest {
     /// <summary>
     /// Name of the source to add the filter to | None | N/A<br />
     /// </summary>
@@ -1663,7 +1663,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class RemoveSourceFilter : FiltersRequestResponse<RemoveSourceFilter> {
+  public class RemoveSourceFilter : FiltersRequest {
     /// <summary>
     /// Name of the source the filter is on | None | N/A<br />
     /// </summary>
@@ -1681,7 +1681,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetSourceFilterName : FiltersRequestResponse<SetSourceFilterName> {
+  public class SetSourceFilterName : FiltersRequest {
     /// <summary>
     /// Name of the source the filter is on | None | N/A<br />
     /// </summary>
@@ -1704,7 +1704,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetSourceFilter : FiltersRequestResponse<GetSourceFilter> {
+  public class GetSourceFilter : FiltersRequest {
     /// <summary>
     /// Name of the source | None | N/A<br />
     /// </summary>
@@ -1717,7 +1717,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string FilterName { get; set; } = "";
   }
 
-  public class GetSourceFilterResponse : FiltersRequestResponse<GetSourceFilterResponse> {
+  public class GetSourceFilterResponse : FiltersRequestResponse {
     /// <summary>
     /// Whether the filter is enabled<br />
     /// </summary>
@@ -1745,7 +1745,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetSourceFilterIndex : FiltersRequestResponse<SetSourceFilterIndex> {
+  public class SetSourceFilterIndex : FiltersRequest {
     /// <summary>
     /// Name of the source the filter is on | None | N/A<br />
     /// </summary>
@@ -1768,7 +1768,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetSourceFilterSettings : FiltersRequestResponse<SetSourceFilterSettings> {
+  public class SetSourceFilterSettings : FiltersRequest {
     /// <summary>
     /// Name of the source the filter is on | None | N/A<br />
     /// </summary>
@@ -1796,7 +1796,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetSourceFilterEnabled : FiltersRequestResponse<SetSourceFilterEnabled> {
+  public class SetSourceFilterEnabled : FiltersRequest {
     /// <summary>
     /// Name of the source the filter is on | None | N/A<br />
     /// </summary>
@@ -1814,15 +1814,15 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public bool FilterEnabled { get; set; }
   }
 
-  public class SceneItemsRequest<T> : Request<T> { }
-  public class SceneItemsRequestResponse<T> : RequestResponse<T> { }
+  public class SceneItemsRequest : Request { }
+  public class SceneItemsRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets a list of all scene items in a scene.<br />
   /// Scenes only<br />
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetSceneItemList : SceneItemsRequestResponse<GetSceneItemList> {
+  public class GetSceneItemList : SceneItemsRequest {
     /// <summary>
     /// Name of the scene to get the items of | None | N/A<br />
     /// </summary>
@@ -1830,7 +1830,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string SceneName { get; set; } = "";
   }
 
-  public class GetSceneItemListResponse : SceneItemsRequestResponse<GetSceneItemListResponse> {
+  public class GetSceneItemListResponse : SceneItemsRequestResponse {
     /// <summary>
     /// Array of scene items in the scene<br />
     /// </summary>
@@ -1845,7 +1845,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetGroupSceneItemList : SceneItemsRequestResponse<GetGroupSceneItemList> {
+  public class GetGroupSceneItemList : SceneItemsRequest {
     /// <summary>
     /// Name of the group to get the items of | None | N/A<br />
     /// </summary>
@@ -1853,7 +1853,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string SceneName { get; set; } = "";
   }
 
-  public class GetGroupSceneItemListResponse : SceneItemsRequestResponse<GetGroupSceneItemListResponse> {
+  public class GetGroupSceneItemListResponse : SceneItemsRequestResponse {
     /// <summary>
     /// Array of scene items in the group<br />
     /// </summary>
@@ -1867,7 +1867,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetSceneItemId : SceneItemsRequestResponse<GetSceneItemId> {
+  public class GetSceneItemId : SceneItemsRequest {
     /// <summary>
     /// Name of the scene or group to search in | None | N/A<br />
     /// </summary>
@@ -1885,7 +1885,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public int? SearchOffset { get; set; }
   }
 
-  public class GetSceneItemIdResponse : SceneItemsRequestResponse<GetSceneItemIdResponse> {
+  public class GetSceneItemIdResponse : SceneItemsRequestResponse {
     /// <summary>
     /// Numeric ID of the scene item<br />
     /// </summary>
@@ -1899,7 +1899,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class CreateSceneItem : SceneItemsRequestResponse<CreateSceneItem> {
+  public class CreateSceneItem : SceneItemsRequest {
     /// <summary>
     /// Name of the scene to create the new item in | None | N/A<br />
     /// </summary>
@@ -1917,7 +1917,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public bool? SceneItemEnabled { get; set; }
   }
 
-  public class CreateSceneItemResponse : SceneItemsRequestResponse<CreateSceneItemResponse> {
+  public class CreateSceneItemResponse : SceneItemsRequestResponse {
     /// <summary>
     /// Numeric ID of the scene item<br />
     /// </summary>
@@ -1931,7 +1931,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class RemoveSceneItem : SceneItemsRequestResponse<RemoveSceneItem> {
+  public class RemoveSceneItem : SceneItemsRequest {
     /// <summary>
     /// Name of the scene the item is in | None | N/A<br />
     /// </summary>
@@ -1950,7 +1950,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class DuplicateSceneItem : SceneItemsRequestResponse<DuplicateSceneItem> {
+  public class DuplicateSceneItem : SceneItemsRequest {
     /// <summary>
     /// Name of the scene the item is in | None | N/A<br />
     /// </summary>
@@ -1968,7 +1968,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string? DestinationSceneName { get; set; }
   }
 
-  public class DuplicateSceneItemResponse : SceneItemsRequestResponse<DuplicateSceneItemResponse> {
+  public class DuplicateSceneItemResponse : SceneItemsRequestResponse {
     /// <summary>
     /// Numeric ID of the duplicated scene item<br />
     /// </summary>
@@ -1982,7 +1982,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetSceneItemTransform : SceneItemsRequestResponse<GetSceneItemTransform> {
+  public class GetSceneItemTransform : SceneItemsRequest {
     /// <summary>
     /// Name of the scene the item is in | None | N/A<br />
     /// </summary>
@@ -1995,7 +1995,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public int SceneItemId { get; set; }
   }
 
-  public class GetSceneItemTransformResponse : SceneItemsRequestResponse<GetSceneItemTransformResponse> {
+  public class GetSceneItemTransformResponse : SceneItemsRequestResponse {
     /// <summary>
     /// Object containing scene item transform info<br />
     /// </summary>
@@ -2008,7 +2008,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetSceneItemTransform : SceneItemsRequestResponse<SetSceneItemTransform> {
+  public class SetSceneItemTransform : SceneItemsRequest {
     /// <summary>
     /// Name of the scene the item is in | None | N/A<br />
     /// </summary>
@@ -2032,7 +2032,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetSceneItemEnabled : SceneItemsRequestResponse<GetSceneItemEnabled> {
+  public class GetSceneItemEnabled : SceneItemsRequest {
     /// <summary>
     /// Name of the scene the item is in | None | N/A<br />
     /// </summary>
@@ -2045,7 +2045,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public int SceneItemId { get; set; }
   }
 
-  public class GetSceneItemEnabledResponse : SceneItemsRequestResponse<GetSceneItemEnabledResponse> {
+  public class GetSceneItemEnabledResponse : SceneItemsRequestResponse {
     /// <summary>
     /// Whether the scene item is enabled. `true` for enabled, `false` for disabled<br />
     /// </summary>
@@ -2059,7 +2059,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetSceneItemEnabled : SceneItemsRequestResponse<SetSceneItemEnabled> {
+  public class SetSceneItemEnabled : SceneItemsRequest {
     /// <summary>
     /// Name of the scene the item is in | None | N/A<br />
     /// </summary>
@@ -2083,7 +2083,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetSceneItemLocked : SceneItemsRequestResponse<GetSceneItemLocked> {
+  public class GetSceneItemLocked : SceneItemsRequest {
     /// <summary>
     /// Name of the scene the item is in | None | N/A<br />
     /// </summary>
@@ -2096,7 +2096,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public int SceneItemId { get; set; }
   }
 
-  public class GetSceneItemLockedResponse : SceneItemsRequestResponse<GetSceneItemLockedResponse> {
+  public class GetSceneItemLockedResponse : SceneItemsRequestResponse {
     /// <summary>
     /// Whether the scene item is locked. `true` for locked, `false` for unlocked<br />
     /// </summary>
@@ -2110,7 +2110,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetSceneItemLocked : SceneItemsRequestResponse<SetSceneItemLocked> {
+  public class SetSceneItemLocked : SceneItemsRequest {
     /// <summary>
     /// Name of the scene the item is in | None | N/A<br />
     /// </summary>
@@ -2135,7 +2135,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetSceneItemIndex : SceneItemsRequestResponse<GetSceneItemIndex> {
+  public class GetSceneItemIndex : SceneItemsRequest {
     /// <summary>
     /// Name of the scene the item is in | None | N/A<br />
     /// </summary>
@@ -2148,7 +2148,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public int SceneItemId { get; set; }
   }
 
-  public class GetSceneItemIndexResponse : SceneItemsRequestResponse<GetSceneItemIndexResponse> {
+  public class GetSceneItemIndexResponse : SceneItemsRequestResponse {
     /// <summary>
     /// Index position of the scene item<br />
     /// </summary>
@@ -2162,7 +2162,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetSceneItemIndex : SceneItemsRequestResponse<SetSceneItemIndex> {
+  public class SetSceneItemIndex : SceneItemsRequest {
     /// <summary>
     /// Name of the scene the item is in | None | N/A<br />
     /// </summary>
@@ -2194,7 +2194,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetSceneItemBlendMode : SceneItemsRequestResponse<GetSceneItemBlendMode> {
+  public class GetSceneItemBlendMode : SceneItemsRequest {
     /// <summary>
     /// Name of the scene the item is in | None | N/A<br />
     /// </summary>
@@ -2207,7 +2207,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public int SceneItemId { get; set; }
   }
 
-  public class GetSceneItemBlendModeResponse : SceneItemsRequestResponse<GetSceneItemBlendModeResponse> {
+  public class GetSceneItemBlendModeResponse : SceneItemsRequestResponse {
     /// <summary>
     /// Current blend mode<br />
     /// </summary>
@@ -2221,7 +2221,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetSceneItemBlendMode : SceneItemsRequestResponse<SetSceneItemBlendMode> {
+  public class SetSceneItemBlendMode : SceneItemsRequest {
     /// <summary>
     /// Name of the scene the item is in | None | N/A<br />
     /// </summary>
@@ -2239,15 +2239,15 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string SceneItemBlendMode { get; set; } = "";
   }
 
-  public class OutputsRequest<T> : Request<T> { }
-  public class OutputsRequestResponse<T> : RequestResponse<T> { }
+  public class OutputsRequest : Request { }
+  public class OutputsRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets the status of the virtualcam output.<br />
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetVirtualCamStatus : OutputsRequestResponse<GetVirtualCamStatus> { }
-  public class GetVirtualCamStatusResponse : OutputsRequestResponse<GetVirtualCamStatusResponse> {
+  public class GetVirtualCamStatus : OutputsRequest { }
+  public class GetVirtualCamStatusResponse : OutputsRequestResponse {
     /// <summary>
     /// Whether the output is active<br />
     /// </summary>
@@ -2260,8 +2260,8 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class ToggleVirtualCam : OutputsRequestResponse<ToggleVirtualCam> { }
-  public class ToggleVirtualCamResponse : OutputsRequestResponse<ToggleVirtualCamResponse> {
+  public class ToggleVirtualCam : OutputsRequest { }
+  public class ToggleVirtualCamResponse : OutputsRequestResponse {
     /// <summary>
     /// Whether the output is active<br />
     /// </summary>
@@ -2274,7 +2274,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class StartVirtualCam : OutputsRequestResponse<StartVirtualCam> {
+  public class StartVirtualCam : OutputsRequest {
   }
 
   /// <summary>
@@ -2282,7 +2282,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class StopVirtualCam : OutputsRequestResponse<StopVirtualCam> {
+  public class StopVirtualCam : OutputsRequest {
   }
 
   /// <summary>
@@ -2290,8 +2290,8 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetReplayBufferStatus : OutputsRequestResponse<GetReplayBufferStatus> { }
-  public class GetReplayBufferStatusResponse : OutputsRequestResponse<GetReplayBufferStatusResponse> {
+  public class GetReplayBufferStatus : OutputsRequest { }
+  public class GetReplayBufferStatusResponse : OutputsRequestResponse {
     /// <summary>
     /// Whether the output is active<br />
     /// </summary>
@@ -2304,8 +2304,8 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class ToggleReplayBuffer : OutputsRequestResponse<ToggleReplayBuffer> { }
-  public class ToggleReplayBufferResponse : OutputsRequestResponse<ToggleReplayBufferResponse> {
+  public class ToggleReplayBuffer : OutputsRequest { }
+  public class ToggleReplayBufferResponse : OutputsRequestResponse {
     /// <summary>
     /// Whether the output is active<br />
     /// </summary>
@@ -2318,7 +2318,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class StartReplayBuffer : OutputsRequestResponse<StartReplayBuffer> {
+  public class StartReplayBuffer : OutputsRequest {
   }
 
   /// <summary>
@@ -2326,7 +2326,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class StopReplayBuffer : OutputsRequestResponse<StopReplayBuffer> {
+  public class StopReplayBuffer : OutputsRequest {
   }
 
   /// <summary>
@@ -2334,7 +2334,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SaveReplayBuffer : OutputsRequestResponse<SaveReplayBuffer> {
+  public class SaveReplayBuffer : OutputsRequest {
   }
 
   /// <summary>
@@ -2342,8 +2342,8 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetLastReplayBufferReplay : OutputsRequestResponse<GetLastReplayBufferReplay> { }
-  public class GetLastReplayBufferReplayResponse : OutputsRequestResponse<GetLastReplayBufferReplayResponse> {
+  public class GetLastReplayBufferReplay : OutputsRequest { }
+  public class GetLastReplayBufferReplayResponse : OutputsRequestResponse {
     /// <summary>
     /// File path<br />
     /// </summary>
@@ -2356,7 +2356,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetOutputList : OutputsRequestResponse<GetOutputList> {
+  public class GetOutputList : OutputsRequest {
   }
 
   /// <summary>
@@ -2364,7 +2364,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetOutputStatus : OutputsRequestResponse<GetOutputStatus> {
+  public class GetOutputStatus : OutputsRequest {
     /// <summary>
     /// Output name | None | N/A<br />
     /// </summary>
@@ -2372,7 +2372,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string OutputName { get; set; } = "";
   }
 
-  public class GetOutputStatusResponse : OutputsRequestResponse<GetOutputStatusResponse> {
+  public class GetOutputStatusResponse : OutputsRequestResponse {
     /// <summary>
     /// Whether the output is active<br />
     /// </summary>
@@ -2420,7 +2420,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class ToggleOutput : OutputsRequestResponse<ToggleOutput> {
+  public class ToggleOutput : OutputsRequest {
     /// <summary>
     /// Output name | None | N/A<br />
     /// </summary>
@@ -2428,7 +2428,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string OutputName { get; set; } = "";
   }
 
-  public class ToggleOutputResponse : OutputsRequestResponse<ToggleOutputResponse> {
+  public class ToggleOutputResponse : OutputsRequestResponse {
     /// <summary>
     /// Whether the output is active<br />
     /// </summary>
@@ -2441,7 +2441,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class StartOutput : OutputsRequestResponse<StartOutput> {
+  public class StartOutput : OutputsRequest {
     /// <summary>
     /// Output name | None | N/A<br />
     /// </summary>
@@ -2454,7 +2454,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class StopOutput : OutputsRequestResponse<StopOutput> {
+  public class StopOutput : OutputsRequest {
     /// <summary>
     /// Output name | None | N/A<br />
     /// </summary>
@@ -2467,7 +2467,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetOutputSettings : OutputsRequestResponse<GetOutputSettings> {
+  public class GetOutputSettings : OutputsRequest {
     /// <summary>
     /// Output name | None | N/A<br />
     /// </summary>
@@ -2475,7 +2475,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string OutputName { get; set; } = "";
   }
 
-  public class GetOutputSettingsResponse : OutputsRequestResponse<GetOutputSettingsResponse> {
+  public class GetOutputSettingsResponse : OutputsRequestResponse {
     /// <summary>
     /// Output settings<br />
     /// </summary>
@@ -2488,7 +2488,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetOutputSettings : OutputsRequestResponse<SetOutputSettings> {
+  public class SetOutputSettings : OutputsRequest {
     /// <summary>
     /// Output name | None | N/A<br />
     /// </summary>
@@ -2501,15 +2501,15 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public Dictionary<string, object?> OutputSettings { get; set; } = new();
   }
 
-  public class StreamRequest<T> : Request<T> { }
-  public class StreamRequestResponse<T> : RequestResponse<T> { }
+  public class StreamRequest : Request { }
+  public class StreamRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets the status of the stream output.<br />
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetStreamStatus : StreamRequestResponse<GetStreamStatus> { }
-  public class GetStreamStatusResponse : StreamRequestResponse<GetStreamStatusResponse> {
+  public class GetStreamStatus : StreamRequest { }
+  public class GetStreamStatusResponse : StreamRequestResponse {
     /// <summary>
     /// Whether the output is active<br />
     /// </summary>
@@ -2557,8 +2557,8 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class ToggleStream : StreamRequestResponse<ToggleStream> { }
-  public class ToggleStreamResponse : StreamRequestResponse<ToggleStreamResponse> {
+  public class ToggleStream : StreamRequest { }
+  public class ToggleStreamResponse : StreamRequestResponse {
     /// <summary>
     /// New state of the stream output<br />
     /// </summary>
@@ -2571,7 +2571,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class StartStream : StreamRequestResponse<StartStream> {
+  public class StartStream : StreamRequest {
   }
 
   /// <summary>
@@ -2579,7 +2579,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class StopStream : StreamRequestResponse<StopStream> {
+  public class StopStream : StreamRequest {
   }
 
   /// <summary>
@@ -2587,7 +2587,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SendStreamCaption : StreamRequestResponse<SendStreamCaption> {
+  public class SendStreamCaption : StreamRequest {
     /// <summary>
     /// Caption text | None | N/A<br />
     /// </summary>
@@ -2595,15 +2595,15 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string CaptionText { get; set; } = "";
   }
 
-  public class RecordRequest<T> : Request<T> { }
-  public class RecordRequestResponse<T> : RequestResponse<T> { }
+  public class RecordRequest : Request { }
+  public class RecordRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets the status of the record output.<br />
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetRecordStatus : RecordRequestResponse<GetRecordStatus> { }
-  public class GetRecordStatusResponse : RecordRequestResponse<GetRecordStatusResponse> {
+  public class GetRecordStatus : RecordRequest { }
+  public class GetRecordStatusResponse : RecordRequestResponse {
     /// <summary>
     /// Whether the output is active<br />
     /// </summary>
@@ -2636,7 +2636,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class ToggleRecord : RecordRequestResponse<ToggleRecord> {
+  public class ToggleRecord : RecordRequest {
   }
 
   /// <summary>
@@ -2644,7 +2644,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class StartRecord : RecordRequestResponse<StartRecord> {
+  public class StartRecord : RecordRequest {
   }
 
   /// <summary>
@@ -2652,8 +2652,8 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class StopRecord : RecordRequestResponse<StopRecord> { }
-  public class StopRecordResponse : RecordRequestResponse<StopRecordResponse> {
+  public class StopRecord : RecordRequest { }
+  public class StopRecordResponse : RecordRequestResponse {
     /// <summary>
     /// File name for the saved recording<br />
     /// </summary>
@@ -2666,7 +2666,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class ToggleRecordPause : RecordRequestResponse<ToggleRecordPause> {
+  public class ToggleRecordPause : RecordRequest {
   }
 
   /// <summary>
@@ -2674,7 +2674,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class PauseRecord : RecordRequestResponse<PauseRecord> {
+  public class PauseRecord : RecordRequest {
   }
 
   /// <summary>
@@ -2682,11 +2682,11 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class ResumeRecord : RecordRequestResponse<ResumeRecord> {
+  public class ResumeRecord : RecordRequest {
   }
 
-  public class MediaInputsRequest<T> : Request<T> { }
-  public class MediaInputsRequestResponse<T> : RequestResponse<T> { }
+  public class MediaInputsRequest : Request { }
+  public class MediaInputsRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets the status of a media input.<br />
   /// Media States:<br />
@@ -2701,7 +2701,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetMediaInputStatus : MediaInputsRequestResponse<GetMediaInputStatus> {
+  public class GetMediaInputStatus : MediaInputsRequest {
     /// <summary>
     /// Name of the media input | None | N/A<br />
     /// </summary>
@@ -2709,7 +2709,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string InputName { get; set; } = "";
   }
 
-  public class GetMediaInputStatusResponse : MediaInputsRequestResponse<GetMediaInputStatusResponse> {
+  public class GetMediaInputStatusResponse : MediaInputsRequestResponse {
     /// <summary>
     /// State of the media input<br />
     /// </summary>
@@ -2733,7 +2733,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetMediaInputCursor : MediaInputsRequestResponse<SetMediaInputCursor> {
+  public class SetMediaInputCursor : MediaInputsRequest {
     /// <summary>
     /// Name of the media input | None | N/A<br />
     /// </summary>
@@ -2752,7 +2752,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class OffsetMediaInputCursor : MediaInputsRequestResponse<OffsetMediaInputCursor> {
+  public class OffsetMediaInputCursor : MediaInputsRequest {
     /// <summary>
     /// Name of the media input | None | N/A<br />
     /// </summary>
@@ -2770,7 +2770,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class TriggerMediaInputAction : MediaInputsRequestResponse<TriggerMediaInputAction> {
+  public class TriggerMediaInputAction : MediaInputsRequest {
     /// <summary>
     /// Name of the media input | None | N/A<br />
     /// </summary>
@@ -2783,15 +2783,15 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     public string MediaAction { get; set; } = "";
   }
 
-  public class UiRequest<T> : Request<T> { }
-  public class UiRequestResponse<T> : RequestResponse<T> { }
+  public class UiRequest : Request { }
+  public class UiRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets whether studio is enabled.<br />
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetStudioModeEnabled : UiRequestResponse<GetStudioModeEnabled> { }
-  public class GetStudioModeEnabledResponse : UiRequestResponse<GetStudioModeEnabledResponse> {
+  public class GetStudioModeEnabled : UiRequest { }
+  public class GetStudioModeEnabledResponse : UiRequestResponse {
     /// <summary>
     /// Whether studio mode is enabled<br />
     /// </summary>
@@ -2804,7 +2804,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SetStudioModeEnabled : UiRequestResponse<SetStudioModeEnabled> {
+  public class SetStudioModeEnabled : UiRequest {
     /// <summary>
     /// True == Enabled, False == Disabled | None | N/A<br />
     /// </summary>
@@ -2817,7 +2817,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class OpenInputPropertiesDialog : UiRequestResponse<OpenInputPropertiesDialog> {
+  public class OpenInputPropertiesDialog : UiRequest {
     /// <summary>
     /// Name of the input to open the dialog of | None | N/A<br />
     /// </summary>
@@ -2830,7 +2830,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class OpenInputFiltersDialog : UiRequestResponse<OpenInputFiltersDialog> {
+  public class OpenInputFiltersDialog : UiRequest {
     /// <summary>
     /// Name of the input to open the dialog of | None | N/A<br />
     /// </summary>
@@ -2843,7 +2843,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class OpenInputInteractDialog : UiRequestResponse<OpenInputInteractDialog> {
+  public class OpenInputInteractDialog : UiRequest {
     /// <summary>
     /// Name of the input to open the dialog of | None | N/A<br />
     /// </summary>
@@ -2856,8 +2856,8 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetMonitorList : UiRequestResponse<GetMonitorList> { }
-  public class GetMonitorListResponse : UiRequestResponse<GetMonitorListResponse> {
+  public class GetMonitorList : UiRequest { }
+  public class GetMonitorListResponse : UiRequestResponse {
     /// <summary>
     /// a list of detected monitors with some information<br />
     /// </summary>
@@ -2875,7 +2875,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class OpenVideoMixProjector : UiRequestResponse<OpenVideoMixProjector> {
+  public class OpenVideoMixProjector : UiRequest {
     /// <summary>
     /// Type of mix to open | None | N/A<br />
     /// </summary>
@@ -2899,7 +2899,7 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class OpenSourceProjector : UiRequestResponse<OpenSourceProjector> {
+  public class OpenSourceProjector : UiRequest {
     /// <summary>
     /// Name of the source to open a projector for | None | N/A<br />
     /// </summary>
@@ -2916,4 +2916,5 @@ namespace ObsDotnetSocket.DataTypes.RequestsAndResponses {
     [Key("projectorGeometry")]
     public string? ProjectorGeometry { get; set; }
   }
+
 }

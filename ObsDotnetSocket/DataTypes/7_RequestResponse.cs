@@ -2,8 +2,31 @@ namespace ObsDotnetSocket.DataTypes {
   using MessagePack;
   using System.Collections.Generic;
 
+  public interface IRequestResponse : IOpcodeMessage {
+    public string RequestType { get; }
+
+    public string RequestId { get; }
+
+    public RequestStatus RequestStatus { get; }
+  }
+
   [MessagePackObject]
-  public class RequestResponse<T> : IOpcodeMessage {
+  public class RequestResponse : IRequestResponse {
+    [IgnoreMember]
+    public WebSocketOpCode Op => WebSocketOpCode.RequestResponse;
+
+    [Key("requestType")]
+    public string RequestType { get => GetType().Name; }
+
+    [Key("requestId")]
+    public string RequestId { get; } = "";
+
+    [Key("requestStatus")]
+    public RequestStatus RequestStatus { get; } = new();
+  }
+
+  [MessagePackObject]
+  public class RawRequestResponse : IRequestResponse {
     [IgnoreMember]
     public WebSocketOpCode Op => WebSocketOpCode.RequestResponse;
 
@@ -15,14 +38,10 @@ namespace ObsDotnetSocket.DataTypes {
 
     [Key("requestStatus")]
     public RequestStatus RequestStatus { get; set; } = new();
-  }
 
-  [MessagePackObject]
-  public class RequestResponse : RequestResponse<Dictionary<string, object?>> {
     [Key("responseData")]
     public Dictionary<string, object?>? ResponseData { get; set; }
   }
-
 
   [MessagePackObject]
   public class RequestStatus {

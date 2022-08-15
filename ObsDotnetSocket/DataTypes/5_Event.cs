@@ -9,7 +9,7 @@ namespace ObsDotnetSocket.DataTypes {
   }
 
   [MessagePackObject]
-  public class KnownEvent : IEvent {
+  public class Event : IEvent {
     [IgnoreMember]
     public WebSocketOpCode Op => WebSocketOpCode.Event;
 
@@ -35,7 +35,7 @@ namespace ObsDotnetSocket.DataTypes {
     public Dictionary<string, object?>? EventData { get; set; }
   }
 
-  public class GeneralEvent : KnownEvent {
+  public class GeneralEvent : Event {
     public GeneralEvent() {
       EventIntent = EventSubscription.General;
     }
@@ -45,7 +45,7 @@ namespace ObsDotnetSocket.DataTypes {
   public class ExitStarted : GeneralEvent { }
 
 
-  public class TransitionsEvent<T> : KnownEvent {
+  public class TransitionsEvent<T> : Event {
     public TransitionsEvent() {
       EventIntent = EventSubscription.Transitions;
     }
@@ -63,7 +63,7 @@ namespace ObsDotnetSocket.DataTypes {
     public string TransitionName { get; set; } = "";
   }
 
-  public class OutputsEvent : KnownEvent {
+  public class OutputsEvent : Event {
     public OutputsEvent() {
       EventIntent = EventSubscription.Outputs;
     }
