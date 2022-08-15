@@ -3,7 +3,7 @@ namespace ObsDotnetSocket.DataTypes {
   using System.Collections.Generic;
 
   [MessagePackObject]
-  public class RequestResponse<T> : IOpcodeMessage where T : new() {
+  public class RequestResponse<T> : IOpcodeMessage {
     [IgnoreMember]
     public WebSocketOpCode Op => WebSocketOpCode.RequestResponse;
 

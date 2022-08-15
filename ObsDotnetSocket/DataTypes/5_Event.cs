@@ -2,63 +2,75 @@ namespace ObsDotnetSocket.DataTypes {
   using MessagePack;
   using System.Collections.Generic;
 
+  public interface IEvent : IOpcodeMessage {
+    public string EventType { get; }
+
+    public EventSubscription EventIntent { get; set; }
+  }
+
   [MessagePackObject]
-  public class Event<T> : IOpcodeMessage {
+  public class KnownEvent : IEvent {
     [IgnoreMember]
     public WebSocketOpCode Op => WebSocketOpCode.Event;
 
     [Key("eventType")]
-    public virtual string EventType { get => GetType().Name; set { } }
+    public string EventType { get => GetType().Name; }
 
     [Key("eventIntent")]
     public EventSubscription EventIntent { get; set; }
   }
 
   [MessagePackObject]
-  public class Event : Event<Dictionary<string, object?>?> {
+  public class RawEvent : IEvent {
     [IgnoreMember]
-    public override string EventType { get; set; } = "";
+    public WebSocketOpCode Op => WebSocketOpCode.Event;
+
+    [Key("eventType")]
+    public string EventType { get; set; } = "";
+
+    [Key("eventIntent")]
+    public EventSubscription EventIntent { get; set; }
 
     [Key("eventData")]
     public Dictionary<string, object?>? EventData { get; set; }
   }
 
-  public class GeneralEvent<T> : Event<T> {
+  public class GeneralEvent : KnownEvent {
     public GeneralEvent() {
       EventIntent = EventSubscription.General;
     }
   }
 
   [MessagePackObject]
-  public class ExitStarted : OutputsEvent<ExitStarted> { }
+  public class ExitStarted : GeneralEvent { }
 
 
-  public class TransitionsEvent<T> : Event<T> {
+  public class TransitionsEvent<T> : KnownEvent {
     public TransitionsEvent() {
       EventIntent = EventSubscription.Transitions;
     }
   }
 
   [MessagePackObject]
-  public class SceneTransitionStarted : OutputsEvent<SceneTransitionStarted> {
+  public class SceneTransitionStarted : OutputsEvent {
     [Key("transitionName")]
     public string TransitionName { get; set; } = "";
   }
 
   [MessagePackObject]
-  public class SceneTransitionEnded : OutputsEvent<SceneTransitionEnded> {
+  public class SceneTransitionEnded : OutputsEvent {
     [Key("transitionName")]
     public string TransitionName { get; set; } = "";
   }
 
-  public class OutputsEvent<T> : Event<T> {
+  public class OutputsEvent : KnownEvent {
     public OutputsEvent() {
       EventIntent = EventSubscription.Outputs;
     }
   }
 
   [MessagePackObject]
-  public class StreamStateChanged : OutputsEvent<StreamStateChanged> {
+  public class StreamStateChanged : OutputsEvent {
     [Key("outputActive")]
     public bool OutputActive { get; set; }
 
@@ -67,7 +79,7 @@ namespace ObsDotnetSocket.DataTypes {
   }
 
   [MessagePackObject]
-  public class RecordStateChanged : OutputsEvent<RecordStateChanged> {
+  public class RecordStateChanged : OutputsEvent {
     [Key("outputActive")]
     public bool OutputActive { get; set; }
 

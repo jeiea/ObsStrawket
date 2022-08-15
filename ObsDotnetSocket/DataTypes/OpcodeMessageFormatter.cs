@@ -3,6 +3,7 @@ namespace ObsDotnetSocket.DataTypes {
   using MessagePack.Formatters;
   using MessagePack.Resolvers;
   using System;
+  using System.Collections.Generic;
   using System.Linq;
 
   class UnexpectedProtocolException : Exception {
@@ -54,21 +55,23 @@ namespace ObsDotnetSocket.DataTypes {
   class EventMessageFormatter : IMessagePackFormatter<IOpcodeMessage> {
     public static readonly EventMessageFormatter Instance = new();
 
+    private static readonly Dictionary<string, Type> _eventNameToTypes = new Type[] {
+      typeof(StreamStateChanged),
+      typeof(RecordStateChanged),
+    }.ToDictionary(t => t.Name, t => t);
+
     public IOpcodeMessage Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
       var peeker = reader.CreatePeekReader();
+      reader.Skip();
       peeker.ReadMapHeader();
 
       string eventType = FormatterUtil.SeekByKey(peeker, "eventType").ReadString();
-      var types = new Type[] {
-        typeof(StreamStateChanged),
-        typeof(RecordStateChanged),
-      };
-      var dict = types.ToDictionary(t => t.Name, t => t);
-      if (dict.TryGetValue(eventType, out var type)) {
-        return (MessagePackSerializer.Deserialize(type, ref reader, options) as IOpcodeMessage)!;
+      FormatterUtil.SeekByKey(ref peeker, "eventData");
+      if (_eventNameToTypes.TryGetValue(eventType, out var type)) {
+        return (MessagePackSerializer.Deserialize(type, ref peeker, options) as IOpcodeMessage)!;
       }
       else {
-        return MessagePackSerializer.Deserialize<Event>(ref reader, options);
+        return MessagePackSerializer.Deserialize<KnownEvent>(ref peeker, options);
       }
     }
 

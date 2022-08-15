@@ -1,7 +1,0 @@
-# RequestStatusCode generation
-RequestStatus::(\w+)\n([\s\S]*?)\nIdentifier Value: (\d+)\n([\s\S]*?)(?=RequestStatus::)
-///<summary>
-///$2
-///$4
-///</summary>
-$1 = $3,

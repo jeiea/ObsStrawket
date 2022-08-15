@@ -1,4 +1,15 @@
 namespace ObsDotnetSocket.DataTypes {
+  /*
+# RequestStatusCode generation
+input: https://github.com/obsproject/obs-websocket/blob/master/docs/generated/protocol.md#enumerations-table-of-contents
+regex:
+RequestStatus::(\w+)\n([\s\S]*?)\nIdentifier Value: (\d+)\n([\s\S]*?)(?=RequestStatus::)
+///<summary>
+///$2
+///$4
+///</summary>
+$1 = $3,
+   */
   public enum RequestStatusCode {
     /// <summary>
     /// Unknown status, should never be used.<br />

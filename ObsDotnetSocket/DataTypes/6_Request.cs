@@ -1,5 +1,6 @@
 namespace ObsDotnetSocket.DataTypes {
   using MessagePack;
+  using System.Collections.Generic;
 
   /// <summary>
   /// Client is making a request to obs-websocket. Eg get current scene, create source.<br />
@@ -16,17 +17,23 @@ namespace ObsDotnetSocket.DataTypes {
   ///   }
   /// }</code></example>
   [MessagePackObject]
-  public class Request : IOpcodeMessage {
+  public class Request<T> : IOpcodeMessage {
     [IgnoreMember]
     public WebSocketOpCode Op => WebSocketOpCode.Request;
 
     [Key("requestType")]
-    public string RequestType { get; set; } = "";
+    public virtual string RequestType { get => GetType().Name; set { } }
 
     [Key("requestId")]
     public string RequestId { get; set; } = "";
+  }
+
+  [MessagePackObject]
+  public class Request : Request<Dictionary<string, object?>?> {
+    [IgnoreMember]
+    public override string RequestType { get; set; } = "";
 
     [Key("requestData")]
-    public object? RequestData { get; set; }
+    public Dictionary<string, object?>? RequestData { get; set; }
   }
 }
