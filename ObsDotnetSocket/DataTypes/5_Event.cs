@@ -11,7 +11,7 @@ namespace ObsDotnetSocket.DataTypes {
   [MessagePackObject]
   public class Event : IEvent {
     [IgnoreMember]
-    public WebSocketOpCode Op => WebSocketOpCode.Event;
+    public OpCode Op => OpCode.Event;
 
     [Key("eventType")]
     public string EventType { get => GetType().Name; }
@@ -23,7 +23,7 @@ namespace ObsDotnetSocket.DataTypes {
   [MessagePackObject]
   public class RawEvent : IEvent {
     [IgnoreMember]
-    public WebSocketOpCode Op => WebSocketOpCode.Event;
+    public OpCode Op => OpCode.Event;
 
     [Key("eventType")]
     public string EventType { get; set; } = "";

@@ -28,15 +28,15 @@ namespace ObsDotnetSocket.DataTypes {
       FormatterUtil.SeekByKey(ref picker, "d");
 
       var data = opcode switch {
-        (int)WebSocketOpCode.Hello => _helloFormatter.Deserialize(ref picker, options),
-        (int)WebSocketOpCode.Identify => _identifyFormatter.Deserialize(ref picker, options),
-        (int)WebSocketOpCode.Identified => _identifiedFormatter.Deserialize(ref picker, options),
-        (int)WebSocketOpCode.Reidentify => _reidentifyFormatter.Deserialize(ref picker, options),
-        (int)WebSocketOpCode.Event => EventMessageFormatter.Instance.Deserialize(ref picker, options),
-        (int)WebSocketOpCode.Request => _requestFormatter.Deserialize(ref picker, options),
-        (int)WebSocketOpCode.RequestResponse => _requestResponseFormatter.Deserialize(ref picker, options),
+        (int)OpCode.Hello => _helloFormatter.Deserialize(ref picker, options),
+        (int)OpCode.Identify => _identifyFormatter.Deserialize(ref picker, options),
+        (int)OpCode.Identified => _identifiedFormatter.Deserialize(ref picker, options),
+        (int)OpCode.Reidentify => _reidentifyFormatter.Deserialize(ref picker, options),
+        (int)OpCode.Event => EventMessageFormatter.Instance.Deserialize(ref picker, options),
+        (int)OpCode.Request => _requestFormatter.Deserialize(ref picker, options),
+        (int)OpCode.RequestResponse => _requestResponseFormatter.Deserialize(ref picker, options),
         // TODO: not implemented
-        _ => new OpcodeMessage<object>((WebSocketOpCode)opcode, StandardResolver.Instance.GetFormatter<object>().Deserialize(ref picker, options)),
+        _ => new OpcodeMessage<object>((OpCode)opcode, StandardResolver.Instance.GetFormatter<object>().Deserialize(ref picker, options)),
       };
 
       reader.Skip();

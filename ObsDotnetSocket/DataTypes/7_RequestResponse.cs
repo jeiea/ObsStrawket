@@ -13,7 +13,7 @@ namespace ObsDotnetSocket.DataTypes {
   [MessagePackObject]
   public class RequestResponse : IRequestResponse {
     [IgnoreMember]
-    public WebSocketOpCode Op => WebSocketOpCode.RequestResponse;
+    public OpCode Op => OpCode.RequestResponse;
 
     [Key("requestType")]
     public string RequestType { get => GetType().Name; }
@@ -28,7 +28,7 @@ namespace ObsDotnetSocket.DataTypes {
   [MessagePackObject]
   public class RawRequestResponse : IRequestResponse {
     [IgnoreMember]
-    public WebSocketOpCode Op => WebSocketOpCode.RequestResponse;
+    public OpCode Op => OpCode.RequestResponse;
 
     [Key("requestType")]
     public string RequestType { get; set; } = "";

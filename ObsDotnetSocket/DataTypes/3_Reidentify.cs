@@ -4,7 +4,7 @@ namespace ObsDotnetSocket.DataTypes {
   [MessagePackObject]
   public class Reidentify : IOpcodeMessage {
     [IgnoreMember]
-    public WebSocketOpCode Op => WebSocketOpCode.Reidentify;
+    public OpCode Op => OpCode.Reidentify;
 
     [Key("eventSubscriptions")]
     public int EventSubscriptions { get; set; }

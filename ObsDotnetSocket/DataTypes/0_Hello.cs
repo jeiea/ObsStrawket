@@ -4,7 +4,7 @@ namespace ObsDotnetSocket.DataTypes {
   [MessagePackObject]
   public class Hello : IOpcodeMessage {
     [IgnoreMember]
-    public WebSocketOpCode Op => WebSocketOpCode.Hello;
+    public OpCode Op => OpCode.Hello;
 
     [Key("obsWebSocketVersion")]
     public string ObsWebSocketVersion { get; set; } = "";

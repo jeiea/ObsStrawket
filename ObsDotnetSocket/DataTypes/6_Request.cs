@@ -25,7 +25,7 @@ namespace ObsDotnetSocket.DataTypes {
   [MessagePackObject]
   public class Request : IRequest {
     [IgnoreMember]
-    public WebSocketOpCode Op => WebSocketOpCode.Event;
+    public OpCode Op => OpCode.Event;
 
     [Key("requestType")]
     public string RequestType { get => GetType().Name; }
@@ -37,7 +37,7 @@ namespace ObsDotnetSocket.DataTypes {
   [MessagePackObject]
   public class RawRequest : IRequest {
     [IgnoreMember]
-    public WebSocketOpCode Op => WebSocketOpCode.Event;
+    public OpCode Op => OpCode.Event;
 
     [Key("requestType")]
     public string RequestType { get => GetType().Name; }
