@@ -2,7 +2,6 @@ namespace ObsDotnetSocket.DataTypes {
   using MessagePack;
   using MessagePack.Formatters;
   using MessagePack.Resolvers;
-  using System;
 
   class OpcodeMessageFormatter : IMessagePackFormatter<IOpcodeMessage> {
     private static readonly DynamicObjectResolver _resolver = DynamicObjectResolver.Instance;
@@ -11,8 +10,6 @@ namespace ObsDotnetSocket.DataTypes {
     private readonly IMessagePackFormatter<Identify> _identifyFormatter = _resolver.GetFormatter<Identify>();
     private readonly IMessagePackFormatter<Identified> _identifiedFormatter = _resolver.GetFormatter<Identified>();
     private readonly IMessagePackFormatter<Reidentify> _reidentifyFormatter = _resolver.GetFormatter<Reidentify>();
-    private readonly IMessagePackFormatter<Request> _requestFormatter = _resolver.GetFormatter<Request>();
-    private readonly IMessagePackFormatter<RequestResponse> _requestResponseFormatter = _resolver.GetFormatter<RequestResponse>();
 
     public IOpcodeMessage Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
       var peeker = reader.CreatePeekReader();
@@ -31,7 +28,7 @@ namespace ObsDotnetSocket.DataTypes {
         (int)OpCode.Identify => _identifyFormatter.Deserialize(ref peeker, options),
         (int)OpCode.Identified => _identifiedFormatter.Deserialize(ref peeker, options),
         (int)OpCode.Reidentify => _reidentifyFormatter.Deserialize(ref peeker, options),
-        (int)OpCode.Event => EventFormatter.Instance.Deserialize(ref peeker, options),
+        (int)OpCode.Event => EventFormatter.Instance.Deserialize(ref peeker, options) as IOpcodeMessage,
         (int)OpCode.Request => RequestFormatter.Instance.Deserialize(ref peeker, options),
         (int)OpCode.RequestResponse => RequestResponseFormatter.Instance.Deserialize(ref peeker, options),
         // TODO: not implemented
@@ -48,7 +45,20 @@ namespace ObsDotnetSocket.DataTypes {
       writer.Write((int)value.Op);
       writer.Write("d");
 
-      MessagePackSerializer.Serialize(value.GetType(), ref writer, value, options);
+      switch (value) {
+      case IEvent @event:
+        EventFormatter.Instance.Serialize(ref writer, @event, options);
+        break;
+      case IRequest request:
+        RequestFormatter.Instance.Serialize(ref writer, request, options);
+        break;
+      case IRequestResponse response:
+        RequestResponseFormatter.Instance.Serialize(ref writer, response, options);
+        break;
+      default:
+        MessagePackSerializer.Serialize(value.GetType(), ref writer, value, options);
+        break;
+      }
     }
   }
 }

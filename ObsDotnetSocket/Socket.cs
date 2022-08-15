@@ -37,7 +37,7 @@ namespace ObsDotnetSocket {
         var result = await _socket!.ReceiveAsync(segment, token).ConfigureAwait(false);
         _receiveBuffer.Advance(result.Count);
 
-        if (result.MessageType == WebSocketMessageType.Close) {
+        if (result.MessageType == WebSocketMessageType.Close && _socket.State == WebSocketState.CloseReceived) {
           return null;
         }
         if (result.EndOfMessage) {

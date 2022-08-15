@@ -5,18 +5,13 @@ namespace ObsDotnetSocket.Test {
   using System.Net;
   using System.Net.WebSockets;
   using System.Text.RegularExpressions;
+  using System.Threading.Channels;
   using Xunit;
 
   public class ConnectionTest {
     [Fact]
     public async Task TestAgainstObsAsync() {
-      var cancellation = new CancellationTokenSource();
-      try {
-        await RunClientAsync(new Uri("ws://127.0.0.1:4455"), cancellation.Token).ConfigureAwait(false);
-      }
-      catch {
-        cancellation.Cancel();
-      }
+      await RunClientAsync(new Uri("ws://127.0.0.1:4455"), CancellationToken.None).ConfigureAwait(false);
     }
 
     [Fact]
@@ -39,25 +34,33 @@ namespace ObsDotnetSocket.Test {
     private static async Task RunClientAsync(Uri uri, CancellationToken token) {
       var client = new ClientSocket();
       await client.ConnectAsync(uri, "ahrEYXzXKytCIlpI", cancellation: token).ConfigureAwait(false);
+      var events = Channel.CreateUnbounded<IEvent>();
       var source = new TaskCompletionSource<IEvent>();
-      client.OnEvent += source.SetResult;
+      client.OnEvent += (@event) => {
+        _ = events.Writer.WriteAsync(@event);
+      };
 
-      var result = await client.RequestAsync(new RawRequest() {
+      var response = await client.RequestAsync(new RawRequest() {
         RequestId = "2521a51c-7040-4830-8181-492ab5477545",
-        RequestType = "GetVersion"
-      }, token).ConfigureAwait(false);
-      if (result is not GetVersionResponse version) {
+        RequestType = "GetStudioModeEnabled"
+      }, cancellation: token).ConfigureAwait(false);
+      if (response is not GetStudioModeEnabledResponse studioMode
+          || studioMode.RequestStatus.Code != RequestStatusCode.Success) {
         Assert.Fail("Did not parse the request");
         throw new Exception();
       }
-      Assert.True(version.AvailableRequests[0] is not null, "availableRequests are not string");
 
-      var @event = await source.Task.ConfigureAwait(false);
-      if (@event is not RecordStateChanged changed) {
+      response = await client.RequestAsync(new SetStudioModeEnabled() {
+        StudioModeEnabled = !studioMode.StudioModeEnabled,
+      }).ConfigureAwait(false);
+      Assert.Null(response);
+
+      var @event = await events.Reader.ReadAsync(token).ConfigureAwait(false); ;
+      if (@event is not StudioModeStateChanged studio) {
         Assert.Fail("Type not converted");
         throw new Exception();
       }
-      Assert.True(changed.OutputActive);
+      Assert.Equal(!studioMode.StudioModeEnabled, studio.StudioModeEnabled);
 
       await client.CloseAsync().ConfigureAwait(false);
     }
@@ -128,7 +131,7 @@ namespace ObsDotnetSocket.Test {
       TestUtil.AssertJsonEqual(@"{
   ""op"": 6,
   ""d"": {
-    ""requestType"": ""GetVersion"",
+    ""requestType"": ""GetStudioModeEnabled"",
     ""requestId"": ""{guid}"",
     ""requestData"":null
   }
@@ -137,7 +140,7 @@ namespace ObsDotnetSocket.Test {
       // In real, op follows d.
       await socket.SendAsync(MessagePackSerializer.ConvertFromJson(@"{
   ""d"": {
-    ""requestType"": ""GetVersion"",
+    ""requestType"": ""GetStudioModeEnabled"",
     ""requestId"": ""{guid}"",
     ""requestStatus"": {
       ""code"": 100,
@@ -145,28 +148,35 @@ namespace ObsDotnetSocket.Test {
       ""result"": true
     },
     ""responseData"": {
-      ""availableRequests"": [""PressInputPropertiesButton"", ""GetHotkeyList"", ""OpenInputInteractDialog"", ""SaveSourceScreenshot"", ""GetVersion"", ""SetInputName"", ""SetSceneName"", ""GetStats"", ""TriggerStudioModeTransition"", ""SetInputAudioSyncOffset"", ""GetSceneCollectionList"", ""BroadcastCustomEvent"", ""Sleep"", ""SetSceneSceneTransitionOverride"", ""CallVendorRequest"", ""CreateSceneCollection"", ""SetStudioModeEnabled"", ""TriggerHotkeyByName"", ""OpenVideoMixProjector"", ""TriggerHotkeyByKeySequence"", ""GetPersistentData"", ""SetSceneItemIndex"", ""SetPersistentData"", ""SetCurrentSceneCollection"", ""SetInputMute"", ""SetCurrentPreviewScene"", ""SetCurrentProgramScene"", ""OpenSourceProjector"", ""GetProfileList"", ""SetCurrentProfile"", ""RemoveProfile"", ""CreateProfile"", ""GetProfileParameter"", ""SetProfileParameter"", ""GetInputPropertiesListPropertyItems"", ""GetInputAudioBalance"", ""GetStreamServiceSettings"", ""GetVideoSettings"", ""SetVideoSettings"", ""SetInputAudioBalance"", ""SetInputVolume"", ""SetStreamServiceSettings"", ""GetInputDefaultSettings"", ""GetSpecialInputs"", ""GetInputKindList"", ""GetRecordDirectory"", ""GetInputMute"", ""GetCurrentPreviewScene"", ""GetReplayBufferStatus"", ""GetSourceActive"", ""GetSourceScreenshot"", ""GetSourcePrivateSettings"", ""SetSourcePrivateSettings"", ""SetSourceFilterEnabled"", ""GetInputList"", ""GetSceneList"", ""GetGroupList"", ""SetInputSettings"", ""GetCurrentProgramScene"", ""GetSceneItemId"", ""RemoveScene"", ""CreateScene"", ""GetSceneSceneTransitionOverride"", ""RemoveInput"", ""CreateInput"", ""GetSceneItemLocked"", ""GetInputSettings"", ""ToggleInputMute"", ""SetCurrentSceneTransition"", ""GetInputVolume"", ""GetInputAudioSyncOffset"", ""GetInputAudioMonitorType"", ""SetInputAudioMonitorType"", ""StartVirtualCam"", ""GetInputAudioTracks"", ""SetInputAudioTracks"", ""GetTransitionKindList"", ""GetSceneItemTransform"", ""GetSceneTransitionList"", ""GetVirtualCamStatus"", ""GetCurrentSceneTransition"", ""SetCurrentSceneTransitionDuration"", ""SetCurrentSceneTransitionSettings"", ""GetCurrentSceneTransitionCursor"", ""SetTBarPosition"", ""StopOutput"", ""ToggleOutput"", ""GetSourceFilterList"", ""GetSourceFilterDefaultSettings"", ""CreateSourceFilter"", ""RemoveSourceFilter"", ""SetSourceFilterName"", ""GetSourceFilter"", ""StopRecord"", ""ToggleRecord"", ""SetSourceFilterIndex"", ""SetSourceFilterSettings"", ""SetSceneItemTransform"", ""GetSceneItemList"", ""GetGroupSceneItemList"", ""CreateSceneItem"", ""RemoveSceneItem"", ""DuplicateSceneItem"", ""GetSceneItemEnabled"", ""SetSceneItemEnabled"", ""SetSceneItemLocked"", ""GetSceneItemIndex"", ""StartReplayBuffer"", ""GetSceneItemBlendMode"", ""SetSceneItemBlendMode"", ""GetSceneItemPrivateSettings"", ""SetSceneItemPrivateSettings"", ""StopVirtualCam"", ""ToggleVirtualCam"", ""StopReplayBuffer"", ""ToggleReplayBuffer"", ""SaveReplayBuffer"", ""GetLastReplayBufferReplay"", ""GetOutputList"", ""GetOutputStatus"", ""StartOutput"", ""GetOutputSettings"", ""SetOutputSettings"", ""GetStreamStatus"", ""StopStream"", ""ToggleStream"", ""StartStream"", ""SendStreamCaption"", ""GetRecordStatus"", ""StartRecord"", ""ToggleRecordPause"", ""PauseRecord"", ""ResumeRecord"", ""SetMediaInputCursor"", ""GetMediaInputStatus"", ""OffsetMediaInputCursor"", ""TriggerMediaInputAction"", ""GetStudioModeEnabled"", ""OpenInputPropertiesDialog"", ""OpenInputFiltersDialog"", ""GetMonitorList""],
-      ""obsVersion"": ""28.0.0"",
-      ""obsWebSocketVersion"": ""5.0.1"",
-      ""platform"": ""windows"",
-      ""platformDescription"": ""Windows 11 Version 2009"",
-      ""rpcVersion"": 1,
-      ""supportedImageFormats"": [""bmp"", ""jpeg"", ""jpg"", ""pbm"", ""pgm"", ""png"", ""ppm"", ""xbm"", ""xpm""],
+      ""studioModeEnabled"": false
     }
   },
   ""op"": 7
 }".Replace("{guid}", guid), cancellationToken: token), binary, true, token).ConfigureAwait(false);
       token.ThrowIfCancellationRequested();
 
+      await socket.ReceiveAsync(buffer, token).ConfigureAwait(false);
+      token.ThrowIfCancellationRequested();
+      json = MessagePackSerializer.ConvertToJson(buffer, cancellationToken: token);
+      guid = Regex.Match(json, @"[0-9a-f]{8}-[0-9a-f]{4}[^""]*").Value;
+      TestUtil.AssertJsonEqual(@"{
+  ""op"": 6,
+  ""d"": {
+    ""requestType"": ""SetStudioModeEnabled"",
+    ""requestId"": ""{guid}"",
+    ""requestData"": {
+      ""studioModeEnabled"": true
+    }
+  }
+}".Replace("{guid}", guid), json);
+
       await socket.SendAsync(MessagePackSerializer.ConvertFromJson(@"{
         ""op"": 5,
         ""d"": {
-          ""eventType"": ""RecordStateChanged"",
+          ""eventType"": ""StudioModeStateChanged"",
           ""eventIntent"": 1,
           ""eventData"": {
-            ""outputActive"": true,
-            ""outputPath"": """",
-            ""outputState"": null
+            ""studioModeEnabled"": true,
           }
         }
       }", cancellationToken: token), binary, true, token).ConfigureAwait(false);

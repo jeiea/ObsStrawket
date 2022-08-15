@@ -99,7 +99,7 @@ namespace ObsDotnetSocket {
       }
     }
 
-    public async Task<RequestResponse> RequestAsync(IRequest request, CancellationToken? cancellation = null) {
+    public async Task<RequestResponse?> RequestAsync(IRequest request, bool skipResponse = false, CancellationToken? cancellation = null) {
       using var source = CancellationTokenSource.CreateLinkedTokenSource(
         cancellation ?? CancellationToken.None,
         _cancellation.Token
@@ -109,8 +109,15 @@ namespace ObsDotnetSocket {
 
       string guid = $"{Guid.NewGuid()}";
       request.RequestId = guid;
-      var waiter = new TaskCompletionSource<RequestResponse>();
-      _requests[guid] = waiter;
+
+      TaskCompletionSource<RequestResponse>? waiter = null;
+      bool willWaitResponse = !skipResponse
+          && DataTypeMapping.RequestToTypes.TryGetValue(request.RequestType, out var typeMapping)
+          && typeMapping.Item2 != typeof(RequestResponse);
+      if (willWaitResponse) {
+        waiter = new();
+        _requests[guid] = waiter;
+      }
       await _sendSemaphore.WaitAsync(token).ConfigureAwait(false);
 
       try {
@@ -121,7 +128,8 @@ namespace ObsDotnetSocket {
       finally {
         _sendSemaphore.Release();
       }
-      return await waiter.Task.ConfigureAwait(false);
+
+      return willWaitResponse ? await waiter!.Task.ConfigureAwait(false) : null;
     }
 
     public void Dispose() {

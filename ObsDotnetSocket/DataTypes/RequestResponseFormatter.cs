@@ -12,7 +12,7 @@ namespace ObsDotnetSocket.DataTypes {
       var requestStatus = MessagePackSerializer.Deserialize<RequestStatus>(ref peeker, options);
       peeker = FormatterUtil.SeekByKey(reader, "responseData");
 
-      var data = RequestFormatter.NameToTypes.TryGetValue(requestType, out var type)
+      var data = DataTypeMapping.RequestToTypes.TryGetValue(requestType, out var type)
         ? (MessagePackSerializer.Deserialize(type.Item2, ref peeker, options) as IRequestResponse)!
         : MessagePackSerializer.Deserialize<RequestResponse>(ref peeker, options);
       if (data is RequestResponse response) {
