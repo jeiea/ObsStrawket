@@ -1,6 +1,7 @@
 namespace ObsDotnetSocket.Test {
   using MessagePack;
   using ObsDotnetSocket.DataTypes;
+  using ObsDotnetSocket.DataTypes.Predefineds;
   using System.Net;
   using System.Net.WebSockets;
   using System.Text.RegularExpressions;
@@ -41,15 +42,15 @@ namespace ObsDotnetSocket.Test {
       var source = new TaskCompletionSource<IEvent>();
       client.OnEvent += source.SetResult;
 
-      var result = await client.RequestAsync(new Request() {
+      var result = await client.RequestAsync(new RawRequest() {
         RequestId = "2521a51c-7040-4830-8181-492ab5477545",
         RequestType = "GetVersion"
       }, token).ConfigureAwait(false);
-      if (result.ResponseData!["availableRequests"] is not object[] availableRequests) {
-        Assert.Fail("availableRequests not parsed");
+      if (result is not GetVersionResponse version) {
+        Assert.Fail("Did not parse the request");
         throw new Exception();
       }
-      Assert.True(availableRequests[0] is string, "availableRequests are not string");
+      Assert.True(version.AvailableRequests[0] is not null, "availableRequests are not string");
 
       var @event = await source.Task.ConfigureAwait(false);
       if (@event is not RecordStateChanged changed) {

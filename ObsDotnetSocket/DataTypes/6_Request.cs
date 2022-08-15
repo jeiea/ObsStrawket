@@ -25,22 +25,22 @@ namespace ObsDotnetSocket.DataTypes {
   [MessagePackObject]
   public class Request : IRequest {
     [IgnoreMember]
-    public OpCode Op => OpCode.Event;
+    public OpCode Op => OpCode.Request;
 
-    [Key("requestType")]
+    [IgnoreMember]
     public string RequestType { get => GetType().Name; }
 
-    [Key("requestId")]
+    [IgnoreMember]
     public string RequestId { get; set; } = "";
   }
 
   [MessagePackObject]
   public class RawRequest : IRequest {
     [IgnoreMember]
-    public OpCode Op => OpCode.Event;
+    public OpCode Op => OpCode.Request;
 
     [Key("requestType")]
-    public string RequestType { get => GetType().Name; }
+    public string RequestType { get; set; } = "";
 
     [Key("requestId")]
     public string RequestId { get; set; } = "";

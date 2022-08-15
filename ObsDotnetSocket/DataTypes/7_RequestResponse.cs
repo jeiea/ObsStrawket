@@ -19,10 +19,10 @@ namespace ObsDotnetSocket.DataTypes {
     public string RequestType { get => GetType().Name; }
 
     [Key("requestId")]
-    public string RequestId { get; } = "";
+    public string RequestId { get; set; } = "";
 
     [Key("requestStatus")]
-    public RequestStatus RequestStatus { get; } = new();
+    public RequestStatus RequestStatus { get; set; } = new();
   }
 
   [MessagePackObject]
