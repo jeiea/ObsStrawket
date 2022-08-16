@@ -2,7 +2,7 @@ namespace ObsDotnetSocket.DataTypes {
   using MessagePack;
   using System.Collections.Generic;
 
-  public interface IRequestResponse : IOpcodeMessage {
+  public interface IRequestResponse : IOpCodeMessage {
     public string RequestType { get; }
 
     public string RequestId { get; }

@@ -2,7 +2,7 @@ namespace ObsDotnetSocket.DataTypes {
   using MessagePack;
 
   [MessagePackObject]
-  public class Reidentify : IOpcodeMessage {
+  public class Reidentify : IOpCodeMessage {
     [IgnoreMember]
     public OpCode Op => OpCode.Reidentify;
 

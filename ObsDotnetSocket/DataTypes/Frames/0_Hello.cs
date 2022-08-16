@@ -2,7 +2,7 @@ namespace ObsDotnetSocket.DataTypes {
   using MessagePack;
 
   [MessagePackObject]
-  public class Hello : IOpcodeMessage {
+  public class Hello : IOpCodeMessage {
     [IgnoreMember]
     public OpCode Op => OpCode.Hello;
 

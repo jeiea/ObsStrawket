@@ -1,13 +1,13 @@
 namespace ObsDotnetSocket.DataTypes {
   using MessagePack;
 
-  public interface IOpcodeMessage {
+  public interface IOpCodeMessage {
     public OpCode Op { get; }
   }
 
   [MessagePackObject]
-  public class OpcodeMessage<T> : IOpcodeMessage where T : new() {
-    public OpcodeMessage(OpCode op, T? data = default) {
+  public class OpCodeMessage<T> : IOpCodeMessage where T : new() {
+    public OpCodeMessage(OpCode op, T? data = default) {
       Op = op;
       Data = data ?? new();
     }

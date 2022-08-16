@@ -160,7 +160,7 @@ namespace ObsDotnetSocket {
       }
     }
 
-    private void Dispatch(IOpcodeMessage message) {
+    private void Dispatch(IOpCodeMessage message) {
       switch (message) {
       case IEvent obsEvent:
         Event(obsEvent);

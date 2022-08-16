@@ -2,7 +2,7 @@ namespace ObsDotnetSocket.DataTypes {
   using MessagePack;
   using System.Collections.Generic;
 
-  public interface IEvent : IOpcodeMessage {
+  public interface IEvent : IOpCodeMessage {
     public string EventType { get; }
 
     public EventSubscription EventIntent { get; set; }

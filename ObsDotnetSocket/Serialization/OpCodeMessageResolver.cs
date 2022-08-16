@@ -4,10 +4,10 @@ namespace ObsDotnetSocket.Serialization {
   using MessagePack.Resolvers;
   using ObsDotnetSocket.DataTypes;
 
-  public class OpcodeMessageResolver : IFormatterResolver {
-    public static OpcodeMessageResolver Instance = new();
+  public class OpCodeMessageResolver : IFormatterResolver {
+    public static OpCodeMessageResolver Instance = new();
 
-    private OpcodeMessageResolver() { }
+    private OpCodeMessageResolver() { }
 
     public IMessagePackFormatter<T>? GetFormatter<T>() {
       return Cache<T>.Formatter ?? StandardResolver.Instance.GetFormatter<T>();
@@ -17,8 +17,8 @@ namespace ObsDotnetSocket.Serialization {
       public static IMessagePackFormatter<T>? Formatter;
 
       static Cache() {
-        if (typeof(T) == typeof(IOpcodeMessage)) {
-          Formatter = (IMessagePackFormatter<T>)new OpcodeMessageFormatter();
+        if (typeof(T) == typeof(IOpCodeMessage)) {
+          Formatter = (IMessagePackFormatter<T>)new OpCodeMessageFormatter();
         }
       }
     }

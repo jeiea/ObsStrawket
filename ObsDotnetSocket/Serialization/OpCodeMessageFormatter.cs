@@ -5,7 +5,7 @@ namespace ObsDotnetSocket.Serialization {
   using MessagePack.Formatters;
   using MessagePack.Resolvers;
 
-  class OpcodeMessageFormatter : IMessagePackFormatter<IOpcodeMessage> {
+  class OpCodeMessageFormatter : IMessagePackFormatter<IOpCodeMessage> {
     private static readonly DynamicObjectResolver _resolver = DynamicObjectResolver.Instance;
 
     private readonly IMessagePackFormatter<Hello> _helloFormatter = _resolver.GetFormatter<Hello>();
@@ -13,7 +13,7 @@ namespace ObsDotnetSocket.Serialization {
     private readonly IMessagePackFormatter<Identified> _identifiedFormatter = _resolver.GetFormatter<Identified>();
     private readonly IMessagePackFormatter<Reidentify> _reidentifyFormatter = _resolver.GetFormatter<Reidentify>();
 
-    public IOpcodeMessage Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
+    public IOpCodeMessage Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
       var peeker = reader.CreatePeekReader();
       if (!FormatterUtil.SeekByKey(ref peeker, "op")) {
         throw new UnexpectedProtocolException();
@@ -30,18 +30,18 @@ namespace ObsDotnetSocket.Serialization {
         (int)OpCode.Identify => _identifyFormatter.Deserialize(ref peeker, options),
         (int)OpCode.Identified => _identifiedFormatter.Deserialize(ref peeker, options),
         (int)OpCode.Reidentify => _reidentifyFormatter.Deserialize(ref peeker, options),
-        (int)OpCode.Event => EventFormatter.Instance.Deserialize(ref peeker, options) as IOpcodeMessage,
+        (int)OpCode.Event => EventFormatter.Instance.Deserialize(ref peeker, options) as IOpCodeMessage,
         (int)OpCode.Request => RequestFormatter.Instance.Deserialize(ref peeker, options),
         (int)OpCode.RequestResponse => RequestResponseFormatter.Instance.Deserialize(ref peeker, options),
         // TODO: not implemented
-        _ => new OpcodeMessage<object>((OpCode)opcode, StandardResolver.Instance.GetFormatter<object>().Deserialize(ref peeker, options)),
+        _ => new OpCodeMessage<object>((OpCode)opcode, StandardResolver.Instance.GetFormatter<object>().Deserialize(ref peeker, options)),
       };
 
       reader.Skip();
       return data;
     }
 
-    public void Serialize(ref MessagePackWriter writer, IOpcodeMessage value, MessagePackSerializerOptions options) {
+    public void Serialize(ref MessagePackWriter writer, IOpCodeMessage value, MessagePackSerializerOptions options) {
       writer.WriteMapHeader(2);
       writer.Write("op");
       writer.Write((int)value.Op);
