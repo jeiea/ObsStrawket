@@ -1,6 +1,7 @@
-namespace ObsDotnetSocket.DataTypes {
+namespace ObsDotnetSocket.Serialization {
   using MessagePack;
   using MessagePack.Formatters;
+  using ObsDotnetSocket.DataTypes;
 
   class RequestFormatter : IMessagePackFormatter<IRequest> {
     public static readonly RequestFormatter Instance = new();

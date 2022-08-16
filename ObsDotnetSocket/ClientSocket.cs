@@ -1,5 +1,6 @@
 namespace ObsDotnetSocket {
   using ObsDotnetSocket.DataTypes;
+  using ObsDotnetSocket.DataTypes.Predefineds;
   using System;
   using System.Collections.Concurrent;
   using System.Net.WebSockets;
@@ -9,7 +10,81 @@ namespace ObsDotnetSocket {
   using System.Threading.Tasks;
 
   public class ClientSocket : IDisposable {
-    public event Action<IEvent> OnEvent = delegate { };
+    #region Events
+    public event Action<IEvent> Event = delegate { };
+
+    public event Action<GeneralEvent> GeneralEvent = delegate { };
+    public event Action<ExitStarted> ExitStarted = delegate { };
+    public event Action<VendorEvent> VendorEvent = delegate { };
+
+    public event Action<ConfigEvent> ConfigEvent = delegate { };
+    public event Action<CurrentSceneCollectionChanging> CurrentSceneCollectionChanging = delegate { };
+    public event Action<CurrentSceneCollectionChanged> CurrentSceneCollectionChanged = delegate { };
+    public event Action<SceneCollectionListChanged> SceneCollectionListChanged = delegate { };
+    public event Action<CurrentProfileChanging> CurrentProfileChanging = delegate { };
+    public event Action<CurrentProfileChanged> CurrentProfileChanged = delegate { };
+    public event Action<ProfileListChanged> ProfileListChanged = delegate { };
+
+    public event Action<ScenesEvent> ScenesEvent = delegate { };
+    public event Action<SceneCreated> SceneCreated = delegate { };
+    public event Action<SceneRemoved> SceneRemoved = delegate { };
+    public event Action<SceneNameChanged> SceneNameChanged = delegate { };
+    public event Action<CurrentProgramSceneChanged> CurrentProgramSceneChanged = delegate { };
+    public event Action<CurrentPreviewSceneChanged> CurrentPreviewSceneChanged = delegate { };
+    public event Action<SceneListChanged> SceneListChanged = delegate { };
+
+    public event Action<InputsEvent> InputsEvent = delegate { };
+    public event Action<InputCreated> InputCreated = delegate { };
+    public event Action<InputRemoved> InputRemoved = delegate { };
+    public event Action<InputNameChanged> InputNameChanged = delegate { };
+    public event Action<InputActiveStateChanged> InputActiveStateChanged = delegate { };
+    public event Action<InputShowStateChanged> InputShowStateChanged = delegate { };
+    public event Action<InputMuteStateChanged> InputMuteStateChanged = delegate { };
+    public event Action<InputVolumeChanged> InputVolumeChanged = delegate { };
+    public event Action<InputAudioBalanceChanged> InputAudioBalanceChanged = delegate { };
+    public event Action<InputAudioSyncOffsetChanged> InputAudioSyncOffsetChanged = delegate { };
+    public event Action<InputAudioTracksChanged> InputAudioTracksChanged = delegate { };
+    public event Action<InputAudioMonitorTypeChanged> InputAudioMonitorTypeChanged = delegate { };
+    public event Action<InputVolumeMeters> InputVolumeMeters = delegate { };
+
+    public event Action<TransitionsEvent> TransitionsEvent = delegate { };
+    public event Action<CurrentSceneTransitionChanged> CurrentSceneTransitionChanged = delegate { };
+    public event Action<CurrentSceneTransitionDurationChanged> CurrentSceneTransitionDurationChanged = delegate { };
+    public event Action<SceneTransitionStarted> SceneTransitionStarted = delegate { };
+    public event Action<SceneTransitionEnded> SceneTransitionEnded = delegate { };
+    public event Action<SceneTransitionVideoEnded> SceneTransitionVideoEnded = delegate { };
+
+    public event Action<FiltersEvent> FiltersEvent = delegate { };
+    public event Action<SourceFilterListReindexed> SourceFilterListReindexed = delegate { };
+    public event Action<SourceFilterCreated> SourceFilterCreated = delegate { };
+    public event Action<SourceFilterRemoved> SourceFilterRemoved = delegate { };
+    public event Action<SourceFilterNameChanged> SourceFilterNameChanged = delegate { };
+    public event Action<SourceFilterEnableStateChanged> SourceFilterEnableStateChanged = delegate { };
+
+    public event Action<SceneItemsEvent> SceneItemsEvent = delegate { };
+    public event Action<SceneItemCreated> SceneItemCreated = delegate { };
+    public event Action<SceneItemRemoved> SceneItemRemoved = delegate { };
+    public event Action<SceneItemListReindexed> SceneItemListReindexed = delegate { };
+    public event Action<SceneItemEnableStateChanged> SceneItemEnableStateChanged = delegate { };
+    public event Action<SceneItemLockStateChanged> SceneItemLockStateChanged = delegate { };
+    public event Action<SceneItemSelected> SceneItemSelected = delegate { };
+    public event Action<SceneItemTransformChanged> SceneItemTransformChanged = delegate { };
+
+    public event Action<OutputsEvent> OutputsEvent = delegate { };
+    public event Action<StreamStateChanged> StreamStateChanged = delegate { };
+    public event Action<RecordStateChanged> RecordStateChanged = delegate { };
+    public event Action<ReplayBufferStateChanged> ReplayBufferStateChanged = delegate { };
+    public event Action<VirtualcamStateChanged> VirtualcamStateChanged = delegate { };
+    public event Action<ReplayBufferSaved> ReplayBufferSaved = delegate { };
+
+    public event Action<MediaInputsEvent> MediaInputsEvent = delegate { };
+    public event Action<MediaInputPlaybackStarted> MediaInputPlaybackStarted = delegate { };
+    public event Action<MediaInputPlaybackEnded> MediaInputPlaybackEnded = delegate { };
+    public event Action<MediaInputActionTriggered> MediaInputActionTriggered = delegate { };
+
+    public event Action<UiEvent> UiEvent = delegate { };
+    public event Action<StudioModeStateChanged> StudioModeStateChanged = delegate { };
+    #endregion
 
     private const int _supportedRpcVersion = 1;
 
@@ -88,7 +163,15 @@ namespace ObsDotnetSocket {
     private void Dispatch(IOpcodeMessage message) {
       switch (message) {
       case IEvent obsEvent:
-        OnEvent(obsEvent);
+        Event(obsEvent);
+        switch (message) {
+        case GeneralEvent general:
+          DispatchGeneralEvent(general);
+          break;
+        case ConfigEvent config:
+          DispatchConfigEvent(config);
+          break;
+        }
         break;
       case RequestResponse response:
         _requests[response.RequestId].SetResult(response);
@@ -99,6 +182,22 @@ namespace ObsDotnetSocket {
       }
     }
 
+    private void DispatchGeneralEvent(GeneralEvent general) {
+      GeneralEvent(general);
+      switch (general) {
+      case ExitStarted exit:
+        ExitStarted(exit);
+        break;
+      case VendorEvent vendor:
+        VendorEvent(vendor);
+        break;
+      }
+    }
+    private void DispatchConfigEvent(ConfigEvent config) {
+      ConfigEvent(config);
+      switch (config) {
+      }
+    }
     public async Task<RequestResponse?> RequestAsync(IRequest request, bool skipResponse = false, CancellationToken? cancellation = null) {
       using var source = CancellationTokenSource.CreateLinkedTokenSource(
         cancellation ?? CancellationToken.None,

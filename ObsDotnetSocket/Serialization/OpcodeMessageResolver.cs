@@ -1,7 +1,8 @@
-﻿namespace ObsDotnetSocket.DataTypes {
+namespace ObsDotnetSocket.Serialization {
   using MessagePack;
   using MessagePack.Formatters;
   using MessagePack.Resolvers;
+  using ObsDotnetSocket.DataTypes;
 
   public class OpcodeMessageResolver : IFormatterResolver {
     public static OpcodeMessageResolver Instance = new();

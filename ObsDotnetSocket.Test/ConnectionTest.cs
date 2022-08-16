@@ -36,7 +36,7 @@ namespace ObsDotnetSocket.Test {
       await client.ConnectAsync(uri, "ahrEYXzXKytCIlpI", cancellation: token).ConfigureAwait(false);
       var events = Channel.CreateUnbounded<IEvent>();
       var source = new TaskCompletionSource<IEvent>();
-      client.OnEvent += (@event) => {
+      client.Event += (@event) => {
         _ = events.Writer.WriteAsync(@event);
       };
 

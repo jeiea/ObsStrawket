@@ -1,4 +1,6 @@
-namespace ObsDotnetSocket.DataTypes {
+using ObsDotnetSocket.DataTypes;
+
+namespace ObsDotnetSocket.Serialization {
   using MessagePack;
   using MessagePack.Formatters;
   using MessagePack.Resolvers;

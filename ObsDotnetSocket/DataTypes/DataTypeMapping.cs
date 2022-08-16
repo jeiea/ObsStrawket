@@ -6,7 +6,7 @@ namespace ObsDotnetSocket.DataTypes {
 
   internal static class DataTypeMapping {
     internal static readonly Dictionary<string, Type> EventToTypes = new Type[] {
-       // General Events,
+      // General Events,
       typeof(ExitStarted),
       typeof(VendorEvent),
 

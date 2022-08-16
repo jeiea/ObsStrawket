@@ -1,6 +1,7 @@
-namespace ObsDotnetSocket.DataTypes {
+namespace ObsDotnetSocket.Serialization {
   using MessagePack;
   using MessagePack.Formatters;
+  using ObsDotnetSocket.DataTypes;
 
   class EventFormatter : IMessagePackFormatter<IEvent> {
     public static readonly EventFormatter Instance = new();
