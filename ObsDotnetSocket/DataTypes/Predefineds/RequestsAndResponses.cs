@@ -240,6 +240,21 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
   public class ConfigRequest : Request { }
   public class ConfigRequestResponse : RequestResponse { }
   /// <summary>
+  /// Gets the current directory that the record output is set to.<br />
+  /// - Latest Supported RPC Version: `1`<br />
+  /// - Added in v5.0.0<br />
+  /// </summary>
+  public class GetRecordDirectory : ConfigRequest {
+  }
+  public class GetRecordDirectoryResponse : ConfigRequestResponse {
+    /// <summary>
+    /// Output directory
+    /// </summary>
+    [Key("recordDirectory")]
+    public string RecordDirectory { get; set; } = "";
+  }
+
+  /// <summary>
   /// Gets the value of a "slot" from the selected persistent data realm.<br />
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />

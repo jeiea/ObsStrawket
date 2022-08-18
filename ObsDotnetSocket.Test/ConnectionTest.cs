@@ -32,11 +32,14 @@ namespace ObsDotnetSocket.Test {
     }
 
     private static async Task RunClientAsync(Uri uri, CancellationToken token) {
-      var client = new ClientSocket();
+      var client = new ObsClientSocket();
       await client.ConnectAsync(uri, "ahrEYXzXKytCIlpI", cancellation: token).ConfigureAwait(false);
       var events = Channel.CreateUnbounded<IEvent>();
       var source = new TaskCompletionSource<IEvent>();
       client.Event += (@event) => {
+        _ = events.Writer.WriteAsync(@event);
+      };
+      client.StudioModeStateChanged += (@event) => {
         _ = events.Writer.WriteAsync(@event);
       };
 
@@ -50,17 +53,20 @@ namespace ObsDotnetSocket.Test {
         throw new Exception();
       }
 
-      response = await client.RequestAsync(new SetStudioModeEnabled() {
-        StudioModeEnabled = !studioMode.StudioModeEnabled,
-      }).ConfigureAwait(false);
-      Assert.Null(response);
+      await client.SetStudioModeEnabledAsync(!studioMode.StudioModeEnabled).ConfigureAwait(false);
 
-      var @event = await events.Reader.ReadAsync(token).ConfigureAwait(false); ;
+      var @event = await events.Reader.ReadAsync(token).ConfigureAwait(false);
       if (@event is not StudioModeStateChanged studio) {
         Assert.Fail("Type not converted");
         throw new Exception();
       }
+      @event = await events.Reader.ReadAsync(token).ConfigureAwait(false);
+      if (@event is not StudioModeStateChanged) {
+        Assert.Fail("Type not converted");
+        throw new Exception();
+      }
       Assert.Equal(!studioMode.StudioModeEnabled, studio.StudioModeEnabled);
+      Assert.Equal(0, events.Reader.Count);
 
       await client.CloseAsync().ConfigureAwait(false);
     }
