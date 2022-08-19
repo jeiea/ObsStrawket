@@ -3,6 +3,7 @@ namespace ObsDotnetSocket {
   using ObsDotnetSocket.DataTypes.Predefineds;
   using System;
   using System.Collections.Generic;
+  using System.Net.WebSockets;
   using System.Threading;
   using System.Threading.Tasks;
 
@@ -83,7 +84,7 @@ namespace ObsDotnetSocket {
     public event Action<StudioModeStateChanged> StudioModeStateChanged = delegate { };
     #endregion
 
-    public event Action Closed {
+    public event Action<WebSocketCloseStatus, string> Closed {
       add => _clientSocket.Closed += value;
       remove => _clientSocket.Closed -= value;
     }

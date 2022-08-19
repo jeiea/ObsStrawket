@@ -10,7 +10,7 @@ namespace ObsDotnetSocket {
 
   public class ClientSocket : IDisposable {
     public event Action<IEvent> Event = delegate { };
-    public event Action Closed = delegate { };
+    public event Action<WebSocketCloseStatus, string> Closed = delegate { };
 
     private const int _supportedRpcVersion = 1;
 
@@ -75,21 +75,27 @@ namespace ObsDotnetSocket {
     }
 
     private async Task RunReceiveLoopAsync() {
-      while (!_cancellation.IsCancellationRequested) {
-        var message = await _socket.ReceiveAsync(_cancellation.Token).ConfigureAwait(false);
-        if (_cancellation.IsCancellationRequested) {
-          break;
-        }
-        if (message == null) {
-          await CloseAsync().ConfigureAwait(false);
-          _requests.Clear();
-          _cancellation.Cancel();
-          Closed.Invoke();
-          return;
-        }
+      try {
+        while (!_cancellation.IsCancellationRequested) {
+          var message = await _socket.ReceiveAsync(_cancellation.Token).ConfigureAwait(false);
+          if (_cancellation.IsCancellationRequested) {
+            break;
+          }
+          if (message == null) {
+            await CloseAsync().ConfigureAwait(false);
 
-        _ = Task.Run(() => Dispatch(message));
+            _requests.Clear();
+            _cancellation.Cancel();
+            if (_clientWebSocket.CloseStatus is WebSocketCloseStatus status) {
+              Closed.Invoke(status, _clientWebSocket.CloseStatusDescription);
+            }
+            return;
+          }
+
+          _ = Task.Run(() => Dispatch(message));
+        }
       }
+      catch (OperationCanceledException) { }
     }
 
     private void Dispatch(IOpCodeMessage message) {
