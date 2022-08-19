@@ -19,8 +19,6 @@ namespace ObsDotnetSocket {
     private readonly Sequence<byte> _receiveBuffer = new() { MinimumSpanLength = _transmissionSize };
     private readonly MessagePackSerializerOptions _serialOptions = new(OpCodeMessageResolver.Instance);
 
-    public string? CloseDescription { get => _socket?.CloseStatusDescription; }
-
     public Socket(WebSocket socket) {
       _socket = socket;
     }

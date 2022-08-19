@@ -2,16 +2,48 @@ namespace ObsDotnetSocket.Test {
   using MessagePack;
   using ObsDotnetSocket.DataTypes;
   using ObsDotnetSocket.DataTypes.Predefineds;
+  using ObsDotnetSocket.Serialization;
   using System.Net;
   using System.Net.WebSockets;
+  using System.Reflection;
   using System.Text.RegularExpressions;
   using System.Threading.Channels;
   using Xunit;
+  using Xunit.Abstractions;
 
   public class ConnectionTest {
+    private readonly ITestOutputHelper _output;
+
+    public ConnectionTest(ITestOutputHelper output) {
+      _output = output;
+    }
+
     [Fact]
     public async Task TestAgainstObsAsync() {
       await RunClientAsync(new Uri("ws://127.0.0.1:4455"), CancellationToken.None).ConfigureAwait(false);
+    }
+
+    [Fact]
+    public async Task JustMonitorObsEventAsync() {
+      var methods = typeof(MessagePackSerializer).GetMethods().ToList();
+      methods = methods.Where(x => x.Name == nameof(MessagePackSerializer.SerializeToJson)).ToList();
+      var method = methods[1];
+      var client = new ObsClientSocket();
+      var source = new TaskCompletionSource();
+      client.Event += (@event) => {
+        var result = method.MakeGenericMethod(@event.GetType()).Invoke(@event, new object[] { @event, MessagePackSerializerOptions.Standard.WithResolver(OpCodeMessageResolver.Instance), default(CancellationToken) });
+        _output.WriteLine($"{result}");
+      };
+      client.Closed += () => {
+        source.SetResult();
+      };
+      try {
+        await client.ConnectAsync(new Uri("ws://127.0.0.1:4455"), "ahrEYXzXKytCIlpI").ConfigureAwait(false);
+      }
+      catch (Exception ex) {
+        source.TrySetException(ex);
+      }
+      await source.Task.ConfigureAwait(false);
     }
 
     [Fact]

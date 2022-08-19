@@ -1,6 +1,5 @@
 namespace ObsDotnetSocket {
   using ObsDotnetSocket.DataTypes;
-  using ObsDotnetSocket.DataTypes.Predefineds;
   using System;
   using System.Collections.Concurrent;
   using System.Net.WebSockets;
@@ -11,6 +10,7 @@ namespace ObsDotnetSocket {
 
   public class ClientSocket : IDisposable {
     public event Action<IEvent> Event = delegate { };
+    public event Action Closed = delegate { };
 
     private const int _supportedRpcVersion = 1;
 
@@ -62,13 +62,16 @@ namespace ObsDotnetSocket {
     }
 
     public async Task CloseAsync() {
-      await _sendSemaphore.WaitAsync(_cancellation.Token).ConfigureAwait(false);
       try {
-        await _socket.CloseAsync(_cancellation.Token).ConfigureAwait(false);
+        await _sendSemaphore.WaitAsync(_cancellation.Token).ConfigureAwait(false);
+        try {
+          await _socket.CloseAsync(_cancellation.Token).ConfigureAwait(false);
+        }
+        finally {
+          _sendSemaphore.Release();
+        }
       }
-      finally {
-        _sendSemaphore.Release();
-      }
+      catch (OperationCanceledException) { }
     }
 
     private async Task RunReceiveLoopAsync() {
@@ -81,6 +84,7 @@ namespace ObsDotnetSocket {
           await CloseAsync().ConfigureAwait(false);
           _requests.Clear();
           _cancellation.Cancel();
+          Closed.Invoke();
           return;
         }
 

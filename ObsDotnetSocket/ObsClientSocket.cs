@@ -83,6 +83,11 @@ namespace ObsDotnetSocket {
     public event Action<StudioModeStateChanged> StudioModeStateChanged = delegate { };
     #endregion
 
+    public event Action Closed {
+      add => _clientSocket.Closed += value;
+      remove => _clientSocket.Closed -= value;
+    }
+
     private readonly ClientSocket _clientSocket;
 
     public string? CloseDescription { get => _clientSocket.CloseDescription; }
@@ -97,7 +102,7 @@ namespace ObsDotnetSocket {
       string? password = null,
       EventSubscription events = EventSubscription.All,
       CancellationToken? cancellation = null
-    ) => ConnectAsync(uri, password, events, cancellation);
+    ) => _clientSocket.ConnectAsync(uri, password, events, cancellation);
 
     public Task CloseAsync() => _clientSocket.CloseAsync();
 
