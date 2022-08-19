@@ -98,7 +98,13 @@ namespace ObsDotnetSocket {
         Event(obsEvent);
         break;
       case RequestResponse response:
-        _requests[response.RequestId].SetResult(response);
+        var request = _requests[response.RequestId];
+        if (response.RequestStatus.Result) {
+          request.SetResult(response);
+        }
+        else {
+          request.SetException(new FailureResponseException(response));
+        }
         break;
       default:
         // TODO: Log

@@ -724,7 +724,7 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
     /// Array of scenes<br />
     /// </summary>
     [Key("scenes")]
-    public List<Dictionary<string, object?>> Scenes { get; set; } = new();
+    public List<Scene> Scenes { get; set; } = new();
   }
 
   /// <summary>
@@ -2372,6 +2372,11 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
   /// - Added in v5.0.0<br />
   /// </summary>
   public class GetOutputList : OutputsRequest {
+  }
+
+  public class GetOutputListResponse : OutputsRequestResponse {
+    [Key("outputs")]
+    public List<Output> Outputs { get; set; } = new();
   }
 
   /// <summary>

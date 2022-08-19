@@ -194,7 +194,7 @@ namespace ObsDotnetSocket.DataTypes {
       new (typeof(StopReplayBuffer), typeof(RequestResponse)),
       new (typeof(SaveReplayBuffer), typeof(RequestResponse)),
       new (typeof(GetLastReplayBufferReplay), typeof(GetLastReplayBufferReplayResponse)),
-      new (typeof(GetOutputList), typeof(RequestResponse)),
+      new (typeof(GetOutputList), typeof(GetOutputListResponse)),
       new (typeof(GetOutputStatus), typeof(GetOutputStatusResponse)),
       new (typeof(ToggleOutput), typeof(ToggleOutputResponse)),
       new (typeof(StartOutput), typeof(RequestResponse)),

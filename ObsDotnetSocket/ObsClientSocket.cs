@@ -1338,8 +1338,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public Task GetOutputListAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new GetOutputList() { }, skipResponse, cancellation);
+    public async Task<GetOutputListResponse?> GetOutputListAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
+      return await _clientSocket.RequestAsync(new GetOutputList() { }, skipResponse, cancellation).ConfigureAwait(false) as GetOutputListResponse;
     }
 
     /// <summary>
