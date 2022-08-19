@@ -818,7 +818,7 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
     /// The specific state of the output<br />
     /// </summary>
     [Key("outputState")]
-    public string OutputState { get; set; } = "";
+    public OutputState OutputState { get; set; }
   }
 
   /// <summary>
@@ -836,7 +836,7 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
     /// The specific state of the output<br />
     /// </summary>
     [Key("outputState")]
-    public string OutputState { get; set; } = "";
+    public OutputState OutputState { get; set; }
     /// <summary>
     /// File name for the saved recording, if record stopped. `null` otherwise<br />
     /// </summary>
@@ -859,7 +859,7 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
     /// The specific state of the output<br />
     /// </summary>
     [Key("outputState")]
-    public string OutputState { get; set; } = "";
+    public OutputState OutputState { get; set; }
   }
 
   /// <summary>
@@ -877,7 +877,7 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
     /// The specific state of the output<br />
     /// </summary>
     [Key("outputState")]
-    public string OutputState { get; set; } = "";
+    public OutputState OutputState { get; set; }
   }
 
   /// <summary>
@@ -935,7 +935,7 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
     /// Action performed on the input. See `ObsMediaInputAction` enum<br />
     /// </summary>
     [Key("mediaAction")]
-    public string MediaAction { get; set; } = "";
+    public MediaInputAction MediaAction { get; set; }
   }
 
   public class UiEvent : Event { }

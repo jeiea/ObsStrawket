@@ -767,7 +767,7 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=inputName>Name of the input to set the audio monitor type of</param>
     /// <param name=monitorType>Audio monitor type</param>
-    public Task SetInputAudioMonitorTypeAsync(string inputName, string monitorType, bool skipResponse = false, CancellationToken? cancellation = null) {
+    public Task SetInputAudioMonitorTypeAsync(string inputName, MonitoringType monitorType, bool skipResponse = false, CancellationToken? cancellation = null) {
       return _clientSocket.RequestAsync(new SetInputAudioMonitorType() { InputName = inputName, MonitorType = monitorType }, skipResponse, cancellation);
     }
 

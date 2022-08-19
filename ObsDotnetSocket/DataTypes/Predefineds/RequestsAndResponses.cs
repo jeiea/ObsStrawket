@@ -1328,7 +1328,7 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
     /// Audio monitor type<br />
     /// </summary>
     [Key("monitorType")]
-    public string MonitorType { get; set; } = "";
+    public MonitoringType MonitorType { get; set; }
   }
 
   /// <summary>
@@ -1346,7 +1346,7 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
     /// Audio monitor type | None | N/A<br />
     /// </summary>
     [Key("monitorType")]
-    public string MonitorType { get; set; } = "";
+    public MonitoringType MonitorType { get; set; }
   }
 
   /// <summary>
@@ -2729,7 +2729,7 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
     /// State of the media input<br />
     /// </summary>
     [Key("mediaState")]
-    public string MediaState { get; set; } = "";
+    public MediaState MediaState { get; set; }
     /// <summary>
     /// Total duration of the playing media in milliseconds. `null` if not playing<br />
     /// </summary>

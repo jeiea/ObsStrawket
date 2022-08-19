@@ -1,4 +1,4 @@
-import { getJsonPath } from "./json_path.ts";
+import { protocolJsonPath } from "./commons.ts";
 
 type ObsEvent = {
   description: string;
@@ -57,10 +57,6 @@ const categoryOrder = [
   "Ui",
   "High-Volume",
 ].map((x) => x.toLowerCase());
-
-const readProtocolJson = () => {
-  return Deno.readTextFile(getJsonPath());
-};
 
 const toParameterComment = (field: RequestField): string => {
   const { valueName, valueDescription } = field;
@@ -171,7 +167,7 @@ const makeRequestMethods = (json: string): string => {
 };
 
 const main = async () => {
-  const json = await readProtocolJson();
+  const json = await Deno.readTextFile(protocolJsonPath);
   const result = makeRequestMethods(json);
   console.log(result);
 };
