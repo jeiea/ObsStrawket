@@ -51,14 +51,14 @@ namespace ObsDotnetSocket {
         Authentication = MakeOneTimePass(password, hello.Authentication),
       };
       await _socket.SendAsync(identify, token).ConfigureAwait(false);
-      try {
-        var identified = (Identified)(await _socket.ReceiveAsync(token))!;
-        _cancellation = new();
-        _ = RunReceiveLoopAsync();
+
+      var identified = (Identified)(await _socket.ReceiveAsync(token))!;
+      if (identified == null && !IsConnected) {
+        throw new AuthenticationFailureException(_clientWebSocket.CloseStatus, _clientWebSocket.CloseStatusDescription);
       }
-      catch (Exception ex) {
-        throw ex;
-      }
+
+      _cancellation = new();
+      _ = RunReceiveLoopAsync();
     }
 
     public async Task CloseAsync() {
