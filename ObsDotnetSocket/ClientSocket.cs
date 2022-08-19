@@ -118,7 +118,7 @@ namespace ObsDotnetSocket {
       }
     }
 
-    public async Task<RequestResponse?> RequestAsync(IRequest request, bool skipResponse = false, CancellationToken? cancellation = null) {
+    public async Task<RequestResponse?> RequestAsync(IRequest request, CancellationToken? cancellation = null) {
       using var source = CancellationTokenSource.CreateLinkedTokenSource(
         cancellation ?? CancellationToken.None,
         _cancellation.Token
@@ -130,8 +130,7 @@ namespace ObsDotnetSocket {
       request.RequestId = guid;
 
       TaskCompletionSource<RequestResponse>? waiter = null;
-      bool willWaitResponse = !skipResponse
-          && DataTypeMapping.RequestToTypes.TryGetValue(request.RequestType, out var typeMapping)
+      bool willWaitResponse = DataTypeMapping.RequestToTypes.TryGetValue(request.RequestType, out var typeMapping)
           && typeMapping.Item2 != typeof(RequestResponse);
       if (willWaitResponse) {
         waiter = new();

@@ -109,9 +109,8 @@ namespace ObsDotnetSocket {
 
     public Task CloseAsync() => _clientSocket.CloseAsync();
 
-    public Task<RequestResponse?> RequestAsync(
-      IRequest request, bool skipResponse = false,
-      CancellationToken? cancellation = null) => _clientSocket.RequestAsync(request, skipResponse, cancellation);
+    public Task<RequestResponse?> RequestAsync(IRequest request, CancellationToken? cancellation = null)
+      => _clientSocket.RequestAsync(request, cancellation);
 
     public void Dispose() {
       _clientSocket.Dispose();
@@ -124,8 +123,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetVersionResponse?> GetVersionAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetVersion() { }, skipResponse, cancellation).ConfigureAwait(false) as GetVersionResponse;
+    public async Task<GetVersionResponse> GetVersionAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetVersion() { }, cancellation).ConfigureAwait(false) as GetVersionResponse)!;
     }
 
     /// <summary>
@@ -133,8 +132,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetStatsResponse?> GetStatsAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetStats() { }, skipResponse, cancellation).ConfigureAwait(false) as GetStatsResponse;
+    public async Task<GetStatsResponse> GetStatsAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetStats() { }, cancellation).ConfigureAwait(false) as GetStatsResponse)!;
     }
 
     /// <summary>
@@ -143,8 +142,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=eventData>Data payload to emit to all receivers</param>
-    public Task BroadcastCustomEventAsync(Dictionary<string, object?> eventData, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new BroadcastCustomEvent() { EventData = eventData }, skipResponse, cancellation);
+    public Task BroadcastCustomEventAsync(Dictionary<string, object?> eventData, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new BroadcastCustomEvent() { EventData = eventData }, cancellation);
     }
 
     /// <summary>
@@ -158,8 +157,8 @@ namespace ObsDotnetSocket {
     /// <param name=vendorName>Name of the vendor to use</param>
     /// <param name=requestType>The request type to call</param>
     /// <param name=requestData>Object containing appropriate request data</param>
-    public async Task<CallVendorRequestResponse?> CallVendorRequestAsync(string vendorName, string requestType, Dictionary<string, object?>? requestData = null, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new CallVendorRequest() { VendorName = vendorName, VendorRequestType = requestType, RequestData = requestData }, skipResponse, cancellation).ConfigureAwait(false) as CallVendorRequestResponse;
+    public async Task<CallVendorRequestResponse> CallVendorRequestAsync(string vendorName, string requestType, Dictionary<string, object?>? requestData = null, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new CallVendorRequest() { VendorName = vendorName, VendorRequestType = requestType, RequestData = requestData }, cancellation).ConfigureAwait(false) as CallVendorRequestResponse)!;
     }
 
     /// <summary>
@@ -167,8 +166,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetHotkeyListResponse?> GetHotkeyListAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetHotkeyList() { }, skipResponse, cancellation).ConfigureAwait(false) as GetHotkeyListResponse;
+    public async Task<GetHotkeyListResponse> GetHotkeyListAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetHotkeyList() { }, cancellation).ConfigureAwait(false) as GetHotkeyListResponse)!;
     }
 
     /// <summary>
@@ -177,8 +176,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=hotkeyName>Name of the hotkey to trigger</param>
-    public Task TriggerHotkeyByNameAsync(string hotkeyName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new TriggerHotkeyByName() { HotkeyName = hotkeyName }, skipResponse, cancellation);
+    public Task TriggerHotkeyByNameAsync(string hotkeyName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new TriggerHotkeyByName() { HotkeyName = hotkeyName }, cancellation);
     }
 
     /// <summary>
@@ -192,8 +191,8 @@ namespace ObsDotnetSocket {
     /// <param name=keyModifiers.control>Press CTRL</param>
     /// <param name=keyModifiers.alt>Press ALT</param>
     /// <param name=keyModifiers.command>Press CMD (Mac)</param>
-    public Task TriggerHotkeyByKeySequenceAsync(string? keyId = null, bool? shift = null, bool? control = null, bool? alt = null, bool? command = null, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new TriggerHotkeyByKeySequence() { KeyId = keyId, KeyModifiers = new KeyModifiers() { Shift = shift, Control = control, Alt = alt, Command = command } }, skipResponse, cancellation);
+    public Task TriggerHotkeyByKeySequenceAsync(string? keyId = null, bool? shift = null, bool? control = null, bool? alt = null, bool? command = null, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new TriggerHotkeyByKeySequence() { KeyId = keyId, KeyModifiers = new KeyModifiers() { Shift = shift, Control = control, Alt = alt, Command = command } }, cancellation);
     }
 
     /// <summary>
@@ -203,8 +202,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=sleepMillis>Number of milliseconds to sleep for (if `SERIAL_REALTIME` mode)</param>
     /// <param name=sleepFrames>Number of frames to sleep for (if `SERIAL_FRAME` mode)</param>
-    public Task SleepAsync(int sleepMillis, int sleepFrames, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new Sleep() { SleepMillis = sleepMillis, SleepFrames = sleepFrames }, skipResponse, cancellation);
+    public Task SleepAsync(int sleepMillis, int sleepFrames, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new Sleep() { SleepMillis = sleepMillis, SleepFrames = sleepFrames }, cancellation);
     }
 
     /// <summary>
@@ -214,8 +213,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=realm>The data realm to select. `OBS_WEBSOCKET_DATA_REALM_GLOBAL` or `OBS_WEBSOCKET_DATA_REALM_PROFILE`</param>
     /// <param name=slotName>The name of the slot to retrieve data from</param>
-    public async Task<GetPersistentDataResponse?> GetPersistentDataAsync(string realm, string slotName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetPersistentData() { Realm = realm, SlotName = slotName }, skipResponse, cancellation).ConfigureAwait(false) as GetPersistentDataResponse;
+    public async Task<GetPersistentDataResponse> GetPersistentDataAsync(string realm, string slotName, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetPersistentData() { Realm = realm, SlotName = slotName }, cancellation).ConfigureAwait(false) as GetPersistentDataResponse)!;
     }
 
     /// <summary>
@@ -226,8 +225,8 @@ namespace ObsDotnetSocket {
     /// <param name=realm>The data realm to select. `OBS_WEBSOCKET_DATA_REALM_GLOBAL` or `OBS_WEBSOCKET_DATA_REALM_PROFILE`</param>
     /// <param name=slotName>The name of the slot to retrieve data from</param>
     /// <param name=slotValue>The value to apply to the slot</param>
-    public Task SetPersistentDataAsync(string realm, string slotName, object? slotValue, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetPersistentData() { Realm = realm, SlotName = slotName, SlotValue = slotValue }, skipResponse, cancellation);
+    public Task SetPersistentDataAsync(string realm, string slotName, object? slotValue, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetPersistentData() { Realm = realm, SlotName = slotName, SlotValue = slotValue }, cancellation);
     }
 
     /// <summary>
@@ -235,8 +234,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetSceneCollectionListResponse?> GetSceneCollectionListAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetSceneCollectionList() { }, skipResponse, cancellation).ConfigureAwait(false) as GetSceneCollectionListResponse;
+    public async Task<GetSceneCollectionListResponse> GetSceneCollectionListAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetSceneCollectionList() { }, cancellation).ConfigureAwait(false) as GetSceneCollectionListResponse)!;
     }
 
     /// <summary>
@@ -247,8 +246,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=sceneCollectionName>Name of the scene collection to switch to</param>
-    public Task SetCurrentSceneCollectionAsync(string sceneCollectionName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetCurrentSceneCollection() { SceneCollectionName = sceneCollectionName }, skipResponse, cancellation);
+    public Task SetCurrentSceneCollectionAsync(string sceneCollectionName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetCurrentSceneCollection() { SceneCollectionName = sceneCollectionName }, cancellation);
     }
 
     /// <summary>
@@ -259,8 +258,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=sceneCollectionName>Name for the new scene collection</param>
-    public Task CreateSceneCollectionAsync(string sceneCollectionName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new CreateSceneCollection() { SceneCollectionName = sceneCollectionName }, skipResponse, cancellation);
+    public Task CreateSceneCollectionAsync(string sceneCollectionName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new CreateSceneCollection() { SceneCollectionName = sceneCollectionName }, cancellation);
     }
 
     /// <summary>
@@ -268,8 +267,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetProfileListResponse?> GetProfileListAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetProfileList() { }, skipResponse, cancellation).ConfigureAwait(false) as GetProfileListResponse;
+    public async Task<GetProfileListResponse> GetProfileListAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetProfileList() { }, cancellation).ConfigureAwait(false) as GetProfileListResponse)!;
     }
 
     /// <summary>
@@ -278,8 +277,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=profileName>Name of the profile to switch to</param>
-    public Task SetCurrentProfileAsync(string profileName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetCurrentProfile() { ProfileName = profileName }, skipResponse, cancellation);
+    public Task SetCurrentProfileAsync(string profileName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetCurrentProfile() { ProfileName = profileName }, cancellation);
     }
 
     /// <summary>
@@ -288,8 +287,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=profileName>Name for the new profile</param>
-    public Task CreateProfileAsync(string profileName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new CreateProfile() { ProfileName = profileName }, skipResponse, cancellation);
+    public Task CreateProfileAsync(string profileName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new CreateProfile() { ProfileName = profileName }, cancellation);
     }
 
     /// <summary>
@@ -298,8 +297,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=profileName>Name of the profile to remove</param>
-    public Task RemoveProfileAsync(string profileName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new RemoveProfile() { ProfileName = profileName }, skipResponse, cancellation);
+    public Task RemoveProfileAsync(string profileName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new RemoveProfile() { ProfileName = profileName }, cancellation);
     }
 
     /// <summary>
@@ -309,8 +308,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=parameterCategory>Category of the parameter to get</param>
     /// <param name=parameterName>Name of the parameter to get</param>
-    public async Task<GetProfileParameterResponse?> GetProfileParameterAsync(string parameterCategory, string parameterName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetProfileParameter() { ParameterCategory = parameterCategory, ParameterName = parameterName }, skipResponse, cancellation).ConfigureAwait(false) as GetProfileParameterResponse;
+    public async Task<GetProfileParameterResponse> GetProfileParameterAsync(string parameterCategory, string parameterName, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetProfileParameter() { ParameterCategory = parameterCategory, ParameterName = parameterName }, cancellation).ConfigureAwait(false) as GetProfileParameterResponse)!;
     }
 
     /// <summary>
@@ -321,8 +320,8 @@ namespace ObsDotnetSocket {
     /// <param name=parameterCategory>Category of the parameter to set</param>
     /// <param name=parameterName>Name of the parameter to set</param>
     /// <param name=parameterValue>Value of the parameter to set. Use `null` to delete</param>
-    public Task SetProfileParameterAsync(string parameterCategory, string parameterName, string parameterValue, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetProfileParameter() { ParameterCategory = parameterCategory, ParameterName = parameterName, ParameterValue = parameterValue }, skipResponse, cancellation);
+    public Task SetProfileParameterAsync(string parameterCategory, string parameterName, string parameterValue, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetProfileParameter() { ParameterCategory = parameterCategory, ParameterName = parameterName, ParameterValue = parameterValue }, cancellation);
     }
 
     /// <summary>
@@ -332,8 +331,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetVideoSettingsResponse?> GetVideoSettingsAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetVideoSettings() { }, skipResponse, cancellation).ConfigureAwait(false) as GetVideoSettingsResponse;
+    public async Task<GetVideoSettingsResponse> GetVideoSettingsAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetVideoSettings() { }, cancellation).ConfigureAwait(false) as GetVideoSettingsResponse)!;
     }
 
     /// <summary>
@@ -349,8 +348,8 @@ namespace ObsDotnetSocket {
     /// <param name=baseHeight>Height of the base (canvas) resolution in pixels</param>
     /// <param name=outputWidth>Width of the output resolution in pixels</param>
     /// <param name=outputHeight>Height of the output resolution in pixels</param>
-    public Task SetVideoSettingsAsync(int? fpsNumerator = null, int? fpsDenominator = null, int? baseWidth = null, int? baseHeight = null, int? outputWidth = null, int? outputHeight = null, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetVideoSettings() { FpsNumerator = fpsNumerator, FpsDenominator = fpsDenominator, BaseWidth = baseWidth, BaseHeight = baseHeight, OutputWidth = outputWidth, OutputHeight = outputHeight }, skipResponse, cancellation);
+    public Task SetVideoSettingsAsync(int? fpsNumerator = null, int? fpsDenominator = null, int? baseWidth = null, int? baseHeight = null, int? outputWidth = null, int? outputHeight = null, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetVideoSettings() { FpsNumerator = fpsNumerator, FpsDenominator = fpsDenominator, BaseWidth = baseWidth, BaseHeight = baseHeight, OutputWidth = outputWidth, OutputHeight = outputHeight }, cancellation);
     }
 
     /// <summary>
@@ -358,8 +357,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetStreamServiceSettingsResponse?> GetStreamServiceSettingsAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetStreamServiceSettings() { }, skipResponse, cancellation).ConfigureAwait(false) as GetStreamServiceSettingsResponse;
+    public async Task<GetStreamServiceSettingsResponse> GetStreamServiceSettingsAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetStreamServiceSettings() { }, cancellation).ConfigureAwait(false) as GetStreamServiceSettingsResponse)!;
     }
 
     /// <summary>
@@ -371,8 +370,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=streamServiceType>Type of stream service to apply. Example: `rtmp_common` or `rtmp_custom`</param>
     /// <param name=streamServiceSettings>Settings to apply to the service</param>
-    public Task SetStreamServiceSettingsAsync(string streamServiceType, Dictionary<string, object?> streamServiceSettings, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetStreamServiceSettings() { StreamServiceType = streamServiceType, StreamServiceSettings = streamServiceSettings }, skipResponse, cancellation);
+    public Task SetStreamServiceSettingsAsync(string streamServiceType, Dictionary<string, object?> streamServiceSettings, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetStreamServiceSettings() { StreamServiceType = streamServiceType, StreamServiceSettings = streamServiceSettings }, cancellation);
     }
 
     /// <summary>
@@ -380,8 +379,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetRecordDirectoryResponse?> GetRecordDirectoryAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetRecordDirectory() { }, skipResponse, cancellation).ConfigureAwait(false) as GetRecordDirectoryResponse;
+    public async Task<GetRecordDirectoryResponse> GetRecordDirectoryAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetRecordDirectory() { }, cancellation).ConfigureAwait(false) as GetRecordDirectoryResponse)!;
     }
 
     /// <summary>
@@ -392,8 +391,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=sourceName>Name of the source to get the active state of</param>
-    public async Task<GetSourceActiveResponse?> GetSourceActiveAsync(string sourceName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetSourceActive() { SourceName = sourceName }, skipResponse, cancellation).ConfigureAwait(false) as GetSourceActiveResponse;
+    public async Task<GetSourceActiveResponse> GetSourceActiveAsync(string sourceName, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetSourceActive() { SourceName = sourceName }, cancellation).ConfigureAwait(false) as GetSourceActiveResponse)!;
     }
 
     /// <summary>
@@ -411,8 +410,8 @@ namespace ObsDotnetSocket {
     /// <param name=imageWidth>Width to scale the screenshot to</param>
     /// <param name=imageHeight>Height to scale the screenshot to</param>
     /// <param name=imageCompressionQuality>Compression quality to use. 0 for high compression, 100 for uncompressed. -1 to use "default" (whatever that means, idk)</param>
-    public async Task<GetSourceScreenshotResponse?> GetSourceScreenshotAsync(string sourceName, string imageFormat, int? imageWidth = null, int? imageHeight = null, int? imageCompressionQuality = null, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetSourceScreenshot() { SourceName = sourceName, ImageFormat = imageFormat, ImageWidth = imageWidth, ImageHeight = imageHeight, ImageCompressionQuality = imageCompressionQuality }, skipResponse, cancellation).ConfigureAwait(false) as GetSourceScreenshotResponse;
+    public async Task<GetSourceScreenshotResponse> GetSourceScreenshotAsync(string sourceName, string imageFormat, int? imageWidth = null, int? imageHeight = null, int? imageCompressionQuality = null, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetSourceScreenshot() { SourceName = sourceName, ImageFormat = imageFormat, ImageWidth = imageWidth, ImageHeight = imageHeight, ImageCompressionQuality = imageCompressionQuality }, cancellation).ConfigureAwait(false) as GetSourceScreenshotResponse)!;
     }
 
     /// <summary>
@@ -431,8 +430,8 @@ namespace ObsDotnetSocket {
     /// <param name=imageWidth>Width to scale the screenshot to</param>
     /// <param name=imageHeight>Height to scale the screenshot to</param>
     /// <param name=imageCompressionQuality>Compression quality to use. 0 for high compression, 100 for uncompressed. -1 to use "default" (whatever that means, idk)</param>
-    public async Task<SaveSourceScreenshotResponse?> SaveSourceScreenshotAsync(string sourceName, string imageFormat, string imageFilePath, int? imageWidth = null, int? imageHeight = null, int? imageCompressionQuality = null, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new SaveSourceScreenshot() { SourceName = sourceName, ImageFormat = imageFormat, ImageFilePath = imageFilePath, ImageWidth = imageWidth, ImageHeight = imageHeight, ImageCompressionQuality = imageCompressionQuality }, skipResponse, cancellation).ConfigureAwait(false) as SaveSourceScreenshotResponse;
+    public async Task<SaveSourceScreenshotResponse> SaveSourceScreenshotAsync(string sourceName, string imageFormat, string imageFilePath, int? imageWidth = null, int? imageHeight = null, int? imageCompressionQuality = null, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new SaveSourceScreenshot() { SourceName = sourceName, ImageFormat = imageFormat, ImageFilePath = imageFilePath, ImageWidth = imageWidth, ImageHeight = imageHeight, ImageCompressionQuality = imageCompressionQuality }, cancellation).ConfigureAwait(false) as SaveSourceScreenshotResponse)!;
     }
 
     /// <summary>
@@ -440,8 +439,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetSceneListResponse?> GetSceneListAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetSceneList() { }, skipResponse, cancellation).ConfigureAwait(false) as GetSceneListResponse;
+    public async Task<GetSceneListResponse> GetSceneListAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetSceneList() { }, cancellation).ConfigureAwait(false) as GetSceneListResponse)!;
     }
 
     /// <summary>
@@ -451,8 +450,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetGroupListResponse?> GetGroupListAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetGroupList() { }, skipResponse, cancellation).ConfigureAwait(false) as GetGroupListResponse;
+    public async Task<GetGroupListResponse> GetGroupListAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetGroupList() { }, cancellation).ConfigureAwait(false) as GetGroupListResponse)!;
     }
 
     /// <summary>
@@ -460,8 +459,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetCurrentProgramSceneResponse?> GetCurrentProgramSceneAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetCurrentProgramScene() { }, skipResponse, cancellation).ConfigureAwait(false) as GetCurrentProgramSceneResponse;
+    public async Task<GetCurrentProgramSceneResponse> GetCurrentProgramSceneAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetCurrentProgramScene() { }, cancellation).ConfigureAwait(false) as GetCurrentProgramSceneResponse)!;
     }
 
     /// <summary>
@@ -470,8 +469,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=sceneName>Scene to set as the current program scene</param>
-    public Task SetCurrentProgramSceneAsync(string sceneName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetCurrentProgramScene() { SceneName = sceneName }, skipResponse, cancellation);
+    public Task SetCurrentProgramSceneAsync(string sceneName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetCurrentProgramScene() { SceneName = sceneName }, cancellation);
     }
 
     /// <summary>
@@ -481,8 +480,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetCurrentPreviewSceneResponse?> GetCurrentPreviewSceneAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetCurrentPreviewScene() { }, skipResponse, cancellation).ConfigureAwait(false) as GetCurrentPreviewSceneResponse;
+    public async Task<GetCurrentPreviewSceneResponse> GetCurrentPreviewSceneAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetCurrentPreviewScene() { }, cancellation).ConfigureAwait(false) as GetCurrentPreviewSceneResponse)!;
     }
 
     /// <summary>
@@ -493,8 +492,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=sceneName>Scene to set as the current preview scene</param>
-    public Task SetCurrentPreviewSceneAsync(string sceneName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetCurrentPreviewScene() { SceneName = sceneName }, skipResponse, cancellation);
+    public Task SetCurrentPreviewSceneAsync(string sceneName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetCurrentPreviewScene() { SceneName = sceneName }, cancellation);
     }
 
     /// <summary>
@@ -503,8 +502,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=sceneName>Name for the new scene</param>
-    public Task CreateSceneAsync(string sceneName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new CreateScene() { SceneName = sceneName }, skipResponse, cancellation);
+    public Task CreateSceneAsync(string sceneName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new CreateScene() { SceneName = sceneName }, cancellation);
     }
 
     /// <summary>
@@ -513,8 +512,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=sceneName>Name of the scene to remove</param>
-    public Task RemoveSceneAsync(string sceneName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new RemoveScene() { SceneName = sceneName }, skipResponse, cancellation);
+    public Task RemoveSceneAsync(string sceneName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new RemoveScene() { SceneName = sceneName }, cancellation);
     }
 
     /// <summary>
@@ -524,8 +523,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=sceneName>Name of the scene to be renamed</param>
     /// <param name=newSceneName>New name for the scene</param>
-    public Task SetSceneNameAsync(string sceneName, string newSceneName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetSceneName() { SceneName = sceneName, NewSceneName = newSceneName }, skipResponse, cancellation);
+    public Task SetSceneNameAsync(string sceneName, string newSceneName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetSceneName() { SceneName = sceneName, NewSceneName = newSceneName }, cancellation);
     }
 
     /// <summary>
@@ -534,8 +533,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=sceneName>Name of the scene</param>
-    public async Task<GetSceneSceneTransitionOverrideResponse?> GetSceneSceneTransitionOverrideAsync(string sceneName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetSceneSceneTransitionOverride() { SceneName = sceneName }, skipResponse, cancellation).ConfigureAwait(false) as GetSceneSceneTransitionOverrideResponse;
+    public async Task<GetSceneSceneTransitionOverrideResponse> GetSceneSceneTransitionOverrideAsync(string sceneName, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetSceneSceneTransitionOverride() { SceneName = sceneName }, cancellation).ConfigureAwait(false) as GetSceneSceneTransitionOverrideResponse)!;
     }
 
     /// <summary>
@@ -546,8 +545,8 @@ namespace ObsDotnetSocket {
     /// <param name=sceneName>Name of the scene</param>
     /// <param name=transitionName>Name of the scene transition to use as override. Specify `null` to remove</param>
     /// <param name=transitionDuration>Duration to use for any overridden transition. Specify `null` to remove</param>
-    public Task SetSceneSceneTransitionOverrideAsync(string sceneName, string? transitionName = null, int? transitionDuration = null, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetSceneSceneTransitionOverride() { SceneName = sceneName, TransitionName = transitionName, TransitionDuration = transitionDuration }, skipResponse, cancellation);
+    public Task SetSceneSceneTransitionOverrideAsync(string sceneName, string? transitionName = null, int? transitionDuration = null, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetSceneSceneTransitionOverride() { SceneName = sceneName, TransitionName = transitionName, TransitionDuration = transitionDuration }, cancellation);
     }
 
     /// <summary>
@@ -556,8 +555,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=inputKind>Restrict the array to only inputs of the specified kind</param>
-    public async Task<GetInputListResponse?> GetInputListAsync(string? inputKind = null, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetInputList() { InputKind = inputKind }, skipResponse, cancellation).ConfigureAwait(false) as GetInputListResponse;
+    public async Task<GetInputListResponse> GetInputListAsync(string? inputKind = null, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetInputList() { InputKind = inputKind }, cancellation).ConfigureAwait(false) as GetInputListResponse)!;
     }
 
     /// <summary>
@@ -566,8 +565,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=unversioned>True == Return all kinds as unversioned, False == Return with version suffixes (if available)</param>
-    public async Task<GetInputKindListResponse?> GetInputKindListAsync(bool? unversioned = null, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetInputKindList() { Unversioned = unversioned }, skipResponse, cancellation).ConfigureAwait(false) as GetInputKindListResponse;
+    public async Task<GetInputKindListResponse> GetInputKindListAsync(bool? unversioned = null, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetInputKindList() { Unversioned = unversioned }, cancellation).ConfigureAwait(false) as GetInputKindListResponse)!;
     }
 
     /// <summary>
@@ -575,8 +574,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetSpecialInputsResponse?> GetSpecialInputsAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetSpecialInputs() { }, skipResponse, cancellation).ConfigureAwait(false) as GetSpecialInputsResponse;
+    public async Task<GetSpecialInputsResponse> GetSpecialInputsAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetSpecialInputs() { }, cancellation).ConfigureAwait(false) as GetSpecialInputsResponse)!;
     }
 
     /// <summary>
@@ -589,8 +588,8 @@ namespace ObsDotnetSocket {
     /// <param name=inputKind>The kind of input to be created</param>
     /// <param name=inputSettings>Settings object to initialize the input with</param>
     /// <param name=sceneItemEnabled>Whether to set the created scene item to enabled or disabled</param>
-    public async Task<CreateInputResponse?> CreateInputAsync(string sceneName, string inputName, string inputKind, Dictionary<string, object?>? inputSettings = null, bool? sceneItemEnabled = null, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new CreateInput() { SceneName = sceneName, InputName = inputName, InputKind = inputKind, InputSettings = inputSettings, SceneItemEnabled = sceneItemEnabled }, skipResponse, cancellation).ConfigureAwait(false) as CreateInputResponse;
+    public async Task<CreateInputResponse> CreateInputAsync(string sceneName, string inputName, string inputKind, Dictionary<string, object?>? inputSettings = null, bool? sceneItemEnabled = null, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new CreateInput() { SceneName = sceneName, InputName = inputName, InputKind = inputKind, InputSettings = inputSettings, SceneItemEnabled = sceneItemEnabled }, cancellation).ConfigureAwait(false) as CreateInputResponse)!;
     }
 
     /// <summary>
@@ -601,8 +600,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=inputName>Name of the input to remove</param>
-    public Task RemoveInputAsync(string inputName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new RemoveInput() { InputName = inputName }, skipResponse, cancellation);
+    public Task RemoveInputAsync(string inputName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new RemoveInput() { InputName = inputName }, cancellation);
     }
 
     /// <summary>
@@ -612,8 +611,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=inputName>Current input name</param>
     /// <param name=newInputName>New name for the input</param>
-    public Task SetInputNameAsync(string inputName, string newInputName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetInputName() { InputName = inputName, NewInputName = newInputName }, skipResponse, cancellation);
+    public Task SetInputNameAsync(string inputName, string newInputName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetInputName() { InputName = inputName, NewInputName = newInputName }, cancellation);
     }
 
     /// <summary>
@@ -622,8 +621,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=inputKind>Input kind to get the default settings for</param>
-    public async Task<GetInputDefaultSettingsResponse?> GetInputDefaultSettingsAsync(string inputKind, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetInputDefaultSettings() { InputKind = inputKind }, skipResponse, cancellation).ConfigureAwait(false) as GetInputDefaultSettingsResponse;
+    public async Task<GetInputDefaultSettingsResponse> GetInputDefaultSettingsAsync(string inputKind, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetInputDefaultSettings() { InputKind = inputKind }, cancellation).ConfigureAwait(false) as GetInputDefaultSettingsResponse)!;
     }
 
     /// <summary>
@@ -634,8 +633,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=inputName>Name of the input to get the settings of</param>
-    public async Task<GetInputSettingsResponse?> GetInputSettingsAsync(string inputName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetInputSettings() { InputName = inputName }, skipResponse, cancellation).ConfigureAwait(false) as GetInputSettingsResponse;
+    public async Task<GetInputSettingsResponse> GetInputSettingsAsync(string inputName, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetInputSettings() { InputName = inputName }, cancellation).ConfigureAwait(false) as GetInputSettingsResponse)!;
     }
 
     /// <summary>
@@ -646,8 +645,8 @@ namespace ObsDotnetSocket {
     /// <param name=inputName>Name of the input to set the settings of</param>
     /// <param name=inputSettings>Object of settings to apply</param>
     /// <param name=overlay>True == apply the settings on top of existing ones, False == reset the input to its defaults, then apply settings.</param>
-    public Task SetInputSettingsAsync(string inputName, Dictionary<string, object?> inputSettings, bool? overlay = null, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetInputSettings() { InputName = inputName, InputSettings = inputSettings, Overlay = overlay }, skipResponse, cancellation);
+    public Task SetInputSettingsAsync(string inputName, Dictionary<string, object?> inputSettings, bool? overlay = null, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetInputSettings() { InputName = inputName, InputSettings = inputSettings, Overlay = overlay }, cancellation);
     }
 
     /// <summary>
@@ -656,8 +655,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=inputName>Name of input to get the mute state of</param>
-    public async Task<GetInputMuteResponse?> GetInputMuteAsync(string inputName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetInputMute() { InputName = inputName }, skipResponse, cancellation).ConfigureAwait(false) as GetInputMuteResponse;
+    public async Task<GetInputMuteResponse> GetInputMuteAsync(string inputName, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetInputMute() { InputName = inputName }, cancellation).ConfigureAwait(false) as GetInputMuteResponse)!;
     }
 
     /// <summary>
@@ -667,8 +666,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=inputName>Name of the input to set the mute state of</param>
     /// <param name=inputMuted>Whether to mute the input or not</param>
-    public Task SetInputMuteAsync(string inputName, bool inputMuted, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetInputMute() { InputName = inputName, InputMuted = inputMuted }, skipResponse, cancellation);
+    public Task SetInputMuteAsync(string inputName, bool inputMuted, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetInputMute() { InputName = inputName, InputMuted = inputMuted }, cancellation);
     }
 
     /// <summary>
@@ -677,8 +676,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=inputName>Name of the input to toggle the mute state of</param>
-    public async Task<ToggleInputMuteResponse?> ToggleInputMuteAsync(string inputName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new ToggleInputMute() { InputName = inputName }, skipResponse, cancellation).ConfigureAwait(false) as ToggleInputMuteResponse;
+    public async Task<ToggleInputMuteResponse> ToggleInputMuteAsync(string inputName, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new ToggleInputMute() { InputName = inputName }, cancellation).ConfigureAwait(false) as ToggleInputMuteResponse)!;
     }
 
     /// <summary>
@@ -687,8 +686,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=inputName>Name of the input to get the volume of</param>
-    public async Task<GetInputVolumeResponse?> GetInputVolumeAsync(string inputName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetInputVolume() { InputName = inputName }, skipResponse, cancellation).ConfigureAwait(false) as GetInputVolumeResponse;
+    public async Task<GetInputVolumeResponse> GetInputVolumeAsync(string inputName, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetInputVolume() { InputName = inputName }, cancellation).ConfigureAwait(false) as GetInputVolumeResponse)!;
     }
 
     /// <summary>
@@ -699,8 +698,8 @@ namespace ObsDotnetSocket {
     /// <param name=inputName>Name of the input to set the volume of</param>
     /// <param name=inputVolumeMul>Volume setting in mul</param>
     /// <param name=inputVolumeDb>Volume setting in dB</param>
-    public Task SetInputVolumeAsync(string inputName, double? inputVolumeMul = null, double? inputVolumeDb = null, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetInputVolume() { InputName = inputName, InputVolumeMul = inputVolumeMul, InputVolumeDb = inputVolumeDb }, skipResponse, cancellation);
+    public Task SetInputVolumeAsync(string inputName, double? inputVolumeMul = null, double? inputVolumeDb = null, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetInputVolume() { InputName = inputName, InputVolumeMul = inputVolumeMul, InputVolumeDb = inputVolumeDb }, cancellation);
     }
 
     /// <summary>
@@ -709,8 +708,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=inputName>Name of the input to get the audio balance of</param>
-    public async Task<GetInputAudioBalanceResponse?> GetInputAudioBalanceAsync(string inputName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetInputAudioBalance() { InputName = inputName }, skipResponse, cancellation).ConfigureAwait(false) as GetInputAudioBalanceResponse;
+    public async Task<GetInputAudioBalanceResponse> GetInputAudioBalanceAsync(string inputName, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetInputAudioBalance() { InputName = inputName }, cancellation).ConfigureAwait(false) as GetInputAudioBalanceResponse)!;
     }
 
     /// <summary>
@@ -720,8 +719,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=inputName>Name of the input to set the audio balance of</param>
     /// <param name=inputAudioBalance>New audio balance value</param>
-    public Task SetInputAudioBalanceAsync(string inputName, double inputAudioBalance, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetInputAudioBalance() { InputName = inputName, InputAudioBalance = inputAudioBalance }, skipResponse, cancellation);
+    public Task SetInputAudioBalanceAsync(string inputName, double inputAudioBalance, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetInputAudioBalance() { InputName = inputName, InputAudioBalance = inputAudioBalance }, cancellation);
     }
 
     /// <summary>
@@ -732,8 +731,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=inputName>Name of the input to get the audio sync offset of</param>
-    public async Task<GetInputAudioSyncOffsetResponse?> GetInputAudioSyncOffsetAsync(string inputName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetInputAudioSyncOffset() { InputName = inputName }, skipResponse, cancellation).ConfigureAwait(false) as GetInputAudioSyncOffsetResponse;
+    public async Task<GetInputAudioSyncOffsetResponse> GetInputAudioSyncOffsetAsync(string inputName, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetInputAudioSyncOffset() { InputName = inputName }, cancellation).ConfigureAwait(false) as GetInputAudioSyncOffsetResponse)!;
     }
 
     /// <summary>
@@ -743,8 +742,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=inputName>Name of the input to set the audio sync offset of</param>
     /// <param name=inputAudioSyncOffset>New audio sync offset in milliseconds</param>
-    public Task SetInputAudioSyncOffsetAsync(string inputName, int inputAudioSyncOffset, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetInputAudioSyncOffset() { InputName = inputName, InputAudioSyncOffset = inputAudioSyncOffset }, skipResponse, cancellation);
+    public Task SetInputAudioSyncOffsetAsync(string inputName, int inputAudioSyncOffset, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetInputAudioSyncOffset() { InputName = inputName, InputAudioSyncOffset = inputAudioSyncOffset }, cancellation);
     }
 
     /// <summary>
@@ -759,8 +758,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=inputName>Name of the input to get the audio monitor type of</param>
-    public async Task<GetInputAudioMonitorTypeResponse?> GetInputAudioMonitorTypeAsync(string inputName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetInputAudioMonitorType() { InputName = inputName }, skipResponse, cancellation).ConfigureAwait(false) as GetInputAudioMonitorTypeResponse;
+    public async Task<GetInputAudioMonitorTypeResponse> GetInputAudioMonitorTypeAsync(string inputName, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetInputAudioMonitorType() { InputName = inputName }, cancellation).ConfigureAwait(false) as GetInputAudioMonitorTypeResponse)!;
     }
 
     /// <summary>
@@ -770,8 +769,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=inputName>Name of the input to set the audio monitor type of</param>
     /// <param name=monitorType>Audio monitor type</param>
-    public Task SetInputAudioMonitorTypeAsync(string inputName, MonitoringType monitorType, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetInputAudioMonitorType() { InputName = inputName, MonitorType = monitorType }, skipResponse, cancellation);
+    public Task SetInputAudioMonitorTypeAsync(string inputName, MonitoringType monitorType, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetInputAudioMonitorType() { InputName = inputName, MonitorType = monitorType }, cancellation);
     }
 
     /// <summary>
@@ -780,8 +779,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=inputName>Name of the input</param>
-    public async Task<GetInputAudioTracksResponse?> GetInputAudioTracksAsync(string inputName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetInputAudioTracks() { InputName = inputName }, skipResponse, cancellation).ConfigureAwait(false) as GetInputAudioTracksResponse;
+    public async Task<GetInputAudioTracksResponse> GetInputAudioTracksAsync(string inputName, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetInputAudioTracks() { InputName = inputName }, cancellation).ConfigureAwait(false) as GetInputAudioTracksResponse)!;
     }
 
     /// <summary>
@@ -791,8 +790,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=inputName>Name of the input</param>
     /// <param name=inputAudioTracks>Track settings to apply</param>
-    public Task SetInputAudioTracksAsync(string inputName, Dictionary<string, object?> inputAudioTracks, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetInputAudioTracks() { InputName = inputName, InputAudioTracks = inputAudioTracks }, skipResponse, cancellation);
+    public Task SetInputAudioTracksAsync(string inputName, Dictionary<string, object?> inputAudioTracks, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetInputAudioTracks() { InputName = inputName, InputAudioTracks = inputAudioTracks }, cancellation);
     }
 
     /// <summary>
@@ -804,8 +803,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=inputName>Name of the input</param>
     /// <param name=propertyName>Name of the list property to get the items of</param>
-    public async Task<GetInputPropertiesListPropertyItemsResponse?> GetInputPropertiesListPropertyItemsAsync(string inputName, string propertyName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetInputPropertiesListPropertyItems() { InputName = inputName, PropertyName = propertyName }, skipResponse, cancellation).ConfigureAwait(false) as GetInputPropertiesListPropertyItemsResponse;
+    public async Task<GetInputPropertiesListPropertyItemsResponse> GetInputPropertiesListPropertyItemsAsync(string inputName, string propertyName, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetInputPropertiesListPropertyItems() { InputName = inputName, PropertyName = propertyName }, cancellation).ConfigureAwait(false) as GetInputPropertiesListPropertyItemsResponse)!;
     }
 
     /// <summary>
@@ -817,8 +816,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=inputName>Name of the input</param>
     /// <param name=propertyName>Name of the button property to press</param>
-    public Task PressInputPropertiesButtonAsync(string inputName, string propertyName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new PressInputPropertiesButton() { InputName = inputName, PropertyName = propertyName }, skipResponse, cancellation);
+    public Task PressInputPropertiesButtonAsync(string inputName, string propertyName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new PressInputPropertiesButton() { InputName = inputName, PropertyName = propertyName }, cancellation);
     }
 
     /// <summary>
@@ -828,8 +827,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetTransitionKindListResponse?> GetTransitionKindListAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetTransitionKindList() { }, skipResponse, cancellation).ConfigureAwait(false) as GetTransitionKindListResponse;
+    public async Task<GetTransitionKindListResponse> GetTransitionKindListAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetTransitionKindList() { }, cancellation).ConfigureAwait(false) as GetTransitionKindListResponse)!;
     }
 
     /// <summary>
@@ -837,8 +836,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetSceneTransitionListResponse?> GetSceneTransitionListAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetSceneTransitionList() { }, skipResponse, cancellation).ConfigureAwait(false) as GetSceneTransitionListResponse;
+    public async Task<GetSceneTransitionListResponse> GetSceneTransitionListAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetSceneTransitionList() { }, cancellation).ConfigureAwait(false) as GetSceneTransitionListResponse)!;
     }
 
     /// <summary>
@@ -846,8 +845,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetCurrentSceneTransitionResponse?> GetCurrentSceneTransitionAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetCurrentSceneTransition() { }, skipResponse, cancellation).ConfigureAwait(false) as GetCurrentSceneTransitionResponse;
+    public async Task<GetCurrentSceneTransitionResponse> GetCurrentSceneTransitionAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetCurrentSceneTransition() { }, cancellation).ConfigureAwait(false) as GetCurrentSceneTransitionResponse)!;
     }
 
     /// <summary>
@@ -858,8 +857,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=transitionName>Name of the transition to make active</param>
-    public Task SetCurrentSceneTransitionAsync(string transitionName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetCurrentSceneTransition() { TransitionName = transitionName }, skipResponse, cancellation);
+    public Task SetCurrentSceneTransitionAsync(string transitionName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetCurrentSceneTransition() { TransitionName = transitionName }, cancellation);
     }
 
     /// <summary>
@@ -868,8 +867,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=transitionDuration>Duration in milliseconds</param>
-    public Task SetCurrentSceneTransitionDurationAsync(int transitionDuration, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetCurrentSceneTransitionDuration() { TransitionDuration = transitionDuration }, skipResponse, cancellation);
+    public Task SetCurrentSceneTransitionDurationAsync(int transitionDuration, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetCurrentSceneTransitionDuration() { TransitionDuration = transitionDuration }, cancellation);
     }
 
     /// <summary>
@@ -879,8 +878,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=transitionSettings>Settings object to apply to the transition. Can be `{}`</param>
     /// <param name=overlay>Whether to overlay over the current settings or replace them</param>
-    public Task SetCurrentSceneTransitionSettingsAsync(Dictionary<string, object?> transitionSettings, bool? overlay = null, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetCurrentSceneTransitionSettings() { TransitionSettings = transitionSettings, Overlay = overlay }, skipResponse, cancellation);
+    public Task SetCurrentSceneTransitionSettingsAsync(Dictionary<string, object?> transitionSettings, bool? overlay = null, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetCurrentSceneTransitionSettings() { TransitionSettings = transitionSettings, Overlay = overlay }, cancellation);
     }
 
     /// <summary>
@@ -890,8 +889,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetCurrentSceneTransitionCursorResponse?> GetCurrentSceneTransitionCursorAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetCurrentSceneTransitionCursor() { }, skipResponse, cancellation).ConfigureAwait(false) as GetCurrentSceneTransitionCursorResponse;
+    public async Task<GetCurrentSceneTransitionCursorResponse> GetCurrentSceneTransitionCursorAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetCurrentSceneTransitionCursor() { }, cancellation).ConfigureAwait(false) as GetCurrentSceneTransitionCursorResponse)!;
     }
 
     /// <summary>
@@ -899,8 +898,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public Task TriggerStudioModeTransitionAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new TriggerStudioModeTransition() { }, skipResponse, cancellation);
+    public Task TriggerStudioModeTransitionAsync(CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new TriggerStudioModeTransition() { }, cancellation);
     }
 
     /// <summary>
@@ -912,8 +911,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=position>New position</param>
     /// <param name=release>Whether to release the TBar. Only set `false` if you know that you will be sending another position update</param>
-    public Task SetTBarPositionAsync(double position, bool? release = null, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetTBarPosition() { Position = position, Release = release }, skipResponse, cancellation);
+    public Task SetTBarPositionAsync(double position, bool? release = null, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetTBarPosition() { Position = position, Release = release }, cancellation);
     }
 
     /// <summary>
@@ -922,8 +921,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=sourceName>Name of the source</param>
-    public async Task<GetSourceFilterListResponse?> GetSourceFilterListAsync(string sourceName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetSourceFilterList() { SourceName = sourceName }, skipResponse, cancellation).ConfigureAwait(false) as GetSourceFilterListResponse;
+    public async Task<GetSourceFilterListResponse> GetSourceFilterListAsync(string sourceName, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetSourceFilterList() { SourceName = sourceName }, cancellation).ConfigureAwait(false) as GetSourceFilterListResponse)!;
     }
 
     /// <summary>
@@ -932,8 +931,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=filterKind>Filter kind to get the default settings for</param>
-    public async Task<GetSourceFilterDefaultSettingsResponse?> GetSourceFilterDefaultSettingsAsync(string filterKind, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetSourceFilterDefaultSettings() { FilterKind = filterKind }, skipResponse, cancellation).ConfigureAwait(false) as GetSourceFilterDefaultSettingsResponse;
+    public async Task<GetSourceFilterDefaultSettingsResponse> GetSourceFilterDefaultSettingsAsync(string filterKind, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetSourceFilterDefaultSettings() { FilterKind = filterKind }, cancellation).ConfigureAwait(false) as GetSourceFilterDefaultSettingsResponse)!;
     }
 
     /// <summary>
@@ -945,8 +944,8 @@ namespace ObsDotnetSocket {
     /// <param name=filterName>Name of the new filter to be created</param>
     /// <param name=filterKind>The kind of filter to be created</param>
     /// <param name=filterSettings>Settings object to initialize the filter with</param>
-    public Task CreateSourceFilterAsync(string sourceName, string filterName, string filterKind, Dictionary<string, object?>? filterSettings = null, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new CreateSourceFilter() { SourceName = sourceName, FilterName = filterName, FilterKind = filterKind, FilterSettings = filterSettings }, skipResponse, cancellation);
+    public Task CreateSourceFilterAsync(string sourceName, string filterName, string filterKind, Dictionary<string, object?>? filterSettings = null, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new CreateSourceFilter() { SourceName = sourceName, FilterName = filterName, FilterKind = filterKind, FilterSettings = filterSettings }, cancellation);
     }
 
     /// <summary>
@@ -956,8 +955,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=sourceName>Name of the source the filter is on</param>
     /// <param name=filterName>Name of the filter to remove</param>
-    public Task RemoveSourceFilterAsync(string sourceName, string filterName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new RemoveSourceFilter() { SourceName = sourceName, FilterName = filterName }, skipResponse, cancellation);
+    public Task RemoveSourceFilterAsync(string sourceName, string filterName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new RemoveSourceFilter() { SourceName = sourceName, FilterName = filterName }, cancellation);
     }
 
     /// <summary>
@@ -968,8 +967,8 @@ namespace ObsDotnetSocket {
     /// <param name=sourceName>Name of the source the filter is on</param>
     /// <param name=filterName>Current name of the filter</param>
     /// <param name=newFilterName>New name for the filter</param>
-    public Task SetSourceFilterNameAsync(string sourceName, string filterName, string newFilterName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetSourceFilterName() { SourceName = sourceName, FilterName = filterName, NewFilterName = newFilterName }, skipResponse, cancellation);
+    public Task SetSourceFilterNameAsync(string sourceName, string filterName, string newFilterName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetSourceFilterName() { SourceName = sourceName, FilterName = filterName, NewFilterName = newFilterName }, cancellation);
     }
 
     /// <summary>
@@ -979,8 +978,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=sourceName>Name of the source</param>
     /// <param name=filterName>Name of the filter</param>
-    public async Task<GetSourceFilterResponse?> GetSourceFilterAsync(string sourceName, string filterName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetSourceFilter() { SourceName = sourceName, FilterName = filterName }, skipResponse, cancellation).ConfigureAwait(false) as GetSourceFilterResponse;
+    public async Task<GetSourceFilterResponse> GetSourceFilterAsync(string sourceName, string filterName, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetSourceFilter() { SourceName = sourceName, FilterName = filterName }, cancellation).ConfigureAwait(false) as GetSourceFilterResponse)!;
     }
 
     /// <summary>
@@ -991,8 +990,8 @@ namespace ObsDotnetSocket {
     /// <param name=sourceName>Name of the source the filter is on</param>
     /// <param name=filterName>Name of the filter</param>
     /// <param name=filterIndex>New index position of the filter</param>
-    public Task SetSourceFilterIndexAsync(string sourceName, string filterName, int filterIndex, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetSourceFilterIndex() { SourceName = sourceName, FilterName = filterName, FilterIndex = filterIndex }, skipResponse, cancellation);
+    public Task SetSourceFilterIndexAsync(string sourceName, string filterName, int filterIndex, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetSourceFilterIndex() { SourceName = sourceName, FilterName = filterName, FilterIndex = filterIndex }, cancellation);
     }
 
     /// <summary>
@@ -1004,8 +1003,8 @@ namespace ObsDotnetSocket {
     /// <param name=filterName>Name of the filter to set the settings of</param>
     /// <param name=filterSettings>Object of settings to apply</param>
     /// <param name=overlay>True == apply the settings on top of existing ones, False == reset the input to its defaults, then apply settings.</param>
-    public Task SetSourceFilterSettingsAsync(string sourceName, string filterName, Dictionary<string, object?> filterSettings, bool? overlay = null, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetSourceFilterSettings() { SourceName = sourceName, FilterName = filterName, FilterSettings = filterSettings, Overlay = overlay }, skipResponse, cancellation);
+    public Task SetSourceFilterSettingsAsync(string sourceName, string filterName, Dictionary<string, object?> filterSettings, bool? overlay = null, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetSourceFilterSettings() { SourceName = sourceName, FilterName = filterName, FilterSettings = filterSettings, Overlay = overlay }, cancellation);
     }
 
     /// <summary>
@@ -1016,8 +1015,8 @@ namespace ObsDotnetSocket {
     /// <param name=sourceName>Name of the source the filter is on</param>
     /// <param name=filterName>Name of the filter</param>
     /// <param name=filterEnabled>New enable state of the filter</param>
-    public Task SetSourceFilterEnabledAsync(string sourceName, string filterName, bool filterEnabled, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetSourceFilterEnabled() { SourceName = sourceName, FilterName = filterName, FilterEnabled = filterEnabled }, skipResponse, cancellation);
+    public Task SetSourceFilterEnabledAsync(string sourceName, string filterName, bool filterEnabled, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetSourceFilterEnabled() { SourceName = sourceName, FilterName = filterName, FilterEnabled = filterEnabled }, cancellation);
     }
 
     /// <summary>
@@ -1028,8 +1027,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=sceneName>Name of the scene to get the items of</param>
-    public async Task<GetSceneItemListResponse?> GetSceneItemListAsync(string sceneName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetSceneItemList() { SceneName = sceneName }, skipResponse, cancellation).ConfigureAwait(false) as GetSceneItemListResponse;
+    public async Task<GetSceneItemListResponse> GetSceneItemListAsync(string sceneName, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetSceneItemList() { SceneName = sceneName }, cancellation).ConfigureAwait(false) as GetSceneItemListResponse)!;
     }
 
     /// <summary>
@@ -1042,8 +1041,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=sceneName>Name of the group to get the items of</param>
-    public async Task<GetGroupSceneItemListResponse?> GetGroupSceneItemListAsync(string sceneName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetGroupSceneItemList() { SceneName = sceneName }, skipResponse, cancellation).ConfigureAwait(false) as GetGroupSceneItemListResponse;
+    public async Task<GetGroupSceneItemListResponse> GetGroupSceneItemListAsync(string sceneName, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetGroupSceneItemList() { SceneName = sceneName }, cancellation).ConfigureAwait(false) as GetGroupSceneItemListResponse)!;
     }
 
     /// <summary>
@@ -1056,8 +1055,8 @@ namespace ObsDotnetSocket {
     /// <param name=sceneName>Name of the scene or group to search in</param>
     /// <param name=sourceName>Name of the source to find</param>
     /// <param name=searchOffset>Number of matches to skip during search. >= 0 means first forward. -1 means last (top) item</param>
-    public async Task<GetSceneItemIdResponse?> GetSceneItemIdAsync(string sceneName, string sourceName, int? searchOffset = null, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetSceneItemId() { SceneName = sceneName, SourceName = sourceName, SearchOffset = searchOffset }, skipResponse, cancellation).ConfigureAwait(false) as GetSceneItemIdResponse;
+    public async Task<GetSceneItemIdResponse> GetSceneItemIdAsync(string sceneName, string sourceName, int? searchOffset = null, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetSceneItemId() { SceneName = sceneName, SourceName = sourceName, SearchOffset = searchOffset }, cancellation).ConfigureAwait(false) as GetSceneItemIdResponse)!;
     }
 
     /// <summary>
@@ -1070,8 +1069,8 @@ namespace ObsDotnetSocket {
     /// <param name=sceneName>Name of the scene to create the new item in</param>
     /// <param name=sourceName>Name of the source to add to the scene</param>
     /// <param name=sceneItemEnabled>Enable state to apply to the scene item on creation</param>
-    public async Task<CreateSceneItemResponse?> CreateSceneItemAsync(string sceneName, string sourceName, bool? sceneItemEnabled = null, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new CreateSceneItem() { SceneName = sceneName, SourceName = sourceName, SceneItemEnabled = sceneItemEnabled }, skipResponse, cancellation).ConfigureAwait(false) as CreateSceneItemResponse;
+    public async Task<CreateSceneItemResponse> CreateSceneItemAsync(string sceneName, string sourceName, bool? sceneItemEnabled = null, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new CreateSceneItem() { SceneName = sceneName, SourceName = sourceName, SceneItemEnabled = sceneItemEnabled }, cancellation).ConfigureAwait(false) as CreateSceneItemResponse)!;
     }
 
     /// <summary>
@@ -1083,8 +1082,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=sceneName>Name of the scene the item is in</param>
     /// <param name=sceneItemId>Numeric ID of the scene item</param>
-    public Task RemoveSceneItemAsync(string sceneName, int sceneItemId, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new RemoveSceneItem() { SceneName = sceneName, SceneItemId = sceneItemId }, skipResponse, cancellation);
+    public Task RemoveSceneItemAsync(string sceneName, int sceneItemId, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new RemoveSceneItem() { SceneName = sceneName, SceneItemId = sceneItemId }, cancellation);
     }
 
     /// <summary>
@@ -1097,8 +1096,8 @@ namespace ObsDotnetSocket {
     /// <param name=sceneName>Name of the scene the item is in</param>
     /// <param name=sceneItemId>Numeric ID of the scene item</param>
     /// <param name=destinationSceneName>Name of the scene to create the duplicated item in</param>
-    public async Task<DuplicateSceneItemResponse?> DuplicateSceneItemAsync(string sceneName, int sceneItemId, string? destinationSceneName = null, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new DuplicateSceneItem() { SceneName = sceneName, SceneItemId = sceneItemId, DestinationSceneName = destinationSceneName }, skipResponse, cancellation).ConfigureAwait(false) as DuplicateSceneItemResponse;
+    public async Task<DuplicateSceneItemResponse> DuplicateSceneItemAsync(string sceneName, int sceneItemId, string? destinationSceneName = null, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new DuplicateSceneItem() { SceneName = sceneName, SceneItemId = sceneItemId, DestinationSceneName = destinationSceneName }, cancellation).ConfigureAwait(false) as DuplicateSceneItemResponse)!;
     }
 
     /// <summary>
@@ -1110,8 +1109,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=sceneName>Name of the scene the item is in</param>
     /// <param name=sceneItemId>Numeric ID of the scene item</param>
-    public async Task<GetSceneItemTransformResponse?> GetSceneItemTransformAsync(string sceneName, int sceneItemId, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetSceneItemTransform() { SceneName = sceneName, SceneItemId = sceneItemId }, skipResponse, cancellation).ConfigureAwait(false) as GetSceneItemTransformResponse;
+    public async Task<GetSceneItemTransformResponse> GetSceneItemTransformAsync(string sceneName, int sceneItemId, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetSceneItemTransform() { SceneName = sceneName, SceneItemId = sceneItemId }, cancellation).ConfigureAwait(false) as GetSceneItemTransformResponse)!;
     }
 
     /// <summary>
@@ -1122,8 +1121,8 @@ namespace ObsDotnetSocket {
     /// <param name=sceneName>Name of the scene the item is in</param>
     /// <param name=sceneItemId>Numeric ID of the scene item</param>
     /// <param name=sceneItemTransform>Object containing scene item transform info to update</param>
-    public Task SetSceneItemTransformAsync(string sceneName, int sceneItemId, Dictionary<string, object?> sceneItemTransform, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetSceneItemTransform() { SceneName = sceneName, SceneItemId = sceneItemId, SceneItemTransform = sceneItemTransform }, skipResponse, cancellation);
+    public Task SetSceneItemTransformAsync(string sceneName, int sceneItemId, Dictionary<string, object?> sceneItemTransform, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetSceneItemTransform() { SceneName = sceneName, SceneItemId = sceneItemId, SceneItemTransform = sceneItemTransform }, cancellation);
     }
 
     /// <summary>
@@ -1135,8 +1134,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=sceneName>Name of the scene the item is in</param>
     /// <param name=sceneItemId>Numeric ID of the scene item</param>
-    public async Task<GetSceneItemEnabledResponse?> GetSceneItemEnabledAsync(string sceneName, int sceneItemId, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetSceneItemEnabled() { SceneName = sceneName, SceneItemId = sceneItemId }, skipResponse, cancellation).ConfigureAwait(false) as GetSceneItemEnabledResponse;
+    public async Task<GetSceneItemEnabledResponse> GetSceneItemEnabledAsync(string sceneName, int sceneItemId, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetSceneItemEnabled() { SceneName = sceneName, SceneItemId = sceneItemId }, cancellation).ConfigureAwait(false) as GetSceneItemEnabledResponse)!;
     }
 
     /// <summary>
@@ -1149,8 +1148,8 @@ namespace ObsDotnetSocket {
     /// <param name=sceneName>Name of the scene the item is in</param>
     /// <param name=sceneItemId>Numeric ID of the scene item</param>
     /// <param name=sceneItemEnabled>New enable state of the scene item</param>
-    public Task SetSceneItemEnabledAsync(string sceneName, int sceneItemId, bool sceneItemEnabled, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetSceneItemEnabled() { SceneName = sceneName, SceneItemId = sceneItemId, SceneItemEnabled = sceneItemEnabled }, skipResponse, cancellation);
+    public Task SetSceneItemEnabledAsync(string sceneName, int sceneItemId, bool sceneItemEnabled, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetSceneItemEnabled() { SceneName = sceneName, SceneItemId = sceneItemId, SceneItemEnabled = sceneItemEnabled }, cancellation);
     }
 
     /// <summary>
@@ -1162,8 +1161,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=sceneName>Name of the scene the item is in</param>
     /// <param name=sceneItemId>Numeric ID of the scene item</param>
-    public async Task<GetSceneItemLockedResponse?> GetSceneItemLockedAsync(string sceneName, int sceneItemId, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetSceneItemLocked() { SceneName = sceneName, SceneItemId = sceneItemId }, skipResponse, cancellation).ConfigureAwait(false) as GetSceneItemLockedResponse;
+    public async Task<GetSceneItemLockedResponse> GetSceneItemLockedAsync(string sceneName, int sceneItemId, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetSceneItemLocked() { SceneName = sceneName, SceneItemId = sceneItemId }, cancellation).ConfigureAwait(false) as GetSceneItemLockedResponse)!;
     }
 
     /// <summary>
@@ -1176,8 +1175,8 @@ namespace ObsDotnetSocket {
     /// <param name=sceneName>Name of the scene the item is in</param>
     /// <param name=sceneItemId>Numeric ID of the scene item</param>
     /// <param name=sceneItemLocked>New lock state of the scene item</param>
-    public Task SetSceneItemLockedAsync(string sceneName, int sceneItemId, bool sceneItemLocked, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetSceneItemLocked() { SceneName = sceneName, SceneItemId = sceneItemId, SceneItemLocked = sceneItemLocked }, skipResponse, cancellation);
+    public Task SetSceneItemLockedAsync(string sceneName, int sceneItemId, bool sceneItemLocked, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetSceneItemLocked() { SceneName = sceneName, SceneItemId = sceneItemId, SceneItemLocked = sceneItemLocked }, cancellation);
     }
 
     /// <summary>
@@ -1191,8 +1190,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=sceneName>Name of the scene the item is in</param>
     /// <param name=sceneItemId>Numeric ID of the scene item</param>
-    public async Task<GetSceneItemIndexResponse?> GetSceneItemIndexAsync(string sceneName, int sceneItemId, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetSceneItemIndex() { SceneName = sceneName, SceneItemId = sceneItemId }, skipResponse, cancellation).ConfigureAwait(false) as GetSceneItemIndexResponse;
+    public async Task<GetSceneItemIndexResponse> GetSceneItemIndexAsync(string sceneName, int sceneItemId, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetSceneItemIndex() { SceneName = sceneName, SceneItemId = sceneItemId }, cancellation).ConfigureAwait(false) as GetSceneItemIndexResponse)!;
     }
 
     /// <summary>
@@ -1205,8 +1204,8 @@ namespace ObsDotnetSocket {
     /// <param name=sceneName>Name of the scene the item is in</param>
     /// <param name=sceneItemId>Numeric ID of the scene item</param>
     /// <param name=sceneItemIndex>New index position of the scene item</param>
-    public Task SetSceneItemIndexAsync(string sceneName, int sceneItemId, int sceneItemIndex, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetSceneItemIndex() { SceneName = sceneName, SceneItemId = sceneItemId, SceneItemIndex = sceneItemIndex }, skipResponse, cancellation);
+    public Task SetSceneItemIndexAsync(string sceneName, int sceneItemId, int sceneItemIndex, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetSceneItemIndex() { SceneName = sceneName, SceneItemId = sceneItemId, SceneItemIndex = sceneItemIndex }, cancellation);
     }
 
     /// <summary>
@@ -1228,8 +1227,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=sceneName>Name of the scene the item is in</param>
     /// <param name=sceneItemId>Numeric ID of the scene item</param>
-    public async Task<GetSceneItemBlendModeResponse?> GetSceneItemBlendModeAsync(string sceneName, int sceneItemId, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetSceneItemBlendMode() { SceneName = sceneName, SceneItemId = sceneItemId }, skipResponse, cancellation).ConfigureAwait(false) as GetSceneItemBlendModeResponse;
+    public async Task<GetSceneItemBlendModeResponse> GetSceneItemBlendModeAsync(string sceneName, int sceneItemId, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetSceneItemBlendMode() { SceneName = sceneName, SceneItemId = sceneItemId }, cancellation).ConfigureAwait(false) as GetSceneItemBlendModeResponse)!;
     }
 
     /// <summary>
@@ -1242,8 +1241,8 @@ namespace ObsDotnetSocket {
     /// <param name=sceneName>Name of the scene the item is in</param>
     /// <param name=sceneItemId>Numeric ID of the scene item</param>
     /// <param name=sceneItemBlendMode>New blend mode</param>
-    public Task SetSceneItemBlendModeAsync(string sceneName, int sceneItemId, string sceneItemBlendMode, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetSceneItemBlendMode() { SceneName = sceneName, SceneItemId = sceneItemId, SceneItemBlendMode = sceneItemBlendMode }, skipResponse, cancellation);
+    public Task SetSceneItemBlendModeAsync(string sceneName, int sceneItemId, string sceneItemBlendMode, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetSceneItemBlendMode() { SceneName = sceneName, SceneItemId = sceneItemId, SceneItemBlendMode = sceneItemBlendMode }, cancellation);
     }
 
     /// <summary>
@@ -1251,8 +1250,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetVirtualCamStatusResponse?> GetVirtualCamStatusAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetVirtualCamStatus() { }, skipResponse, cancellation).ConfigureAwait(false) as GetVirtualCamStatusResponse;
+    public async Task<GetVirtualCamStatusResponse> GetVirtualCamStatusAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetVirtualCamStatus() { }, cancellation).ConfigureAwait(false) as GetVirtualCamStatusResponse)!;
     }
 
     /// <summary>
@@ -1260,8 +1259,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<ToggleVirtualCamResponse?> ToggleVirtualCamAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new ToggleVirtualCam() { }, skipResponse, cancellation).ConfigureAwait(false) as ToggleVirtualCamResponse;
+    public async Task<ToggleVirtualCamResponse> ToggleVirtualCamAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new ToggleVirtualCam() { }, cancellation).ConfigureAwait(false) as ToggleVirtualCamResponse)!;
     }
 
     /// <summary>
@@ -1269,8 +1268,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public Task StartVirtualCamAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new StartVirtualCam() { }, skipResponse, cancellation);
+    public Task StartVirtualCamAsync(CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new StartVirtualCam() { }, cancellation);
     }
 
     /// <summary>
@@ -1278,8 +1277,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public Task StopVirtualCamAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new StopVirtualCam() { }, skipResponse, cancellation);
+    public Task StopVirtualCamAsync(CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new StopVirtualCam() { }, cancellation);
     }
 
     /// <summary>
@@ -1287,8 +1286,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetReplayBufferStatusResponse?> GetReplayBufferStatusAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetReplayBufferStatus() { }, skipResponse, cancellation).ConfigureAwait(false) as GetReplayBufferStatusResponse;
+    public async Task<GetReplayBufferStatusResponse> GetReplayBufferStatusAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetReplayBufferStatus() { }, cancellation).ConfigureAwait(false) as GetReplayBufferStatusResponse)!;
     }
 
     /// <summary>
@@ -1296,8 +1295,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<ToggleReplayBufferResponse?> ToggleReplayBufferAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new ToggleReplayBuffer() { }, skipResponse, cancellation).ConfigureAwait(false) as ToggleReplayBufferResponse;
+    public async Task<ToggleReplayBufferResponse> ToggleReplayBufferAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new ToggleReplayBuffer() { }, cancellation).ConfigureAwait(false) as ToggleReplayBufferResponse)!;
     }
 
     /// <summary>
@@ -1305,8 +1304,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public Task StartReplayBufferAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new StartReplayBuffer() { }, skipResponse, cancellation);
+    public Task StartReplayBufferAsync(CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new StartReplayBuffer() { }, cancellation);
     }
 
     /// <summary>
@@ -1314,8 +1313,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public Task StopReplayBufferAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new StopReplayBuffer() { }, skipResponse, cancellation);
+    public Task StopReplayBufferAsync(CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new StopReplayBuffer() { }, cancellation);
     }
 
     /// <summary>
@@ -1323,8 +1322,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public Task SaveReplayBufferAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SaveReplayBuffer() { }, skipResponse, cancellation);
+    public Task SaveReplayBufferAsync(CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SaveReplayBuffer() { }, cancellation);
     }
 
     /// <summary>
@@ -1332,8 +1331,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetLastReplayBufferReplayResponse?> GetLastReplayBufferReplayAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetLastReplayBufferReplay() { }, skipResponse, cancellation).ConfigureAwait(false) as GetLastReplayBufferReplayResponse;
+    public async Task<GetLastReplayBufferReplayResponse> GetLastReplayBufferReplayAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetLastReplayBufferReplay() { }, cancellation).ConfigureAwait(false) as GetLastReplayBufferReplayResponse)!;
     }
 
     /// <summary>
@@ -1341,8 +1340,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetOutputListResponse?> GetOutputListAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetOutputList() { }, skipResponse, cancellation).ConfigureAwait(false) as GetOutputListResponse;
+    public async Task<GetOutputListResponse> GetOutputListAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetOutputList() { }, cancellation).ConfigureAwait(false) as GetOutputListResponse)!;
     }
 
     /// <summary>
@@ -1351,8 +1350,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=outputName>Output name</param>
-    public async Task<GetOutputStatusResponse?> GetOutputStatusAsync(string outputName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetOutputStatus() { OutputName = outputName }, skipResponse, cancellation).ConfigureAwait(false) as GetOutputStatusResponse;
+    public async Task<GetOutputStatusResponse> GetOutputStatusAsync(string outputName, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetOutputStatus() { OutputName = outputName }, cancellation).ConfigureAwait(false) as GetOutputStatusResponse)!;
     }
 
     /// <summary>
@@ -1361,8 +1360,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=outputName>Output name</param>
-    public async Task<ToggleOutputResponse?> ToggleOutputAsync(string outputName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new ToggleOutput() { OutputName = outputName }, skipResponse, cancellation).ConfigureAwait(false) as ToggleOutputResponse;
+    public async Task<ToggleOutputResponse> ToggleOutputAsync(string outputName, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new ToggleOutput() { OutputName = outputName }, cancellation).ConfigureAwait(false) as ToggleOutputResponse)!;
     }
 
     /// <summary>
@@ -1371,8 +1370,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=outputName>Output name</param>
-    public Task StartOutputAsync(string outputName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new StartOutput() { OutputName = outputName }, skipResponse, cancellation);
+    public Task StartOutputAsync(string outputName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new StartOutput() { OutputName = outputName }, cancellation);
     }
 
     /// <summary>
@@ -1381,8 +1380,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=outputName>Output name</param>
-    public Task StopOutputAsync(string outputName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new StopOutput() { OutputName = outputName }, skipResponse, cancellation);
+    public Task StopOutputAsync(string outputName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new StopOutput() { OutputName = outputName }, cancellation);
     }
 
     /// <summary>
@@ -1391,8 +1390,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=outputName>Output name</param>
-    public async Task<GetOutputSettingsResponse?> GetOutputSettingsAsync(string outputName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetOutputSettings() { OutputName = outputName }, skipResponse, cancellation).ConfigureAwait(false) as GetOutputSettingsResponse;
+    public async Task<GetOutputSettingsResponse> GetOutputSettingsAsync(string outputName, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetOutputSettings() { OutputName = outputName }, cancellation).ConfigureAwait(false) as GetOutputSettingsResponse)!;
     }
 
     /// <summary>
@@ -1402,8 +1401,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=outputName>Output name</param>
     /// <param name=outputSettings>Output settings</param>
-    public Task SetOutputSettingsAsync(string outputName, Dictionary<string, object?> outputSettings, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetOutputSettings() { OutputName = outputName, OutputSettings = outputSettings }, skipResponse, cancellation);
+    public Task SetOutputSettingsAsync(string outputName, Dictionary<string, object?> outputSettings, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetOutputSettings() { OutputName = outputName, OutputSettings = outputSettings }, cancellation);
     }
 
     /// <summary>
@@ -1411,8 +1410,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetStreamStatusResponse?> GetStreamStatusAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetStreamStatus() { }, skipResponse, cancellation).ConfigureAwait(false) as GetStreamStatusResponse;
+    public async Task<GetStreamStatusResponse> GetStreamStatusAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetStreamStatus() { }, cancellation).ConfigureAwait(false) as GetStreamStatusResponse)!;
     }
 
     /// <summary>
@@ -1420,8 +1419,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<ToggleStreamResponse?> ToggleStreamAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new ToggleStream() { }, skipResponse, cancellation).ConfigureAwait(false) as ToggleStreamResponse;
+    public async Task<ToggleStreamResponse> ToggleStreamAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new ToggleStream() { }, cancellation).ConfigureAwait(false) as ToggleStreamResponse)!;
     }
 
     /// <summary>
@@ -1429,8 +1428,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public Task StartStreamAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new StartStream() { }, skipResponse, cancellation);
+    public Task StartStreamAsync(CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new StartStream() { }, cancellation);
     }
 
     /// <summary>
@@ -1438,8 +1437,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public Task StopStreamAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new StopStream() { }, skipResponse, cancellation);
+    public Task StopStreamAsync(CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new StopStream() { }, cancellation);
     }
 
     /// <summary>
@@ -1448,8 +1447,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=captionText>Caption text</param>
-    public Task SendStreamCaptionAsync(string captionText, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SendStreamCaption() { CaptionText = captionText }, skipResponse, cancellation);
+    public Task SendStreamCaptionAsync(string captionText, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SendStreamCaption() { CaptionText = captionText }, cancellation);
     }
 
     /// <summary>
@@ -1457,8 +1456,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetRecordStatusResponse?> GetRecordStatusAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetRecordStatus() { }, skipResponse, cancellation).ConfigureAwait(false) as GetRecordStatusResponse;
+    public async Task<GetRecordStatusResponse> GetRecordStatusAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetRecordStatus() { }, cancellation).ConfigureAwait(false) as GetRecordStatusResponse)!;
     }
 
     /// <summary>
@@ -1466,8 +1465,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public Task ToggleRecordAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new ToggleRecord() { }, skipResponse, cancellation);
+    public Task ToggleRecordAsync(CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new ToggleRecord() { }, cancellation);
     }
 
     /// <summary>
@@ -1475,8 +1474,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public Task StartRecordAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new StartRecord() { }, skipResponse, cancellation);
+    public Task StartRecordAsync(CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new StartRecord() { }, cancellation);
     }
 
     /// <summary>
@@ -1484,8 +1483,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<StopRecordResponse?> StopRecordAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new StopRecord() { }, skipResponse, cancellation).ConfigureAwait(false) as StopRecordResponse;
+    public async Task<StopRecordResponse> StopRecordAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new StopRecord() { }, cancellation).ConfigureAwait(false) as StopRecordResponse)!;
     }
 
     /// <summary>
@@ -1493,8 +1492,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public Task ToggleRecordPauseAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new ToggleRecordPause() { }, skipResponse, cancellation);
+    public Task ToggleRecordPauseAsync(CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new ToggleRecordPause() { }, cancellation);
     }
 
     /// <summary>
@@ -1502,8 +1501,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public Task PauseRecordAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new PauseRecord() { }, skipResponse, cancellation);
+    public Task PauseRecordAsync(CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new PauseRecord() { }, cancellation);
     }
 
     /// <summary>
@@ -1511,8 +1510,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public Task ResumeRecordAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new ResumeRecord() { }, skipResponse, cancellation);
+    public Task ResumeRecordAsync(CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new ResumeRecord() { }, cancellation);
     }
 
     /// <summary>
@@ -1532,8 +1531,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=inputName>Name of the media input</param>
-    public async Task<GetMediaInputStatusResponse?> GetMediaInputStatusAsync(string inputName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetMediaInputStatus() { InputName = inputName }, skipResponse, cancellation).ConfigureAwait(false) as GetMediaInputStatusResponse;
+    public async Task<GetMediaInputStatusResponse> GetMediaInputStatusAsync(string inputName, CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetMediaInputStatus() { InputName = inputName }, cancellation).ConfigureAwait(false) as GetMediaInputStatusResponse)!;
     }
 
     /// <summary>
@@ -1545,8 +1544,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=inputName>Name of the media input</param>
     /// <param name=mediaCursor>New cursor position to set</param>
-    public Task SetMediaInputCursorAsync(string inputName, double mediaCursor, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetMediaInputCursor() { InputName = inputName, MediaCursor = mediaCursor }, skipResponse, cancellation);
+    public Task SetMediaInputCursorAsync(string inputName, double mediaCursor, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetMediaInputCursor() { InputName = inputName, MediaCursor = mediaCursor }, cancellation);
     }
 
     /// <summary>
@@ -1558,8 +1557,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=inputName>Name of the media input</param>
     /// <param name=mediaCursorOffset>Value to offset the current cursor position by</param>
-    public Task OffsetMediaInputCursorAsync(string inputName, int mediaCursorOffset, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new OffsetMediaInputCursor() { InputName = inputName, MediaCursorOffset = mediaCursorOffset }, skipResponse, cancellation);
+    public Task OffsetMediaInputCursorAsync(string inputName, int mediaCursorOffset, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new OffsetMediaInputCursor() { InputName = inputName, MediaCursorOffset = mediaCursorOffset }, cancellation);
     }
 
     /// <summary>
@@ -1569,8 +1568,8 @@ namespace ObsDotnetSocket {
     /// </summary>
     /// <param name=inputName>Name of the media input</param>
     /// <param name=mediaAction>Identifier of the `ObsMediaInputAction` enum</param>
-    public Task TriggerMediaInputActionAsync(string inputName, string mediaAction, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new TriggerMediaInputAction() { InputName = inputName, MediaAction = mediaAction }, skipResponse, cancellation);
+    public Task TriggerMediaInputActionAsync(string inputName, string mediaAction, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new TriggerMediaInputAction() { InputName = inputName, MediaAction = mediaAction }, cancellation);
     }
 
     /// <summary>
@@ -1578,8 +1577,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetStudioModeEnabledResponse?> GetStudioModeEnabledAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetStudioModeEnabled() { }, skipResponse, cancellation).ConfigureAwait(false) as GetStudioModeEnabledResponse;
+    public async Task<GetStudioModeEnabledResponse> GetStudioModeEnabledAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetStudioModeEnabled() { }, cancellation).ConfigureAwait(false) as GetStudioModeEnabledResponse)!;
     }
 
     /// <summary>
@@ -1588,8 +1587,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=studioModeEnabled>True == Enabled, False == Disabled</param>
-    public Task SetStudioModeEnabledAsync(bool studioModeEnabled, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new SetStudioModeEnabled() { StudioModeEnabled = studioModeEnabled }, skipResponse, cancellation);
+    public Task SetStudioModeEnabledAsync(bool studioModeEnabled, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new SetStudioModeEnabled() { StudioModeEnabled = studioModeEnabled }, cancellation);
     }
 
     /// <summary>
@@ -1598,8 +1597,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=inputName>Name of the input to open the dialog of</param>
-    public Task OpenInputPropertiesDialogAsync(string inputName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new OpenInputPropertiesDialog() { InputName = inputName }, skipResponse, cancellation);
+    public Task OpenInputPropertiesDialogAsync(string inputName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new OpenInputPropertiesDialog() { InputName = inputName }, cancellation);
     }
 
     /// <summary>
@@ -1608,8 +1607,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=inputName>Name of the input to open the dialog of</param>
-    public Task OpenInputFiltersDialogAsync(string inputName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new OpenInputFiltersDialog() { InputName = inputName }, skipResponse, cancellation);
+    public Task OpenInputFiltersDialogAsync(string inputName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new OpenInputFiltersDialog() { InputName = inputName }, cancellation);
     }
 
     /// <summary>
@@ -1618,8 +1617,8 @@ namespace ObsDotnetSocket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name=inputName>Name of the input to open the dialog of</param>
-    public Task OpenInputInteractDialogAsync(string inputName, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new OpenInputInteractDialog() { InputName = inputName }, skipResponse, cancellation);
+    public Task OpenInputInteractDialogAsync(string inputName, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new OpenInputInteractDialog() { InputName = inputName }, cancellation);
     }
 
     /// <summary>
@@ -1627,8 +1626,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public async Task<GetMonitorListResponse?> GetMonitorListAsync(bool skipResponse = false, CancellationToken? cancellation = null) {
-      return await _clientSocket.RequestAsync(new GetMonitorList() { }, skipResponse, cancellation).ConfigureAwait(false) as GetMonitorListResponse;
+    public async Task<GetMonitorListResponse> GetMonitorListAsync(CancellationToken? cancellation = null) {
+      return (await _clientSocket.RequestAsync(new GetMonitorList() { }, cancellation).ConfigureAwait(false) as GetMonitorListResponse)!;
     }
 
     /// <summary>
@@ -1647,8 +1646,8 @@ namespace ObsDotnetSocket {
     /// <param name=videoMixType>Type of mix to open</param>
     /// <param name=monitorIndex>Monitor index, use `GetMonitorList` to obtain index</param>
     /// <param name=projectorGeometry>Size/Position data for a windowed projector, in Qt Base64 encoded format. Mutually exclusive with `monitorIndex`</param>
-    public Task OpenVideoMixProjectorAsync(string videoMixType, int? monitorIndex = null, string? projectorGeometry = null, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new OpenVideoMixProjector() { VideoMixType = videoMixType, MonitorIndex = monitorIndex, ProjectorGeometry = projectorGeometry }, skipResponse, cancellation);
+    public Task OpenVideoMixProjectorAsync(string videoMixType, int? monitorIndex = null, string? projectorGeometry = null, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new OpenVideoMixProjector() { VideoMixType = videoMixType, MonitorIndex = monitorIndex, ProjectorGeometry = projectorGeometry }, cancellation);
     }
 
     /// <summary>
@@ -1661,8 +1660,8 @@ namespace ObsDotnetSocket {
     /// <param name=sourceName>Name of the source to open a projector for</param>
     /// <param name=monitorIndex>Monitor index, use `GetMonitorList` to obtain index</param>
     /// <param name=projectorGeometry>Size/Position data for a windowed projector, in Qt Base64 encoded format. Mutually exclusive with `monitorIndex`</param>
-    public Task OpenSourceProjectorAsync(string sourceName, int? monitorIndex = null, string? projectorGeometry = null, bool skipResponse = false, CancellationToken? cancellation = null) {
-      return _clientSocket.RequestAsync(new OpenSourceProjector() { SourceName = sourceName, MonitorIndex = monitorIndex, ProjectorGeometry = projectorGeometry }, skipResponse, cancellation);
+    public Task OpenSourceProjectorAsync(string sourceName, int? monitorIndex = null, string? projectorGeometry = null, CancellationToken? cancellation = null) {
+      return _clientSocket.RequestAsync(new OpenSourceProjector() { SourceName = sourceName, MonitorIndex = monitorIndex, ProjectorGeometry = projectorGeometry }, cancellation);
     }
 
     #endregion
