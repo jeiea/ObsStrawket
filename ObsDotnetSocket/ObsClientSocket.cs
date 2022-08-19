@@ -92,6 +92,8 @@ namespace ObsDotnetSocket {
 
     public string? CloseDescription { get => _clientSocket.CloseDescription; }
 
+    public bool IsConnected { get => _clientSocket.IsConnected; }
+
     public ObsClientSocket() {
       _clientSocket = new ClientSocket();
       _clientSocket.Event += Dispatch;
