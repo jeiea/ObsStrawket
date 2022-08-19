@@ -21,17 +21,17 @@ namespace ObsDotnetSocket.DataTypes {
   }
 
   [MessagePackObject]
-  public class RawEvent : IEvent {
-    [IgnoreMember]
+  public sealed class RawEvent : IEvent {
+    [Key("op")]
     public OpCode Op => OpCode.Event;
 
-    [IgnoreMember]
+    [Key("eventType")]
     public string EventType { get; set; } = "";
 
-    [IgnoreMember]
+    [Key("eventIntent")]
     public EventSubscription EventIntent { get; set; }
 
-    [IgnoreMember]
+    [Key("eventData")]
     public Dictionary<string, object?>? EventData { get; set; }
   }
 }
