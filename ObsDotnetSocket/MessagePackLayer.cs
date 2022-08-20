@@ -3,23 +3,24 @@ namespace ObsDotnetSocket {
   using Nerdbank.Streams;
   using ObsDotnetSocket.DataTypes;
   using ObsDotnetSocket.Serialization;
+  using ObsDotnetSocket.WebSocket;
   using System;
-  using System.Net.WebSockets;
-  using System.Runtime.InteropServices;
   using System.Threading;
   using System.Threading.Tasks;
 
-  internal class Socket : IDisposable {
+  internal class MessagePackLayer : IDisposable {
     internal static readonly Uri defaultUri = new("ws://127.0.0.1:4455");
+
+    public WebSocketReceival? CloseMessage { get; private set; }
 
     private const int _transmissionSize = 1400;
 
-    private readonly WebSocket _socket;
+    private readonly IWebSocket _socket;
     private readonly Sequence<byte> _sendBuffer = new() { MinimumSpanLength = _transmissionSize };
     private readonly Sequence<byte> _receiveBuffer = new() { MinimumSpanLength = _transmissionSize };
     private readonly MessagePackSerializerOptions _serialOptions = new(OpCodeMessageResolver.Instance);
 
-    public Socket(WebSocket socket) {
+    public MessagePackLayer(IWebSocket socket) {
       _socket = socket;
     }
 
@@ -31,15 +32,14 @@ namespace ObsDotnetSocket {
         token.ThrowIfCancellationRequested();
 
         var memory = _receiveBuffer.GetMemory(_transmissionSize);
-        ReadOnlyMemory<byte> readOnlyMemory = memory;
-        var segment = GetSegment(readOnlyMemory);
-        var result = await _socket!.ReceiveAsync(segment, token).ConfigureAwait(false);
+        var result = await _socket!.ReceiveAsync(memory, token).ConfigureAwait(false);
         _receiveBuffer.Advance(result.Count);
 
-        if (result.MessageType == WebSocketMessageType.Close && _socket.State == WebSocketState.CloseReceived) {
+        if (result.MessageType == MessageType.Close) {
+          CloseMessage = result;
           return null;
         }
-        if (result.EndOfMessage) {
+        if (!result.IsContinued) {
           return MessagePackSerializer.Deserialize<IOpCodeMessage>(_receiveBuffer, _serialOptions, token);
         }
       }
@@ -58,38 +58,17 @@ namespace ObsDotnetSocket {
       foreach (var item in readOnlySequence) {
         position += item.Length;
         bool isEnd = position >= length;
-        if (MemoryMarshal.TryGetArray(item, out var segment)) {
-          token.ThrowIfCancellationRequested();
-          await _socket!.SendAsync(segment, WebSocketMessageType.Binary, isEnd, token).ConfigureAwait(false);
-        }
-        else {
-          throw new Exception("Marshal failure");
-        }
+        token.ThrowIfCancellationRequested();
+        await _socket!.SendAsync(item, MessageType.Binary, isEnd, token).ConfigureAwait(false);
       }
     }
 
-    public async Task CloseAsync(CancellationToken cancellation) {
-      switch (_socket.State) {
-      case WebSocketState.Open:
-        await _socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "", cancellation).ConfigureAwait(false);
-        break;
-      case WebSocketState.CloseReceived:
-        await _socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "", cancellation).ConfigureAwait(false);
-        break;
-      }
+    public Task CloseAsync(CancellationToken cancellation) {
+      return _socket.CloseAsync(cancellation: cancellation);
     }
 
     public void Dispose() {
       _socket.Dispose();
-    }
-
-    private static ArraySegment<byte> GetSegment(ReadOnlyMemory<byte> memory) {
-      if (MemoryMarshal.TryGetArray(memory, out var segment)) {
-        return segment;
-      }
-      else {
-        throw new Exception("Failed to get buffer");
-      }
     }
   }
 }

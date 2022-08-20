@@ -4,8 +4,9 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>10</LangVersion>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ObsDotnetSocket.WebSocket4Net\ObsDotnetSocket.WebSocket4Net.csproj" />
     <ProjectReference Include="..\ObsDotnetSocket\ObsDotnetSocket.csproj" />
   </ItemGroup>
 

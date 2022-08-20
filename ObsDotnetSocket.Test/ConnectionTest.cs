@@ -34,7 +34,7 @@ namespace ObsDotnetSocket.Test {
       var client = new ObsClientSocket();
       var source = new TaskCompletionSource<object?>();
       client.Event += (@event) => {
-        object result = method.MakeGenericMethod(@event.GetType()).Invoke(@event, new object[] {
+        object? result = method.MakeGenericMethod(@event.GetType()).Invoke(@event, new object[] {
           @event,
           MessagePackSerializerOptions.Standard.WithResolver(OpCodeMessageResolver.Instance), default(CancellationToken)
         });

@@ -1,7 +1,6 @@
 namespace ObsDotnetSocket {
   using ObsDotnetSocket.DataTypes;
   using System;
-  using System.Net.WebSockets;
 
   public class ObsWebSocketException : Exception {
     public ObsWebSocketException(string? message = null, Exception? innerException = null) : base(message, innerException) { }
@@ -20,13 +19,13 @@ namespace ObsDotnetSocket {
   }
 
   public class AuthenticationFailureException : ObsWebSocketException {
-    public AuthenticationFailureException(WebSocketCloseStatus? closeStatus, string closeStatusDescription) : base($"${closeStatus}: ${closeStatusDescription}") {
-      CloseStatus = closeStatus;
-      CloseStatusDescription = closeStatusDescription;
+    public AuthenticationFailureException(int? code = null, string? closeStatusDescription = null) : base($"${code}: ${closeStatusDescription}") {
+      Code = code;
+      CloseStatusDescription = closeStatusDescription ?? "";
     }
 
-    public WebSocketCloseStatus? CloseStatus { get; set; }
+    public int? Code { get; set; }
 
-    public string CloseStatusDescription { get; set; } = "";
+    public string? CloseStatusDescription { get; set; }
   }
 }
