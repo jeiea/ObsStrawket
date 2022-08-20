@@ -15,13 +15,13 @@ namespace ObsDotnetSocket.DataTypes {
     [IgnoreMember]
     public OpCode Op => OpCode.RequestResponse;
 
-    [Key("requestType")]
+    [IgnoreMember]
     public string RequestType { get => GetType().Name; }
 
-    [Key("requestId")]
+    [IgnoreMember]
     public string RequestId { get; set; } = "";
 
-    [Key("requestStatus")]
+    [IgnoreMember]
     public RequestStatus RequestStatus { get; set; } = new();
   }
 

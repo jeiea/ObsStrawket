@@ -3,6 +3,7 @@ namespace ObsDotnetSocket.Test {
   using ObsDotnetSocket.DataTypes;
   using ObsDotnetSocket.DataTypes.Predefineds;
   using ObsDotnetSocket.Serialization;
+  using ObsDotnetSocket.WebSocket4Net;
   using System;
   using System.Linq;
   using System.Net;
@@ -14,51 +15,20 @@ namespace ObsDotnetSocket.Test {
   using Xunit;
   using Xunit.Abstractions;
 
-  public class ConnectionTest {
+  public class MockServerTest {
     private readonly ITestOutputHelper _output;
 
-    public ConnectionTest(ITestOutputHelper output) {
+    public MockServerTest(ITestOutputHelper output) {
       _output = output;
     }
 
     [Fact]
-    public async Task TestAgainstObsAsync() {
-      await RunClientAsync(new Uri("ws://127.0.0.1:4455"), CancellationToken.None).ConfigureAwait(false);
-    }
-
-    [Fact]
-    public async Task JustMonitorObsEventAsync() {
-      var methods = typeof(MessagePackSerializer).GetMethods().ToList();
-      methods = methods.Where(x => x.Name == nameof(MessagePackSerializer.SerializeToJson)).ToList();
-      var method = methods[1];
-      var client = new ObsClientSocket();
-      var source = new TaskCompletionSource<object?>();
-      client.Event += (@event) => {
-        object? result = method.MakeGenericMethod(@event.GetType()).Invoke(@event, new object[] {
-          @event,
-          MessagePackSerializerOptions.Standard.WithResolver(OpCodeMessageResolver.Instance), default(CancellationToken)
-        });
-        _output.WriteLine($"{result}");
-      };
-      client.Closed += (reason) => {
-        source.SetResult(reason);
-      };
-      try {
-        await client.ConnectAsync(new Uri("ws://127.0.0.1:4455"), "ahrEYXzXKytCIlpI").ConfigureAwait(false);
-      }
-      catch (Exception ex) {
-        source.TrySetException(ex);
-      }
-      await source.Task.ConfigureAwait(false);
-    }
-
-    [Fact]
-    public async Task TestAgainstMockServerAsync() {
+    public async Task TestSystemNetSocketsAsync() {
       var cancellation = new CancellationTokenSource();
       try {
         var tasks = new[] {
           RunMockServerAsync(cancellation.Token),
-          RunClientAsync(new Uri("ws://127.0.0.1:44550"), cancellation.Token),
+          CommonFlow.RunClientAsync(new Uri("ws://127.0.0.1:44550"), cancellation: cancellation.Token),
         };
         await await Task.WhenAny(tasks).ConfigureAwait(false);
         await Task.WhenAll(tasks).ConfigureAwait(false);
@@ -69,44 +39,21 @@ namespace ObsDotnetSocket.Test {
       }
     }
 
-    private static async Task RunClientAsync(Uri uri, CancellationToken token) {
-      var client = new ObsClientSocket();
-      await client.ConnectAsync(uri, "ahrEYXzXKytCIlpI", cancellation: token).ConfigureAwait(false);
-      var events = Channel.CreateUnbounded<IEvent>();
-      var source = new TaskCompletionSource<IEvent>();
-      client.Event += (@event) => {
-        _ = events.Writer.WriteAsync(@event);
-      };
-      client.StudioModeStateChanged += (@event) => {
-        _ = events.Writer.WriteAsync(@event);
-      };
-
-      var response = await client.RequestAsync(new RawRequest() {
-        RequestId = "2521a51c-7040-4830-8181-492ab5477545",
-        RequestType = "GetStudioModeEnabled"
-      }, cancellation: token).ConfigureAwait(false);
-      if (response is not GetStudioModeEnabledResponse studioMode
-          || studioMode.RequestStatus.Code != RequestStatusCode.Success) {
-        Assert.Fail("Did not parse the request");
-        throw new Exception();
+    [Fact]
+    public async Task TestWebSocket4NetAsync() {
+      var cancellation = new CancellationTokenSource();
+      try {
+        var tasks = new[] {
+          RunMockServerAsync(cancellation.Token),
+          CommonFlow.RunClientAsync(new Uri("ws://127.0.0.1:44550"), new WebSocket4NetSocket(), cancellation: cancellation.Token),
+        };
+        await await Task.WhenAny(tasks).ConfigureAwait(false);
+        await Task.WhenAll(tasks).ConfigureAwait(false);
       }
-
-      await client.SetStudioModeEnabledAsync(!studioMode.StudioModeEnabled).ConfigureAwait(false);
-
-      var @event = await events.Reader.ReadAsync(token).ConfigureAwait(false);
-      if (@event is not StudioModeStateChanged studio) {
-        Assert.Fail("Type not converted");
-        throw new Exception();
+      catch {
+        cancellation.Cancel();
+        throw;
       }
-      @event = await events.Reader.ReadAsync(token).ConfigureAwait(false);
-      if (@event is not StudioModeStateChanged) {
-        Assert.Fail("Type not converted");
-        throw new Exception();
-      }
-      Assert.Equal(!studioMode.StudioModeEnabled, studio.StudioModeEnabled);
-      Assert.Equal(0, events.Reader.Count);
-
-      await client.CloseAsync().ConfigureAwait(false);
     }
 
     private static Task RunMockServerAsync(CancellationToken token) {
@@ -128,9 +75,10 @@ namespace ObsDotnetSocket.Test {
       token.ThrowIfCancellationRequested();
 
       Assert.True(context.Request.IsWebSocketRequest);
-      Assert.Equal("obswebsocket.msgpack", context.Request.Headers["Sec-WebSocket-Protocol"]);
+      string subProtocol = "obswebsocket.msgpack";
+      Assert.Equal(subProtocol, context.Request.Headers["Sec-WebSocket-Protocol"]);
 
-      var webSocketContext = await context.AcceptWebSocketAsync(null).ConfigureAwait(false);
+      var webSocketContext = await context.AcceptWebSocketAsync(subProtocol).ConfigureAwait(false);
       token.ThrowIfCancellationRequested();
 
       using var socket = webSocketContext.WebSocket;

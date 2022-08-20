@@ -53,7 +53,7 @@ namespace ObsDotnetSocket {
       };
       await _socket.SendAsync(identify, token).ConfigureAwait(false);
 
-      var identified = await _socket.ReceiveAsync(token);
+      var identified = await _socket.ReceiveAsync(token).ConfigureAwait(false) as Identified;
       if (identified == null) {
         var closeMessage = _socket.CloseMessage;
         throw new AuthenticationFailureException(closeMessage?.CloseStatus, closeMessage?.CloseStatusDescription ?? "Cannot read authentication response");

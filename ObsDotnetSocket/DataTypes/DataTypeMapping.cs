@@ -79,7 +79,7 @@ namespace ObsDotnetSocket.DataTypes {
       typeof(StudioModeStateChanged),
     }.ToDictionary(t => t.Name, t => t);
 
-    internal static readonly Dictionary<string, (Type, Type)> RequestToTypes = new (Type, Type)[] {
+    internal static readonly Dictionary<string, (Type Request, Type Response)> RequestToTypes = new (Type, Type)[] {
       // General Requests
       new (typeof(GetVersion), typeof(GetVersionResponse)),
       new (typeof(GetStats), typeof(GetStatsResponse)),

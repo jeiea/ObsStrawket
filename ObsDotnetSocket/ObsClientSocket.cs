@@ -1,6 +1,7 @@
 namespace ObsDotnetSocket {
   using ObsDotnetSocket.DataTypes;
   using ObsDotnetSocket.DataTypes.Predefineds;
+  using ObsDotnetSocket.WebSocket;
   using System;
   using System.Collections.Generic;
   using System.Threading;
@@ -94,8 +95,8 @@ namespace ObsDotnetSocket {
 
     public bool IsConnected { get => _clientSocket.IsConnected; }
 
-    public ObsClientSocket() {
-      _clientSocket = new ClientSocket();
+    public ObsClientSocket(IClientWebSocket? socket = null) {
+      _clientSocket = new ClientSocket(socket);
       _clientSocket.Event += Dispatch;
     }
 

@@ -8,21 +8,23 @@ namespace ObsDotnetSocket.Serialization {
 
     public IRequestResponse Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
       string requestType = FormatterUtil.SeekByKey(reader, "requestType").ReadString();
-      string requestId = FormatterUtil.SeekByKey(reader, "requestId").ReadString();
-      var peeker = FormatterUtil.SeekByKey(reader, "requestStatus");
-      var requestStatus = MessagePackSerializer.Deserialize<RequestStatus>(ref peeker, options);
-      peeker = FormatterUtil.SeekByKey(reader, "responseData");
-
-      var data = DataTypeMapping.RequestToTypes.TryGetValue(requestType, out var type)
-        ? (MessagePackSerializer.Deserialize(type.Item2, ref peeker, options) as IRequestResponse)!
-        : MessagePackSerializer.Deserialize<RequestResponse>(ref peeker, options);
-      if (data is RequestResponse response) {
-        response.RequestId = requestId;
-        response.RequestStatus = requestStatus;
+      if (!DataTypeMapping.RequestToTypes.TryGetValue(requestType, out var type)) {
+        return MessagePackSerializer.Deserialize<RawRequestResponse>(ref reader, options);
       }
 
+      var peeker = reader.CreatePeekReader();
+      if (!FormatterUtil.SeekByKey(ref peeker, "responseData")) {
+        return MessagePackSerializer.Deserialize<RawRequestResponse>(ref reader, options);
+      }
+
+      var response = (MessagePackSerializer.Deserialize(type.Response, ref peeker, options) as RequestResponse)!;
+      response.RequestId = FormatterUtil.SeekByKey(reader, "requestId").ReadString();
+      peeker = FormatterUtil.SeekByKey(reader, "requestStatus");
+      response.RequestStatus = MessagePackSerializer.Deserialize<RequestStatus>(ref peeker, options);
+
       reader.Skip();
-      return data;
+
+      return response;
     }
 
     public void Serialize(ref MessagePackWriter writer, IRequestResponse value, MessagePackSerializerOptions options) {

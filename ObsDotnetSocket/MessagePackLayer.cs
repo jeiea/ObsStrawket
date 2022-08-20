@@ -57,9 +57,9 @@ namespace ObsDotnetSocket {
       long length = _sendBuffer.Length;
       foreach (var item in readOnlySequence) {
         position += item.Length;
-        bool isEnd = position >= length;
+        bool isContinued = position < length;
         token.ThrowIfCancellationRequested();
-        await _socket!.SendAsync(item, MessageType.Binary, isEnd, token).ConfigureAwait(false);
+        await _socket!.SendAsync(item, MessageType.Binary, isContinued, token).ConfigureAwait(false);
       }
     }
 
