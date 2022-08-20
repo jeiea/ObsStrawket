@@ -911,7 +911,7 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
     /// Array of inputs<br />
     /// </summary>
     [Key("inputs")]
-    public List<Dictionary<string, object?>> Inputs { get; set; } = new();
+    public List<Input> Inputs { get; set; } = new();
   }
 
   /// <summary>
