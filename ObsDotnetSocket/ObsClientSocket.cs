@@ -84,7 +84,7 @@ namespace ObsDotnetSocket {
     public event Action<StudioModeStateChanged> StudioModeStateChanged = delegate { };
     #endregion
 
-    public event Action<WebSocketCloseStatus, string> Closed {
+    public event Action<object> Closed {
       add => _clientSocket.Closed += value;
       remove => _clientSocket.Closed -= value;
     }

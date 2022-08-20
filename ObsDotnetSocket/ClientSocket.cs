@@ -10,7 +10,7 @@ namespace ObsDotnetSocket {
 
   public class ClientSocket : IDisposable {
     public event Action<IEvent> Event = delegate { };
-    public event Action<WebSocketCloseStatus, string> Closed = delegate { };
+    public event Action<object> Closed = delegate { };
 
     private const int _supportedRpcVersion = 1;
 
@@ -87,7 +87,7 @@ namespace ObsDotnetSocket {
             _requests.Clear();
             _cancellation.Cancel();
             if (_clientWebSocket.CloseStatus is WebSocketCloseStatus status) {
-              Closed.Invoke(status, _clientWebSocket.CloseStatusDescription);
+              Closed.Invoke($"{status}: {_clientWebSocket.CloseStatusDescription}");
             }
             return;
           }

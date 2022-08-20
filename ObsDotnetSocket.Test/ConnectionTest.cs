@@ -3,11 +3,14 @@ namespace ObsDotnetSocket.Test {
   using ObsDotnetSocket.DataTypes;
   using ObsDotnetSocket.DataTypes.Predefineds;
   using ObsDotnetSocket.Serialization;
+  using System;
+  using System.Linq;
   using System.Net;
   using System.Net.WebSockets;
-  using System.Reflection;
   using System.Text.RegularExpressions;
+  using System.Threading;
   using System.Threading.Channels;
+  using System.Threading.Tasks;
   using Xunit;
   using Xunit.Abstractions;
 
@@ -29,13 +32,16 @@ namespace ObsDotnetSocket.Test {
       methods = methods.Where(x => x.Name == nameof(MessagePackSerializer.SerializeToJson)).ToList();
       var method = methods[1];
       var client = new ObsClientSocket();
-      var source = new TaskCompletionSource();
+      var source = new TaskCompletionSource<object?>();
       client.Event += (@event) => {
-        var result = method.MakeGenericMethod(@event.GetType()).Invoke(@event, new object[] { @event, MessagePackSerializerOptions.Standard.WithResolver(OpCodeMessageResolver.Instance), default(CancellationToken) });
+        object result = method.MakeGenericMethod(@event.GetType()).Invoke(@event, new object[] {
+          @event,
+          MessagePackSerializerOptions.Standard.WithResolver(OpCodeMessageResolver.Instance), default(CancellationToken)
+        });
         _output.WriteLine($"{result}");
       };
-      client.Closed += () => {
-        source.SetResult();
+      client.Closed += (reason) => {
+        source.SetResult(reason);
       };
       try {
         await client.ConnectAsync(new Uri("ws://127.0.0.1:4455"), "ahrEYXzXKytCIlpI").ConfigureAwait(false);
@@ -129,7 +135,7 @@ namespace ObsDotnetSocket.Test {
 
       using var socket = webSocketContext.WebSocket;
       var binary = WebSocketMessageType.Binary;
-      await socket.SendAsync(MessagePackSerializer.ConvertFromJson(@"{
+      await socket.SendAsync(new ArraySegment<byte>(MessagePackSerializer.ConvertFromJson(@"{
   ""op"": 0,
   ""d"": {
     ""obsWebSocketVersion"": ""5.0.1"",
@@ -139,7 +145,7 @@ namespace ObsDotnetSocket.Test {
       ""salt"": ""lM1GncleQOaCu9lT1yeUZhFYnqhsLLP1G5lAGo3ixaI=""
     }
   }
-}", cancellationToken: token), binary, true, token).ConfigureAwait(false);
+}", cancellationToken: token)), binary, true, token).ConfigureAwait(false);
       token.ThrowIfCancellationRequested();
 
       await socket.ReceiveAsync(buffer, token).ConfigureAwait(false);
@@ -154,12 +160,12 @@ namespace ObsDotnetSocket.Test {
   }
 }", json);
 
-      await socket.SendAsync(MessagePackSerializer.ConvertFromJson(@"{
+      await socket.SendAsync(new ArraySegment<byte>(MessagePackSerializer.ConvertFromJson(@"{
   ""op"": 2,
   ""d"": {
     ""negotiatedRpcVersion"": 1
   }
-}", cancellationToken: token), binary, true, token).ConfigureAwait(false);
+}", cancellationToken: token)), binary, true, token).ConfigureAwait(false);
       token.ThrowIfCancellationRequested();
 
       await socket.ReceiveAsync(buffer, token).ConfigureAwait(false);
@@ -176,7 +182,7 @@ namespace ObsDotnetSocket.Test {
 }".Replace("{guid}", guid), json);
 
       // In real, op follows d.
-      await socket.SendAsync(MessagePackSerializer.ConvertFromJson(@"{
+      await socket.SendAsync(new ArraySegment<byte>(MessagePackSerializer.ConvertFromJson(@"{
   ""d"": {
     ""requestType"": ""GetStudioModeEnabled"",
     ""requestId"": ""{guid}"",
@@ -190,7 +196,7 @@ namespace ObsDotnetSocket.Test {
     }
   },
   ""op"": 7
-}".Replace("{guid}", guid), cancellationToken: token), binary, true, token).ConfigureAwait(false);
+}".Replace("{guid}", guid), cancellationToken: token)), binary, true, token).ConfigureAwait(false);
       token.ThrowIfCancellationRequested();
 
       await socket.ReceiveAsync(buffer, token).ConfigureAwait(false);
@@ -208,16 +214,16 @@ namespace ObsDotnetSocket.Test {
   }
 }".Replace("{guid}", guid), json);
 
-      await socket.SendAsync(MessagePackSerializer.ConvertFromJson(@"{
-        ""op"": 5,
-        ""d"": {
-          ""eventType"": ""StudioModeStateChanged"",
-          ""eventIntent"": 1,
-          ""eventData"": {
-            ""studioModeEnabled"": true,
-          }
-        }
-      }", cancellationToken: token), binary, true, token).ConfigureAwait(false);
+      await socket.SendAsync(new ArraySegment<byte>(MessagePackSerializer.ConvertFromJson(@"{
+  ""op"": 5,
+  ""d"": {
+    ""eventType"": ""StudioModeStateChanged"",
+    ""eventIntent"": 1,
+    ""eventData"": {
+      ""studioModeEnabled"": true,
+    }
+  }
+}", cancellationToken: token)), binary, true, token).ConfigureAwait(false);
       token.ThrowIfCancellationRequested();
 
       await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, token).ConfigureAwait(false);
