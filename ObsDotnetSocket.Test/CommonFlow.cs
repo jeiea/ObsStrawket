@@ -46,6 +46,14 @@ namespace ObsDotnetSocket.Test {
       var directory = await client.GetRecordDirectoryAsync().ConfigureAwait(false);
       Assert.True(Directory.Exists(directory.RecordDirectory));
 
+      await client.StartRecordAsync().ConfigureAwait(false);
+      await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
+      await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
+      var recording = await client.StopRecordAsync().ConfigureAwait(false);
+      await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
+      await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
+      Assert.True(File.Exists(recording.OutputPath));
+
       await client.CloseAsync().ConfigureAwait(false);
     }
 

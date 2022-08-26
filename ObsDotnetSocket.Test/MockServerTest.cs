@@ -230,6 +230,100 @@ namespace ObsDotnetSocket.Test {
   },
   ""op"": 7
 }".Replace("{guid}", guid)).ConfigureAwait(false);
+
+
+      guid = await session.ReceiveAsync(@"{
+  ""d"": {
+    ""requestData"": [],
+    ""requestId"": ""{guid}"",
+    ""requestType"": ""StartRecord""
+  },
+  ""op"": 6
+}").ConfigureAwait(false);
+
+      await session.SendAsync(@"{
+  ""op"": 7,
+  ""d"": {
+    ""requestId"": ""{guid}"",
+    ""requestStatus"": {
+      ""code"": 100,
+      ""result"": true
+    },
+    ""requestType"": ""StartRecord""
+  }
+}".Replace("{guid}", guid)).ConfigureAwait(false);
+      await session.SendAsync(@"{
+  ""d"": {
+    ""eventData"": {
+      ""outputActive"": false,
+      ""outputPath"": null,
+      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STARTING""
+    },
+    ""eventIntent"": 64,
+    ""eventType"": ""RecordStateChanged""
+  },
+  ""op"": 5
+}").ConfigureAwait(false);
+      await session.SendAsync(@"{
+  ""d"": {
+    ""eventData"": {
+      ""outputActive"": true,
+      ""outputPath"": ""C:\\Windows\\System32\\notepad.exe"",
+      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STARTED""
+    },
+    ""eventIntent"": 64,
+    ""eventType"": ""RecordStateChanged""
+  },
+  ""op"": 5
+}").ConfigureAwait(false);
+
+      guid = await session.ReceiveAsync(@"{
+  ""op"": 6,
+  ""d"": {
+    ""requestId"": ""{guid}"",
+    ""requestType"": ""StopRecord""
+  }
+}").ConfigureAwait(false);
+
+      await session.SendAsync(@"{
+  ""d"": {
+    ""requestId"": ""{guid}"",
+    ""requestStatus"": {
+      ""code"": 100,
+      ""result"": true
+    },
+    ""requestType"": ""StopRecord"",
+    ""responseData"": {
+      ""outputPath"": ""C:\\Windows\\System32\\notepad.exe""
+    }
+  },
+  ""op"": 7
+}".Replace("{guid}", guid)).ConfigureAwait(false);
+      await session.SendAsync(@"{
+  ""d"": {
+    ""eventData"": {
+      ""outputActive"": false,
+      ""outputPath"": null,
+      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STOPPING""
+    },
+    ""eventIntent"": 64,
+    ""eventType"": ""RecordStateChanged""
+  },
+  ""op"": 5
+}").ConfigureAwait(false);
+      await session.SendAsync(@"{
+  ""d"": {
+    ""eventData"": {
+      ""outputActive"": false,
+      ""outputPath"": ""C:\\Windows\\System32\\notepad.exe"",
+      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STOPPED""
+    },
+    ""eventIntent"": 64,
+    ""eventType"": ""RecordStateChanged""
+  },
+  ""op"": 5
+}").ConfigureAwait(false);
+
       await webSocketContext.WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, token).ConfigureAwait(false);
 
       token.ThrowIfCancellationRequested();
