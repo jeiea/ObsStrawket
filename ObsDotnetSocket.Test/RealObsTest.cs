@@ -24,12 +24,12 @@ namespace ObsDotnetSocket.Test {
 
     [Fact]
     public async Task TestSystemNetWebSocketsAsync() {
-      await CommonFlow.RunClientAsync(new Uri("ws://127.0.0.1:4455")).ConfigureAwait(false);
+      await new CommonFlow().RunClientAsync(new Uri("ws://127.0.0.1:4455")).ConfigureAwait(false);
     }
 
     [Fact]
     public async Task TestWebSocket4NetAsync() {
-      await CommonFlow.RunClientAsync(new Uri("ws://127.0.0.1:4455"), new WebSocket4NetSocket()).ConfigureAwait(false);
+      await new CommonFlow().RunClientAsync(new Uri("ws://127.0.0.1:4455"), new WebSocket4NetSocket()).ConfigureAwait(false);
     }
 
     [Fact]

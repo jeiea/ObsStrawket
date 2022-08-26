@@ -11,15 +11,12 @@ using System.Threading.Channels;
 using ObsDotnetSocket.WebSocket;
 
 namespace ObsDotnetSocket.Test {
-  internal static class CommonFlow {
-    public static async Task RunClientAsync(Uri uri, IClientWebSocket? socket = null, CancellationToken cancellation = default) {
+  internal class CommonFlow {
+    private readonly Channel<IEvent> _events = Channel.CreateUnbounded<IEvent>();
+
+    public async Task RunClientAsync(Uri uri, IClientWebSocket? socket = null, CancellationToken cancellation = default) {
       var client = new ObsClientSocket(socket);
       await client.ConnectAsync(uri, "ahrEYXzXKytCIlpI", cancellation: cancellation).ConfigureAwait(false);
-      var events = Channel.CreateUnbounded<IEvent>();
-      var source = new TaskCompletionSource<IEvent>();
-      client.StudioModeStateChanged += (@event) => {
-        _ = events.Writer.WriteAsync(@event);
-      };
 
       var response = await client.RequestAsync(new RawRequest() {
         RequestId = "2521a51c-7040-4830-8181-492ab5477545",
@@ -31,20 +28,27 @@ namespace ObsDotnetSocket.Test {
         throw new Exception();
       }
 
+
+      client.Event += QueueEvent;
+      client.StudioModeStateChanged += QueueEvent;
       await client.SetStudioModeEnabledAsync(!studioMode.StudioModeEnabled).ConfigureAwait(false);
 
-      IEvent ev;
-
-      ev = await events.Reader.ReadAsync(cancellation).ConfigureAwait(false);
-      if (ev is not StudioModeStateChanged studio) {
-        Assert.Fail("Type not converted");
-        throw new Exception();
-      }
-
+      var studio = await ReadEventAsync<StudioModeStateChanged>().ConfigureAwait(false);
       Assert.Equal(!studioMode.StudioModeEnabled, studio.StudioModeEnabled);
-      Assert.Equal(0, events.Reader.Count);
+      studio = await ReadEventAsync<StudioModeStateChanged>().ConfigureAwait(false);
+      Assert.Equal(!studioMode.StudioModeEnabled, studio.StudioModeEnabled);
+      Assert.Equal(0, _events.Reader.Count);
 
       await client.CloseAsync().ConfigureAwait(false);
+    }
+
+    private void QueueEvent(IEvent @event) {
+      _ = _events.Writer.WriteAsync(@event);
+    }
+
+    private async Task<T> ReadEventAsync<T>() where T : class {
+      var ev = await _events.Reader.ReadAsync().ConfigureAwait(false);
+      return (ev as T)!;
     }
   }
 }

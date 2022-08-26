@@ -28,7 +28,7 @@ namespace ObsDotnetSocket.Test {
       try {
         var tasks = new[] {
           RunMockServerAsync(cancellation.Token),
-          CommonFlow.RunClientAsync(new Uri("ws://127.0.0.1:44550"), cancellation: cancellation.Token),
+          new CommonFlow().RunClientAsync(new Uri("ws://127.0.0.1:44550"), cancellation: cancellation.Token),
         };
         await await Task.WhenAny(tasks).ConfigureAwait(false);
         await Task.WhenAll(tasks).ConfigureAwait(false);
@@ -45,7 +45,7 @@ namespace ObsDotnetSocket.Test {
       try {
         var tasks = new[] {
           RunMockServerAsync(cancellation.Token),
-          CommonFlow.RunClientAsync(new Uri("ws://127.0.0.1:44550"), new WebSocket4NetSocket(), cancellation: cancellation.Token),
+          new CommonFlow().RunClientAsync(new Uri("ws://127.0.0.1:44550"), new WebSocket4NetSocket(), cancellation: cancellation.Token),
         };
         await await Task.WhenAny(tasks).ConfigureAwait(false);
         await Task.WhenAll(tasks).ConfigureAwait(false);
