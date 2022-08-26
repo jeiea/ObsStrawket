@@ -1,16 +1,9 @@
 namespace ObsDotnetSocket.Test {
-  using MessagePack;
-  using ObsDotnetSocket.DataTypes;
-  using ObsDotnetSocket.DataTypes.Predefineds;
-  using ObsDotnetSocket.Serialization;
   using ObsDotnetSocket.WebSocket4Net;
   using System;
-  using System.Linq;
   using System.Net;
   using System.Net.WebSockets;
-  using System.Text.RegularExpressions;
   using System.Threading;
-  using System.Threading.Channels;
   using System.Threading.Tasks;
   using Xunit;
   using Xunit.Abstractions;
@@ -69,8 +62,7 @@ namespace ObsDotnetSocket.Test {
     private static async Task RunOneshotServerAsync(HttpListener httpListener, CancellationToken token) {
       token.ThrowIfCancellationRequested();
 
-      var buffer = new ArraySegment<byte>(new byte[1024]);
-
+      using var _ = httpListener;
       var context = await httpListener.GetContextAsync().ConfigureAwait(false);
       token.ThrowIfCancellationRequested();
 
@@ -81,9 +73,8 @@ namespace ObsDotnetSocket.Test {
       var webSocketContext = await context.AcceptWebSocketAsync(subProtocol).ConfigureAwait(false);
       token.ThrowIfCancellationRequested();
 
-      using var socket = webSocketContext.WebSocket;
-      var binary = WebSocketMessageType.Binary;
-      await socket.SendAsync(new ArraySegment<byte>(MessagePackSerializer.ConvertFromJson(@"{
+      using var session = new MockServerSession(webSocketContext.WebSocket, token);
+      await session.SendAsync(@"{
   ""op"": 0,
   ""d"": {
     ""obsWebSocketVersion"": ""5.0.1"",
@@ -93,44 +84,35 @@ namespace ObsDotnetSocket.Test {
       ""salt"": ""lM1GncleQOaCu9lT1yeUZhFYnqhsLLP1G5lAGo3ixaI=""
     }
   }
-}", cancellationToken: token)), binary, true, token).ConfigureAwait(false);
-      token.ThrowIfCancellationRequested();
+}").ConfigureAwait(false);
 
-      await socket.ReceiveAsync(buffer, token).ConfigureAwait(false);
-      token.ThrowIfCancellationRequested();
-      string json = MessagePackSerializer.ConvertToJson(buffer, cancellationToken: token);
-      TestUtil.AssertJsonEqual(@"{
+      await session.ReceiveAsync(@"{
   ""op"": 1,
   ""d"": {
     ""rpcVersion"": 1,
     ""authentication"": ""J8rNSuYuYOLlFbHzDw8IHA8lTjMgL29Mq/3lFvl1sJI="",
     ""eventSubscriptions"": 2047
   }
-}", json);
+}");
 
-      await socket.SendAsync(new ArraySegment<byte>(MessagePackSerializer.ConvertFromJson(@"{
+      await session.SendAsync(@"{
   ""op"": 2,
   ""d"": {
     ""negotiatedRpcVersion"": 1
   }
-}", cancellationToken: token)), binary, true, token).ConfigureAwait(false);
-      token.ThrowIfCancellationRequested();
+}").ConfigureAwait(false);
 
-      await socket.ReceiveAsync(buffer, token).ConfigureAwait(false);
-      token.ThrowIfCancellationRequested();
-      json = MessagePackSerializer.ConvertToJson(buffer, cancellationToken: token);
-      string guid = Regex.Match(json, @"[0-9a-f]{8}-[0-9a-f]{4}[^""]*").Value;
-      TestUtil.AssertJsonEqual(@"{
+      string? guid = await session.ReceiveAsync(@"{
   ""op"": 6,
   ""d"": {
     ""requestType"": ""GetStudioModeEnabled"",
     ""requestId"": ""{guid}"",
     ""requestData"":null
   }
-}".Replace("{guid}", guid), json);
+}").ConfigureAwait(false);
 
       // In real, op follows d.
-      await socket.SendAsync(new ArraySegment<byte>(MessagePackSerializer.ConvertFromJson(@"{
+      await session.SendAsync(@"{
   ""d"": {
     ""requestType"": ""GetStudioModeEnabled"",
     ""requestId"": ""{guid}"",
@@ -144,14 +126,9 @@ namespace ObsDotnetSocket.Test {
     }
   },
   ""op"": 7
-}".Replace("{guid}", guid), cancellationToken: token)), binary, true, token).ConfigureAwait(false);
-      token.ThrowIfCancellationRequested();
+}".Replace("{guid}", guid)).ConfigureAwait(false);
 
-      await socket.ReceiveAsync(buffer, token).ConfigureAwait(false);
-      token.ThrowIfCancellationRequested();
-      json = MessagePackSerializer.ConvertToJson(buffer, cancellationToken: token);
-      guid = Regex.Match(json, @"[0-9a-f]{8}-[0-9a-f]{4}[^""]*").Value;
-      TestUtil.AssertJsonEqual(@"{
+      guid = await session.ReceiveAsync(@"{
   ""op"": 6,
   ""d"": {
     ""requestType"": ""SetStudioModeEnabled"",
@@ -160,9 +137,9 @@ namespace ObsDotnetSocket.Test {
       ""studioModeEnabled"": true
     }
   }
-}".Replace("{guid}", guid), json);
+}").ConfigureAwait(false);
 
-      await socket.SendAsync(new ArraySegment<byte>(MessagePackSerializer.ConvertFromJson(@"{
+      await session.SendAsync(@"{
   ""op"": 5,
   ""d"": {
     ""eventType"": ""StudioModeStateChanged"",
@@ -171,12 +148,91 @@ namespace ObsDotnetSocket.Test {
       ""studioModeEnabled"": true,
     }
   }
-}", cancellationToken: token)), binary, true, token).ConfigureAwait(false);
-      token.ThrowIfCancellationRequested();
+}").ConfigureAwait(false);
 
-      await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, token).ConfigureAwait(false);
-      token.ThrowIfCancellationRequested();
+      guid = await session.ReceiveAsync(@"{
+  ""op"": 6,
+  ""d"": {
+    ""requestType"": ""GetSpecialInputs"",
+    ""requestId"": ""{guid}""
+  }
+}").ConfigureAwait(false);
 
+      await session.SendAsync(@"{
+  ""d"": {
+    ""requestType"": ""GetSpecialInputs"",
+    ""requestId"": ""{guid}"",
+    ""requestStatus"": {
+      ""code"": 100,
+      ""result"": true
+    },
+    ""responseData"": {
+       ""desktop1"": ""Desktop Audio"",
+       ""desktop2"": null,
+       ""mic1"": ""Microphone/Aux"",
+       ""mic2"": null,
+       ""mic3"": null,
+       ""mic4"": null
+    }
+  },
+  ""op"": 7
+}".Replace("{guid}", guid)).ConfigureAwait(false);
+
+      guid = await session.ReceiveAsync(@"{
+  ""op"": 6,
+  ""d"": {
+    ""requestType"": ""GetInputSettings"",
+    ""requestId"": ""{guid}"",
+    ""requestData"": {
+      ""inputName"": ""Desktop Audio""
+    }
+  }
+}").ConfigureAwait(false);
+
+      await session.SendAsync(@"{
+  ""d"": {
+    ""requestType"": ""GetInputSettings"",
+    ""requestId"": ""{guid}"",
+    ""requestStatus"": {
+      ""code"": 100,
+      ""result"": true
+    },
+    ""responseData"": {
+      ""inputKind"": ""wasapi_output_capture"",
+      ""inputSettings"": {
+        ""device_id"": ""default"",
+        ""use_device_timing"": true
+      }
+    }
+  },
+  ""op"": 7
+}".Replace("{guid}", guid)).ConfigureAwait(false);
+
+      guid = await session.ReceiveAsync(@"{
+  ""op"": 6,
+  ""d"": {
+    ""requestType"": ""GetRecordDirectory"",
+    ""requestId"": ""{guid}""
+  }
+}").ConfigureAwait(false);
+
+      await session.SendAsync(@"{
+  ""d"": {
+    ""requestId"": ""{guid}"",
+    ""requestStatus"": {
+      ""code"": 100,
+      ""result"": true
+    },
+    ""requestType"": ""GetRecordDirectory"",
+    ""responseData"": {
+      ""recordDirectory"": ""C:\\Users""
+    }
+  },
+  ""op"": 7
+}".Replace("{guid}", guid)).ConfigureAwait(false);
+      await webSocketContext.WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, token).ConfigureAwait(false);
+
+      token.ThrowIfCancellationRequested();
       httpListener.Close();
     }
   }

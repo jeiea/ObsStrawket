@@ -136,7 +136,7 @@ namespace ObsDotnetSocket {
 
       TaskCompletionSource<RequestResponse>? waiter = null;
       bool willWaitResponse = DataTypeMapping.RequestToTypes.TryGetValue(request.RequestType, out var typeMapping)
-          && typeMapping.Item2 != typeof(RequestResponse);
+          && typeMapping.Response != typeof(RequestResponse);
       if (willWaitResponse) {
         waiter = new();
         _requests[guid] = waiter;

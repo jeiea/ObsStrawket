@@ -12,7 +12,7 @@ namespace ObsDotnetSocket.Serialization {
       var peeker = FormatterUtil.SeekByKey(reader, "responseData");
 
       var data = DataTypeMapping.RequestToTypes.TryGetValue(requestType, out var type)
-        ? (MessagePackSerializer.Deserialize(type.Item1, ref peeker, options) as IRequest)!
+        ? (MessagePackSerializer.Deserialize(type.Request, ref peeker, options) as IRequest)!
         : MessagePackSerializer.Deserialize<Request>(ref peeker, options);
       data.RequestId = requestId;
 
@@ -21,16 +21,22 @@ namespace ObsDotnetSocket.Serialization {
     }
 
     public void Serialize(ref MessagePackWriter writer, IRequest value, MessagePackSerializerOptions options) {
+      var type = value.GetType();
       if (value is not RawRequest) {
-        writer.WriteMapHeader(3);
+        bool isEmpty = DataTypeMapping.RequestToTypes.TryGetValue(type.Name, out var mapping) && mapping.IsRequestEmpty;
+        writer.WriteMapHeader(isEmpty ? 2 : 3);
         writer.Write("requestType");
         writer.Write(value.RequestType);
         writer.Write("requestId");
         writer.Write(value.RequestId);
+        if (isEmpty) {
+          return;
+        }
+
         writer.Write("requestData");
       }
 
-      MessagePackSerializer.Serialize(value.GetType(), ref writer, value, options);
+      MessagePackSerializer.Serialize(type, ref writer, value, options);
     }
   }
 }

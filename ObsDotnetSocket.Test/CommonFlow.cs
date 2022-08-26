@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Xunit;
 using System.Threading.Channels;
 using ObsDotnetSocket.WebSocket;
+using System.IO;
 
 namespace ObsDotnetSocket.Test {
   internal class CommonFlow {
@@ -28,16 +29,22 @@ namespace ObsDotnetSocket.Test {
         throw new Exception();
       }
 
-
       client.Event += QueueEvent;
       client.StudioModeStateChanged += QueueEvent;
       await client.SetStudioModeEnabledAsync(!studioMode.StudioModeEnabled).ConfigureAwait(false);
 
-      var studio = await ReadEventAsync<StudioModeStateChanged>().ConfigureAwait(false);
+      var studio = await ReadEventAsync<StudioModeStateChanged>(cancellation).ConfigureAwait(false);
       Assert.Equal(!studioMode.StudioModeEnabled, studio.StudioModeEnabled);
-      studio = await ReadEventAsync<StudioModeStateChanged>().ConfigureAwait(false);
+      studio = await ReadEventAsync<StudioModeStateChanged>(cancellation).ConfigureAwait(false);
       Assert.Equal(!studioMode.StudioModeEnabled, studio.StudioModeEnabled);
       Assert.Equal(0, _events.Reader.Count);
+
+      var specials = await client.GetSpecialInputsAsync(cancellation).ConfigureAwait(false);
+      var inputSettings = await client.GetInputSettingsAsync(specials.Desktop1!, cancellation).ConfigureAwait(false);
+      Assert.True(inputSettings.InputSettings.ContainsKey("device_id"), "device_id not found");
+
+      var directory = await client.GetRecordDirectoryAsync().ConfigureAwait(false);
+      Assert.True(Directory.Exists(directory.RecordDirectory));
 
       await client.CloseAsync().ConfigureAwait(false);
     }
@@ -46,9 +53,15 @@ namespace ObsDotnetSocket.Test {
       _ = _events.Writer.WriteAsync(@event);
     }
 
-    private async Task<T> ReadEventAsync<T>() where T : class {
-      var ev = await _events.Reader.ReadAsync().ConfigureAwait(false);
-      return (ev as T)!;
+    private async Task<T> ReadEventAsync<T>(CancellationToken cancellation = default) where T : class {
+      T? cast;
+      while (true) {
+        var ev = await _events.Reader.ReadAsync(cancellation).ConfigureAwait(false);
+        cast = ev as T;
+        if (cast != null) {
+          return cast;
+        }
+      }
     }
   }
 }

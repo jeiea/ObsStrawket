@@ -946,32 +946,32 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
     /// Name of the Desktop Audio input<br />
     /// </summary>
     [Key("desktop1")]
-    public string Desktop1 { get; set; } = "";
+    public string? Desktop1 { get; set; }
     /// <summary>
     /// Name of the Desktop Audio 2 input<br />
     /// </summary>
     [Key("desktop2")]
-    public string Desktop2 { get; set; } = "";
+    public string? Desktop2 { get; set; }
     /// <summary>
     /// Name of the Mic/Auxiliary Audio input<br />
     /// </summary>
     [Key("mic1")]
-    public string Mic1 { get; set; } = "";
+    public string? Mic1 { get; set; }
     /// <summary>
     /// Name of the Mic/Auxiliary Audio 2 input<br />
     /// </summary>
     [Key("mic2")]
-    public string Mic2 { get; set; } = "";
+    public string? Mic2 { get; set; }
     /// <summary>
     /// Name of the Mic/Auxiliary Audio 3 input<br />
     /// </summary>
     [Key("mic3")]
-    public string Mic3 { get; set; } = "";
+    public string? Mic3 { get; set; }
     /// <summary>
     /// Name of the Mic/Auxiliary Audio 4 input<br />
     /// </summary>
     [Key("mic4")]
-    public string Mic4 { get; set; } = "";
+    public string? Mic4 { get; set; }
   }
 
   /// <summary>
