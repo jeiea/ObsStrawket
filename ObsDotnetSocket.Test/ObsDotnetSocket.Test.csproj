@@ -31,7 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ObsDotnetSocket.WebSocket4Net\ObsDotnetSocket.WebSocket4Net.csproj" />
     <ProjectReference Include="..\ObsDotnetSocket\ObsDotnetSocket.csproj" />
   </ItemGroup>
 
