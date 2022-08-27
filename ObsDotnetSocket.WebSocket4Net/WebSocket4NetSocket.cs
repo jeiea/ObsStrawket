@@ -17,7 +17,7 @@ namespace ObsDotnetSocket.WebSocket4Net {
   public class WebSocket4NetSocket : IClientWebSocket {
     private readonly ClientOptions _options = new();
     private readonly List<ReadOnlyMemory<byte>> _pendingSend = new();
-    private Channel<EventArgs> _receivals = Channel.CreateUnbounded<EventArgs>();
+    private readonly Channel<EventArgs> _receivals = Channel.CreateUnbounded<EventArgs>();
     private CancellationTokenSource _cancellation = new();
     private Memory<byte>? _pendingReceival;
     private WebSocket? _socket;
@@ -26,6 +26,9 @@ namespace ObsDotnetSocket.WebSocket4Net {
     public IClientWebSocketOptions Options { get => _options; }
 
     public async Task ConnectAsync(Uri uri, CancellationToken cancellation = default) {
+      _cancellation.Cancel();
+      _cancellation.Dispose();
+      _socket?.Dispose();
       _cancellation = new();
 
       string subProtocol = _options.SubProtocols.FirstOrDefault();

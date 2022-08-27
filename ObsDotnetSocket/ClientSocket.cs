@@ -42,6 +42,11 @@ namespace ObsDotnetSocket {
       await _clientWebSocket.ConnectAsync(uri ?? MessagePackLayer.defaultUri, token).ConfigureAwait(false);
 
       var hello = (Hello)(await _socket.ReceiveAsync(token).ConfigureAwait(false))!;
+      if (hello == null)
+      {
+        var closeMessage = _socket.CloseMessage;
+        throw new Exception($"{closeMessage?.CloseStatus}: {closeMessage?.CloseStatusDescription ?? "Handshake failure"}");
+      }
       if (hello.RpcVersion > _supportedRpcVersion) {
         // TODO: Log
       }
@@ -73,9 +78,8 @@ namespace ObsDotnetSocket {
           _requests.Clear();
           _cancellation.Cancel();
           var closeMessage = _socket.CloseMessage;
-          if (closeMessage != null) {
-            Closed.Invoke($"{closeMessage.CloseStatus}: {closeMessage.CloseStatusDescription}");
-          }
+          string closeString = closeMessage == null ? "unknown reason" : $"{closeMessage?.CloseStatus}: {closeMessage.CloseStatusDescription}";
+          Closed.Invoke(closeString);
         }
         finally {
           _sendSemaphore.Release();
@@ -165,7 +169,7 @@ namespace ObsDotnetSocket {
     // Method for preventing crash in Unity by type isolation.
     // Type load occurs by method unit, thus this defers assembly load.
     private static IClientWebSocket GetSystemClientWebSocket() {
-      return new SystemClientWebSocket(new ClientWebSocket());
+      return new SystemClientWebSocket();
     }
 
     private static string? MakeOneTimePass(string? password, HelloAuthentication? auth) {

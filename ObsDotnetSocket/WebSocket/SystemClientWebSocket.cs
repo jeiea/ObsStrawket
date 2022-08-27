@@ -1,44 +1,39 @@
 namespace ObsDotnetSocket.WebSocket {
   using System;
+  using System.Collections.Generic;
+  using System.Linq;
   using System.Net.WebSockets;
   using System.Runtime.InteropServices;
   using System.Threading;
   using System.Threading.Tasks;
 
   internal class SystemClientWebSocket : SystemWebSocket, IClientWebSocket {
-    public SystemClientWebSocket(ClientWebSocket? socket = null) : base(socket ?? new ClientWebSocket()) {
-      Options = new ClientOptions(((ClientWebSocket)_webSocket).Options);
-    }
-
-    public IClientWebSocketOptions Options { get; private set; }
+    public IClientWebSocketOptions Options { get => _options; }
+    private ClientOptions _options = new();
 
     public Task ConnectAsync(Uri uri, CancellationToken cancellation = default) {
-      return ((ClientWebSocket)_webSocket).ConnectAsync(uri, cancellation);
+      _webSocket?.Dispose();
+      var socket = new ClientWebSocket();
+      socket.Options.AddSubProtocol(_options.SubProtocols.First());
+      _webSocket = socket;
+      return socket.ConnectAsync(uri, cancellation);
     }
 
     class ClientOptions : IClientWebSocketOptions {
-      private readonly ClientWebSocketOptions _options;
-
-      public ClientOptions(ClientWebSocketOptions options) {
-        _options = options;
-      }
+      public HashSet<string> SubProtocols { get; private set; } = new();
 
       public void AddSubProtocol(string subProtocol) {
-        _options.AddSubProtocol(subProtocol);
+        SubProtocols.Add(subProtocol);
       }
     }
   }
 
   internal class SystemWebSocket : IWebSocket {
-    protected readonly WebSocket _webSocket;
+    protected WebSocket? _webSocket;
     private bool _isDisposed;
 
-    public SystemWebSocket(WebSocket socket) {
-      _webSocket = socket;
-    }
-
     public Task SendAsync(ReadOnlyMemory<byte> memory, MessageType type, bool isContinued = false, CancellationToken cancellation = default) {
-      return _webSocket.SendAsync(GetSegment(memory), (WebSocketMessageType)(int)type, !isContinued, cancellation);
+      return _webSocket!.SendAsync(GetSegment(memory), (WebSocketMessageType)(int)type, !isContinued, cancellation);
     }
 
     public async Task<WebSocketReceival> ReceiveAsync(Memory<byte> buffer, CancellationToken cancellation = default) {
@@ -49,7 +44,7 @@ namespace ObsDotnetSocket.WebSocket {
     }
 
     public Task CloseAsync(int? code = null, string? reason = null, CancellationToken cancellation = default) {
-      return _webSocket.CloseAsync((WebSocketCloseStatus?)code ?? WebSocketCloseStatus.NormalClosure, reason, cancellation);
+      return _webSocket!.CloseAsync((WebSocketCloseStatus?)code ?? WebSocketCloseStatus.NormalClosure, reason, cancellation);
     }
 
     public void Dispose() {
