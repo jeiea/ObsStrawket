@@ -92,8 +92,6 @@ namespace ObsDotnetSocket {
     private readonly ClientSocket _clientSocket;
     private readonly ILogger? _logger;
 
-    public string? CloseDescription { get => _clientSocket.CloseDescription; }
-
     public bool IsConnected { get => _clientSocket.IsConnected; }
 
     public ObsClientSocket(ILogger? logger = null) {

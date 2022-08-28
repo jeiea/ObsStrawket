@@ -1,9 +1,13 @@
 namespace ObsDotnetSocket.Test {
   using System;
+  using System.Collections.Generic;
   using System.Diagnostics;
+  using System.Linq;
   using System.Net;
   using System.Net.WebSockets;
+  using System.Runtime.InteropServices;
   using System.Threading;
+  using System.Threading.Channels;
   using System.Threading.Tasks;
   using Xunit;
   using Xunit.Abstractions;
@@ -18,7 +22,7 @@ namespace ObsDotnetSocket.Test {
       _output = output;
     }
 
-    [Fact(Timeout = 1000)]
+    [Fact]
     public async Task TestAgainstMockServerAsync() {
       var cancellation = new CancellationTokenSource();
       try {
@@ -32,8 +36,65 @@ namespace ObsDotnetSocket.Test {
       }
     }
 
-    [Fact(Timeout = 30000)]
-    public async Task TestReconnectivityAsync() {
+    [Fact]
+    public async Task TestStressAsync() {
+      var cancellation = new CancellationTokenSource();
+      var token = cancellation.Token;
+      try {
+        HttpListener server;
+        var abort = Task.CompletedTask;
+        var client = new ObsClientSocket();
+        var connections = new List<bool>();
+        client.Closed += (o) => {
+          connections.Add(false);
+        };
+        server = RunMockServer(token);
+
+        async Task ConnectAsync() {
+          await client.ConnectAsync(_mockServerUri, Password, cancellation: token).ConfigureAwait(false);
+          connections.Add(true);
+        }
+
+        var tasks = new List<Task>();
+        for (int i = 0; i < 50; i++) {
+          await abort.ConfigureAwait(false);
+
+          tasks.Add(Task.Run(async () => {
+            try {
+              await ConnectAsync().ConfigureAwait(false);
+              var version = await client.GetVersionAsync(token).ConfigureAwait(false);
+              Assert.Contains("bmp", version.SupportedImageFormats);
+            }
+            catch (Exception ex) {
+              Debug.WriteLine(ex);
+            }
+          }));
+          tasks.Add(Task.Run(async () => {
+            try {
+              await client.CloseAsync();
+            }
+            catch (Exception ex) {
+              Debug.WriteLine(ex);
+            }
+          }));
+          await Task.Delay(i * 4).ConfigureAwait(false);
+        }
+        await Task.WhenAll(tasks).ConfigureAwait(false);
+
+        int open = connections.Where(x => x == true).Count();
+        int close = connections.Count - open;
+        Assert.True(Math.Abs(open - close) <= 1, "open and close count doesn't match");
+
+        server.Close();
+      }
+      catch {
+        cancellation.Cancel();
+        throw;
+      }
+    }
+
+    [Fact]
+    public async Task TestServerAbortAsync() {
       CancellationTokenSource cancellation = new();
       try {
         HttpListener server;
@@ -42,13 +103,13 @@ namespace ObsDotnetSocket.Test {
         client.Closed += (o) => {
           Debug.WriteLine(o);
         };
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 50; i++) {
           cancellation = new CancellationTokenSource();
           await abort.ConfigureAwait(false);
           Debug.WriteLine($"Session {i} start");
 
           server = RunMockServer(cancellation.Token);
-          int milliseconds = i * 2;
+          int milliseconds = i * 4;
           abort = Task.Run(async () => {
             await Task.Delay(milliseconds);
             server.Abort();
@@ -67,6 +128,7 @@ namespace ObsDotnetSocket.Test {
         await abort.ConfigureAwait(false);
         server = RunMockServer(cancellation.Token);
         await new CommonFlow().RunClientAsync(_mockServerUri, client, cancellation: cancellation.Token);
+        server.Close();
       }
       catch {
         cancellation.Cancel();

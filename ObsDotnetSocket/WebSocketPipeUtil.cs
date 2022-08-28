@@ -1,15 +1,43 @@
 namespace ObsDotnetSocket {
   using Microsoft;
+  using Microsoft.Extensions.Logging;
   using System;
+  using System.Buffers;
   using System.IO.Pipelines;
+  using System.Net.Sockets;
   using System.Net.WebSockets;
   using System.Runtime.InteropServices;
   using System.Threading;
   using System.Threading.Tasks;
 
+  class AutoPinBufferWriter<T> : IBufferWriter<T> {
+    private readonly IBufferWriter<T> _writer;
+    private MemoryHandle? _handle;
+
+    public AutoPinBufferWriter(IBufferWriter<T> writer) {
+      _writer = writer;
+    }
+
+    public void Advance(int count) {
+      _handle?.Dispose();
+      _writer.Advance(count);
+    }
+
+    public Memory<T> GetMemory(int sizeHint = 0) {
+      var memory = _writer.GetMemory(sizeHint);
+      _handle = memory.Pin();
+      return memory;
+    }
+
+    public Span<T> GetSpan(int sizeHint = 0) {
+      var span = _writer.GetSpan(sizeHint);
+      return span;
+    }
+  }
+
   static class WebSocketPipeUtil {
 
-    public static PipeReader UsePipeReader(WebSocket webSocket, int sizeHint = 1400, PipeOptions? pipeOptions = null, CancellationToken cancellation = default) {
+    public static PipeReader UsePipeReader(WebSocket webSocket, int sizeHint = 1400, PipeOptions? pipeOptions = null, ILogger? logger = null, CancellationToken cancellation = default) {
       Requires.NotNull(webSocket, nameof(webSocket));
 
       var pipe = new Pipe(pipeOptions ?? PipeOptions.Default);
@@ -20,10 +48,9 @@ namespace ObsDotnetSocket {
             var memory = pipe.Writer.GetMemory(sizeHint);
             using var handle = memory.Pin();
             var segment = GetSegment(memory.Slice(4));
-            var shifted = new ArraySegment<byte>(segment.Array, segment.Offset, segment.Count);
-            var readResult = await webSocket.ReceiveAsync(shifted, cancellation).ConfigureAwait(false);
+            var readResult = await webSocket.ReceiveAsync(segment, cancellation).ConfigureAwait(false);
 
-            if (readResult.Count == 0) {
+            if (webSocket.State == WebSocketState.CloseReceived && readResult.MessageType == WebSocketMessageType.Close) {
               // Tell the PipeReader that there's no more data coming
               await pipe.Writer.CompleteAsync().ConfigureAwait(false);
               break;
@@ -32,8 +59,10 @@ namespace ObsDotnetSocket {
             byte[] encodedLength = BitConverter.GetBytes(readResult.Count);
             encodedLength.CopyTo(memory.Span.Slice(0, 4));
 
+            logger?.LogInformation("Advance WebsocketRead {}", sizeof(int) + readResult.Count);
             pipe.Writer.Advance(sizeof(int) + readResult.Count);
             if (readResult.EndOfMessage) {
+              logger?.LogInformation("Flush WebsocketRead");
               var result = await pipe.Writer.FlushAsync(cancellation).ConfigureAwait(false);
               if (result.IsCompleted) {
                 break;
