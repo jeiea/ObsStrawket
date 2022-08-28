@@ -126,11 +126,8 @@ namespace ObsDotnetSocket {
       }
     }
 
-    public async Task<RequestResponse?> RequestAsync(IRequest request, CancellationToken? cancellation = null) {
-      using var source = CancellationTokenSource.CreateLinkedTokenSource(
-        cancellation ?? CancellationToken.None,
-        _cancellation.Token
-      );
+    public async Task<RequestResponse?> RequestAsync(IRequest request, CancellationToken cancellation = default) {
+      using var source = CancellationTokenSource.CreateLinkedTokenSource(cancellation, _cancellation.Token);
       var token = source.Token;
       token.ThrowIfCancellationRequested();
 
