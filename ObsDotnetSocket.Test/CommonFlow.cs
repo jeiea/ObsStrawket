@@ -16,8 +16,8 @@ namespace ObsDotnetSocket.Test {
     private readonly Channel<IEvent> _events = Channel.CreateUnbounded<IEvent>();
 
     public async Task RunClientAsync(Uri uri, ClientWebSocket? socket = null, CancellationToken cancellation = default) {
-      var client = new ObsClientSocket(socket);
-      await client.ConnectAsync(uri, "ahrEYXzXKytCIlpI", cancellation: cancellation).ConfigureAwait(false);
+      var client = new ObsClientSocket();
+      await client.ConnectAsync(uri, MockServerTest.Password, cancellation: cancellation).ConfigureAwait(false);
 
       var response = await client.RequestAsync(new RawRequest() {
         RequestId = "2521a51c-7040-4830-8181-492ab5477545",

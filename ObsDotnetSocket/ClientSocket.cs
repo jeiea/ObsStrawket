@@ -14,33 +14,37 @@ namespace ObsDotnetSocket {
 
     private const int _supportedRpcVersion = 1;
 
-    private readonly MessagePackLayer _socket;
-    private readonly ClientWebSocket _clientWebSocket;
     private readonly ConcurrentDictionary<string, TaskCompletionSource<RequestResponse>> _requests = new();
 
+    private MessagePackLayer _socket;
+    private ClientWebSocket _clientWebSocket = new();
     private CancellationTokenSource _cancellation = new();
 
     public string? CloseDescription { get => _clientWebSocket.CloseStatusDescription; }
 
     public bool IsConnected { get; private set; }
 
-    public ClientSocket(ClientWebSocket? client = null) {
-      _clientWebSocket = client ?? new ClientWebSocket();
-      _clientWebSocket.Options.AddSubProtocol("obswebsocket.msgpack");
-      _socket = new MessagePackLayer(_clientWebSocket);
+    public ClientSocket() {
+      _socket = new(_clientWebSocket);
     }
 
     public async Task ConnectAsync(
       Uri? uri = null,
       string? password = null,
       EventSubscription events = EventSubscription.All,
-      CancellationToken? cancellation = null
+      CancellationToken cancellation = default
     ) {
-      var token = cancellation ?? CancellationToken.None;
-      await _clientWebSocket.ConnectAsync(uri ?? MessagePackLayer.defaultUri, token).ConfigureAwait(false);
+      _socket.Dispose();
+      _clientWebSocket.Dispose();
+
+      _clientWebSocket = new ClientWebSocket();
+      _clientWebSocket.Options.AddSubProtocol("obswebsocket.msgpack");
+      _socket = new MessagePackLayer(_clientWebSocket);
+
+      await _clientWebSocket.ConnectAsync(uri ?? MessagePackLayer.defaultUri, cancellation).ConfigureAwait(false);
 
       _socket.RunLoop();
-      var hello = (Hello)(await _socket.ReceiveAsync(token).ConfigureAwait(false))!;
+      var hello = (Hello)(await _socket.ReceiveAsync(cancellation).ConfigureAwait(false))!;
       if (hello == null) {
         throw new Exception(GetCloseMessage() ?? "Handshake failure");
       }
@@ -53,9 +57,9 @@ namespace ObsDotnetSocket {
         EventSubscriptions = events,
         Authentication = MakeOneTimePass(password, hello.Authentication),
       };
-      await _socket.SendAsync(identify, token).ConfigureAwait(false);
+      await _socket.SendAsync(identify, cancellation).ConfigureAwait(false);
 
-      if (await _socket.ReceiveAsync(token).ConfigureAwait(false) is not Identified identified) {
+      if (await _socket.ReceiveAsync(cancellation).ConfigureAwait(false) is not Identified identified) {
         throw new AuthenticationFailureException(GetCloseMessage());
       }
 

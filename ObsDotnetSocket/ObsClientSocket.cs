@@ -95,8 +95,8 @@ namespace ObsDotnetSocket {
 
     public bool IsConnected { get => _clientSocket.IsConnected; }
 
-    public ObsClientSocket(ClientWebSocket? socket = null) {
-      _clientSocket = new ClientSocket(socket);
+    public ObsClientSocket() {
+      _clientSocket = new ClientSocket();
       _clientSocket.Event += Dispatch;
     }
 
@@ -104,7 +104,7 @@ namespace ObsDotnetSocket {
       Uri? uri = null,
       string? password = null,
       EventSubscription events = EventSubscription.All,
-      CancellationToken? cancellation = null
+      CancellationToken cancellation = default
     ) => _clientSocket.ConnectAsync(uri, password, events, cancellation);
 
     public Task CloseAsync() => _clientSocket.CloseAsync();

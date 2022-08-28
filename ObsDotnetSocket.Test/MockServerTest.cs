@@ -8,6 +8,9 @@ namespace ObsDotnetSocket.Test {
   using Xunit.Abstractions;
 
   public class MockServerTest {
+    private readonly Uri _mockServerUri = new("ws://127.0.0.1:44550");
+    public const string Password = "ahrEYXzXKytCIlpI";
+
     private readonly ITestOutputHelper _output;
 
     public MockServerTest(ITestOutputHelper output) {
@@ -15,15 +18,37 @@ namespace ObsDotnetSocket.Test {
     }
 
     [Fact]
-    public async Task TestSystemNetSocketsAsync() {
+    public async Task TestAgainstMockServerAsync() {
       var cancellation = new CancellationTokenSource();
       try {
         var tasks = new[] {
           RunMockServerAsync(cancellation.Token),
-          new CommonFlow().RunClientAsync(new Uri("ws://127.0.0.1:44550"), cancellation: cancellation.Token),
+          new CommonFlow().RunClientAsync(_mockServerUri, cancellation: cancellation.Token),
         };
         await await Task.WhenAny(tasks).ConfigureAwait(false);
         await Task.WhenAll(tasks).ConfigureAwait(false);
+      }
+      catch {
+        cancellation.Cancel();
+        throw;
+      }
+    }
+
+    [Fact]
+    public async Task TestReconnectivityAsync() {
+      var cancellation = new CancellationTokenSource();
+      try {
+        var server = RunMockServerAsync(cancellation.Token);
+        var client = new ObsClientSocket();
+        try {
+          await client.ConnectAsync(new Uri("ws://localhost:55595"), Password).ConfigureAwait(false);
+          Assert.Fail("Connecting to existent endpoint but no exception thrown");
+        }
+        catch (Exception ex) {
+          // expected
+        }
+
+        await client.ConnectAsync(_mockServerUri, Password).ConfigureAwait(false);
       }
       catch {
         cancellation.Cancel();
