@@ -80,7 +80,8 @@ namespace ObsDotnetSocket {
       try {
         while (!_cancellation.IsCancellationRequested) {
           var (input, output, cancellation) = await _serialQueue.Reader.ReadAsync(_cancellation.Token).ConfigureAwait(false);
-          var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellation, _cancellation.Token).Token;
+          using var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(cancellation, _cancellation.Token);
+          var linked = linkedSource.Token;
           var prefixer = new PrefixingBufferWriter<byte>(_writer.Writer, sizeof(int));
           MessagePackSerializer.Serialize(prefixer, input, _serialOptions, linked);
           byte[] prefix = BitConverter.GetBytes((int)prefixer.Length);
@@ -103,7 +104,9 @@ namespace ObsDotnetSocket {
     private async Task RunSendLoopAsync() {
       while (!_cancellation.IsCancellationRequested) {
         var (output, cancellation) = await _sendQueue.Reader.ReadAsync(_cancellation.Token).ConfigureAwait(false);
-        var linked = CancellationTokenSource.CreateLinkedTokenSource(_cancellation.Token, cancellation).Token;
+        using var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(cancellation, _cancellation.Token);
+        var linked = linkedSource.Token;
+
         int length = await ReadLengthAsync(_writer.Reader, linked).ConfigureAwait(false);
         var readResult = await _writer.Reader.ReadAtLeastAsync(length, linked).ConfigureAwait(false);
         try {

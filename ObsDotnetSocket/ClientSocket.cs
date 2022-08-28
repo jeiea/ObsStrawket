@@ -22,7 +22,7 @@ namespace ObsDotnetSocket {
 
     public string? CloseDescription { get => _clientWebSocket.CloseStatusDescription; }
 
-    public bool IsConnected { get; private set; }
+    public bool IsConnected { get => _clientWebSocket.State == WebSocketState.Open; }
 
     public ClientSocket() {
       _socket = new(_clientWebSocket);
@@ -63,7 +63,6 @@ namespace ObsDotnetSocket {
         throw new AuthenticationFailureException(GetCloseMessage());
       }
 
-      IsConnected = true;
       _cancellation = new();
       _ = RunReceiveLoopAsync();
     }
@@ -72,40 +71,39 @@ namespace ObsDotnetSocket {
       try {
         _socket.Dispose();
         await Task.WhenAny(_socket.SendTask, Task.Delay(1000)).ConfigureAwait(false);
-        try {
-          if (_clientWebSocket.State == WebSocketState.Open || _clientWebSocket.State == WebSocketState.CloseReceived) {
-            await _clientWebSocket.CloseOutputAsync(
-              WebSocketCloseStatus.NormalClosure, "Normal closure", _cancellation.Token
-            ).ConfigureAwait(false);
-          }
+        if (_clientWebSocket.State == WebSocketState.Open || _clientWebSocket.State == WebSocketState.CloseReceived) {
+          await _clientWebSocket.CloseOutputAsync(
+            WebSocketCloseStatus.NormalClosure, "Normal closure", _cancellation.Token
+          ).ConfigureAwait(false);
+        }
 
-          _requests.Clear();
-          _cancellation.Cancel();
-          Closed.Invoke(GetCloseMessage() ?? "Unknown close reason");
-        }
-        finally {
-          IsConnected = false;
-        }
+        _requests.Clear();
+        _cancellation.Cancel();
+        Closed.Invoke(GetCloseMessage() ?? "Unknown close reason");
       }
       catch (OperationCanceledException) { }
     }
 
     private async Task RunReceiveLoopAsync() {
       try {
-        while (!_cancellation.IsCancellationRequested) {
+        while (true) {
+          _cancellation.Token.ThrowIfCancellationRequested();
           var message = await _socket.ReceiveAsync(_cancellation.Token).ConfigureAwait(false);
-          if (_cancellation.IsCancellationRequested) {
-            break;
-          }
           if (message == null) {
             await CloseAsync().ConfigureAwait(false);
             return;
           }
 
+          _cancellation.Token.ThrowIfCancellationRequested();
           _ = Task.Run(() => Dispatch(message));
         }
       }
-      catch (OperationCanceledException) { }
+      catch (Exception ex) {
+        foreach (var request in _requests.Values) {
+          request.TrySetException(ex);
+        }
+        _requests.Clear();
+      }
     }
 
     private void Dispatch(IOpCodeMessage message) {
