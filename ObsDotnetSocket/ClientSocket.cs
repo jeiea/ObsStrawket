@@ -1,4 +1,5 @@
 namespace ObsDotnetSocket {
+  using Microsoft.Extensions.Logging;
   using ObsDotnetSocket.DataTypes;
   using System;
   using System.Collections.Concurrent;
@@ -19,12 +20,14 @@ namespace ObsDotnetSocket {
     private MessagePackLayer _socket;
     private ClientWebSocket _clientWebSocket = new();
     private CancellationTokenSource _cancellation = new();
+    private readonly ILogger? _logger;
 
     public string? CloseDescription { get => _clientWebSocket.CloseStatusDescription; }
 
     public bool IsConnected { get => _clientWebSocket.State == WebSocketState.Open; }
 
-    public ClientSocket() {
+    public ClientSocket(ILogger? logger = null) {
+      _logger = logger;
       _socket = new(_clientWebSocket);
     }
 
@@ -49,7 +52,7 @@ namespace ObsDotnetSocket {
         throw new Exception(GetCloseMessage() ?? "Handshake failure");
       }
       if (hello.RpcVersion > _supportedRpcVersion) {
-        // TODO: Log
+        _logger?.LogWarning("OBS RPC version({hello}) is newer than supported version({supported}).", hello.RpcVersion, _supportedRpcVersion);
       }
 
       var identify = new Identify() {
@@ -120,11 +123,11 @@ namespace ObsDotnetSocket {
           }
         }
         else {
-          // TODO: Log
+          _logger?.LogWarning("Failed to remove stalled task");
         }
         break;
       default:
-        // TODO: Log
+        _logger?.LogWarning("Unknown message type: {}", message.GetType());
         break;
       }
     }

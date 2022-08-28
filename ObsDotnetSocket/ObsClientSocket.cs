@@ -1,9 +1,9 @@
 namespace ObsDotnetSocket {
+  using Microsoft.Extensions.Logging;
   using ObsDotnetSocket.DataTypes;
   using ObsDotnetSocket.DataTypes.Predefineds;
   using System;
   using System.Collections.Generic;
-  using System.Net.WebSockets;
   using System.Threading;
   using System.Threading.Tasks;
 
@@ -90,13 +90,15 @@ namespace ObsDotnetSocket {
     }
 
     private readonly ClientSocket _clientSocket;
+    private readonly ILogger? _logger;
 
     public string? CloseDescription { get => _clientSocket.CloseDescription; }
 
     public bool IsConnected { get => _clientSocket.IsConnected; }
 
-    public ObsClientSocket() {
-      _clientSocket = new ClientSocket();
+    public ObsClientSocket(ILogger? logger = null) {
+      _logger = logger;
+      _clientSocket = new ClientSocket(logger);
       _clientSocket.Event += Dispatch;
     }
 
@@ -1701,7 +1703,7 @@ namespace ObsDotnetSocket {
         DispatchUiEvent(ui);
         break;
       default:
-        // TODO: Log
+        _logger?.LogWarning("Ignore unclassified event");
         break;
       }
     }

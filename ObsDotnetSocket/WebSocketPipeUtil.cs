@@ -1,10 +1,8 @@
 namespace ObsDotnetSocket {
   using Microsoft;
-  using Nerdbank.Streams;
   using System;
   using System.IO.Pipelines;
   using System.Net.WebSockets;
-  using System.Runtime.CompilerServices;
   using System.Runtime.InteropServices;
   using System.Threading;
   using System.Threading.Tasks;

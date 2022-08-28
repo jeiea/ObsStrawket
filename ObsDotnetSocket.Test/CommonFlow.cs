@@ -1,22 +1,19 @@
-using ObsDotnetSocket.DataTypes.Predefineds;
+using Microsoft.Extensions.Logging.Debug;
 using ObsDotnetSocket.DataTypes;
+using ObsDotnetSocket.DataTypes.Predefineds;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using Xunit;
-using System.Threading.Channels;
-using System.IO;
-using System.Net.WebSockets;
 
 namespace ObsDotnetSocket.Test {
   internal class CommonFlow {
     private readonly Channel<IEvent> _events = Channel.CreateUnbounded<IEvent>();
 
     public async Task RunClientAsync(Uri uri, ObsClientSocket? socket = null, CancellationToken cancellation = default) {
-      var client = socket ?? new ObsClientSocket();
+      var client = socket ?? new ObsClientSocket(new DebugLoggerProvider().CreateLogger("Client"));
       await client.ConnectAsync(uri, MockServerTest.Password, cancellation: cancellation).ConfigureAwait(false);
 
       var version = await client.GetVersionAsync(cancellation).ConfigureAwait(false);

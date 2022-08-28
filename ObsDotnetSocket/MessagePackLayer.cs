@@ -92,7 +92,7 @@ namespace ObsDotnetSocket {
       while (!(_cancellation.IsCancellationRequested || _sendQueue.Reader.Completion.IsCompleted)) {
         var item = await _sendQueue.Reader.ReadAsync(_cancellation.Token).ConfigureAwait(false);
         try {
-          await SendExclusively(item).ConfigureAwait(false);
+          await SendExclusivelyAsync(item).ConfigureAwait(false);
         }
         catch (Exception ex) {
           item.Output.SetException(ex);
@@ -100,7 +100,7 @@ namespace ObsDotnetSocket {
       }
     }
 
-    private async Task SendExclusively(Deferred<object?> item) {
+    private async Task SendExclusivelyAsync(Deferred<object?> item) {
       var (output, cancellation) = item;
       using var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(cancellation, _cancellation.Token);
       var linked = linkedSource.Token;
