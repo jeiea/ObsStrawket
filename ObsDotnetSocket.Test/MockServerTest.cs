@@ -1,4 +1,5 @@
 namespace ObsDotnetSocket.Test {
+  using Newtonsoft.Json.Linq;
   using System;
   using System.Net;
   using System.Net.WebSockets;
@@ -17,16 +18,13 @@ namespace ObsDotnetSocket.Test {
       _output = output;
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task TestAgainstMockServerAsync() {
       var cancellation = new CancellationTokenSource();
       try {
-        var tasks = new[] {
-          RunMockServerAsync(cancellation.Token),
-          new CommonFlow().RunClientAsync(_mockServerUri, cancellation: cancellation.Token),
-        };
-        await await Task.WhenAny(tasks).ConfigureAwait(false);
-        await Task.WhenAll(tasks).ConfigureAwait(false);
+        var server = RunMockServer(cancellation.Token);
+        await new CommonFlow().RunClientAsync(_mockServerUri, cancellation: cancellation.Token);
+        server.Stop();
       }
       catch {
         cancellation.Cancel();
@@ -34,21 +32,35 @@ namespace ObsDotnetSocket.Test {
       }
     }
 
-    [Fact]
+    [Fact(Timeout = 30000)]
     public async Task TestReconnectivityAsync() {
       var cancellation = new CancellationTokenSource();
       try {
-        var server = RunMockServerAsync(cancellation.Token);
+        HttpListener server;
+        var abort = Task.CompletedTask;
         var client = new ObsClientSocket();
-        try {
-          await client.ConnectAsync(new Uri("ws://localhost:55595"), Password).ConfigureAwait(false);
-          Assert.Fail("Connecting to existent endpoint but no exception thrown");
-        }
-        catch (Exception ex) {
-          // expected
+        for (int i = 0; i < 100; i++) {
+          await abort.ConfigureAwait(false);
+          System.Diagnostics.Debug.WriteLine($"Session {i} start");
+
+          server = RunMockServer(cancellation.Token);
+          int milliseconds = i * 2;
+          abort = Task.Run(async () => {
+            await Task.Delay(milliseconds);
+            server.Abort();
+          });
+
+          try {
+            await new CommonFlow().RunClientAsync(_mockServerUri, client, cancellation: cancellation.Token);
+          }
+          catch (Exception) {
+            // expected
+          }
         }
 
-        await client.ConnectAsync(_mockServerUri, Password).ConfigureAwait(false);
+        await abort.ConfigureAwait(false);
+        server = RunMockServer(cancellation.Token);
+        await new CommonFlow().RunClientAsync(_mockServerUri, client, cancellation: cancellation.Token);
       }
       catch {
         cancellation.Cancel();
@@ -56,21 +68,25 @@ namespace ObsDotnetSocket.Test {
       }
     }
 
-    private static Task RunMockServerAsync(CancellationToken token) {
+    private static HttpListener RunMockServer(CancellationToken token) {
       token.ThrowIfCancellationRequested();
 
       var httpListener = new HttpListener();
       httpListener.Prefixes.Add("http://127.0.0.1:44550/");
       httpListener.Start();
 
-      return RunOneshotServerAsync(httpListener, token);
+      _ = Task.Run(() => ServeForeverAsync(httpListener, ServeAsync, token), token);
+      return httpListener;
     }
 
-    private static async Task RunOneshotServerAsync(HttpListener httpListener, CancellationToken token) {
-      token.ThrowIfCancellationRequested();
+    private static async Task ServeForeverAsync(HttpListener http, Func<HttpListenerContext, CancellationToken, Task> action, CancellationToken token) {
+      while (!token.IsCancellationRequested) {
+        var context = await http.GetContextAsync().ConfigureAwait(false);
+        _ = action(context, token);
+      }
+    }
 
-      using var _ = httpListener;
-      var context = await httpListener.GetContextAsync().ConfigureAwait(false);
+    private static async Task<(WebSocketContext, MockServerSession)> HandshakeAsync(HttpListenerContext context, CancellationToken token) {
       token.ThrowIfCancellationRequested();
 
       Assert.True(context.Request.IsWebSocketRequest);
@@ -80,7 +96,7 @@ namespace ObsDotnetSocket.Test {
       var webSocketContext = await context.AcceptWebSocketAsync(subProtocol).ConfigureAwait(false);
       token.ThrowIfCancellationRequested();
 
-      using var session = new MockServerSession(webSocketContext.WebSocket, token);
+      var session = new MockServerSession(webSocketContext.WebSocket, token);
       await session.SendAsync(@"{
   ""op"": 0,
   ""d"": {
@@ -108,6 +124,13 @@ namespace ObsDotnetSocket.Test {
     ""negotiatedRpcVersion"": 1
   }
 }").ConfigureAwait(false);
+
+      return (webSocketContext, session);
+    }
+
+    private static async Task ServeAsync(HttpListenerContext context, CancellationToken token) {
+      var (webSocketContext, session) = await HandshakeAsync(context, token).ConfigureAwait(false);
+      using var _ = session;
 
       string? guid = await session.ReceiveAsync(@"{
   ""op"": 6,
@@ -332,9 +355,6 @@ namespace ObsDotnetSocket.Test {
 }").ConfigureAwait(false);
 
       await webSocketContext.WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, token).ConfigureAwait(false);
-
-      token.ThrowIfCancellationRequested();
-      httpListener.Close();
     }
   }
 }

@@ -23,6 +23,7 @@ namespace ObsDotnetSocket.Test {
       _cancellation.ThrowIfCancellationRequested();
       var binary = WebSocketMessageType.Binary;
       byte[] buffer = MessagePackSerializer.ConvertFromJson(json, cancellationToken: _cancellation);
+      _ = Task.Run(() => System.Diagnostics.Debug.WriteLine($"Mock send {Regex.Replace(json, @"\s+", "")}"));
       return _webSocket.SendAsync(new ArraySegment<byte>(buffer), binary, true, _cancellation);
     }
 
@@ -30,6 +31,7 @@ namespace ObsDotnetSocket.Test {
       var result = await _webSocket.ReceiveAsync(_buffer, _cancellation).ConfigureAwait(false);
       _cancellation.ThrowIfCancellationRequested();
       string json = MessagePackSerializer.ConvertToJson(new ArraySegment<byte>(_buffer.Array!, 0, result.Count), cancellationToken: _cancellation);
+      _ = Task.Run(() => System.Diagnostics.Debug.WriteLine($"Mock receive {Regex.Replace(json, @"\s+", "")}"));
       string? guid = Regex.Match(json, @"[0-9a-f]{8}-[0-9a-f]{4}[^""]*")?.Value;
       AssertJsonEqual(expectedJson.Replace("{guid}", guid ?? ""), json);
       return guid;
