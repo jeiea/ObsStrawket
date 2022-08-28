@@ -46,6 +46,7 @@ namespace ObsDotnetSocket {
         catch (Exception ex) {
           // Propagate the exception to the reader.
           await pipe.Writer.CompleteAsync(ex).ConfigureAwait(false);
+          System.Diagnostics.Debug.WriteLine($"UsePipeReader: {ex}");
         }
       }, cancellation);
 

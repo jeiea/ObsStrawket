@@ -67,16 +67,17 @@ namespace ObsDotnetSocket {
       _ = RunReceiveLoopAsync();
     }
 
-    public async Task CloseAsync() {
+    public async Task CloseAsync(WebSocketCloseStatus status = WebSocketCloseStatus.NormalClosure, string? description = null, Exception? exception = null) {
       try {
         _socket.Dispose();
         await Task.WhenAny(_socket.SendTask, Task.Delay(1000)).ConfigureAwait(false);
         if (_clientWebSocket.State == WebSocketState.Open || _clientWebSocket.State == WebSocketState.CloseReceived) {
-          await _clientWebSocket.CloseOutputAsync(
-            WebSocketCloseStatus.NormalClosure, "Normal closure", _cancellation.Token
-          ).ConfigureAwait(false);
+          await _clientWebSocket.CloseOutputAsync(status, description, _cancellation.Token).ConfigureAwait(false);
         }
 
+        foreach (var request in _requests.Values) {
+          request.TrySetException(exception ?? new ObsWebSocketException("Websocket closed"));
+        }
         _requests.Clear();
         _cancellation.Cancel();
         Closed.Invoke(GetCloseMessage() ?? "Unknown close reason");
@@ -99,10 +100,8 @@ namespace ObsDotnetSocket {
         }
       }
       catch (Exception ex) {
-        foreach (var request in _requests.Values) {
-          request.TrySetException(ex);
-        }
-        _requests.Clear();
+        await CloseAsync(exception: ex).ConfigureAwait(false);
+        System.Diagnostics.Debug.WriteLine($"UsePipeReader: {ex}");
       }
     }
 
@@ -112,12 +111,16 @@ namespace ObsDotnetSocket {
         Event(obsEvent);
         break;
       case RequestResponse response:
-        var request = _requests[response.RequestId];
-        if (response.RequestStatus.Result) {
-          request.SetResult(response);
+        if (_requests.TryRemove(response.RequestId, out var request)) {
+          if (response.RequestStatus.Result) {
+            request.SetResult(response);
+          }
+          else {
+            request.SetException(new FailureResponseException(response));
+          }
         }
         else {
-          request.SetException(new FailureResponseException(response));
+          // TODO: Log
         }
         break;
       default:
@@ -134,18 +137,19 @@ namespace ObsDotnetSocket {
       string guid = $"{Guid.NewGuid()}";
       request.RequestId = guid;
 
-      TaskCompletionSource<RequestResponse>? waiter = null;
       bool willWaitResponse = DataTypeMapping.RequestToTypes.TryGetValue(request.RequestType, out var typeMapping)
           && typeMapping.Response != typeof(RequestResponse);
       if (willWaitResponse) {
-        waiter = new();
+        var waiter = new TaskCompletionSource<RequestResponse>();
         _requests[guid] = waiter;
+
+        await _socket.SendAsync(request, token).ConfigureAwait(false);
+        return await waiter.Task.ConfigureAwait(false);
       }
-
-      token.ThrowIfCancellationRequested();
-      await _socket.SendAsync(request, token).ConfigureAwait(false);
-
-      return willWaitResponse ? await waiter!.Task.ConfigureAwait(false) : null;
+      else {
+        await _socket.SendAsync(request, token).ConfigureAwait(false);
+        return null;
+      }
     }
 
     public void Dispose() {

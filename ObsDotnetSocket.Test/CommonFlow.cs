@@ -31,7 +31,10 @@ namespace ObsDotnetSocket.Test {
 
       client.Event += QueueEvent;
       client.StudioModeStateChanged += QueueEvent;
-      await client.SetStudioModeEnabledAsync(!studioMode.StudioModeEnabled).ConfigureAwait(false);
+      client.Closed += (o) => {
+        _events.Writer.TryComplete(new Exception($"{o}"));
+      };
+      await client.SetStudioModeEnabledAsync(!studioMode.StudioModeEnabled, cancellation).ConfigureAwait(false);
 
       var studio = await ReadEventAsync<StudioModeStateChanged>(cancellation).ConfigureAwait(false);
       Assert.Equal(!studioMode.StudioModeEnabled, studio.StudioModeEnabled);
@@ -43,13 +46,13 @@ namespace ObsDotnetSocket.Test {
       var inputSettings = await client.GetInputSettingsAsync(specials.Desktop1!, cancellation).ConfigureAwait(false);
       Assert.True(inputSettings.InputSettings.ContainsKey("device_id"), "device_id not found");
 
-      var directory = await client.GetRecordDirectoryAsync().ConfigureAwait(false);
+      var directory = await client.GetRecordDirectoryAsync(cancellation).ConfigureAwait(false);
       Assert.True(Directory.Exists(directory.RecordDirectory));
 
-      await client.StartRecordAsync().ConfigureAwait(false);
+      await client.StartRecordAsync(cancellation).ConfigureAwait(false);
       await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
       await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
-      var recording = await client.StopRecordAsync().ConfigureAwait(false);
+      var recording = await client.StopRecordAsync(cancellation).ConfigureAwait(false);
       await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
       await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
       Assert.True(File.Exists(recording.OutputPath));

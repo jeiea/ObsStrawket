@@ -1,6 +1,7 @@
 namespace ObsDotnetSocket.Test {
   using Newtonsoft.Json.Linq;
   using System;
+  using System.Diagnostics;
   using System.Net;
   using System.Net.WebSockets;
   using System.Threading;
@@ -18,7 +19,7 @@ namespace ObsDotnetSocket.Test {
       _output = output;
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = 1000)]
     public async Task TestAgainstMockServerAsync() {
       var cancellation = new CancellationTokenSource();
       try {
@@ -34,14 +35,18 @@ namespace ObsDotnetSocket.Test {
 
     [Fact(Timeout = 30000)]
     public async Task TestReconnectivityAsync() {
-      var cancellation = new CancellationTokenSource();
+      CancellationTokenSource cancellation = new();
       try {
         HttpListener server;
         var abort = Task.CompletedTask;
         var client = new ObsClientSocket();
+        client.Closed += (o) => {
+          Debug.WriteLine(o);
+        };
         for (int i = 0; i < 100; i++) {
+          cancellation = new CancellationTokenSource();
           await abort.ConfigureAwait(false);
-          System.Diagnostics.Debug.WriteLine($"Session {i} start");
+          Debug.WriteLine($"Session {i} start");
 
           server = RunMockServer(cancellation.Token);
           int milliseconds = i * 2;
@@ -53,11 +58,13 @@ namespace ObsDotnetSocket.Test {
           try {
             await new CommonFlow().RunClientAsync(_mockServerUri, client, cancellation: cancellation.Token);
           }
-          catch (Exception) {
-            // expected
+          catch (Exception ex) {
+            Debug.WriteLine(ex);
           }
+          cancellation.Cancel();
         }
 
+        cancellation = new CancellationTokenSource();
         await abort.ConfigureAwait(false);
         server = RunMockServer(cancellation.Token);
         await new CommonFlow().RunClientAsync(_mockServerUri, client, cancellation: cancellation.Token);
@@ -80,7 +87,7 @@ namespace ObsDotnetSocket.Test {
     }
 
     private static async Task ServeForeverAsync(HttpListener http, Func<HttpListenerContext, CancellationToken, Task> action, CancellationToken token) {
-      while (!token.IsCancellationRequested) {
+      while (!token.IsCancellationRequested && http.IsListening) {
         var context = await http.GetContextAsync().ConfigureAwait(false);
         _ = action(context, token);
       }
