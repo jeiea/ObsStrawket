@@ -91,7 +91,7 @@ namespace ObsDotnetSocket {
           _cancellation.Token.ThrowIfCancellationRequested();
           var message = await _socket.ReceiveAsync(_cancellation.Token).ConfigureAwait(false);
           if (message == null) {
-            await CloseAsync().ConfigureAwait(false);
+            await CloseAsync(exception: new WebSocketException(GetCloseMessage())).ConfigureAwait(false);
             return;
           }
 

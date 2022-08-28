@@ -19,6 +19,9 @@ namespace ObsDotnetSocket.Test {
       var client = socket ?? new ObsClientSocket();
       await client.ConnectAsync(uri, MockServerTest.Password, cancellation: cancellation).ConfigureAwait(false);
 
+      var version = await client.GetVersionAsync(cancellation).ConfigureAwait(false);
+      Assert.Contains("bmp", version.SupportedImageFormats);
+
       var response = await client.RequestAsync(new RawRequest() {
         RequestId = "2521a51c-7040-4830-8181-492ab5477545",
         RequestType = "GetStudioModeEnabled"
