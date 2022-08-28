@@ -19,13 +19,6 @@ namespace ObsDotnetSocket {
   }
 
   public class AuthenticationFailureException : ObsWebSocketException {
-    public AuthenticationFailureException(int? code = null, string? closeStatusDescription = null) : base($"${code}: ${closeStatusDescription}") {
-      Code = code;
-      CloseStatusDescription = closeStatusDescription ?? "";
-    }
-
-    public int? Code { get; set; }
-
-    public string? CloseStatusDescription { get; set; }
+    public AuthenticationFailureException(string? message = null) : base(message ?? "OBS Authentication failure") { }
   }
 }

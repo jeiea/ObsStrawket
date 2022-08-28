@@ -8,14 +8,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using System.Threading.Channels;
-using ObsDotnetSocket.WebSocket;
 using System.IO;
+using System.Net.WebSockets;
 
 namespace ObsDotnetSocket.Test {
   internal class CommonFlow {
     private readonly Channel<IEvent> _events = Channel.CreateUnbounded<IEvent>();
 
-    public async Task RunClientAsync(Uri uri, IClientWebSocket? socket = null, CancellationToken cancellation = default) {
+    public async Task RunClientAsync(Uri uri, ClientWebSocket? socket = null, CancellationToken cancellation = default) {
       var client = new ObsClientSocket(socket);
       await client.ConnectAsync(uri, "ahrEYXzXKytCIlpI", cancellation: cancellation).ConfigureAwait(false);
 

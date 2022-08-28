@@ -1,6 +1,5 @@
 namespace ObsDotnetSocket {
   using ObsDotnetSocket.DataTypes;
-  using ObsDotnetSocket.WebSocket;
   using System;
   using System.Collections.Concurrent;
   using System.Net.WebSockets;
@@ -16,18 +15,17 @@ namespace ObsDotnetSocket {
     private const int _supportedRpcVersion = 1;
 
     private readonly MessagePackLayer _socket;
-    private readonly IClientWebSocket _clientWebSocket;
-    private readonly SemaphoreSlim _sendSemaphore = new(1, 1);
+    private readonly ClientWebSocket _clientWebSocket;
     private readonly ConcurrentDictionary<string, TaskCompletionSource<RequestResponse>> _requests = new();
 
     private CancellationTokenSource _cancellation = new();
 
-    public string? CloseDescription { get => _socket.CloseMessage?.CloseStatusDescription; }
+    public string? CloseDescription { get => _clientWebSocket.CloseStatusDescription; }
 
     public bool IsConnected { get; private set; }
 
-    public ClientSocket(IClientWebSocket? client = null) {
-      _clientWebSocket = client ?? GetSystemClientWebSocket();
+    public ClientSocket(ClientWebSocket? client = null) {
+      _clientWebSocket = client ?? new ClientWebSocket();
       _clientWebSocket.Options.AddSubProtocol("obswebsocket.msgpack");
       _socket = new MessagePackLayer(_clientWebSocket);
     }
@@ -41,11 +39,10 @@ namespace ObsDotnetSocket {
       var token = cancellation ?? CancellationToken.None;
       await _clientWebSocket.ConnectAsync(uri ?? MessagePackLayer.defaultUri, token).ConfigureAwait(false);
 
+      _socket.RunLoop();
       var hello = (Hello)(await _socket.ReceiveAsync(token).ConfigureAwait(false))!;
-      if (hello == null)
-      {
-        var closeMessage = _socket.CloseMessage;
-        throw new Exception($"{closeMessage?.CloseStatus}: {closeMessage?.CloseStatusDescription ?? "Handshake failure"}");
+      if (hello == null) {
+        throw new Exception(GetCloseMessage() ?? "Handshake failure");
       }
       if (hello.RpcVersion > _supportedRpcVersion) {
         // TODO: Log
@@ -58,10 +55,8 @@ namespace ObsDotnetSocket {
       };
       await _socket.SendAsync(identify, token).ConfigureAwait(false);
 
-      var identified = await _socket.ReceiveAsync(token).ConfigureAwait(false) as Identified;
-      if (identified == null) {
-        var closeMessage = _socket.CloseMessage;
-        throw new AuthenticationFailureException(closeMessage?.CloseStatus, closeMessage?.CloseStatusDescription ?? "Cannot read authentication response");
+      if (await _socket.ReceiveAsync(token).ConfigureAwait(false) is not Identified identified) {
+        throw new AuthenticationFailureException(GetCloseMessage());
       }
 
       IsConnected = true;
@@ -71,18 +66,20 @@ namespace ObsDotnetSocket {
 
     public async Task CloseAsync() {
       try {
-        await _sendSemaphore.WaitAsync(_cancellation.Token).ConfigureAwait(false);
+        _socket.Dispose();
+        await Task.WhenAny(_socket.SendTask, Task.Delay(1000)).ConfigureAwait(false);
         try {
-          await _socket.CloseAsync(_cancellation.Token).ConfigureAwait(false);
+          if (_clientWebSocket.State == WebSocketState.Open || _clientWebSocket.State == WebSocketState.CloseReceived) {
+            await _clientWebSocket.CloseOutputAsync(
+              WebSocketCloseStatus.NormalClosure, "Normal closure", _cancellation.Token
+            ).ConfigureAwait(false);
+          }
 
           _requests.Clear();
           _cancellation.Cancel();
-          var closeMessage = _socket.CloseMessage;
-          string closeString = closeMessage == null ? "unknown reason" : $"{closeMessage?.CloseStatus}: {closeMessage.CloseStatusDescription}";
-          Closed.Invoke(closeString);
+          Closed.Invoke(GetCloseMessage() ?? "Unknown close reason");
         }
         finally {
-          _sendSemaphore.Release();
           IsConnected = false;
         }
       }
@@ -145,16 +142,9 @@ namespace ObsDotnetSocket {
         waiter = new();
         _requests[guid] = waiter;
       }
-      await _sendSemaphore.WaitAsync(token).ConfigureAwait(false);
 
-      try {
-        token.ThrowIfCancellationRequested();
-
-        await _socket.SendAsync(request, token).ConfigureAwait(false);
-      }
-      finally {
-        _sendSemaphore.Release();
-      }
+      token.ThrowIfCancellationRequested();
+      await _socket.SendAsync(request, token).ConfigureAwait(false);
 
       return willWaitResponse ? await waiter!.Task.ConfigureAwait(false) : null;
     }
@@ -162,14 +152,15 @@ namespace ObsDotnetSocket {
     public void Dispose() {
       _cancellation.Cancel();
       _cancellation.Dispose();
-      _sendSemaphore.Dispose();
       _socket.Dispose();
+      GC.SuppressFinalize(this);
     }
 
-    // Method for preventing crash in Unity by type isolation.
-    // Type load occurs by method unit, thus this defers assembly load.
-    private static IClientWebSocket GetSystemClientWebSocket() {
-      return new SystemClientWebSocket();
+    private string? GetCloseMessage() {
+      if (_clientWebSocket.CloseStatus == null) {
+        return null;
+      }
+      return $"{_clientWebSocket.CloseStatus}: {_clientWebSocket.CloseStatusDescription}";
     }
 
     private static string? MakeOneTimePass(string? password, HelloAuthentication? auth) {

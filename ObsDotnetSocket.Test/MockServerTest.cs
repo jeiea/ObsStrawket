@@ -1,5 +1,4 @@
 namespace ObsDotnetSocket.Test {
-  using ObsDotnetSocket.WebSocket4Net;
   using System;
   using System.Net;
   using System.Net.WebSockets;
@@ -22,23 +21,6 @@ namespace ObsDotnetSocket.Test {
         var tasks = new[] {
           RunMockServerAsync(cancellation.Token),
           new CommonFlow().RunClientAsync(new Uri("ws://127.0.0.1:44550"), cancellation: cancellation.Token),
-        };
-        await await Task.WhenAny(tasks).ConfigureAwait(false);
-        await Task.WhenAll(tasks).ConfigureAwait(false);
-      }
-      catch {
-        cancellation.Cancel();
-        throw;
-      }
-    }
-
-    [Fact]
-    public async Task TestWebSocket4NetAsync() {
-      var cancellation = new CancellationTokenSource();
-      try {
-        var tasks = new[] {
-          RunMockServerAsync(cancellation.Token),
-          new CommonFlow().RunClientAsync(new Uri("ws://127.0.0.1:44550"), new WebSocket4NetSocket(), cancellation: cancellation.Token),
         };
         await await Task.WhenAny(tasks).ConfigureAwait(false);
         await Task.WhenAll(tasks).ConfigureAwait(false);
