@@ -3,9 +3,11 @@ namespace ObsDotnetSocket {
   using Microsoft.Extensions.Logging;
   using Nerdbank.Streams;
   using ObsDotnetSocket.DataTypes;
+  using ObsDotnetSocket.DataTypes.Predefineds;
   using ObsDotnetSocket.Serialization;
   using System;
   using System.Buffers;
+  using System.Diagnostics;
   using System.IO.Pipelines;
   using System.Net.WebSockets;
   using System.Runtime.InteropServices;
@@ -22,10 +24,10 @@ namespace ObsDotnetSocket {
 
   internal class MessagePackLayer : IDisposable {
     internal static readonly Uri defaultUri = new("ws://127.0.0.1:4455");
+    private static readonly MessagePackSerializerOptions _serialOptions = new(OpCodeMessageResolver.Instance);
 
     private readonly WebSocket _socket;
     private readonly ILogger? _logger;
-    private readonly MessagePackSerializerOptions _serialOptions = new(OpCodeMessageResolver.Instance);
     private PipeReader? _reader;
     private readonly Pipe _writer = new();
     private readonly Channel<Deferred<object?>> _sendQueue =
@@ -86,73 +88,85 @@ namespace ObsDotnetSocket {
         //prefix.CopyTo(prefixer.Prefix.Slice(0, sizeof(int)).Span);
       }
 
-      if (_cancellation.IsCancellationRequested) {
-        return;
-      }
-
+      linked.ThrowIfCancellationRequested();
       prefixer.Commit();
+
       var output = new TaskCompletionSource<object?>();
       await _sendQueue.Writer.WriteAsync(new(output, linked), linked).ConfigureAwait(false);
       await _writer.Writer.FlushAsync(linked).ConfigureAwait(false);
 
+      _logger?.LogDebug("SendAsync output await {}", value.GetType().Name);
       await output.Task.ConfigureAwait(false);
+      _logger?.LogDebug("SendAsync output waited {}", value.GetType().Name);
+    }
+
+    public void Cancel(Exception exception) {
+      _sendQueue.Writer.Complete(exception);
+      _writer.Writer.Complete(exception);
+      _reader?.Complete(exception);
     }
 
     public void Dispose() {
       _cancellation.Cancel();
+      _cancellation.Dispose();
     }
 
     private async Task RunSendLoopAsync() {
-      while (!(_cancellation.IsCancellationRequested || _sendQueue.Reader.Completion.IsCompleted)) {
-        var item = await _sendQueue.Reader.ReadAsync(_cancellation.Token);
-        try {
-          await SendExclusivelyAsync(item);
+      var queue = _sendQueue.Reader;
+      var bytes = _writer.Reader;
+
+      try {
+        while (await queue.WaitToReadAsync()) {
+          int messageLength = await ReadLengthAsync(bytes, default);
+          var readResult = await bytes.ReadAtLeastAsync(messageLength, default);
+          var item = await queue.ReadAsync();
+          try {
+            await SendExclusivelyAsync(item, messageLength, readResult);
+          }
+          catch (Exception exception) {
+            item.Output.SetException(exception);
+          }
+          finally {
+            bytes.AdvanceTo(readResult.Buffer.GetPosition(messageLength));
+          }
         }
-        catch (Exception ex) {
-          item.Output.SetException(ex);
+      }
+      catch (Exception fault) {
+        _sendQueue.Writer.TryComplete(fault);
+        await bytes.CompleteAsync(fault).ConfigureAwait(false);
+        while (!queue.Completion.IsCompleted) {
+          var item = await queue.ReadAsync();
+          item.Output.SetException(fault);
         }
       }
     }
 
-    private async Task SendExclusivelyAsync(Deferred<object?> item) {
+    private async Task SendExclusivelyAsync(Deferred<object?> item, int messageLength, ReadResult readResult) {
       var (output, cancellation) = item;
-      int messageLength = await ReadLengthAsync(_writer.Reader, cancellation);
-      var readResult = await _writer.Reader.ReadAtLeastAsync(messageLength, cancellation);
-      try {
-        if (cancellation.IsCancellationRequested) {
-          output.SetException(new OperationCanceledException());
-          return;
-        }
-        var buffer = readResult.Buffer;
-
-        long bytesRemaining = messageLength;
-        foreach (var memory in buffer) {
-          if (memory.Length == 0) {
-            _logger?.LogInformation("memory.Length == 0, skip.");
-            continue;
-          }
-
-          using var _ = memory.Pin();
-          int count = Math.Min(memory.Length, (int)bytesRemaining);
-          bytesRemaining -= count;
-          bool isEnd = bytesRemaining <= 0;
-
-          var segment = GetSegment(memory);
-          var cut = new ArraySegment<byte>(segment.Array, segment.Offset, count);
-          _logger?.LogInformation("Offset: {}, Count: {}, buffer.Length: {}, messageLength: {}, bytesRemaining: {}, isEnd: {}, Data: {}",
-            cut.Offset, cut.Count, buffer.Length, messageLength, bytesRemaining, isEnd, BitConverter.ToString(cut.Array, cut.Offset, cut.Count));
-          await _socket.SendAsync(cut, WebSocketMessageType.Binary, isEnd, cancellation);
-
-          if (isEnd) {
-            break;
-          }
-        }
-        output.SetResult(null);
+      if (cancellation.IsCancellationRequested) {
+        output.SetException(new OperationCanceledException(cancellation));
+        return;
       }
-      finally {
-        _logger?.LogInformation("AdvanceTo: {}", messageLength);
-        _writer.Reader.AdvanceTo(readResult.Buffer.GetPosition(messageLength));
+
+      var buffer = readResult.Buffer;
+      long bytesRemaining = messageLength;
+      foreach (var memory in buffer) {
+        using var _2 = memory.Pin();
+        int count = Math.Min(memory.Length, (int)bytesRemaining);
+        bytesRemaining -= count;
+        bool isEnd = bytesRemaining <= 0;
+
+        var segment = GetSegment(memory);
+        var cut = new ArraySegment<byte>(segment.Array, segment.Offset, count);
+        _logger?.LogDebug("SendExclusivelyAsync advanceTo: {}, bytesRemaining: {}, data: {}", messageLength, bytesRemaining, BitConverter.ToString(cut.Array, cut.Offset, cut.Count));
+        await _socket.SendAsync(cut, WebSocketMessageType.Binary, isEnd, cancellation).ConfigureAwait(false);
+
+        if (isEnd) {
+          break;
+        }
       }
+      _logger?.LogDebug("SendExclusivelyAsync SetResult null");
+      output.SetResult(null);
     }
 
     private async Task<int> ReadLengthAsync(PipeReader reader, CancellationToken cancellation) {

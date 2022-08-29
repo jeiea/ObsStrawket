@@ -1,16 +1,19 @@
+using ObsDotnetSocket.DataTypes.Predefineds;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Net;
+using System.Net.WebSockets;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Channels;
+using System.Threading.Tasks;
+using Xunit;
+using Xunit.Abstractions;
+
 namespace ObsDotnetSocket.Test {
-  using System;
-  using System.Collections.Generic;
-  using System.Diagnostics;
-  using System.Linq;
-  using System.Net;
-  using System.Net.WebSockets;
-  using System.Runtime.InteropServices;
-  using System.Threading;
-  using System.Threading.Channels;
-  using System.Threading.Tasks;
-  using Xunit;
-  using Xunit.Abstractions;
+  using ContextHandler = Func<HttpListenerContext, CancellationToken, Task>;
 
   public class MockServerTest {
     private readonly Uri _mockServerUri = new("ws://127.0.0.1:44550");
@@ -37,7 +40,7 @@ namespace ObsDotnetSocket.Test {
     }
 
     [Fact]
-    public async Task TestStressAsync() {
+    public async Task TestTrollUserAsync() {
       var cancellation = new CancellationTokenSource();
       var token = cancellation.Token;
       try {
@@ -95,7 +98,7 @@ namespace ObsDotnetSocket.Test {
 
     [Fact]
     public async Task TestServerAbortAsync() {
-      CancellationTokenSource cancellation = new();
+      var cancellation = new CancellationTokenSource();
       try {
         HttpListener server;
         var abort = Task.CompletedTask;
@@ -136,18 +139,56 @@ namespace ObsDotnetSocket.Test {
       }
     }
 
-    private static HttpListener RunMockServer(CancellationToken token) {
+    [Fact]
+    public async Task TestTrollServerAsync() {
+      var cancellation = new CancellationTokenSource();
+      var server = RunMockServer(cancellation.Token, ServeEchoAsync);
+      var tasks = new List<Task<GetRecordDirectoryResponse>>();
+      try {
+        var socket = new ClientSocket();
+        var client = new ObsClientSocket(client: socket);
+        socket.SetOptions = (sock) => {
+          sock.Options.KeepAliveInterval = TimeSpan.FromMilliseconds(1000);
+        };
+
+
+        await client.ConnectAsync(_mockServerUri, Password, cancellation: cancellation.Token).ConfigureAwait(false);
+
+        for (int i = 0; i < 30; i++) {
+          tasks.Add(client.GetRecordDirectoryAsync(cancellation.Token));
+        }
+        await Task.WhenAll(tasks).ConfigureAwait(false);
+        Assert.All(tasks, t => Assert.Equal("C:\\Users", t.Result.RecordDirectory));
+
+        tasks.Clear();
+        for (int i = 0; i < 30; i++) {
+          tasks.Add(client.GetRecordDirectoryAsync(cancellation.Token));
+        }
+
+        await Task.WhenAll(tasks).ConfigureAwait(false);
+        Assert.All(tasks, t => Assert.Equal("C:\\Users", t.Result.RecordDirectory));
+      }
+      catch (Exception ex) {
+        cancellation.Cancel();
+        Assert.IsType<QueueCancelledException>(ex);
+      }
+      finally {
+        server.Close();
+      }
+    }
+
+    private static HttpListener RunMockServer(CancellationToken token, ContextHandler? handler = null) {
       token.ThrowIfCancellationRequested();
 
       var httpListener = new HttpListener();
       httpListener.Prefixes.Add("http://127.0.0.1:44550/");
       httpListener.Start();
 
-      _ = Task.Run(() => ServeForeverAsync(httpListener, ServeAsync, token), token);
+      _ = Task.Run(() => ServeForeverAsync(httpListener, handler ?? ServeAsync, token), token);
       return httpListener;
     }
 
-    private static async Task ServeForeverAsync(HttpListener http, Func<HttpListenerContext, CancellationToken, Task> action, CancellationToken token) {
+    private static async Task ServeForeverAsync(HttpListener http, ContextHandler action, CancellationToken token) {
       while (!token.IsCancellationRequested && http.IsListening) {
         var context = await http.GetContextAsync().ConfigureAwait(false);
         _ = action(context, token);
@@ -194,6 +235,74 @@ namespace ObsDotnetSocket.Test {
 }").ConfigureAwait(false);
 
       return (webSocketContext, session);
+    }
+
+    private static async Task ServeEchoAsync(HttpListenerContext context, CancellationToken token) {
+      var (webSocketContext, session) = await HandshakeAsync(context, token).ConfigureAwait(false);
+      using var _1 = session;
+
+      var channel = Channel.CreateUnbounded<string>();
+
+      for (int i = 0; i < 30; i++) {
+        string? guid = await session.ReceiveAsync(@"{
+  ""op"": 6,
+  ""d"": {
+    ""requestType"": ""GetRecordDirectory"",
+    ""requestId"": ""{guid}""
+  }
+}").ConfigureAwait(false);
+
+        await session.SendAsync(@"{
+  ""d"": {
+    ""requestId"": ""{guid}"",
+    ""requestStatus"": {
+      ""code"": 100,
+      ""result"": true
+    },
+    ""requestType"": ""GetRecordDirectory"",
+    ""responseData"": {
+      ""recordDirectory"": ""C:\\Users""
+    }
+  },
+  ""op"": 7
+}".Replace("{guid}", guid)).ConfigureAwait(false);
+      }
+
+      var guids = new List<string>();
+      for (int i = 0; i < 20; i++) {
+        string? guid = await session.ReceiveAsync(@"{
+  ""op"": 6,
+  ""d"": {
+    ""requestType"": ""GetRecordDirectory"",
+    ""requestId"": ""{guid}""
+  }
+}").ConfigureAwait(false);
+        guids.Add(guid!);
+      }
+
+      foreach (string guid in guids.Take(10)) {
+        await session.SendAsync(@"{
+  ""d"": {
+    ""requestId"": ""{guid}"",
+    ""requestStatus"": {
+      ""code"": 100,
+      ""result"": true
+    },
+    ""requestType"": ""GetRecordDirectory"",
+    ""responseData"": {
+      ""recordDirectory"": ""C:\\Users""
+    }
+  },
+  ""op"": 7
+}".Replace("{guid}", guid)).ConfigureAwait(false);
+      }
+
+      byte[] buffer = new byte[] { 0x01, 0x02, 0x03, 0x04 };
+      await webSocketContext.WebSocket.SendAsync(
+        new ArraySegment<byte>(buffer), WebSocketMessageType.Binary, true, token
+      ).ConfigureAwait(false);
+
+      //await webSocketContext.WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "", token).ConfigureAwait(false);
     }
 
     private static async Task ServeAsync(HttpListenerContext context, CancellationToken token) {

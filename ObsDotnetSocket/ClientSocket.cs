@@ -26,6 +26,8 @@ namespace ObsDotnetSocket {
 
     public bool IsConnected { get => _clientWebSocket.State == WebSocketState.Open; }
 
+    public Action<ClientWebSocket> SetOptions { get; set; } = delegate { };
+
     public ClientSocket(ILogger? logger = null) {
       _logger = logger;
       _socket = new(_clientWebSocket);
@@ -52,6 +54,7 @@ namespace ObsDotnetSocket {
 
         _clientWebSocket = new ClientWebSocket();
         _clientWebSocket.Options.AddSubProtocol("obswebsocket.msgpack");
+        SetOptions(_clientWebSocket);
         _socket = new MessagePackLayer(_clientWebSocket, _logger);
 
         await _clientWebSocket.ConnectAsync(uri ?? MessagePackLayer.defaultUri, cancellation).ConfigureAwait(false);
@@ -95,6 +98,7 @@ namespace ObsDotnetSocket {
 
       bool willWaitResponse = DataTypeMapping.RequestToTypes.TryGetValue(request.RequestType, out var typeMapping)
           && typeMapping.Response != typeof(RequestResponse);
+      _logger?.LogDebug("SendAsync: {}", request.GetType().Name);
       if (willWaitResponse) {
         var waiter = new TaskCompletionSource<RequestResponse>();
         _requests[guid] = waiter;
@@ -151,6 +155,7 @@ namespace ObsDotnetSocket {
         while (_clientWebSocket.State != WebSocketState.Closed) {
           _cancellation.Token.ThrowIfCancellationRequested();
           var message = await _socket.ReceiveAsync(_cancellation.Token).ConfigureAwait(false);
+          _logger?.LogInformation("Received message: {}", message?.GetType().Name ?? "null");
           if (message == null) {
             await CloseAsync(exception: new WebSocketException(GetCloseMessage())).ConfigureAwait(false);
             return;
@@ -160,9 +165,9 @@ namespace ObsDotnetSocket {
           _ = Task.Run(() => Dispatch(message));
         }
       }
-      catch (Exception ex) {
-        await CloseAsync(exception: ex).ConfigureAwait(false);
-        System.Diagnostics.Debug.WriteLine($"UsePipeReader: {ex}");
+      catch (Exception exception) {
+        await CloseAsync(exception: new QueueCancelledException(innerException: exception)).ConfigureAwait(false);
+        _logger?.LogDebug("RunReceiveLoopAsync: {}", exception);
       }
     }
 
@@ -191,6 +196,7 @@ namespace ObsDotnetSocket {
     }
 
     private void ClearQueue(Exception exception) {
+      _socket.Cancel(exception);
       _socket.Dispose();
       _cancellation.Cancel();
       _cancellation.Dispose();

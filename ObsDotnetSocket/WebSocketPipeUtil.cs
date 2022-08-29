@@ -70,10 +70,10 @@ namespace ObsDotnetSocket {
             }
           }
         }
-        catch (Exception ex) {
+        catch (Exception exception) {
           // Propagate the exception to the reader.
-          await pipe.Writer.CompleteAsync(ex).ConfigureAwait(false);
-          System.Diagnostics.Debug.WriteLine($"UsePipeReader: {ex}");
+          await pipe.Writer.CompleteAsync(exception).ConfigureAwait(false);
+          logger?.LogDebug("UsePipeReader: {}", exception);
         }
       }, cancellation);
 

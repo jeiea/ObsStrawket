@@ -10,6 +10,10 @@ namespace ObsDotnetSocket {
     public UnexpectedProtocolException(string? message = null) : base(message ?? "It's not seem to be obs websocket message") { }
   }
 
+  public class QueueCancelledException : ObsWebSocketException {
+    public QueueCancelledException(string message = "Connection closed before operation", Exception? innerException = null) : base(message, innerException) { }
+  }
+
   public class FailureResponseException : ObsWebSocketException {
     public IRequestResponse Response { get; set; }
 

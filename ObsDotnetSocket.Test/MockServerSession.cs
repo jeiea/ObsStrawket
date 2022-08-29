@@ -2,6 +2,7 @@ namespace ObsDotnetSocket.Test {
   using MessagePack;
   using Newtonsoft.Json.Linq;
   using System;
+  using System.Diagnostics;
   using System.Net.WebSockets;
   using System.Text.RegularExpressions;
   using System.Threading;
@@ -23,15 +24,19 @@ namespace ObsDotnetSocket.Test {
       _cancellation.ThrowIfCancellationRequested();
       var binary = WebSocketMessageType.Binary;
       byte[] buffer = MessagePackSerializer.ConvertFromJson(json, cancellationToken: _cancellation);
-      _ = Task.Run(() => System.Diagnostics.Debug.WriteLine($"Mock send {Regex.Replace(json, @"\s+", "")}"));
+      _ = Task.Run(() => Debug.WriteLine($"Mock send {Regex.Replace(json, @"\s+", "")}"));
       return _webSocket.SendAsync(new ArraySegment<byte>(buffer), binary, true, _cancellation);
     }
 
-    public async Task<string?> ReceiveAsync(string expectedJson) {
+    public async Task<string> ReceiveAsync() {
       var result = await _webSocket.ReceiveAsync(_buffer, _cancellation).ConfigureAwait(false);
       _cancellation.ThrowIfCancellationRequested();
-      string json = MessagePackSerializer.ConvertToJson(new ArraySegment<byte>(_buffer.Array!, 0, result.Count), cancellationToken: _cancellation);
-      _ = Task.Run(() => System.Diagnostics.Debug.WriteLine($"Mock receive {Regex.Replace(json, @"\s+", "")}"));
+      return MessagePackSerializer.ConvertToJson(new ArraySegment<byte>(_buffer.Array!, 0, result.Count), cancellationToken: _cancellation);
+    }
+
+    public async Task<string?> ReceiveAsync(string expectedJson) {
+      string json = await ReceiveAsync().ConfigureAwait(false);
+      _ = Task.Run(() => Debug.WriteLine($"Mock receive {Regex.Replace(json, @"\s+", "")}"));
       string? guid = Regex.Match(json, @"[0-9a-f]{8}-[0-9a-f]{4}[^""]*")?.Value;
       AssertJsonEqual(expectedJson.Replace("{guid}", guid ?? ""), json);
       return guid;

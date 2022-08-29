@@ -94,9 +94,9 @@ namespace ObsDotnetSocket {
 
     public bool IsConnected { get => _clientSocket.IsConnected; }
 
-    public ObsClientSocket(ILogger? logger = null) {
+    public ObsClientSocket(ILogger? logger = null, ClientSocket? client = null) {
       _logger = logger;
-      _clientSocket = new ClientSocket(logger);
+      _clientSocket = client ?? new ClientSocket(logger);
       _clientSocket.Event += Dispatch;
     }
 
@@ -114,6 +114,7 @@ namespace ObsDotnetSocket {
 
     public void Dispose() {
       _clientSocket.Dispose();
+      GC.SuppressFinalize(this);
     }
 
     #region Requests
