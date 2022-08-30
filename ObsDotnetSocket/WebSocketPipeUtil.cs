@@ -10,31 +10,6 @@ namespace ObsDotnetSocket {
   using System.Threading;
   using System.Threading.Tasks;
 
-  class AutoPinBufferWriter<T> : IBufferWriter<T> {
-    private readonly IBufferWriter<T> _writer;
-    private MemoryHandle? _handle;
-
-    public AutoPinBufferWriter(IBufferWriter<T> writer) {
-      _writer = writer;
-    }
-
-    public void Advance(int count) {
-      _handle?.Dispose();
-      _writer.Advance(count);
-    }
-
-    public Memory<T> GetMemory(int sizeHint = 0) {
-      var memory = _writer.GetMemory(sizeHint);
-      _handle = memory.Pin();
-      return memory;
-    }
-
-    public Span<T> GetSpan(int sizeHint = 0) {
-      var span = _writer.GetSpan(sizeHint);
-      return span;
-    }
-  }
-
   static class WebSocketPipeUtil {
 
     public static PipeReader UsePipeReader(WebSocket webSocket, int sizeHint = 1400, PipeOptions? pipeOptions = null, ILogger? logger = null, CancellationToken cancellation = default) {
