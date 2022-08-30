@@ -1,3 +1,4 @@
+using ObsDotnetSocket.DataTypes;
 using ObsDotnetSocket.DataTypes.Predefineds;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.WebSockets;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -140,39 +142,60 @@ namespace ObsDotnetSocket.Test {
     }
 
     [Fact]
-    public async Task TestTrollServerAsync() {
+    public async Task TestParallelAsync() {
       var cancellation = new CancellationTokenSource();
       var server = RunMockServer(cancellation.Token, ServeEchoAsync);
-      var tasks = new List<Task<GetRecordDirectoryResponse>>();
+      var tasks = new List<Task>();
       try {
-        var socket = new ClientSocket();
-        var client = new ObsClientSocket(client: socket);
-        socket.SetOptions = (sock) => {
-          sock.Options.KeepAliveInterval = TimeSpan.FromMilliseconds(1000);
-        };
-
-
+        var client = new ObsClientSocket();
         await client.ConnectAsync(_mockServerUri, Password, cancellation: cancellation.Token).ConfigureAwait(false);
 
         for (int i = 0; i < 30; i++) {
-          tasks.Add(client.GetRecordDirectoryAsync(cancellation.Token));
+          tasks.Add((i % 2) switch {
+            0 => client.GetStudioModeEnabledAsync(cancellation.Token),
+            _ => client.GetVersionAsync(cancellation.Token),
+          });
         }
         await Task.WhenAll(tasks).ConfigureAwait(false);
-        Assert.All(tasks, t => Assert.Equal("C:\\Users", t.Result.RecordDirectory));
-
-        tasks.Clear();
-        for (int i = 0; i < 30; i++) {
-          tasks.Add(client.GetRecordDirectoryAsync(cancellation.Token));
-        }
-
-        await Task.WhenAll(tasks).ConfigureAwait(false);
-        Assert.All(tasks, t => Assert.Equal("C:\\Users", t.Result.RecordDirectory));
+        Assert.All(tasks, t => Assert.True(t.IsCompletedSuccessfully));
       }
       catch (Exception ex) {
-        cancellation.Cancel();
-        Assert.IsType<QueueCancelledException>(ex);
+        Debug.WriteLine(ex);
       }
       finally {
+        cancellation.Cancel();
+        server.Close();
+      }
+    }
+
+    [Fact]
+    public async Task TestTrollServerAsync() {
+      var cancellation = new CancellationTokenSource();
+      var server = RunMockServer(cancellation.Token, ServeTrollAsync);
+      try {
+        var socket = new ClientSocket {
+          SetOptions = (sock) => {
+            sock.Options.KeepAliveInterval = TimeSpan.FromMilliseconds(1000);
+          }
+        };
+        var client = new ObsClientSocket(client: socket);
+        await client.ConnectAsync(_mockServerUri, Password, cancellation: cancellation.Token).ConfigureAwait(false);
+
+        var recordTasks = new List<Task<GetRecordDirectoryResponse>>();
+        for (int i = 0; i < 30; i++) {
+          recordTasks.Add(client.GetRecordDirectoryAsync(cancellation.Token));
+        }
+
+        try {
+          await Task.WhenAll(recordTasks).ConfigureAwait(false);
+          Assert.Fail("exception not fired");
+        }
+        catch (QueueCancelledException) {
+          Debug.WriteLine("Huh?");
+        }
+      }
+      finally {
+        cancellation.Cancel();
         server.Close();
       }
     }
@@ -237,36 +260,9 @@ namespace ObsDotnetSocket.Test {
       return (webSocketContext, session);
     }
 
-    private static async Task ServeEchoAsync(HttpListenerContext context, CancellationToken token) {
+    private static async Task ServeTrollAsync(HttpListenerContext context, CancellationToken token) {
       var (webSocketContext, session) = await HandshakeAsync(context, token).ConfigureAwait(false);
       using var _1 = session;
-
-      var channel = Channel.CreateUnbounded<string>();
-
-      for (int i = 0; i < 30; i++) {
-        string? guid = await session.ReceiveAsync(@"{
-  ""op"": 6,
-  ""d"": {
-    ""requestType"": ""GetRecordDirectory"",
-    ""requestId"": ""{guid}""
-  }
-}").ConfigureAwait(false);
-
-        await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
-    },
-    ""requestType"": ""GetRecordDirectory"",
-    ""responseData"": {
-      ""recordDirectory"": ""C:\\Users""
-    }
-  },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      }
 
       var guids = new List<string>();
       for (int i = 0; i < 20; i++) {
@@ -301,8 +297,27 @@ namespace ObsDotnetSocket.Test {
       await webSocketContext.WebSocket.SendAsync(
         new ArraySegment<byte>(buffer), WebSocketMessageType.Binary, true, token
       ).ConfigureAwait(false);
+    }
 
-      //await webSocketContext.WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "", token).ConfigureAwait(false);
+    private static async Task ServeEchoAsync(HttpListenerContext context, CancellationToken token) {
+      var (_, session) = await HandshakeAsync(context, token).ConfigureAwait(false);
+      using var _1 = session;
+
+      for (int i = 0; i < 30; i++) {
+        string json = await session.ReceiveAsync().ConfigureAwait(false);
+        string guid = Regex.Match(json, @"[0-9a-f]{8}-[0-9a-f]{4}[^""]*").Value;
+        if (json.Contains(@"""requestType"":""GetVersion"",")) {
+          await session.SendGetVersionResponseAsync(guid).ConfigureAwait(false);
+        }
+        else if (json.Contains(@"""requestType"":""GetStudioModeEnabled"",")) {
+          await session.SendGetStudioModeEnabledResponseAsync(guid).ConfigureAwait(false);
+        }
+        else {
+          throw new Exception("Unexpected request");
+        }
+      }
+
+      Debug.WriteLine("Served all messages");
     }
 
     private static async Task ServeAsync(HttpListenerContext context, CancellationToken token) {
@@ -317,23 +332,7 @@ namespace ObsDotnetSocket.Test {
   ""op"": 6
 }").ConfigureAwait(false);
 
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": { ""code"": 100, ""result"": true },
-    ""requestType"": ""GetVersion"",
-    ""responseData"": {
-      ""availableRequests"": [""PressInputPropertiesButton"", ""GetHotkeyList"", ""OpenInputInteractDialog"", ""SaveSourceScreenshot"", ""GetVersion"", ""SetInputName"", ""SetSceneName"", ""GetStats"", ""TriggerStudioModeTransition"", ""SetInputAudioSyncOffset"", ""GetSceneCollectionList"", ""BroadcastCustomEvent"", ""Sleep"", ""SetSceneSceneTransitionOverride"", ""CallVendorRequest"", ""CreateSceneCollection"", ""SetStudioModeEnabled"", ""TriggerHotkeyByName"", ""OpenVideoMixProjector"", ""TriggerHotkeyByKeySequence"", ""GetPersistentData"", ""SetSceneItemIndex"", ""SetPersistentData"", ""SetCurrentSceneCollection"", ""SetInputMute"", ""SetCurrentPreviewScene"", ""SetCurrentProgramScene"", ""OpenSourceProjector"", ""GetProfileList"", ""SetCurrentProfile"", ""RemoveProfile"", ""CreateProfile"", ""GetProfileParameter"", ""SetProfileParameter"", ""GetInputPropertiesListPropertyItems"", ""GetInputAudioBalance"", ""GetStreamServiceSettings"", ""GetVideoSettings"", ""SetVideoSettings"", ""SetInputAudioBalance"", ""SetInputVolume"", ""SetStreamServiceSettings"", ""GetInputDefaultSettings"", ""GetSpecialInputs"", ""GetInputKindList"", ""GetRecordDirectory"", ""GetInputMute"", ""GetCurrentPreviewScene"", ""GetReplayBufferStatus"", ""GetSourceActive"", ""GetSourceScreenshot"", ""GetSourcePrivateSettings"", ""SetSourcePrivateSettings"", ""SetSourceFilterEnabled"", ""GetInputList"", ""GetSceneList"", ""GetGroupList"", ""SetInputSettings"", ""GetCurrentProgramScene"", ""GetSceneItemId"", ""RemoveScene"", ""CreateScene"", ""GetSceneSceneTransitionOverride"", ""RemoveInput"", ""CreateInput"", ""GetSceneItemLocked"", ""GetInputSettings"", ""ToggleInputMute"", ""SetCurrentSceneTransition"", ""GetInputVolume"", ""GetInputAudioSyncOffset"", ""GetInputAudioMonitorType"", ""SetInputAudioMonitorType"", ""StartVirtualCam"", ""GetInputAudioTracks"", ""SetInputAudioTracks"", ""GetTransitionKindList"", ""GetSceneItemTransform"", ""GetSceneTransitionList"", ""GetVirtualCamStatus"", ""GetCurrentSceneTransition"", ""SetCurrentSceneTransitionDuration"", ""SetCurrentSceneTransitionSettings"", ""GetCurrentSceneTransitionCursor"", ""SetTBarPosition"", ""StopOutput"", ""ToggleOutput"", ""GetSourceFilterList"", ""GetSourceFilterDefaultSettings"", ""CreateSourceFilter"", ""RemoveSourceFilter"", ""SetSourceFilterName"", ""GetSourceFilter"", ""StopRecord"", ""ToggleRecord"", ""SetSourceFilterIndex"", ""SetSourceFilterSettings"", ""SetSceneItemTransform"", ""GetSceneItemList"", ""GetGroupSceneItemList"", ""CreateSceneItem"", ""RemoveSceneItem"", ""DuplicateSceneItem"", ""GetSceneItemEnabled"", ""SetSceneItemEnabled"", ""SetSceneItemLocked"", ""GetSceneItemIndex"", ""StartReplayBuffer"", ""GetSceneItemBlendMode"", ""SetSceneItemBlendMode"", ""GetSceneItemPrivateSettings"", ""SetSceneItemPrivateSettings"", ""StopVirtualCam"", ""ToggleVirtualCam"", ""StopReplayBuffer"", ""ToggleReplayBuffer"", ""SaveReplayBuffer"", ""GetLastReplayBufferReplay"", ""GetOutputList"", ""GetOutputStatus"", ""StartOutput"", ""GetOutputSettings"", ""SetOutputSettings"", ""GetStreamStatus"", ""StopStream"", ""ToggleStream"", ""StartStream"", ""SendStreamCaption"", ""GetRecordStatus"", ""StartRecord"", ""ToggleRecordPause"", ""PauseRecord"", ""ResumeRecord"", ""SetMediaInputCursor"", ""GetMediaInputStatus"", ""OffsetMediaInputCursor"", ""TriggerMediaInputAction"", ""GetStudioModeEnabled"", ""OpenInputPropertiesDialog"", ""OpenInputFiltersDialog"", ""GetMonitorList""],
-      ""obsVersion"": ""27.2.4"",
-      ""obsWebSocketVersion"": ""5.0.1"",
-      ""platform"": ""windows"",
-      ""platformDescription"": ""Windows 11 Version 2009"",
-      ""rpcVersion"": 1,
-      ""supportedImageFormats"": [""bmp"", ""jpeg"", ""jpg"", ""pbm"", ""pgm"", ""png"", ""ppm"", ""xbm"", ""xpm""]
-    }
-  },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+      await session.SendGetVersionResponseAsync(guid!).ConfigureAwait(false);
 
       guid = await session.ReceiveAsync(@"{
   ""op"": 6,
@@ -344,22 +343,7 @@ namespace ObsDotnetSocket.Test {
   }
 }").ConfigureAwait(false);
 
-      // In real, op follows d.
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestType"": ""GetStudioModeEnabled"",
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""comment"": null,
-      ""result"": true
-    },
-    ""responseData"": {
-      ""studioModeEnabled"": false
-    }
-  },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+      await session.SendGetStudioModeEnabledResponseAsync(guid!).ConfigureAwait(false);
 
       guid = await session.ReceiveAsync(@"{
   ""op"": 6,

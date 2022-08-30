@@ -89,6 +89,10 @@ namespace ObsDotnetSocket {
     }
 
     public async Task<RequestResponse?> RequestAsync(IRequest request, CancellationToken cancellation = default) {
+      if (!IsConnected) {
+        throw new InvalidOperationException("WebSocket is not connected");
+      }
+
       using var source = CancellationTokenSource.CreateLinkedTokenSource(cancellation, _cancellation.Token);
       var token = source.Token;
       token.ThrowIfCancellationRequested();

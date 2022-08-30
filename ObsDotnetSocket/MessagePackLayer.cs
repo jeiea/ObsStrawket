@@ -91,13 +91,19 @@ namespace ObsDotnetSocket {
       linked.ThrowIfCancellationRequested();
       prefixer.Commit();
 
+      _logger?.LogDebug("SendAsync prefixer: 0x{a0:x2}, 0x{a1:x2}, 0x{a2:x2}, 0x{a3:x2}",
+        prefix[0], prefix[1], prefix[2], prefix[3]);
+      _logger?.LogDebug("SendAsync prefixer.Prefix: 0x{a0:x2}, 0x{a1:x2}, 0x{a2:x2}, 0x{a3:x2}",
+        prefixer.Prefix.Span[0], prefixer.Prefix.Span[1], prefixer.Prefix.Span[2], prefixer.Prefix.Span[3]);
+      _logger?.LogDebug("SendAsync prefixer.Length: {}, _writer.UnflushedBytes: {}",
+        prefixer.Length, _writer.Writer.UnflushedBytes);
       var output = new TaskCompletionSource<object?>();
       await _sendQueue.Writer.WriteAsync(new(output, linked), linked).ConfigureAwait(false);
       await _writer.Writer.FlushAsync(linked).ConfigureAwait(false);
 
       _logger?.LogDebug("SendAsync output await {}", value.GetType().Name);
       await output.Task.ConfigureAwait(false);
-      _logger?.LogDebug("SendAsync output waited {}", value.GetType().Name);
+      _logger?.LogDebug("SendAsync output awaited {}", value.GetType().Name);
     }
 
     public void Cancel(Exception exception) {
@@ -119,8 +125,10 @@ namespace ObsDotnetSocket {
         while (await queue.WaitToReadAsync()) {
           int messageLength = await ReadLengthAsync(bytes, default);
           var readResult = await bytes.ReadAtLeastAsync(messageLength, default);
+          _logger?.LogDebug("RunSendLoopAsync readResult: {}", readResult);
           var item = await queue.ReadAsync();
           try {
+            _logger?.LogDebug("RunSendLoopAsync read item");
             await SendExclusivelyAsync(item, messageLength, readResult);
           }
           catch (Exception exception) {
@@ -132,6 +140,7 @@ namespace ObsDotnetSocket {
         }
       }
       catch (Exception fault) {
+        _logger?.LogDebug("RunSendLoopAsync quit: {}", fault);
         _sendQueue.Writer.TryComplete(fault);
         await bytes.CompleteAsync(fault).ConfigureAwait(false);
         while (!queue.Completion.IsCompleted) {
@@ -172,13 +181,19 @@ namespace ObsDotnetSocket {
     private async Task<int> ReadLengthAsync(PipeReader reader, CancellationToken cancellation) {
       var result = await reader!.ReadAsync(cancellation).ConfigureAwait(false);
       try {
+        _logger?.LogDebug("ReadLengthAsync buffer.Length: {}, isCancelled: {}, isCompleted: {}",
+          result.Buffer.Length, result.IsCanceled, result.IsCompleted);
         if (result.Buffer.IsEmpty) {
           return 0;
         }
 
         var header = result.Buffer.Slice(0, 4);
         header.CopyTo(_lengthBuffer);
-        return BitConverter.ToInt32(_lengthBuffer, 0);
+        int length = BitConverter.ToInt32(_lengthBuffer, 0);
+        _logger?.LogDebug("ReadLengthAsync header.Length: {}, 0x{a0:x2}, 0x{a1:x2}, 0x{a2:x2}, 0x{a3:x2}",
+          header.Length, _lengthBuffer[0], _lengthBuffer[1], _lengthBuffer[2], _lengthBuffer[3]);
+        _logger?.LogDebug("ReadLengthAsync read messageLength: {}, 0x{length:x}", length, length);
+        return length;
       }
       finally {
         var consumed = result.Buffer.GetPosition(Math.Min(result.Buffer.Length, 4));
