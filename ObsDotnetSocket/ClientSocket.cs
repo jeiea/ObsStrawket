@@ -116,7 +116,7 @@ namespace ObsDotnetSocket {
       }
     }
 
-    public async Task CloseAsync(WebSocketCloseStatus status = WebSocketCloseStatus.NormalClosure, string? description = null, Exception? exception = null) {
+    public async Task CloseAsync(WebSocketCloseStatus status = WebSocketCloseStatus.NormalClosure, string? description = "Client closed websocket", Exception? exception = null) {
       await _writeSemaphore.WaitAsync().ConfigureAwait(false);
       try {
         await CloseInternalAsync(status, description, exception).ConfigureAwait(false);
@@ -149,7 +149,7 @@ namespace ObsDotnetSocket {
       }
 
       try {
-        ClearQueue(exception ?? new ObsWebSocketException("Websocket closed"));
+        ClearQueue(exception);
         await Task.WhenAny(_socket.SendTask, Task.Delay(1000)).ConfigureAwait(false);
         if (_clientWebSocket.State == WebSocketState.Open || _clientWebSocket.State == WebSocketState.CloseReceived) {
           await _clientWebSocket.CloseOutputAsync(status, description, default).ConfigureAwait(false);
@@ -209,7 +209,7 @@ namespace ObsDotnetSocket {
       }
     }
 
-    private void ClearQueue(Exception exception) {
+    private void ClearQueue(Exception? exception = null) {
       _socket.Cancel(exception);
       _socket.Dispose();
       _cancellation.Cancel();

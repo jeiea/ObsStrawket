@@ -97,7 +97,7 @@ namespace ObsDotnetSocket {
       _logger?.LogDebug("SendAsync output awaited {}", value.GetType().Name);
     }
 
-    public void Cancel(Exception exception) {
+    public void Cancel(Exception? exception = null) {
       _sendQueue.Writer.Complete(exception);
       _writer.Writer.Complete(exception);
       _reader?.Complete(exception);

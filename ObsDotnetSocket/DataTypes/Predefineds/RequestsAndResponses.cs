@@ -85,7 +85,7 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
     /// Average time in milliseconds that OBS is taking to render a frame<br />
     /// </summary>
     [Key("averageFrameRenderTime")]
-    public int AverageFrameRenderTime { get; set; }
+    public double AverageFrameRenderTime { get; set; }
     /// <summary>
     /// Number of frames skipped by OBS in the render thread<br />
     /// </summary>

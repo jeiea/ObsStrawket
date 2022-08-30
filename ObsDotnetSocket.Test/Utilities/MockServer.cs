@@ -242,6 +242,38 @@ namespace ObsDotnetSocket.Test.Utilities {
   ""op"": 7
 }".Replace("{guid}", guid)).ConfigureAwait(false);
 
+      guid = await session.ReceiveAsync(@"{
+  ""op"": 6,
+  ""d"": {
+    ""requestType"": ""GetStats"",
+    ""requestId"": ""{guid}""
+  }
+}").ConfigureAwait(false);
+
+      await session.SendAsync(@"{
+  ""d"": {
+    ""requestId"": ""{guid}"",
+    ""requestStatus"": {
+      ""code"": 100,
+      ""result"": true
+    },
+    ""requestType"": ""GetStats"",
+    ""responseData"": {
+      ""activeFps"": 60.0000024000001,
+      ""availableDiskSpace"": 198612.01953125,
+      ""averageFrameRenderTime"": 0.534547,
+      ""cpuUsage"": 11.508459378338541,
+      ""memoryUsage"": 948.94140625,
+      ""outputSkippedFrames"": 0,
+      ""outputTotalFrames"": 268,
+      ""renderSkippedFrames"": 46,
+      ""renderTotalFrames"": 558618,
+      ""webSocketSessionIncomingMessages"": 13,
+      ""webSocketSessionOutgoingMessages"": 13
+    }
+  },
+  ""op"": 7
+}".Replace("{guid}", guid)).ConfigureAwait(false);
 
       guid = await session.ReceiveAsync(@"{
   ""d"": {

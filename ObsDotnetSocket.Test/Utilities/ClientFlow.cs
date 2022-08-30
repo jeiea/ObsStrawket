@@ -53,6 +53,9 @@ namespace ObsDotnetSocket.Test.Utilities {
       var directory = await client.GetRecordDirectoryAsync(cancellation).ConfigureAwait(false);
       Assert.True(Directory.Exists(directory.RecordDirectory));
 
+      var stats = await client.GetStatsAsync(cancellation).ConfigureAwait(false);
+      Assert.Equal(11.508459378338541, stats.CpuUsage);
+
       await client.StartRecordAsync(cancellation).ConfigureAwait(false);
       await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
       await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
