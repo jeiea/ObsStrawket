@@ -79,14 +79,7 @@ namespace ObsDotnetSocket {
       var prefixer = new PrefixingBufferWriter<byte>(_writer.Writer, sizeof(int));
       MessagePackSerializer.Serialize(prefixer, value, _serialOptions, linked);
       byte[] prefix = BitConverter.GetBytes((int)prefixer.Length);
-      {
-        using var _ = prefixer.Prefix.Pin();
-        prefixer.Prefix.Span[0] = prefix[0];
-        prefixer.Prefix.Span[1] = prefix[1];
-        prefixer.Prefix.Span[2] = prefix[2];
-        prefixer.Prefix.Span[3] = prefix[3];
-        //prefix.CopyTo(prefixer.Prefix.Slice(0, sizeof(int)).Span);
-      }
+      prefix.CopyTo(prefixer.Prefix.Slice(0, sizeof(int)).Span);
 
       linked.ThrowIfCancellationRequested();
       prefixer.Commit();
