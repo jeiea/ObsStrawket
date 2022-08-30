@@ -3,11 +3,9 @@ namespace ObsDotnetSocket {
   using Microsoft.Extensions.Logging;
   using Nerdbank.Streams;
   using ObsDotnetSocket.DataTypes;
-  using ObsDotnetSocket.DataTypes.Predefineds;
   using ObsDotnetSocket.Serialization;
   using System;
   using System.Buffers;
-  using System.Diagnostics;
   using System.IO.Pipelines;
   using System.Net.WebSockets;
   using System.Runtime.InteropServices;
@@ -46,7 +44,7 @@ namespace ObsDotnetSocket {
       if (_reader != null) {
         return;
       }
-      _reader = WebSocketPipeUtil.UsePipeReader(_socket, logger: _logger, cancellation: _cancellation.Token);
+      _reader = UsePipeReader(_socket, logger: _logger, cancellation: _cancellation.Token);
       SendTask = Task.Run(RunSendLoopAsync);
     }
 
@@ -79,7 +77,7 @@ namespace ObsDotnetSocket {
       var prefixer = new PrefixingBufferWriter<byte>(_writer.Writer, sizeof(int));
       MessagePackSerializer.Serialize(prefixer, value, _serialOptions, linked);
       byte[] prefix = BitConverter.GetBytes((int)prefixer.Length);
-      prefix.CopyTo(prefixer.Prefix.Slice(0, sizeof(int)).Span);
+      prefix.CopyTo(prefixer.Prefix.Span);
 
       linked.ThrowIfCancellationRequested();
       prefixer.Commit();
@@ -118,10 +116,10 @@ namespace ObsDotnetSocket {
         while (await queue.WaitToReadAsync().ConfigureAwait(false)) {
           int messageLength = await ReadLengthAsync(bytes, default).ConfigureAwait(false);
           var readResult = await bytes.ReadAtLeastAsync(messageLength, default).ConfigureAwait(false);
-          _logger?.LogDebug("RunSendLoopAsync readResult: {}", readResult);
+          _logger?.LogDebug("RunSendLoopAsync readResult.Length: {}", readResult.Buffer.Length);
           var item = await queue.ReadAsync().ConfigureAwait(false);
           try {
-            _logger?.LogDebug("RunSendLoopAsync read item");
+            _logger?.LogTrace("RunSendLoopAsync read item");
             await SendExclusivelyAsync(item, messageLength, readResult).ConfigureAwait(false);
           }
           catch (Exception exception) {
@@ -194,6 +192,48 @@ namespace ObsDotnetSocket {
       }
     }
 
+    public static PipeReader UsePipeReader(WebSocket webSocket, int sizeHint = 0, PipeOptions? pipeOptions = null, ILogger? logger = null, CancellationToken cancellation = default) {
+      var pipe = new Pipe(pipeOptions ?? PipeOptions.Default);
+      _ = Task.Run(async delegate {
+        try {
+          var prefixer = new PrefixingBufferWriter<byte>(pipe.Writer, sizeof(int));
+
+          while (true) {
+            cancellation.ThrowIfCancellationRequested();
+            var memory = prefixer.GetMemory(sizeHint);
+            using var handle = memory.Pin();
+            var segment = GetSegment(memory);
+            var readResult = await webSocket.ReceiveAsync(segment, cancellation).ConfigureAwait(false);
+            logger?.LogDebug("UsePipeReader received: {}", BitConverter.ToString(segment.Array, segment.Offset, readResult.Count));
+
+            if (webSocket.State == WebSocketState.CloseReceived && readResult.MessageType == WebSocketMessageType.Close) {
+              // Tell the PipeReader that there's no more data coming
+              await pipe.Writer.CompleteAsync().ConfigureAwait(false);
+              break;
+            }
+
+            logger?.LogDebug("Advance WebsocketRead {}", sizeof(int) + readResult.Count);
+            prefixer.Advance(readResult.Count);
+            if (readResult.EndOfMessage) {
+              BitConverter.GetBytes((int)prefixer.Length).CopyTo(prefixer.Prefix.Span);
+              logger?.LogDebug("UsePipeReader flush messageLength: {}", prefixer.Length);
+              prefixer.Commit();
+              var result = await pipe.Writer.FlushAsync(cancellation).ConfigureAwait(false);
+              if (result.IsCompleted) {
+                break;
+              }
+            }
+          }
+        }
+        catch (Exception exception) {
+          // Propagate the exception to the reader.
+          await pipe.Writer.CompleteAsync(exception).ConfigureAwait(false);
+          logger?.LogDebug("UsePipeReader: {}", exception);
+        }
+      }, cancellation);
+
+      return pipe.Reader;
+    }
 
     private static ArraySegment<byte> GetSegment(ReadOnlyMemory<byte> memory) {
       if (MemoryMarshal.TryGetArray(memory, out var segment)) {

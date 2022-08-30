@@ -61,7 +61,7 @@ namespace ObsDotnetSocket.Test.Utilities {
 }".Replace("{guid}", guid).Replace("{modeEnabled}", modeEnabled ? "true" : "false"));
     }
 
-    public Task SendGetVersionResponseAsync(string guid) {
+    public Task SendGetVersionResponseAsync(string guid, string platformDescription = "Windows 11 Version 2009") {
       return SendAsync(@"{
   ""d"": {
     ""requestId"": ""{guid}"",
@@ -72,13 +72,13 @@ namespace ObsDotnetSocket.Test.Utilities {
       ""obsVersion"": ""27.2.4"",
       ""obsWebSocketVersion"": ""5.0.1"",
       ""platform"": ""windows"",
-      ""platformDescription"": ""Windows 11 Version 2009"",
+      ""platformDescription"": ""{platformDescription}"",
       ""rpcVersion"": 1,
       ""supportedImageFormats"": [""bmp"", ""jpeg"", ""jpg"", ""pbm"", ""pgm"", ""png"", ""ppm"", ""xbm"", ""xpm""]
     }
   },
   ""op"": 7
-}".Replace("{guid}", guid));
+}".Replace("{guid}", guid).Replace("{platformDescription}", platformDescription));
     }
 
     public void Dispose() {

@@ -15,6 +15,7 @@ using Xunit;
 namespace ObsDotnetSocket.Test {
   public class MockServerParallelTest {
     private const int _parallelCount = 30;
+    private readonly TaskCompletionSource<int> _serverComplete = new();
 
     [Fact]
     public async Task TestParallelAsync() {
@@ -46,6 +47,7 @@ namespace ObsDotnetSocket.Test {
 
         await Task.WhenAll(tasks).ConfigureAwait(false);
         Assert.All(tasks, t => Assert.True(t.IsCompletedSuccessfully));
+        await _serverComplete.Task.ConfigureAwait(false);
       }
       catch (Exception ex) {
         Debug.WriteLine(ex);
@@ -68,12 +70,14 @@ namespace ObsDotnetSocket.Test {
           }
           channel.Writer.Complete();
         }, token);
+
+        string largeString = new('D', 32 * 1024);
         var sendTask = Task.Run(async () => {
           int i = 0;
           await foreach (string json in channel.Reader.ReadAllAsync(token)) {
             string guid = Regex.Match(json, @"[0-9a-f]{8}-[0-9a-f]{4}[^""]*").Value;
             if (json.Contains(@"""requestType"":""GetVersion"",")) {
-              await session.SendGetVersionResponseAsync(guid).ConfigureAwait(false);
+              await session.SendGetVersionResponseAsync(guid, largeString).ConfigureAwait(false);
             }
             else if (json.Contains(@"""requestType"":""GetStudioModeEnabled"",")) {
               await session.SendGetStudioModeEnabledResponseAsync(guid).ConfigureAwait(false);
@@ -88,6 +92,7 @@ namespace ObsDotnetSocket.Test {
 
         await webSocketContext.WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "", token).ConfigureAwait(false);
         Debug.WriteLine("Served all messages");
+        _serverComplete.SetResult(0);
       }
       catch (Exception ex) {
         Debug.WriteLine(ex);
