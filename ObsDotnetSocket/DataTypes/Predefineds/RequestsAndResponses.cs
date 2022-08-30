@@ -2664,8 +2664,8 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class StartRecord : RecordRequest {
-  }
+  public class StartRecord : RecordRequest { }
+  public class StartRecordResponse : RecordRequestResponse { }
 
   /// <summary>
   /// Stops the record output.<br />

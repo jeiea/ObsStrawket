@@ -56,7 +56,8 @@ namespace ObsDotnetSocket.Test.Utilities {
       var stats = await client.GetStatsAsync(cancellation).ConfigureAwait(false);
       Assert.Equal(11.508459378338541, stats.CpuUsage);
 
-      await client.StartRecordAsync(cancellation).ConfigureAwait(false);
+      var startRecord = await client.StartRecordAsync(cancellation).ConfigureAwait(false);
+      Assert.NotNull(startRecord);
       await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
       await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
       var recording = await client.StopRecordAsync(cancellation).ConfigureAwait(false);

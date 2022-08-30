@@ -213,7 +213,7 @@ namespace ObsDotnetSocket.DataTypes {
       // Record Requests
       new (typeof(GetRecordStatus), typeof(GetRecordStatusResponse), true),
       new (typeof(ToggleRecord), typeof(RequestResponse)),
-      new (typeof(StartRecord), typeof(RequestResponse)),
+      new (typeof(StartRecord), typeof(StartRecordResponse), true),
       new (typeof(StopRecord), typeof(StopRecordResponse), true),
       new (typeof(ToggleRecordPause), typeof(RequestResponse)),
       new (typeof(PauseRecord), typeof(RequestResponse)),

@@ -1475,8 +1475,8 @@ namespace ObsDotnetSocket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public Task StartRecordAsync(CancellationToken cancellation = default) {
-      return _clientSocket.RequestAsync(new StartRecord() { }, cancellation);
+    public async Task<StartRecordResponse> StartRecordAsync(CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new StartRecord() { }, cancellation).ConfigureAwait(false) as StartRecordResponse)!;
     }
 
     /// <summary>
