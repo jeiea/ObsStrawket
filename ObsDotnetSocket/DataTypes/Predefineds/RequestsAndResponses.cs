@@ -244,8 +244,7 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetRecordDirectory : ConfigRequest {
-  }
+  public class GetRecordDirectory : ConfigRequest { }
   public class GetRecordDirectoryResponse : ConfigRequestResponse {
     /// <summary>
     /// Output directory
@@ -1579,8 +1578,7 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class TriggerStudioModeTransition : TransitionsRequest {
-  }
+  public class TriggerStudioModeTransition : TransitionsRequest { }
 
   /// <summary>
   /// Sets the position of the TBar.<br />
@@ -2289,16 +2287,14 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class StartVirtualCam : OutputsRequest {
-  }
+  public class StartVirtualCam : OutputsRequest { }
 
   /// <summary>
   /// Stops the virtualcam output.<br />
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class StopVirtualCam : OutputsRequest {
-  }
+  public class StopVirtualCam : OutputsRequest { }
 
   /// <summary>
   /// Gets the status of the replay buffer output.<br />
@@ -2333,24 +2329,21 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class StartReplayBuffer : OutputsRequest {
-  }
+  public class StartReplayBuffer : OutputsRequest { }
 
   /// <summary>
   /// Stops the replay buffer output.<br />
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class StopReplayBuffer : OutputsRequest {
-  }
+  public class StopReplayBuffer : OutputsRequest { }
 
   /// <summary>
   /// Saves the contents of the replay buffer output.<br />
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class SaveReplayBuffer : OutputsRequest {
-  }
+  public class SaveReplayBuffer : OutputsRequest { }
 
   /// <summary>
   /// Gets the filename of the last replay buffer save file.<br />
@@ -2371,8 +2364,7 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class GetOutputList : OutputsRequest {
-  }
+  public class GetOutputList : OutputsRequest { }
 
   public class GetOutputListResponse : OutputsRequestResponse {
     [Key("outputs")]
@@ -2591,16 +2583,14 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class StartStream : StreamRequest {
-  }
+  public class StartStream : StreamRequest { }
 
   /// <summary>
   /// Stops the stream output.<br />
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class StopStream : StreamRequest {
-  }
+  public class StopStream : StreamRequest { }
 
   /// <summary>
   /// Sends CEA-608 caption text over the stream output.<br />
@@ -2656,8 +2646,7 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class ToggleRecord : RecordRequest {
-  }
+  public class ToggleRecord : RecordRequest { }
 
   /// <summary>
   /// Starts the record output.<br />
@@ -2686,24 +2675,21 @@ namespace ObsDotnetSocket.DataTypes.Predefineds {
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class ToggleRecordPause : RecordRequest {
-  }
+  public class ToggleRecordPause : RecordRequest { }
 
   /// <summary>
   /// Pauses the record output.<br />
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class PauseRecord : RecordRequest {
-  }
+  public class PauseRecord : RecordRequest { }
 
   /// <summary>
   /// Resumes the record output.<br />
   /// - Latest Supported RPC Version: `1`<br />
   /// - Added in v5.0.0<br />
   /// </summary>
-  public class ResumeRecord : RecordRequest {
-  }
+  public class ResumeRecord : RecordRequest { }
 
   public class MediaInputsRequest : Request { }
   public class MediaInputsRequestResponse : RequestResponse { }

@@ -277,7 +277,6 @@ namespace ObsDotnetSocket.Test.Utilities {
 
       guid = await session.ReceiveAsync(@"{
   ""d"": {
-    ""requestData"": [],
     ""requestId"": ""{guid}"",
     ""requestType"": ""StartRecord""
   },

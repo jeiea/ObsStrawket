@@ -2,6 +2,7 @@ namespace ObsDotnetSocket.Serialization {
   using MessagePack;
   using MessagePack.Formatters;
   using ObsDotnetSocket.DataTypes;
+  using System;
 
   class RequestResponseFormatter : IMessagePackFormatter<IRequestResponse> {
     public static readonly RequestResponseFormatter Instance = new();
@@ -13,11 +14,9 @@ namespace ObsDotnetSocket.Serialization {
       }
 
       var peeker = reader.CreatePeekReader();
-      if (!FormatterUtil.SeekByKey(ref peeker, "responseData")) {
-        return MessagePackSerializer.Deserialize<RawRequestResponse>(ref reader, options);
-      }
-
-      var response = (MessagePackSerializer.Deserialize(type.Response, ref peeker, options) as RequestResponse)!;
+      var response = FormatterUtil.SeekByKey(ref peeker, "responseData")
+        ? (MessagePackSerializer.Deserialize(type.Response, ref peeker, options) as RequestResponse)!
+        : (Activator.CreateInstance(type.Response) as RequestResponse)!;
       response.RequestId = FormatterUtil.SeekByKey(reader, "requestId").ReadString();
       peeker = FormatterUtil.SeekByKey(reader, "requestStatus");
       response.RequestStatus = MessagePackSerializer.Deserialize<RequestStatus>(ref peeker, options);
