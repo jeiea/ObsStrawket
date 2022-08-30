@@ -16,7 +16,7 @@ namespace ObsDotnetSocket {
     private const int _supportedRpcVersion = 1;
 
     private readonly ConcurrentDictionary<string, TaskCompletionSource<RequestResponse>> _requests = new();
-    private readonly SemaphoreSlim _connectSemaphore = new(1);
+    private readonly SemaphoreSlim _writeSemaphore = new(1);
     private readonly ILogger? _logger;
 
     private MessagePackLayer _socket;
@@ -41,7 +41,7 @@ namespace ObsDotnetSocket {
     ) {
       cancellation.ThrowIfCancellationRequested();
 
-      await _connectSemaphore.WaitAsync(cancellation).ConfigureAwait(false);
+      await _writeSemaphore.WaitAsync(cancellation).ConfigureAwait(false);
       try {
         if (_isOpen) {
           try {
@@ -84,7 +84,7 @@ namespace ObsDotnetSocket {
         _isOpen = true;
       }
       finally {
-        _connectSemaphore.Release();
+        _writeSemaphore.Release();
       }
     }
 
@@ -107,30 +107,40 @@ namespace ObsDotnetSocket {
         var waiter = new TaskCompletionSource<RequestResponse>();
         _requests[guid] = waiter;
 
-        await _socket.SendAsync(request, token).ConfigureAwait(false);
+        await SendSafeAsync(request, token).ConfigureAwait(false);
         return await waiter.Task.ConfigureAwait(false);
       }
       else {
-        await _socket.SendAsync(request, token).ConfigureAwait(false);
+        await SendSafeAsync(request, token).ConfigureAwait(false);
         return null;
       }
     }
 
     public async Task CloseAsync(WebSocketCloseStatus status = WebSocketCloseStatus.NormalClosure, string? description = null, Exception? exception = null) {
-      await _connectSemaphore.WaitAsync().ConfigureAwait(false);
+      await _writeSemaphore.WaitAsync().ConfigureAwait(false);
       try {
         await CloseInternalAsync(status, description, exception).ConfigureAwait(false);
       }
       finally {
-        _connectSemaphore.Release();
+        _writeSemaphore.Release();
       }
     }
 
     public void Dispose() {
       ClearQueue(new ObsWebSocketException("Socket disposed"));
-      _connectSemaphore.Dispose();
+      _writeSemaphore.Dispose();
       _clientWebSocket.Dispose();
       GC.SuppressFinalize(this);
+    }
+
+    private async Task SendSafeAsync(IRequest request, CancellationToken token) {
+      await _writeSemaphore.WaitAsync(token).ConfigureAwait(false);
+      try {
+        await _socket.SendAsync(request, token).ConfigureAwait(false);
+      }
+      finally {
+        _writeSemaphore.Release();
+      }
     }
 
     private async Task CloseInternalAsync(WebSocketCloseStatus status = WebSocketCloseStatus.NormalClosure, string? description = null, Exception? exception = null) {

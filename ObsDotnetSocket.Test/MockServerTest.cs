@@ -22,7 +22,7 @@ namespace ObsDotnetSocket.Test {
     [Fact]
     public async Task TestTrollUserAsync() {
       var cancellation = new CancellationTokenSource();
-      var client = new ObsClientSocket();
+      var client = ClientFlow.GetDebugClient();
       using var server = new MockServer().Run(cancellation.Token);
 
       var connections = new List<bool>();
@@ -71,7 +71,7 @@ namespace ObsDotnetSocket.Test {
     public async Task TestServerAbortAsync() {
       var cancellation = new CancellationTokenSource();
       var abort = Task.CompletedTask;
-      var client = new ObsClientSocket();
+      var client = ClientFlow.GetDebugClient();
       client.Closed += (o) => {
         Debug.WriteLine(o);
       };
@@ -113,7 +113,7 @@ namespace ObsDotnetSocket.Test {
           sock.Options.KeepAliveInterval = TimeSpan.FromMilliseconds(1000);
         }
       };
-      var client = new ObsClientSocket(client: socket);
+      var client = ClientFlow.GetDebugClient(socket);
       await client.ConnectAsync(MockServer.DefaultUri, MockServer.Password, cancellation: cancellation.Token).ConfigureAwait(false);
 
       var recordTasks = new List<Task<GetRecordDirectoryResponse>>();
