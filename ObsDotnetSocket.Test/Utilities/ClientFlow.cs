@@ -8,13 +8,13 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace ObsDotnetSocket.Test {
-  internal class CommonFlow {
+namespace ObsDotnetSocket.Test.Utilities {
+  internal class ClientFlow {
     private readonly Channel<IEvent> _events = Channel.CreateUnbounded<IEvent>();
 
     public async Task RunClientAsync(Uri uri, ObsClientSocket? socket = null, CancellationToken cancellation = default) {
       var client = socket ?? new ObsClientSocket(new DebugLoggerProvider().CreateLogger("Client"));
-      await client.ConnectAsync(uri, MockServerTest.Password, cancellation: cancellation).ConfigureAwait(false);
+      await client.ConnectAsync(uri, MockServer.Password, cancellation: cancellation).ConfigureAwait(false);
 
       var version = await client.GetVersionAsync(cancellation).ConfigureAwait(false);
       Assert.Contains("bmp", version.SupportedImageFormats);

@@ -1,4 +1,4 @@
-namespace ObsDotnetSocket.Test {
+namespace ObsDotnetSocket.Test.Utilities {
   using MessagePack;
   using Newtonsoft.Json.Linq;
   using System;

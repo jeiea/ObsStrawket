@@ -3,6 +3,7 @@ namespace ObsDotnetSocket.Test {
   using ObsDotnetSocket.DataTypes;
   using ObsDotnetSocket.DataTypes.Predefineds;
   using ObsDotnetSocket.Serialization;
+  using ObsDotnetSocket.Test.Utilities;
   using System;
   using System.Linq;
   using System.Net;
@@ -23,7 +24,7 @@ namespace ObsDotnetSocket.Test {
 
     [Fact]
     public async Task TestSystemNetWebSocketsAsync() {
-      await new CommonFlow().RunClientAsync(new Uri("ws://127.0.0.1:4455")).ConfigureAwait(false);
+      await new ClientFlow().RunClientAsync(new Uri("ws://127.0.0.1:4455")).ConfigureAwait(false);
     }
 
     [Fact]
