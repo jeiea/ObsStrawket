@@ -122,14 +122,14 @@ namespace ObsDotnetSocket {
       var bytes = _writer.Reader;
 
       try {
-        while (await queue.WaitToReadAsync()) {
-          int messageLength = await ReadLengthAsync(bytes, default);
-          var readResult = await bytes.ReadAtLeastAsync(messageLength, default);
+        while (await queue.WaitToReadAsync().ConfigureAwait(false)) {
+          int messageLength = await ReadLengthAsync(bytes, default).ConfigureAwait(false);
+          var readResult = await bytes.ReadAtLeastAsync(messageLength, default).ConfigureAwait(false);
           _logger?.LogDebug("RunSendLoopAsync readResult: {}", readResult);
-          var item = await queue.ReadAsync();
+          var item = await queue.ReadAsync().ConfigureAwait(false);
           try {
             _logger?.LogDebug("RunSendLoopAsync read item");
-            await SendExclusivelyAsync(item, messageLength, readResult);
+            await SendExclusivelyAsync(item, messageLength, readResult).ConfigureAwait(false);
           }
           catch (Exception exception) {
             item.Output.SetException(exception);
@@ -144,7 +144,7 @@ namespace ObsDotnetSocket {
         _sendQueue.Writer.TryComplete(fault);
         await bytes.CompleteAsync(fault).ConfigureAwait(false);
         while (!queue.Completion.IsCompleted) {
-          var item = await queue.ReadAsync();
+          var item = await queue.ReadAsync().ConfigureAwait(false);
           item.Output.SetException(fault);
         }
       }
