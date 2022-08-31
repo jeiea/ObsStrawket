@@ -41,6 +41,7 @@ namespace ObsDotnetSocket {
     ) {
       cancellation.ThrowIfCancellationRequested();
 
+      _logger?.LogInformation("ConnectAsync to {}.", uri);
       await _writeSemaphore.WaitAsync(cancellation).ConfigureAwait(false);
       try {
         if (_isOpen) {
@@ -82,6 +83,7 @@ namespace ObsDotnetSocket {
         _cancellation = new();
         _ = RunReceiveLoopAsync();
         _isOpen = true;
+        _logger?.LogInformation("ConnectAsync to {} complete.", uri);
       }
       finally {
         _writeSemaphore.Release();
@@ -99,27 +101,31 @@ namespace ObsDotnetSocket {
 
       string guid = $"{Guid.NewGuid()}";
       request.RequestId = guid;
+      _logger?.LogInformation("RequestAsync {} start.", request.GetType().Name);
 
       bool willWaitResponse = DataTypeMapping.RequestToTypes.TryGetValue(request.RequestType, out var typeMapping)
           && typeMapping.Response != typeof(RequestResponse);
-      _logger?.LogDebug("SendAsync: {}", request.GetType().Name);
+      RequestResponse? response = null;
       if (willWaitResponse) {
         var waiter = new TaskCompletionSource<RequestResponse>();
         _requests[guid] = waiter;
 
         await SendSafeAsync(request, token).ConfigureAwait(false);
-        return await waiter.Task.ConfigureAwait(false);
+        response = await waiter.Task.ConfigureAwait(false);
       }
       else {
         await SendSafeAsync(request, token).ConfigureAwait(false);
-        return null;
       }
+      _logger?.LogInformation("RequestAsync {} finished.", request.GetType().Name);
+      return response;
     }
 
     public async Task CloseAsync(WebSocketCloseStatus status = WebSocketCloseStatus.NormalClosure, string? description = "Client closed websocket", Exception? exception = null) {
+      _logger?.LogInformation("CloseAsync");
       await _writeSemaphore.WaitAsync().ConfigureAwait(false);
       try {
         await CloseInternalAsync(status, description, exception).ConfigureAwait(false);
+        _logger?.LogInformation("CloseAsync complete.");
       }
       finally {
         _writeSemaphore.Release();
@@ -165,11 +171,12 @@ namespace ObsDotnetSocket {
     }
 
     private async Task RunReceiveLoopAsync() {
+      using var _1 = _logger?.BeginScope(nameof(RunReceiveLoopAsync));
       try {
         while (_clientWebSocket.State != WebSocketState.Closed) {
           _cancellation.Token.ThrowIfCancellationRequested();
           var message = await _socket.ReceiveAsync(_cancellation.Token).ConfigureAwait(false);
-          _logger?.LogInformation("Received message: {}", message?.GetType().Name ?? "null");
+          _logger?.LogDebug("Received message: {}", message?.GetType().Name ?? "null");
           if (message == null) {
             await CloseAsync(exception: new WebSocketException(GetCloseMessage())).ConfigureAwait(false);
             return;
@@ -181,7 +188,7 @@ namespace ObsDotnetSocket {
       }
       catch (Exception exception) {
         await CloseAsync(exception: new QueueCancelledException(innerException: exception)).ConfigureAwait(false);
-        _logger?.LogDebug("RunReceiveLoopAsync: {}", exception);
+        _logger?.LogDebug(exception, "Queue cancelled");
       }
     }
 
@@ -200,11 +207,11 @@ namespace ObsDotnetSocket {
           }
         }
         else {
-          _logger?.LogWarning("Failed to remove completed task");
+          _logger?.LogWarning("Dispatch: Failed to remove completed task");
         }
         break;
       default:
-        _logger?.LogWarning("Unknown message type: {}", message.GetType());
+        _logger?.LogWarning("Dispatch: Unknown message type: {}", message.GetType());
         break;
       }
     }

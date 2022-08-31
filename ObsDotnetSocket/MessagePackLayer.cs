@@ -49,12 +49,13 @@ namespace ObsDotnetSocket {
     }
 
     public async Task<IOpCodeMessage?> ReceiveAsync(CancellationToken cancellation = default) {
+      using var _1 = _logger?.BeginScope(nameof(ReceiveAsync));
       using var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(cancellation, _cancellation.Token);
       var linked = linkedSource.Token;
       linked.ThrowIfCancellationRequested();
 
       int length = await ReadLengthAsync(_reader!, default).ConfigureAwait(false);
-      _logger?.LogInformation("Receive read length: {}", length);
+      _logger?.LogDebug("read length: {}", length);
       var result = await _reader!.ReadAtLeastAsync(length, default).ConfigureAwait(false);
       try {
         if (result.Buffer.IsEmpty) {
@@ -70,6 +71,8 @@ namespace ObsDotnetSocket {
     }
 
     public async Task SendAsync(IOpCodeMessage value, CancellationToken cancellation = default) {
+      using var _1 = _logger?.BeginScope(nameof(SendAsync));
+
       using var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(cancellation, _cancellation.Token);
       var linked = linkedSource.Token;
       linked.ThrowIfCancellationRequested();
@@ -82,19 +85,18 @@ namespace ObsDotnetSocket {
       linked.ThrowIfCancellationRequested();
       prefixer.Commit();
 
-      _logger?.LogDebug("SendAsync prefixer: 0x{a0:x2}, 0x{a1:x2}, 0x{a2:x2}, 0x{a3:x2}",
-        prefix[0], prefix[1], prefix[2], prefix[3]);
-      _logger?.LogDebug("SendAsync prefixer.Prefix: 0x{a0:x2}, 0x{a1:x2}, 0x{a2:x2}, 0x{a3:x2}",
-        prefixer.Prefix.Span[0], prefixer.Prefix.Span[1], prefixer.Prefix.Span[2], prefixer.Prefix.Span[3]);
-      _logger?.LogDebug("SendAsync prefixer.Length: {}, _writer.UnflushedBytes: {}",
-        prefixer.Length, _writer.Writer.UnflushedBytes);
+      _logger?.LogDebug(
+        "prefixer.Length: {uncommit}, _writer.UnflushedBytes: {unflushed}, prefix: 0x{a3:x2}{a2:x2}{a1:x2}{a0:x2}",
+        prefixer.Length, _writer.Writer.UnflushedBytes,
+        prefixer.Prefix.Span[3], prefixer.Prefix.Span[2], prefixer.Prefix.Span[1], prefixer.Prefix.Span[0]
+      );
       var output = new TaskCompletionSource<object?>();
       await _sendQueue.Writer.WriteAsync(new(output, linked), linked).ConfigureAwait(false);
       await _writer.Writer.FlushAsync(linked).ConfigureAwait(false);
 
-      _logger?.LogDebug("SendAsync output await {}", value.GetType().Name);
+      _logger?.LogDebug("output await {}", value.GetType().Name);
       await output.Task.ConfigureAwait(false);
-      _logger?.LogDebug("SendAsync output awaited {}", value.GetType().Name);
+      _logger?.LogDebug("output awaited {}", value.GetType().Name);
     }
 
     public void Cancel(Exception? exception = null) {
@@ -109,6 +111,7 @@ namespace ObsDotnetSocket {
     }
 
     private async Task RunSendLoopAsync() {
+      using var _1 = _logger?.BeginScope(nameof(RunSendLoopAsync));
       var queue = _sendQueue.Reader;
       var bytes = _writer.Reader;
 
@@ -116,10 +119,10 @@ namespace ObsDotnetSocket {
         while (await queue.WaitToReadAsync().ConfigureAwait(false)) {
           int messageLength = await ReadLengthAsync(bytes, default).ConfigureAwait(false);
           var readResult = await bytes.ReadAtLeastAsync(messageLength, default).ConfigureAwait(false);
-          _logger?.LogDebug("RunSendLoopAsync readResult.Length: {}", readResult.Buffer.Length);
+          _logger?.LogDebug("readResult.Length: {}", readResult.Buffer.Length);
           var item = await queue.ReadAsync().ConfigureAwait(false);
           try {
-            _logger?.LogTrace("RunSendLoopAsync read item");
+            _logger?.LogTrace("read item");
             await SendExclusivelyAsync(item, messageLength, readResult).ConfigureAwait(false);
           }
           catch (Exception exception) {
@@ -131,7 +134,7 @@ namespace ObsDotnetSocket {
         }
       }
       catch (Exception fault) {
-        _logger?.LogDebug("RunSendLoopAsync quit: {}", fault);
+        _logger?.LogDebug("quit: {}", fault);
         _sendQueue.Writer.TryComplete(fault);
         await bytes.CompleteAsync(fault).ConfigureAwait(false);
         while (!queue.Completion.IsCompleted) {
@@ -142,6 +145,8 @@ namespace ObsDotnetSocket {
     }
 
     private async Task SendExclusivelyAsync(Deferred<object?> item, int messageLength, ReadResult readResult) {
+      using var _1 = _logger?.BeginScope(nameof(SendExclusivelyAsync));
+
       var (output, cancellation) = item;
       if (cancellation.IsCancellationRequested) {
         output.SetException(new OperationCanceledException(cancellation));
@@ -158,32 +163,25 @@ namespace ObsDotnetSocket {
 
         var segment = GetSegment(memory);
         var cut = new ArraySegment<byte>(segment.Array, segment.Offset, count);
-        _logger?.LogDebug("SendExclusivelyAsync advanceTo: {}, bytesRemaining: {}, data: {}", messageLength, bytesRemaining, BitConverter.ToString(cut.Array, cut.Offset, cut.Count));
+        _logger?.LogDebug("advanceTo: {}, bytesRemaining: {}, data: {}", messageLength, bytesRemaining, BitConverter.ToString(cut.Array, cut.Offset, cut.Count));
         await _socket.SendAsync(cut, WebSocketMessageType.Binary, isEnd, cancellation).ConfigureAwait(false);
 
         if (isEnd) {
           break;
         }
       }
-      _logger?.LogDebug("SendExclusivelyAsync SetResult null");
+      _logger?.LogDebug("SetResult null");
       output.SetResult(null);
     }
 
     private async Task<int> ReadLengthAsync(PipeReader reader, CancellationToken cancellation) {
-      var result = await reader!.ReadAsync(cancellation).ConfigureAwait(false);
+      using var _1 = _logger?.BeginScope(nameof(ReadLengthAsync));
+      var result = await reader!.ReadAtLeastAsync(sizeof(int), cancellation).ConfigureAwait(false);
       try {
-        _logger?.LogDebug("ReadLengthAsync buffer.Length: {}, isCancelled: {}, isCompleted: {}",
-          result.Buffer.Length, result.IsCanceled, result.IsCompleted);
-        if (result.Buffer.IsEmpty) {
-          return 0;
-        }
-
-        var header = result.Buffer.Slice(0, 4);
-        header.CopyTo(_lengthBuffer);
+        result.Buffer.Slice(0, 4).CopyTo(_lengthBuffer);
         int length = BitConverter.ToInt32(_lengthBuffer, 0);
-        _logger?.LogDebug("ReadLengthAsync header.Length: {}, 0x{a0:x2}, 0x{a1:x2}, 0x{a2:x2}, 0x{a3:x2}",
-          header.Length, _lengthBuffer[0], _lengthBuffer[1], _lengthBuffer[2], _lengthBuffer[3]);
-        _logger?.LogDebug("ReadLengthAsync read messageLength: {}, 0x{length:x}", length, length);
+        _logger?.LogDebug("buffer.Length: {}, messageLength: {}(0x{length:x})",
+          result.Buffer.Length, length, length);
         return length;
       }
       finally {
@@ -195,6 +193,8 @@ namespace ObsDotnetSocket {
     public static PipeReader UsePipeReader(WebSocket webSocket, int sizeHint = 0, PipeOptions? pipeOptions = null, ILogger? logger = null, CancellationToken cancellation = default) {
       var pipe = new Pipe(pipeOptions ?? PipeOptions.Default);
       _ = Task.Run(async delegate {
+        using var _1 = logger?.BeginScope(nameof(UsePipeReader));
+
         try {
           var prefixer = new PrefixingBufferWriter<byte>(pipe.Writer, sizeof(int));
 
@@ -204,7 +204,7 @@ namespace ObsDotnetSocket {
             using var handle = memory.Pin();
             var segment = GetSegment(memory);
             var readResult = await webSocket.ReceiveAsync(segment, cancellation).ConfigureAwait(false);
-            logger?.LogDebug("UsePipeReader received: {}", BitConverter.ToString(segment.Array, segment.Offset, readResult.Count));
+            logger?.LogDebug("received: {}", BitConverter.ToString(segment.Array, segment.Offset, readResult.Count));
 
             if (webSocket.State == WebSocketState.CloseReceived && readResult.MessageType == WebSocketMessageType.Close) {
               // Tell the PipeReader that there's no more data coming
@@ -216,7 +216,7 @@ namespace ObsDotnetSocket {
             prefixer.Advance(readResult.Count);
             if (readResult.EndOfMessage) {
               BitConverter.GetBytes((int)prefixer.Length).CopyTo(prefixer.Prefix.Span);
-              logger?.LogDebug("UsePipeReader flush messageLength: {}", prefixer.Length);
+              logger?.LogDebug("flush messageLength: {}", prefixer.Length);
               prefixer.Commit();
               var result = await pipe.Writer.FlushAsync(cancellation).ConfigureAwait(false);
               if (result.IsCompleted) {
