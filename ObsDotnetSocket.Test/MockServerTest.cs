@@ -24,15 +24,21 @@ namespace ObsDotnetSocket.Test {
       var cancellation = new CancellationTokenSource();
       var client = ClientFlow.GetDebugClient();
       using var server = new MockServer().Run(cancellation.Token);
+      int openCloseDifference = 0;
 
-      var connections = new List<bool>();
       client.Closed += (o) => {
-        connections.Add(false);
+        Interlocked.Decrement(ref openCloseDifference);
+        if (Math.Abs(openCloseDifference) > 1) {
+          cancellation.Cancel();
+        }
       };
 
       async Task ConnectAsync() {
         await client.ConnectAsync(MockServer.DefaultUri, MockServer.Password, cancellation: cancellation.Token).ConfigureAwait(false);
-        connections.Add(true);
+        Interlocked.Increment(ref openCloseDifference);
+        if (Math.Abs(openCloseDifference) > 1) {
+          cancellation.Cancel();
+        }
       }
 
       var tasks = new List<Task>();
@@ -62,9 +68,7 @@ namespace ObsDotnetSocket.Test {
       }
       await Task.WhenAll(tasks).ConfigureAwait(false);
 
-      int open = connections.Where(x => x == true).Count();
-      int close = connections.Count - open;
-      Assert.True(Math.Abs(open - close) <= 1, "open and close count doesn't match");
+      Assert.True(openCloseDifference <= 1, $"open and close count doesn't match: {openCloseDifference}");
     }
 
     [Fact]
