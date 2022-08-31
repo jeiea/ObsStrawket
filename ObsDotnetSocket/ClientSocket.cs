@@ -214,9 +214,18 @@ namespace ObsDotnetSocket {
       _socket.Dispose();
       _cancellation.Cancel();
       _cancellation.Dispose();
-      foreach (var request in _requests.Values) {
-        request.TrySetException(exception);
+
+      if (exception != null) {
+        foreach (var request in _requests.Values) {
+          request.TrySetException(exception);
+        }
       }
+      else {
+        foreach (var request in _requests.Values) {
+          request.TrySetCanceled();
+        }
+      }
+
       _requests.Clear();
     }
 

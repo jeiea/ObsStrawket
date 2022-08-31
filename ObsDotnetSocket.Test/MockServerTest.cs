@@ -28,6 +28,7 @@ namespace ObsDotnetSocket.Test {
 
       client.Closed += (o) => {
         Interlocked.Decrement(ref openCloseDifference);
+        _ = Task.Run(() => Debug.WriteLine($"Disconnect: {openCloseDifference}"));
         if (Math.Abs(openCloseDifference) > 1) {
           cancellation.Cancel();
         }
@@ -36,6 +37,7 @@ namespace ObsDotnetSocket.Test {
       async Task ConnectAsync() {
         await client.ConnectAsync(MockServer.DefaultUri, MockServer.Password, cancellation: cancellation.Token).ConfigureAwait(false);
         Interlocked.Increment(ref openCloseDifference);
+        _ = Task.Run(() => Debug.WriteLine($"Connect: {openCloseDifference}"));
         if (Math.Abs(openCloseDifference) > 1) {
           cancellation.Cancel();
         }
@@ -64,11 +66,11 @@ namespace ObsDotnetSocket.Test {
             Debug.WriteLine(ex);
           }
         }));
-        await Task.Delay(i * 4).ConfigureAwait(false);
+        await Task.Delay(i * 4, cancellation.Token).ConfigureAwait(false);
       }
       await Task.WhenAll(tasks).ConfigureAwait(false);
 
-      Assert.True(openCloseDifference <= 1, $"open and close count doesn't match: {openCloseDifference}");
+      Assert.InRange(openCloseDifference, 0, 1);
     }
 
     [Fact]
