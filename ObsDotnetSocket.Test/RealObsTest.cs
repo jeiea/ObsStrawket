@@ -7,8 +7,13 @@ namespace ObsDotnetSocket.Test {
 
   public class RealObsTest {
     [Fact]
-    public async Task TestSystemNetWebSocketsAsync() {
+    public async Task TestNormalAsync() {
       await new ClientFlow().RunClientAsync(new Uri("ws://127.0.0.1:4455")).ConfigureAwait(false);
+    }
+
+    [Fact]
+    public async Task TestBadRequestAsync() {
+      await ClientFlow.RequestBadAsync(new Uri("ws://127.0.0.1:4455")).ConfigureAwait(false);
     }
 
     [Fact]

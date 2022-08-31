@@ -2,7 +2,9 @@ using Microsoft.Extensions.Logging.Debug;
 using ObsDotnetSocket.DataTypes;
 using ObsDotnetSocket.DataTypes.Predefineds;
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -17,7 +19,7 @@ namespace ObsDotnetSocket.Test.Utilities {
     }
 
     public async Task RunClientAsync(Uri uri, ObsClientSocket? socket = null, CancellationToken cancellation = default) {
-      var client = socket ?? new ObsClientSocket(new DebugLoggerProvider().CreateLogger("Client"));
+      var client = socket ?? GetDebugClient();
       await client.ConnectAsync(uri, MockServer.Password, cancellation: cancellation).ConfigureAwait(false);
 
       var version = await client.GetVersionAsync(cancellation).ConfigureAwait(false);
@@ -66,6 +68,30 @@ namespace ObsDotnetSocket.Test.Utilities {
       Assert.True(File.Exists(recording.OutputPath));
 
       await client.CloseAsync().ConfigureAwait(false);
+    }
+
+    public static async Task RequestBadAsync(Uri uri, ObsClientSocket? socket = null, CancellationToken cancellation = default) {
+      var client = socket ?? GetDebugClient();
+      await client.ConnectAsync(uri, MockServer.Password, cancellation: cancellation).ConfigureAwait(false);
+
+      var taskSource = new TaskCompletionSource<object?>();
+      client.RecordStateChanged += (ev) => {
+        if (ev.OutputState == OutputState.Stopped) {
+          taskSource.SetResult(null);
+        }
+      };
+      try {
+        await client.StopRecordAsync(cancellation).ConfigureAwait(false);
+        await taskSource.Task.ConfigureAwait(false);
+        var response = await client.StopRecordAsync(cancellation).ConfigureAwait(false);
+        Assert.Fail("Unexpected response");
+      }
+      catch (FailureResponseException ex) {
+        Debug.WriteLine(ex);
+      }
+      finally {
+        await client.StopRecordAsync(cancellation).ConfigureAwait(false);
+      }
     }
 
     private void QueueEvent(IEvent @event) {
