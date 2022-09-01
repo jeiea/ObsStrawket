@@ -1,0 +1,25 @@
+name: dotnet test
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: windows-latest
+    env:
+      DOTNET_NOLOGO: true
+    steps:
+      # Checkout the repo
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          fetch-depth: 0
+      # Setup .NET SDK
+      - name: Setup
+        uses: actions/setup-dotnet@main
+        with:
+          dotnet-version: "6.0"
+      # Run tests
+      - name: Test
+        run: dotnet test

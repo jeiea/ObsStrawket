@@ -5,7 +5,7 @@ on:
     branches: [release]
 
 jobs:
-  github-publish:
+  publish:
     runs-on: windows-latest
     env:
       DOTNET_NOLOGO: true
@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@main
         with:
           fetch-depth: 0
-      # Setup .NET Core SDK
+      # Setup .NET SDK
       - name: Setup
         uses: actions/setup-dotnet@main
         with:
