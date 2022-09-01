@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Xunit;
 
 namespace ObsStrawket.Test {
-  public class SimpleTest {
+  public class BadRequestTest {
     [Fact(Timeout = 1000)]
-    public async Task TestDisconnectedRequestAsync() {
+    public async Task TestAsync() {
       try {
         var client = ClientFlow.GetDebugClient();
 

@@ -11,8 +11,10 @@ namespace ObsStrawket.Test.Utilities {
   using ContextHandler = Func<HttpListenerContext, CancellationToken, Task>;
 
   class MockServer : IDisposable {
-    public static readonly Uri DefaultUri = new("ws://127.0.0.1:44550");
     public static readonly string Password = "ahrEYXzXKytCIlpI";
+
+    public int Port { get; private set; }
+    public Uri Uri { get => new($"ws://127.0.0.1:{Port}/"); }
 
     private HttpListener? _httpListener;
     private bool _isDisposed;
@@ -20,9 +22,22 @@ namespace ObsStrawket.Test.Utilities {
     public MockServer Run(CancellationToken token, ContextHandler? handler = null) {
       token.ThrowIfCancellationRequested();
 
-      _httpListener = new HttpListener();
-      _httpListener.Prefixes.Add("http://127.0.0.1:44550/");
-      _httpListener.Start();
+      var random = new Random();
+
+      do {
+        try {
+          Port = random.Next(1024, ushort.MaxValue);
+          _httpListener = new HttpListener();
+          _httpListener.Prefixes.Add($"http://127.0.0.1:{Port}/");
+          _httpListener.Start();
+        }
+        catch (HttpListenerException ex) {
+          // Failed to listen on prefix '' because it conflicts with an existing registration on the machine.
+          if (ex.ErrorCode == 0xb7) {
+            // retry
+          }
+        }
+      } while (_httpListener?.IsListening == false);
 
       _ = Task.Run(() => ServeForeverAsync(handler ?? ServeAsync, token), token);
       return this;

@@ -13,19 +13,19 @@ using System.Threading.Tasks;
 using Xunit;
 
 namespace ObsStrawket.Test {
-  public class MockServerParallelTest {
+  public class ParallelRequestTest {
     private const int _parallelCount = 30;
     private readonly TaskCompletionSource<int> _serverComplete = new();
 
     [Fact]
-    public async Task TestParallelAsync() {
+    public async Task TestAsync() {
       CancellationTokenSource cancellation = new();
       using var server = new MockServer().Run(cancellation.Token, ServeEchoAsync);
       var tasks = new List<Task<IRequestResponse>>();
 
       try {
         var client = ClientFlow.GetDebugClient();
-        await client.ConnectAsync(MockServer.DefaultUri, MockServer.Password, cancellation: cancellation.Token).ConfigureAwait(false);
+        await client.ConnectAsync(server.Uri, MockServer.Password, cancellation: cancellation.Token).ConfigureAwait(false);
 
         async Task<IRequestResponse> GetStudioModeEnabledAsync() {
           var result = await client.GetStudioModeEnabledAsync(cancellation.Token).ConfigureAwait(false);
