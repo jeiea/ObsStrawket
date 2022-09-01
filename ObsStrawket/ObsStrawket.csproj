@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>ObsStrawket</RootNamespace>
+    <Nullable>enable</Nullable>
+    <LangVersion>10</LangVersion>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>True</EnableNETAnalyzers>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MessagePack" Version="2.4.35" />
+    <PackageReference Include="MessagePackAnalyzer" Version="2.4.35">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0-preview.7.22375.6" />
+    <PackageReference Include="Nerdbank.Streams" Version="2.9.91-alpha" />
+    <PackageReference Include="System.Net.WebSockets" Version="4.3.0" />
+    <PackageReference Include="System.Threading.Channels" Version="7.0.0-preview.7.22375.6" />
+  </ItemGroup>
+</Project>
