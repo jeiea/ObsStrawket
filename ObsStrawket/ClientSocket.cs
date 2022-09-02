@@ -10,6 +10,8 @@ namespace ObsStrawket {
   using System.Threading.Tasks;
 
   public class ClientSocket : IDisposable {
+    private static readonly Uri _defaultUri = new("ws://127.0.0.1:4455");
+
     public event Action<IEvent> Event = delegate { };
     public event Action<object> Closed = delegate { };
 
@@ -19,10 +21,11 @@ namespace ObsStrawket {
     private readonly SemaphoreSlim _writeSemaphore = new(1);
     private readonly ILogger? _logger;
 
-    private MessagePackLayer _socket;
     private ClientWebSocket _clientWebSocket = new();
     private CancellationTokenSource _cancellation = new();
     private bool _isOpen = false;
+    private SendPipeline _sender;
+    private ReceivePipeline _receiver;
 
     public bool IsConnected { get => _clientWebSocket.State == WebSocketState.Open; }
 
@@ -30,7 +33,8 @@ namespace ObsStrawket {
 
     public ClientSocket(ILogger? logger = null) {
       _logger = logger;
-      _socket = new(_clientWebSocket);
+      _sender = new(_clientWebSocket);
+      _receiver = new(_clientWebSocket);
     }
 
     public async Task ConnectAsync(
@@ -46,7 +50,7 @@ namespace ObsStrawket {
       try {
         if (_isOpen) {
           try {
-            await CloseInternalAsync(exception: new ObsWebSocketException("Websocket connect")).ConfigureAwait(false);
+            await CloseInternalAsync(exception: new ObsWebSocketException($"ConnectAsync to {uri}")).ConfigureAwait(false);
           }
           catch (Exception ex) {
             _logger?.LogWarning("Ignore close exception: {}", ex);
@@ -55,13 +59,15 @@ namespace ObsStrawket {
 
         _clientWebSocket = new ClientWebSocket();
         _clientWebSocket.Options.AddSubProtocol("obswebsocket.msgpack");
+        _sender = new(_clientWebSocket, _logger);
+        _receiver = new(_clientWebSocket, _logger);
         SetOptions(_clientWebSocket);
-        _socket = new MessagePackLayer(_clientWebSocket, _logger);
 
-        await _clientWebSocket.ConnectAsync(uri ?? MessagePackLayer.defaultUri, cancellation).ConfigureAwait(false);
+        await _clientWebSocket.ConnectAsync(uri ?? _defaultUri, cancellation).ConfigureAwait(false);
 
-        _socket.RunLoop();
-        var hello = (Hello)(await _socket.ReceiveAsync(cancellation).ConfigureAwait(false))!;
+        _receiver.Run();
+        _sender.Run();
+        var hello = (Hello)(await _receiver.ReceiveAsync(cancellation).ConfigureAwait(false))!;
         if (hello == null) {
           throw new Exception(GetCloseMessage() ?? "Handshake failure");
         }
@@ -74,9 +80,9 @@ namespace ObsStrawket {
           EventSubscriptions = events,
           Authentication = MakeOneTimePass(password, hello.Authentication),
         };
-        await _socket.SendAsync(identify, cancellation).ConfigureAwait(false);
+        await _sender.SendAsync(identify, cancellation).ConfigureAwait(false);
 
-        if (await _socket.ReceiveAsync(cancellation).ConfigureAwait(false) is not Identified identified) {
+        if (await _receiver.ReceiveAsync(cancellation).ConfigureAwait(false) is not Identified identified) {
           throw new AuthenticationFailureException(GetCloseMessage());
         }
 
@@ -133,7 +139,8 @@ namespace ObsStrawket {
     }
 
     public void Dispose() {
-      ClearQueue(new ObsWebSocketException("Socket disposed"));
+      Reset(new ObsWebSocketException("Socket disposed"));
+      _receiver.Dispose();
       _writeSemaphore.Dispose();
       _clientWebSocket.Dispose();
       GC.SuppressFinalize(this);
@@ -142,7 +149,7 @@ namespace ObsStrawket {
     private async Task SendSafeAsync(IRequest request, CancellationToken token) {
       await _writeSemaphore.WaitAsync(token).ConfigureAwait(false);
       try {
-        await _socket.SendAsync(request, token).ConfigureAwait(false);
+        await _sender.SendAsync(request, token).ConfigureAwait(false);
       }
       finally {
         _writeSemaphore.Release();
@@ -155,11 +162,18 @@ namespace ObsStrawket {
       }
 
       try {
-        ClearQueue(exception);
-        await Task.WhenAny(_socket.SendTask, Task.Delay(1000)).ConfigureAwait(false);
+        Reset(exception);
         if (_clientWebSocket.State == WebSocketState.Open || _clientWebSocket.State == WebSocketState.CloseReceived) {
           await _clientWebSocket.CloseOutputAsync(status, description, default).ConfigureAwait(false);
         }
+
+        _receiver.Dispose();
+        var cleanup = Task.WhenAll(_sender.SendTask, _receiver.ReceiveTask);
+        var completed = await Task.WhenAny(cleanup, Task.Delay(1000)).ConfigureAwait(false);
+        if (completed != cleanup) {
+          _logger?.LogInformation("Queue is not terminated, force close.");
+        }
+
         _clientWebSocket.Dispose();
 
         if (_isOpen) {
@@ -173,18 +187,18 @@ namespace ObsStrawket {
     private async Task RunReceiveLoopAsync() {
       using var _1 = _logger?.BeginScope(nameof(RunReceiveLoopAsync));
       try {
-        while (_clientWebSocket.State != WebSocketState.Closed) {
-          _cancellation.Token.ThrowIfCancellationRequested();
-          var message = await _socket.ReceiveAsync(_cancellation.Token).ConfigureAwait(false);
+        while (_clientWebSocket.State != WebSocketState.Closed && !_cancellation.IsCancellationRequested) {
+          var message = await _receiver.ReceiveAsync(_cancellation.Token).ConfigureAwait(false);
           _logger?.LogDebug("Received message: {}", message?.GetType().Name ?? "null");
           if (message == null) {
             await CloseAsync(exception: new WebSocketException(GetCloseMessage())).ConfigureAwait(false);
-            return;
+            break;
           }
 
-          _cancellation.Token.ThrowIfCancellationRequested();
           _ = Task.Run(() => Dispatch(message));
         }
+        _logger?.LogDebug("Close, webSocket.State: {}, cancellation: {}",
+          _clientWebSocket.State, _cancellation.IsCancellationRequested);
       }
       catch (Exception exception) {
         await CloseAsync(exception: new QueueCancelledException(innerException: exception)).ConfigureAwait(false);
@@ -216,9 +230,8 @@ namespace ObsStrawket {
       }
     }
 
-    private void ClearQueue(Exception? exception = null) {
-      _socket.Cancel(exception);
-      _socket.Dispose();
+    private void Reset(Exception? exception = null) {
+      _sender.Dispose();
       _cancellation.Cancel();
       _cancellation.Dispose();
 

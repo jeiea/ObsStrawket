@@ -4,7 +4,6 @@ using ObsStrawket.DataTypes.Predefineds;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -94,19 +93,22 @@ namespace ObsStrawket.Test.Utilities {
       }
     }
 
-    private void QueueEvent(IEvent @event) {
-      _ = _events.Writer.WriteAsync(@event);
+#pragma warning disable VSTHRD100 // Avoid async void methods
+    private async void QueueEvent(IEvent @event) {
+      await _events.Writer.WriteAsync(@event);
     }
+#pragma warning restore VSTHRD100 // Avoid async void methods
 
     private async Task<T> ReadEventAsync<T>(CancellationToken cancellation = default) where T : class {
       T? cast;
-      while (true) {
+      while (await _events.Reader.WaitToReadAsync(cancellation).ConfigureAwait(false)) {
         var ev = await _events.Reader.ReadAsync(cancellation).ConfigureAwait(false);
         cast = ev as T;
         if (cast != null) {
           return cast;
         }
       }
+      throw new Exception("Unreachable code");
     }
   }
 }
