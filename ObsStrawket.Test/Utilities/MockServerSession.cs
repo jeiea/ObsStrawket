@@ -3,6 +3,7 @@ namespace ObsStrawket.Test.Utilities {
   using Newtonsoft.Json.Linq;
   using System;
   using System.Diagnostics;
+  using System.IO;
   using System.Net.WebSockets;
   using System.Text.RegularExpressions;
   using System.Threading;
@@ -79,6 +80,23 @@ namespace ObsStrawket.Test.Utilities {
   },
   ""op"": 7
 }".Replace("{guid}", guid).Replace("{platformDescription}", platformDescription));
+    }
+
+    public Task SendGetRecordDirectoryResponseAsync(string guid) {
+      return SendAsync(@"{
+  ""d"": {
+    ""requestId"": ""{guid}"",
+    ""requestStatus"": {
+      ""code"": 100,
+      ""result"": true
+    },
+    ""requestType"": ""GetRecordDirectory"",
+    ""responseData"": {
+      ""recordDirectory"": ""{cd}""
+    }
+  },
+  ""op"": 7
+}".Replace("{guid}", guid).Replace("{cd}", Directory.GetCurrentDirectory().Replace(@"\", @"\\")));
     }
 
     public void Dispose() {

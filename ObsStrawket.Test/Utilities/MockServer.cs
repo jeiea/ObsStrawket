@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.WebSockets;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -106,20 +108,7 @@ namespace ObsStrawket.Test.Utilities {
       }
 
       foreach (string guid in guids.Take(10)) {
-        await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
-    },
-    ""requestType"": ""GetRecordDirectory"",
-    ""responseData"": {
-      ""recordDirectory"": ""C:\\Users""
-    }
-  },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+        await session.SendGetRecordDirectoryResponseAsync(guid).ConfigureAwait(false);
       }
 
       byte[] buffer = new byte[] { 0x01, 0x02, 0x03, 0x04 };
@@ -242,20 +231,7 @@ namespace ObsStrawket.Test.Utilities {
   }
 }").ConfigureAwait(false);
 
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
-    },
-    ""requestType"": ""GetRecordDirectory"",
-    ""responseData"": {
-      ""recordDirectory"": ""C:\\Users""
-    }
-  },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+      await session.SendGetRecordDirectoryResponseAsync(guid!).ConfigureAwait(false);
 
       guid = await session.ReceiveAsync(@"{
   ""op"": 6,
@@ -321,18 +297,19 @@ namespace ObsStrawket.Test.Utilities {
   },
   ""op"": 5
 }").ConfigureAwait(false);
+      string escapedPath = Assembly.GetExecutingAssembly().Location.Replace(@"\", @"\\");
       await session.SendAsync(@"{
   ""d"": {
     ""eventData"": {
       ""outputActive"": true,
-      ""outputPath"": ""C:\\Windows\\System32\\notepad.exe"",
+      ""outputPath"": ""{file}"",
       ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STARTED""
     },
     ""eventIntent"": 64,
     ""eventType"": ""RecordStateChanged""
   },
   ""op"": 5
-}").ConfigureAwait(false);
+}".Replace("{file}", escapedPath)).ConfigureAwait(false);
 
       guid = await session.ReceiveAsync(@"{
   ""op"": 6,
@@ -351,11 +328,11 @@ namespace ObsStrawket.Test.Utilities {
     },
     ""requestType"": ""StopRecord"",
     ""responseData"": {
-      ""outputPath"": ""C:\\Windows\\System32\\notepad.exe""
+      ""outputPath"": ""{file}""
     }
   },
   ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+}".Replace("{guid}", guid).Replace("{file}", escapedPath)).ConfigureAwait(false);
       await session.SendAsync(@"{
   ""d"": {
     ""eventData"": {

@@ -52,7 +52,7 @@ namespace ObsStrawket.Test.Utilities {
       Assert.True(inputSettings.InputSettings.ContainsKey("device_id"), "device_id not found");
 
       var directory = await client.GetRecordDirectoryAsync(cancellation).ConfigureAwait(false);
-      Assert.True(Directory.Exists(directory.RecordDirectory));
+      Assert.True(Directory.Exists(directory.RecordDirectory), $"{directory.RecordDirectory} is not exists.");
 
       var stats = await client.GetStatsAsync(cancellation).ConfigureAwait(false);
       Assert.Equal(11.508459378338541, stats.CpuUsage);
@@ -64,7 +64,7 @@ namespace ObsStrawket.Test.Utilities {
       var recording = await client.StopRecordAsync(cancellation).ConfigureAwait(false);
       await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
       await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
-      Assert.True(File.Exists(recording.OutputPath));
+      Assert.True(File.Exists(recording.OutputPath), $"{recording.OutputPath} is not exists.");
 
       await client.CloseAsync().ConfigureAwait(false);
     }
