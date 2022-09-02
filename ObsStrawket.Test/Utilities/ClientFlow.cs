@@ -95,7 +95,12 @@ namespace ObsStrawket.Test.Utilities {
 
 #pragma warning disable VSTHRD100 // Avoid async void methods
     private async void QueueEvent(IEvent @event) {
-      await _events.Writer.WriteAsync(@event);
+      try {
+        await _events.Writer.WriteAsync(@event);
+      }
+      catch (ChannelClosedException) {
+        // occurs in ServerAbortTest.
+      }
     }
 #pragma warning restore VSTHRD100 // Avoid async void methods
 
