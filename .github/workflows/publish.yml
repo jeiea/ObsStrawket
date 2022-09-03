@@ -18,10 +18,12 @@ jobs:
         uses: actions/setup-dotnet@main
         with:
           dotnet-version: "6.0"
+      - name: Test
+        run: dotnet test
       - name: Package
-        run: dotnet pack --configuration Release
+        run: dotnet pack --include-source --include-symbols --configuration Release
       - name: Publish
-        run: dotnet nuget push ObsStrawket\bin\Release\*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push ObsStrawket/bin/Release/*.nupkg  --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
       - name: Setup nbgv
         uses: dotnet/nbgv@master
         with:
