@@ -21,7 +21,7 @@ jobs:
       - name: Test
         run: dotnet test
       - name: Package
-        run: dotnet pack --include-source --include-symbols --configuration Release
+        run: dotnet pack --include-source --configuration Release
       - name: Publish
         run: dotnet nuget push ObsStrawket/bin/Release/*.nupkg  --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
       - name: Setup nbgv

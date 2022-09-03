@@ -4,6 +4,7 @@
     <RootNamespace>ObsStrawket</RootNamespace>
     <Nullable>enable</Nullable>
     <LangVersion>10</LangVersion>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
   </PropertyGroup>
