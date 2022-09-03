@@ -24,9 +24,5 @@ jobs:
         run: dotnet pack --include-source --configuration Release
       - name: Publish
         run: dotnet nuget push ObsStrawket/bin/Release/*.nupkg  --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
-      - name: Setup nbgv
-        uses: dotnet/nbgv@master
-        with:
-          setAllVars: true
       - name: Create tag
-        run: nbgv tag && git push origin $NBGV_NuGetPackageVersion
+        run: nbgv tag && git push origin $(nbgv get-version -v SimpleVersion)$(nbgv get-version -v PrereleaseVersion)
