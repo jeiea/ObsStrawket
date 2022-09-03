@@ -45,26 +45,28 @@ namespace ObsStrawket {
       var token = _cancellation.Token;
 
       try {
-        while (!token.IsCancellationRequested) {
-          var message = await ReceiveAsync(token).ConfigureAwait(false);
-          if (message == null) {
-            break;
-          }
+        try {
+          while (!token.IsCancellationRequested) {
+            var message = await ReceiveAsync(token).ConfigureAwait(false);
+            if (message == null) {
+              break;
+            }
 
-          await writer.WriteAsync(message).ConfigureAwait(false);
+            await writer.WriteAsync(message).ConfigureAwait(false);
+          }
         }
-      }
-      catch (OperationCanceledException) {
-        // Regard as normal complete
+        catch (OperationCanceledException) {
+          // Regard as normal complete
+        }
+        writer.Complete();
+        await _pipe.Reader.CompleteAsync().ConfigureAwait(false);
+        _logger?.LogTrace("Exit, IsCancellationRequested: {}", _cancellation.IsCancellationRequested);
       }
       catch (Exception exception) {
         writer.TryComplete(exception);
         await _pipe.Reader.CompleteAsync(exception).ConfigureAwait(false);
         _logger?.LogDebug("Exit, {}", exception);
       }
-      writer.Complete();
-      await _pipe.Reader.CompleteAsync().ConfigureAwait(false);
-        _logger?.LogTrace("Exit, IsCancellationRequested: {}", _cancellation.IsCancellationRequested);
     }
 
     private async Task<IOpCodeMessage?> ReceiveAsync(CancellationToken token) {
