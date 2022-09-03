@@ -16,7 +16,9 @@ namespace ObsStrawket.Test {
     public async Task TestAsync() {
       var cancellation = new CancellationTokenSource();
       using var server = new MockServer().Run(cancellation.Token);
-      await new ClientFlow().RunClientAsync(server.Uri, cancellation: cancellation.Token);
+      var client = new ObsClientSocket();
+      await new ClientFlow().RunClientAsync(server.Uri, client, cancellation: cancellation.Token);
+      await new ClientFlow().RunClientAsync(server.Uri, client, cancellation: cancellation.Token);
     }
   }
 }

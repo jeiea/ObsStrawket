@@ -4,6 +4,7 @@ namespace ObsStrawket {
   using ObsStrawket.DataTypes.Predefineds;
   using System;
   using System.Collections.Generic;
+  using System.Net.WebSockets;
   using System.Threading;
   using System.Threading.Tasks;
 
@@ -84,10 +85,7 @@ namespace ObsStrawket {
     public event Action<StudioModeStateChanged> StudioModeStateChanged = delegate { };
     #endregion
 
-    public event Action<object> Closed {
-      add => _clientSocket.Closed += value;
-      remove => _clientSocket.Closed -= value;
-    }
+    public event Action<object> Closed = delegate { };
 
     private readonly ClientSocket _clientSocket;
     private readonly ILogger? _logger;
@@ -97,24 +95,51 @@ namespace ObsStrawket {
     public ObsClientSocket(ILogger? logger = null, ClientSocket? client = null) {
       _logger = logger;
       _clientSocket = client ?? new ClientSocket(logger);
-      _clientSocket.Event += Dispatch;
     }
 
-    public Task ConnectAsync(
+    public async Task ConnectAsync(
       Uri? uri = null,
       string? password = null,
       EventSubscription events = EventSubscription.All,
       CancellationToken cancellation = default
-    ) => _clientSocket.ConnectAsync(uri, password, events, cancellation);
+    ) {
+      await _clientSocket.ConnectAsync(uri, password, events, cancellation).ConfigureAwait(false);
+      _ = Task.Run(DispatchEventAsync, cancellation);
+    }
 
     public Task CloseAsync() => _clientSocket.CloseAsync();
 
-    public Task<RequestResponse?> RequestAsync(IRequest request, CancellationToken cancellation = default)
+    public Task<IRequestResponse?> RequestAsync(IRequest request, CancellationToken cancellation = default)
       => _clientSocket.RequestAsync(request, cancellation);
 
     public void Dispose() {
       _clientSocket.Dispose();
       GC.SuppressFinalize(this);
+    }
+
+    private async Task DispatchEventAsync() {
+      using var _1 = _logger?.BeginScope(nameof(DispatchEventAsync));
+      var events = _clientSocket.Events;
+      try {
+        while (await events.WaitToReadAsync().ConfigureAwait(false)) {
+          DispatchEvent(await events.ReadAsync().ConfigureAwait(false));
+        }
+        InvokeCloseSafe("Normal closure");
+        _logger?.LogTrace("Exit");
+      }
+      catch (Exception exception) {
+        InvokeCloseSafe(exception);
+        _logger?.LogDebug(exception, "Exit");
+      }
+    }
+
+    private void InvokeCloseSafe(object info) {
+      try {
+        Closed(info);
+      }
+      catch (Exception ex) {
+        _logger?.LogWarning(ex, "Close event hander throws");
+      }
     }
 
     #region Requests
@@ -1668,7 +1693,7 @@ namespace ObsStrawket {
     #endregion
 
     #region Event dispatch
-    private void Dispatch(IEvent message) {
+    private void DispatchEvent(IEvent message) {
       Event(message);
       switch (message) {
       case GeneralEvent general:

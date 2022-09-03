@@ -154,16 +154,7 @@ namespace ObsStrawket.Test.Utilities {
   }
 }").ConfigureAwait(false);
 
-      await session.SendAsync(@"{
-  ""op"": 5,
-  ""d"": {
-    ""eventType"": ""StudioModeStateChanged"",
-    ""eventIntent"": 1,
-    ""eventData"": {
-      ""studioModeEnabled"": true,
-    }
-  }
-}").ConfigureAwait(false);
+      await session.SendStudioModeStateChangedAsync(true).ConfigureAwait(false);
 
       guid = await session.ReceiveAsync(@"{
   ""op"": 6,

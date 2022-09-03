@@ -99,6 +99,19 @@ namespace ObsStrawket.Test.Utilities {
 }".Replace("{guid}", guid).Replace("{cd}", Directory.GetCurrentDirectory().Replace(@"\", @"\\")));
     }
 
+    public Task SendStudioModeStateChangedAsync(bool enabled = false) {
+      return SendAsync(@"{
+  ""op"": 5,
+  ""d"": {
+    ""eventType"": ""StudioModeStateChanged"",
+    ""eventIntent"": 1,
+    ""eventData"": {
+      ""studioModeEnabled"": {enabled},
+    }
+  }
+}".Replace("{enabled}", enabled ? "true" : "false"));
+    }
+
     public void Dispose() {
       // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
       Dispose(disposing: true);

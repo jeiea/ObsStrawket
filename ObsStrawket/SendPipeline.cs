@@ -12,14 +12,13 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace ObsStrawket {
-  internal class SendPipeline : IDisposable {
+  internal class SendPipeline {
     private static readonly MessagePackSerializerOptions _serialOptions = new(OpCodeMessageResolver.Instance);
 
     private readonly WebSocket _socket;
     private readonly ILogger? _logger;
     private readonly Pipe _writer = new();
     private readonly Channel<Deferred<object?>> _sendQueue = Channel.CreateBounded<Deferred<object?>>(1);
-    private readonly CancellationTokenSource _cancellation = new();
 
     public Task? SendTask { get; private set; }
 
@@ -28,23 +27,22 @@ namespace ObsStrawket {
       _logger = logger;
     }
 
-    public void Run() {
-      SendTask ??= Task.Run(RunSendLoopAsync);
+    public void Run(CancellationToken cancellation = default) {
+      SendTask ??= Task.Run(() => LoopSendAsync(cancellation), cancellation);
     }
 
     public async Task SendAsync(IOpCodeMessage value, CancellationToken cancellation = default) {
       using var _1 = _logger?.BeginScope(nameof(SendAsync));
 
-      using var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(cancellation, _cancellation.Token);
-      var linked = linkedSource.Token;
-      linked.ThrowIfCancellationRequested();
+      var token = cancellation;
+      token.ThrowIfCancellationRequested();
 
       var prefixer = new PrefixingBufferWriter<byte>(_writer.Writer, sizeof(int));
-      MessagePackSerializer.Serialize(prefixer, value, _serialOptions, linked);
+      MessagePackSerializer.Serialize(prefixer, value, _serialOptions, token);
       byte[] prefix = BitConverter.GetBytes((int)prefixer.Length);
       prefix.CopyTo(prefixer.Prefix.Span);
 
-      linked.ThrowIfCancellationRequested();
+      token.ThrowIfCancellationRequested();
       prefixer.Commit();
 
       _logger?.LogTrace(
@@ -53,25 +51,19 @@ namespace ObsStrawket {
         prefixer.Prefix.Span[3], prefixer.Prefix.Span[2], prefixer.Prefix.Span[1], prefixer.Prefix.Span[0]
       );
       var output = new TaskCompletionSource<object?>();
-      await _sendQueue.Writer.WriteAsync(new(output, linked), linked).ConfigureAwait(false);
-      await _writer.Writer.FlushAsync(linked).ConfigureAwait(false);
+      await _sendQueue.Writer.WriteAsync(new(output, token), token).ConfigureAwait(false);
+      await _writer.Writer.FlushAsync(token).ConfigureAwait(false);
 
       _logger?.LogTrace("output await {}", value.GetType().Name);
       await output.Task.ConfigureAwait(false);
       _logger?.LogTrace("output awaited {}", value.GetType().Name);
     }
 
-    public void Dispose() {
-      _sendQueue.Writer.Complete();
-      _cancellation.Cancel();
-      _cancellation.Dispose();
-    }
-
-    private async Task RunSendLoopAsync() {
-      using var _1 = _logger?.BeginScope(nameof(RunSendLoopAsync));
+    private async Task LoopSendAsync(CancellationToken cancellation) {
+      using var _1 = _logger?.BeginScope(nameof(LoopSendAsync));
       var queue = _sendQueue.Reader;
       var bytes = _writer.Reader;
-      var token = _cancellation.Token;
+      var token = cancellation;
 
       try {
         while (await queue.WaitToReadAsync(token).ConfigureAwait(false)) {
@@ -85,6 +77,7 @@ namespace ObsStrawket {
           }
           catch (Exception exception) {
             item.Output.SetException(exception);
+            throw;
           }
           finally {
             bytes.AdvanceTo(readResult.Buffer.GetPosition(messageLength));

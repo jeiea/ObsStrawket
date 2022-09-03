@@ -12,12 +12,11 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace ObsStrawket {
-  internal class ReceivePipeline : IDisposable {
+  internal class ReceivePipeline {
     private static readonly MessagePackSerializerOptions _serialOptions = new(OpCodeMessageResolver.Instance);
 
     private readonly WebSocket _socket;
     private readonly ILogger? _logger;
-    private readonly CancellationTokenSource _cancellation = new();
     private readonly Channel<IOpCodeMessage> _messages = Channel.CreateUnbounded<IOpCodeMessage>();
     private readonly Pipe _pipe = new();
 
@@ -30,19 +29,13 @@ namespace ObsStrawket {
       _logger = logger;
     }
 
-    public void Run() {
-      ReceiveTask ??= Task.WhenAll(LoopWebSocketReadAsync(), LoopDeserializeAsync());
+    public void Run(CancellationToken token) {
+      ReceiveTask ??= Task.WhenAll(LoopWebSocketReadAsync(token: token), LoopDeserializeAsync(default));
     }
 
-    public void Dispose() {
-      _cancellation.Cancel();
-      _cancellation.Dispose();
-    }
-
-    private async Task LoopDeserializeAsync() {
+    private async Task LoopDeserializeAsync(CancellationToken token = default) {
       using var _1 = _logger?.BeginScope(nameof(LoopDeserializeAsync));
       var writer = _messages.Writer;
-      var token = _cancellation.Token;
 
       try {
         try {
@@ -52,7 +45,7 @@ namespace ObsStrawket {
               break;
             }
 
-            await writer.WriteAsync(message).ConfigureAwait(false);
+            await writer.WriteAsync(message, token).ConfigureAwait(false);
           }
         }
         catch (OperationCanceledException) {
@@ -60,7 +53,7 @@ namespace ObsStrawket {
         }
         writer.Complete();
         await _pipe.Reader.CompleteAsync().ConfigureAwait(false);
-        _logger?.LogTrace("Exit, IsCancellationRequested: {}", _cancellation.IsCancellationRequested);
+        _logger?.LogTrace("Exit, IsCancellationRequested: {}", token.IsCancellationRequested);
       }
       catch (Exception exception) {
         writer.TryComplete(exception);
@@ -101,10 +94,9 @@ namespace ObsStrawket {
       }
     }
 
-    private async Task LoopWebSocketReadAsync(int sizeHint = 0) {
+    private async Task LoopWebSocketReadAsync(int sizeHint = 0, CancellationToken token = default) {
       using var _1 = _logger?.BeginScope(nameof(LoopWebSocketReadAsync));
       var writer = _pipe.Writer;
-      var token = _cancellation.Token;
 
       try {
         var prefixer = new PrefixingBufferWriter<byte>(writer, sizeof(int));

@@ -21,26 +21,38 @@ namespace ObsStrawket.Test {
     public async Task TestAsync() {
       CancellationTokenSource cancellation = new();
       using var server = new MockServer().Run(cancellation.Token, ServeEchoAsync);
-      var tasks = new List<Task<IRequestResponse>>();
+      var tasks = new List<Task<IOpCodeMessage>>();
+      var events = Channel.CreateUnbounded<StudioModeStateChanged>();
 
       try {
         var client = ClientFlow.GetDebugClient();
         await client.ConnectAsync(server.Uri, MockServer.Password, cancellation: cancellation.Token).ConfigureAwait(false);
 
-        async Task<IRequestResponse> GetStudioModeEnabledAsync() {
+#pragma warning disable VSTHRD101 // Avoid unsupported async delegates
+        client.StudioModeStateChanged += async (e) => {
+          await events.Writer.WriteAsync(e).ConfigureAwait(false);
+        };
+#pragma warning restore VSTHRD101 // Avoid unsupported async delegates
+        async Task<IOpCodeMessage> GetStudioModeEnabledAsync() {
           var result = await client.GetStudioModeEnabledAsync(cancellation.Token).ConfigureAwait(false);
           return result;
         }
 
-        async Task<IRequestResponse> GetVersionAsync() {
+        async Task<IOpCodeMessage> SetStudioModeEnabledAsync() {
+          await client.SetStudioModeEnabledAsync(false, cancellation.Token).ConfigureAwait(false);
+          var changed = await events.Reader.ReadAsync(cancellation.Token).ConfigureAwait(false);
+          return changed;
+        }
+
+        async Task<IOpCodeMessage> GetVersionAsync() {
           var result = await client.GetVersionAsync(cancellation.Token).ConfigureAwait(false);
           return result;
         }
 
         for (int i = 0; i < _parallelCount; i++) {
-          // I know i is random, but if I changed this deterministic failure not occured.
-          tasks.Add(Task.Run(() => (i % 2) switch {
+          tasks.Add(Task.Run(() => (i % 3) switch {
             0 => GetStudioModeEnabledAsync(),
+            1 => SetStudioModeEnabledAsync(),
             _ => GetVersionAsync(),
           }));
         }
@@ -81,6 +93,9 @@ namespace ObsStrawket.Test {
             }
             else if (json.Contains(@"""requestType"":""GetStudioModeEnabled"",")) {
               await session.SendGetStudioModeEnabledResponseAsync(guid).ConfigureAwait(false);
+            }
+            else if (json.Contains(@"""requestType"":""SetStudioModeEnabled"",")) {
+              await session.SendStudioModeStateChangedAsync().ConfigureAwait(false);
             }
             else {
               throw new Exception("Unexpected request");
