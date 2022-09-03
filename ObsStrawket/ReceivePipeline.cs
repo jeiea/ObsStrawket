@@ -53,16 +53,18 @@ namespace ObsStrawket {
 
           await writer.WriteAsync(message).ConfigureAwait(false);
         }
-
-        writer.Complete();
-        await _pipe.Reader.CompleteAsync().ConfigureAwait(false);
-        _logger?.LogTrace("Exit, IsCancellationRequested: {}", _cancellation.IsCancellationRequested);
+      }
+      catch (OperationCanceledException) {
+        // Regard as normal complete
       }
       catch (Exception exception) {
         writer.TryComplete(exception);
         await _pipe.Reader.CompleteAsync(exception).ConfigureAwait(false);
         _logger?.LogDebug("Exit, {}", exception);
       }
+      writer.Complete();
+      await _pipe.Reader.CompleteAsync().ConfigureAwait(false);
+        _logger?.LogTrace("Exit, IsCancellationRequested: {}", _cancellation.IsCancellationRequested);
     }
 
     private async Task<IOpCodeMessage?> ReceiveAsync(CancellationToken token) {
@@ -72,7 +74,7 @@ namespace ObsStrawket {
       }
 
       int length = await PipelineHelpers.ReadLengthAsync(reader, _logger, token).ConfigureAwait(false);
-      _logger?.LogDebug("read length: {}", length);
+      _logger?.LogTrace("read length: {}", length);
       if (length == -1) {
         return null;
       }
@@ -105,8 +107,7 @@ namespace ObsStrawket {
       try {
         var prefixer = new PrefixingBufferWriter<byte>(writer, sizeof(int));
 
-        while (true) {
-          token.ThrowIfCancellationRequested();
+        while (!token.IsCancellationRequested) {
           var memory = prefixer.GetMemory(sizeHint);
           using var handle = memory.Pin();
           var segment = PipelineHelpers.GetSegment(memory);
@@ -114,14 +115,15 @@ namespace ObsStrawket {
           _logger?.LogDebug("received: {}", BitConverter.ToString(segment.Array, segment.Offset, readResult.Count));
 
           if (_socket.State == WebSocketState.CloseReceived && readResult.MessageType == WebSocketMessageType.Close) {
+            _logger?.LogDebug("Exit by websocket close");
             break;
           }
 
-          _logger?.LogDebug("Advance WebsocketRead {}", sizeof(int) + readResult.Count);
+          _logger?.LogTrace("Advance WebsocketRead {}", sizeof(int) + readResult.Count);
           prefixer.Advance(readResult.Count);
           if (readResult.EndOfMessage) {
             BitConverter.GetBytes((int)prefixer.Length).CopyTo(prefixer.Prefix.Span);
-            _logger?.LogDebug("flush messageLength: {}", prefixer.Length);
+            _logger?.LogTrace("flush messageLength: {}", prefixer.Length);
             prefixer.Commit();
             var result = await writer.FlushAsync(token).ConfigureAwait(false);
             if (result.IsCompleted) {
@@ -130,6 +132,7 @@ namespace ObsStrawket {
           }
         }
         await writer.CompleteAsync().ConfigureAwait(false);
+        _logger?.LogDebug("Complete, IsCancellationRequested: {}", token.IsCancellationRequested);
       }
       catch (Exception exception) {
         await writer.CompleteAsync(exception).ConfigureAwait(false);

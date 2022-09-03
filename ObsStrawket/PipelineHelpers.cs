@@ -26,7 +26,7 @@ namespace ObsStrawket {
         }
 
         int length = ReadInt(buffer);
-        logger?.LogDebug("buffer.Length: {}, messageLength: {}(0x{length:x})", buffer.Length, length, length);
+        logger?.LogTrace("buffer.Length: {}, messageLength: {}(0x{length:x})", buffer.Length, length, length);
         return length;
       }
       finally {

@@ -47,7 +47,7 @@ namespace ObsStrawket {
       linked.ThrowIfCancellationRequested();
       prefixer.Commit();
 
-      _logger?.LogDebug(
+      _logger?.LogTrace(
         "prefixer.Length: {uncommit}, _writer.UnflushedBytes: {unflushed}, prefix: 0x{a3:x2}{a2:x2}{a1:x2}{a0:x2}",
         prefixer.Length, _writer.Writer.UnflushedBytes,
         prefixer.Prefix.Span[3], prefixer.Prefix.Span[2], prefixer.Prefix.Span[1], prefixer.Prefix.Span[0]
@@ -56,9 +56,9 @@ namespace ObsStrawket {
       await _sendQueue.Writer.WriteAsync(new(output, linked), linked).ConfigureAwait(false);
       await _writer.Writer.FlushAsync(linked).ConfigureAwait(false);
 
-      _logger?.LogDebug("output await {}", value.GetType().Name);
+      _logger?.LogTrace("output await {}", value.GetType().Name);
       await output.Task.ConfigureAwait(false);
-      _logger?.LogDebug("output awaited {}", value.GetType().Name);
+      _logger?.LogTrace("output awaited {}", value.GetType().Name);
     }
 
     public void Dispose() {
@@ -77,7 +77,7 @@ namespace ObsStrawket {
         while (await queue.WaitToReadAsync(token).ConfigureAwait(false)) {
           int messageLength = await PipelineHelpers.ReadLengthAsync(bytes, _logger, token).ConfigureAwait(false);
           var readResult = await bytes.ReadAtLeastAsync(messageLength, token).ConfigureAwait(false);
-          _logger?.LogDebug("readResult.Length: {}", readResult.Buffer.Length);
+          _logger?.LogTrace("readResult.Length: {}", readResult.Buffer.Length);
           var item = await queue.ReadAsync(token).ConfigureAwait(false);
           try {
             _logger?.LogTrace("read item");
@@ -128,7 +128,7 @@ namespace ObsStrawket {
           break;
         }
       }
-      _logger?.LogDebug("SetResult null");
+      _logger?.LogTrace("SetResult null");
       output.SetResult(null);
     }
   }
