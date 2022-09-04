@@ -22,7 +22,7 @@ Of course it supports v5 protocol right now.
 var client = new ObsClientSocket();
 await client.ConnectAsync(new Uri("ws://localhost:4455"), "ahrEYXzXKytCIlpI");
 
-var version = await client.GetVersionAsync(cancellation);
+var version = await client.GetVersionAsync();
 Assert.Contains("bmp", version.SupportedImageFormats);
 
 // Listen specific event.
@@ -45,7 +45,209 @@ client.Event += (ev) => {
     break;
   }
 };
-await client.StartRecordAsync(cancellation);
+await client.StartRecordAsync();
 
 await client.CloseAsync();
 ```
+
+# To do
+- Complete the support list
+- Batch request
+
+# Support list
+Checkmark means it has test.
+
+## Events
+
+- [ ] CurrentPreviewSceneChanged
+- [ ] CurrentProfileChanged
+- [ ] CurrentProfileChanging
+- [ ] CurrentProgramSceneChanged
+- [ ] CurrentSceneCollectionChanged
+- [ ] CurrentSceneCollectionChanging
+- [ ] CurrentSceneTransitionChanged
+- [ ] CurrentSceneTransitionDurationChanged
+- [ ] ExitStarted
+- [ ] InputActiveStateChanged
+- [ ] InputAudioBalanceChanged
+- [ ] InputAudioMonitorTypeChanged
+- [ ] InputAudioSyncOffsetChanged
+- [ ] InputAudioTracksChanged
+- [ ] InputCreated
+- [ ] InputMuteStateChanged
+- [ ] InputNameChanged
+- [ ] InputRemoved
+- [ ] InputShowStateChanged
+- [ ] InputVolumeChanged
+- [ ] InputVolumeMeters
+- [ ] MediaInputActionTriggered
+- [ ] MediaInputPlaybackEnded
+- [ ] MediaInputPlaybackStarted
+- [ ] ProfileListChanged
+- [ ] RecordStateChanged
+- [ ] ReplayBufferSaved
+- [ ] ReplayBufferStateChanged
+- [ ] SceneCollectionListChanged
+- [ ] SceneCreated
+- [ ] SceneItemCreated
+- [ ] SceneItemEnableStateChanged
+- [ ] SceneItemListReindexed
+- [ ] SceneItemLockStateChanged
+- [ ] SceneItemRemoved
+- [ ] SceneItemSelected
+- [ ] SceneItemTransformChanged
+- [ ] SceneListChanged
+- [ ] SceneNameChanged
+- [ ] SceneRemoved
+- [ ] SceneTransitionEnded
+- [ ] SceneTransitionStarted
+- [ ] SceneTransitionVideoEnded
+- [ ] SourceFilterCreated
+- [ ] SourceFilterEnableStateChanged
+- [ ] SourceFilterListReindexed
+- [ ] SourceFilterNameChanged
+- [ ] SourceFilterRemoved
+- [ ] StreamStateChanged
+- [ ] StudioModeStateChanged
+- [ ] VendorEvent
+- [ ] VirtualcamStateChanged
+
+## Requests
+
+- [ ] BroadcastCustomEvent
+- [ ] CallVendorRequest
+- [ ] CreateInput
+- [ ] CreateProfile
+- [ ] CreateScene
+- [ ] CreateSceneCollection
+- [ ] CreateSceneItem
+- [ ] CreateSourceFilter
+- [ ] DuplicateSceneItem
+- [ ] GetCurrentPreviewScene
+- [ ] GetCurrentProgramScene
+- [ ] GetCurrentSceneTransition
+- [ ] GetCurrentSceneTransitionCursor
+- [ ] GetGroupList
+- [ ] GetGroupSceneItemList
+- [ ] GetHotkeyList
+- [ ] GetInputAudioBalance
+- [ ] GetInputAudioMonitorType
+- [ ] GetInputAudioSyncOffset
+- [ ] GetInputAudioTracks
+- [ ] GetInputDefaultSettings
+- [ ] GetInputKindList
+- [ ] GetInputList
+- [ ] GetInputMute
+- [ ] GetInputPropertiesListPropertyItems
+- [ ] GetInputSettings
+- [ ] GetInputVolume
+- [ ] GetLastReplayBufferReplay
+- [ ] GetMediaInputStatus
+- [ ] GetMonitorList
+- [ ] GetOutputList
+- [ ] GetOutputSettings
+- [ ] GetOutputStatus
+- [ ] GetPersistentData
+- [ ] GetProfileList
+- [ ] GetProfileParameter
+- [ ] GetRecordDirectory
+- [ ] GetRecordStatus
+- [ ] GetReplayBufferStatus
+- [ ] GetSceneCollectionList
+- [ ] GetSceneItemBlendMode
+- [ ] GetSceneItemEnabled
+- [ ] GetSceneItemId
+- [ ] GetSceneItemIndex
+- [ ] GetSceneItemList
+- [ ] GetSceneItemLocked
+- [ ] GetSceneItemTransform
+- [ ] GetSceneList
+- [ ] GetSceneSceneTransitionOverride
+- [ ] GetSceneTransitionList
+- [ ] GetSourceActive
+- [ ] GetSourceFilter
+- [ ] GetSourceFilterDefaultSettings
+- [ ] GetSourceFilterList
+- [ ] GetSourceScreenshot
+- [ ] GetSpecialInputs
+- [ ] GetStats
+- [ ] GetStreamServiceSettings
+- [ ] GetStreamStatus
+- [ ] GetStudioModeEnabled
+- [ ] GetTransitionKindList
+- [ ] GetVersion
+- [ ] GetVideoSettings
+- [ ] GetVirtualCamStatus
+- [ ] OffsetMediaInputCursor
+- [ ] OpenInputFiltersDialog
+- [ ] OpenInputInteractDialog
+- [ ] OpenInputPropertiesDialog
+- [ ] OpenSourceProjector
+- [ ] OpenVideoMixProjector
+- [ ] PauseRecord
+- [ ] PressInputPropertiesButton
+- [ ] RemoveInput
+- [ ] RemoveProfile
+- [ ] RemoveScene
+- [ ] RemoveSceneItem
+- [ ] RemoveSourceFilter
+- [ ] ResumeRecord
+- [ ] SaveReplayBuffer
+- [ ] SaveSourceScreenshot
+- [ ] SendStreamCaption
+- [ ] SetCurrentPreviewScene
+- [ ] SetCurrentProfile
+- [ ] SetCurrentProgramScene
+- [ ] SetCurrentSceneCollection
+- [ ] SetCurrentSceneTransition
+- [ ] SetCurrentSceneTransitionDuration
+- [ ] SetCurrentSceneTransitionSettings
+- [ ] SetInputAudioBalance
+- [ ] SetInputAudioMonitorType
+- [ ] SetInputAudioSyncOffset
+- [ ] SetInputAudioTracks
+- [ ] SetInputMute
+- [ ] SetInputName
+- [ ] SetInputSettings
+- [ ] SetInputVolume
+- [ ] SetMediaInputCursor
+- [ ] SetOutputSettings
+- [ ] SetPersistentData
+- [ ] SetProfileParameter
+- [ ] SetSceneItemBlendMode
+- [ ] SetSceneItemEnabled
+- [ ] SetSceneItemIndex
+- [ ] SetSceneItemLocked
+- [ ] SetSceneItemTransform
+- [ ] SetSceneName
+- [ ] SetSceneSceneTransitionOverride
+- [ ] SetSourceFilterEnabled
+- [ ] SetSourceFilterIndex
+- [ ] SetSourceFilterName
+- [ ] SetSourceFilterSettings
+- [ ] SetStreamServiceSettings
+- [ ] SetStudioModeEnabled
+- [ ] SetTBarPosition
+- [ ] SetVideoSettings
+- [ ] Sleep
+- [ ] StartOutput
+- [ ] StartRecord
+- [ ] StartReplayBuffer
+- [ ] StartStream
+- [ ] StartVirtualCam
+- [ ] StopOutput
+- [ ] StopRecord
+- [ ] StopReplayBuffer
+- [ ] StopStream
+- [ ] StopVirtualCam
+- [ ] ToggleInputMute
+- [ ] ToggleOutput
+- [ ] ToggleRecord
+- [ ] ToggleRecordPause
+- [ ] ToggleReplayBuffer
+- [ ] ToggleStream
+- [ ] ToggleVirtualCam
+- [ ] TriggerHotkeyByKeySequence
+- [ ] TriggerHotkeyByName
+- [ ] TriggerMediaInputAction
+- [ ] TriggerStudioModeTransition
