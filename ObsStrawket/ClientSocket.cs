@@ -11,8 +11,7 @@ namespace ObsStrawket {
   using System.Threading.Tasks;
 
   public class ClientSocket : IDisposable {
-    private static readonly Uri _defaultUri = new("ws://127.0.0.1:4455");
-
+    internal static Uri DefaultUri => new("ws://127.0.0.1:4455");
 
     private const int _supportedRpcVersion = 1;
 
@@ -47,12 +46,13 @@ namespace ObsStrawket {
     ) {
       cancellation.ThrowIfCancellationRequested();
 
-      _logger?.LogInformation("ConnectAsync to {}.", uri);
+      var url = uri ?? DefaultUri;
+      _logger?.LogInformation("ConnectAsync to {}.", url);
       await _writeSemaphore.WaitAsync(cancellation).ConfigureAwait(false);
       try {
         if (_isOpen) {
           try {
-            await CloseInternalAsync(exception: new ObsWebSocketException($"ConnectAsync to {uri}")).ConfigureAwait(false);
+            await CloseInternalAsync(exception: new ObsWebSocketException($"ConnectAsync to {url}")).ConfigureAwait(false);
           }
           catch (Exception ex) {
             _logger?.LogWarning("Ignore close exception: {}", ex);
@@ -66,7 +66,7 @@ namespace ObsStrawket {
         _receiver = new(_clientWebSocket, _logger);
         SetOptions(_clientWebSocket);
 
-        await _clientWebSocket.ConnectAsync(uri ?? _defaultUri, cancellation).ConfigureAwait(false);
+        await _clientWebSocket.ConnectAsync(url, cancellation).ConfigureAwait(false);
         _isOpen = true;
 
         _receiver.Run(_cancellation.Token);
@@ -91,7 +91,7 @@ namespace ObsStrawket {
         }
 
         _ = LoopReceiveAsync(_cancellation.Token);
-        _logger?.LogInformation("ConnectAsync to {} complete.", uri);
+        _logger?.LogInformation("ConnectAsync to {} complete.", url);
       }
       finally {
         _writeSemaphore.Release();
