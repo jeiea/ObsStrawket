@@ -86,7 +86,8 @@ namespace ObsStrawket {
     public event Action<StudioModeStateChanged> StudioModeStateChanged = delegate { };
     #endregion
 
-    public event Action<object> Closed = delegate { };
+    public event Action<Uri> Connected = delegate { };
+    public event Action<object> Disconnected = delegate { };
 
     private readonly ClientSocket _clientSocket;
     private readonly ILogger? _logger;
@@ -121,6 +122,13 @@ namespace ObsStrawket {
         _dispatch = _dispatch.ContinueWith(
           (_) => DispatchEventAsync(_clientSocket.Events), TaskScheduler.Default);
       }
+
+      try {
+        Connected(uri ?? ClientSocket.DefaultUri);
+      }
+      catch (Exception ex) {
+        _logger?.LogWarning(ex, "Connected event hander throws");
+      }
     }
 
     public Task CloseAsync() => _clientSocket.CloseAsync();
@@ -150,10 +158,10 @@ namespace ObsStrawket {
 
     private void InvokeCloseSafe(object info) {
       try {
-        Closed(info);
+        Disconnected(info);
       }
       catch (Exception ex) {
-        _logger?.LogWarning(ex, "Close event hander throws");
+        _logger?.LogWarning(ex, "Disconnected event hander throws");
       }
     }
 

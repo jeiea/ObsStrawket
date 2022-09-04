@@ -19,22 +19,19 @@ namespace ObsStrawket.Test {
       using var server = new MockServer().Run(cancellation.Token);
       int openCloseDifference = 0;
 
-      client.Closed += (o) => {
+      client.Disconnected += (o) => {
         Interlocked.Decrement(ref openCloseDifference);
-        _ = Task.Run(() => Debug.WriteLine($"Disconnect: {openCloseDifference}"));
         if (Math.Abs(openCloseDifference) > 1) {
           cancellation.Cancel();
         }
       };
 
-      async Task ConnectAsync() {
-        await client.ConnectAsync(server.Uri, MockServer.Password, cancellation: cancellation.Token).ConfigureAwait(false);
+      client.Connected += (uri) => {
         Interlocked.Increment(ref openCloseDifference);
-        _ = Task.Run(() => Debug.WriteLine($"Connect: {openCloseDifference}"));
         if (Math.Abs(openCloseDifference) > 1) {
           cancellation.Cancel();
         }
-      }
+      };
 
       var tasks = new List<Task>();
       var abort = Task.CompletedTask;
@@ -43,7 +40,7 @@ namespace ObsStrawket.Test {
 
         tasks.Add(Task.Run(async () => {
           try {
-            await ConnectAsync().ConfigureAwait(false);
+            await client.ConnectAsync(server.Uri, MockServer.Password, cancellation: cancellation.Token).ConfigureAwait(false);
             var version = await client.GetVersionAsync(cancellation.Token).ConfigureAwait(false);
             Assert.Contains("bmp", version.SupportedImageFormats);
           }

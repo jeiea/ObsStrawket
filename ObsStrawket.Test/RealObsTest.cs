@@ -36,7 +36,7 @@ namespace ObsStrawket.Test.Real {
       var client = ClientFlow.GetDebugClient();
       await client.ConnectAsync(new Uri("ws://127.0.0.1:4455"), "ahrEYXzXKytCIlpI").ConfigureAwait(false);
       var taskSource = new TaskCompletionSource<object>();
-      client.Closed += (reason) => {
+      client.Disconnected += (reason) => {
         taskSource.SetResult(reason);
       };
       await client.CloseAsync().ConfigureAwait(false);

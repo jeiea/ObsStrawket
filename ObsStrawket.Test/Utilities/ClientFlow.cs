@@ -36,7 +36,7 @@ namespace ObsStrawket.Test.Utilities {
 
       client.Event += QueueEvent;
       client.StudioModeStateChanged += QueueEvent;
-      client.Closed += (o) => {
+      client.Disconnected += (o) => {
         _events.Writer.TryComplete(new Exception($"{o}"));
       };
       await client.SetStudioModeEnabledAsync(!studioMode.StudioModeEnabled, cancellation).ConfigureAwait(false);
