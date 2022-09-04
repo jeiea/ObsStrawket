@@ -2,6 +2,7 @@
 
 - Add `ObsClientSocket.Connected` event.
 - Rename `ObsClientSocket.Closed` event to `Disconnected`.
+- Catch event handler's exception.
 
 ## 0.1.2
 

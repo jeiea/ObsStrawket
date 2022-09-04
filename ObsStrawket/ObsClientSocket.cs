@@ -1717,7 +1717,21 @@ namespace ObsStrawket {
 
     #region Event dispatch
     private void DispatchEvent(IEvent message) {
-      Event(message);
+      try {
+        Event(message);
+      }
+      catch (Exception ex) {
+        _logger?.LogWarning(ex, "Event handler throws: {}", message.EventType);
+      }
+      try {
+        DispatchSpecificEvent(message);
+      }
+      catch (Exception ex) {
+        _logger?.LogWarning(ex, "{} event handler throws", message.EventType);
+      }
+    }
+
+    private void DispatchSpecificEvent(IEvent message) {
       switch (message) {
       case GeneralEvent general:
         DispatchGeneralEvent(general);
