@@ -7,7 +7,25 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
+    <PackageProjectUrl>https://github.com/jeiea/ObsStrawket</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/jeiea/ObsStrawket.git</RepositoryUrl>
+    <IncludeSymbols>True</IncludeSymbols>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Description>Personal .NET implementation of obs-websocket protocol v5.</Description>
+    <Copyright>Copyright (c) 2022 jeiea</Copyright>
+    <PackageTags>obs;websocket</PackageTags>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MessagePack" Version="2.4.35" />
     <PackageReference Include="MessagePackAnalyzer" Version="2.4.35">
