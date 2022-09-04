@@ -25,4 +25,4 @@ jobs:
       - name: Publish
         run: dotnet nuget push ObsStrawket/bin/Release/*.nupkg  --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
       - name: Create tag
-        run: nbgv tag && git push origin $(nbgv get-version -v SimpleVersion)$(nbgv get-version -v PrereleaseVersion)
+        run: nbgv tag && git push origin v$(nbgv get-version -v SimpleVersion)$(nbgv get-version -v PrereleaseVersion)
