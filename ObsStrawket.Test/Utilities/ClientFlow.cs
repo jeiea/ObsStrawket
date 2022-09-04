@@ -30,7 +30,7 @@ namespace ObsStrawket.Test.Utilities {
       }, cancellation: cancellation).ConfigureAwait(false);
       if (response is not GetStudioModeEnabledResponse studioMode
           || studioMode.RequestStatus.Code != RequestStatusCode.Success) {
-        Assert.Fail("Did not parse the request");
+        Assert.Fail("Cannot read the response");
         throw new Exception();
       }
 

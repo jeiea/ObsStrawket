@@ -150,7 +150,7 @@ Checkmark means it has test.
 - [ ] GetPersistentData
 - [ ] GetProfileList
 - [ ] GetProfileParameter
-- [ ] GetRecordDirectory
+- [x] GetRecordDirectory
 - [ ] GetRecordStatus
 - [ ] GetReplayBufferStatus
 - [ ] GetSceneCollectionList

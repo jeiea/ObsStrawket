@@ -1,3 +1,4 @@
+using ObsStrawket.Test.Specs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -89,32 +90,6 @@ namespace ObsStrawket.Test.Utilities {
 }").ConfigureAwait(false);
 
       return (webSocketContext, session);
-    }
-
-    public static async Task ServeTrollAsync(HttpListenerContext context, CancellationToken token) {
-      var (webSocketContext, session) = await HandshakeAsync(context, token).ConfigureAwait(false);
-      using var _1 = session;
-
-      var guids = new List<string>();
-      for (int i = 0; i < 20; i++) {
-        string? guid = await session.ReceiveAsync(@"{
-  ""op"": 6,
-  ""d"": {
-    ""requestType"": ""GetRecordDirectory"",
-    ""requestId"": ""{guid}""
-  }
-}").ConfigureAwait(false);
-        guids.Add(guid!);
-      }
-
-      foreach (string guid in guids.Take(10)) {
-        await session.SendGetRecordDirectoryResponseAsync(guid).ConfigureAwait(false);
-      }
-
-      byte[] buffer = new byte[] { 0x01, 0x02, 0x03, 0x04 };
-      await webSocketContext.WebSocket.SendAsync(
-        new ArraySegment<byte>(buffer), WebSocketMessageType.Binary, true, token
-      ).ConfigureAwait(false);
     }
 
 
@@ -214,16 +189,8 @@ namespace ObsStrawket.Test.Utilities {
   ""op"": 7
 }".Replace("{guid}", guid)).ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync(@"{
-  ""op"": 6,
-  ""d"": {
-    ""requestType"": ""GetRecordDirectory"",
-    ""requestId"": ""{guid}""
-  }
-}").ConfigureAwait(false);
-
-      await session.SendGetRecordDirectoryResponseAsync(guid!).ConfigureAwait(false);
-
+      await new GetRecordDirectoryFlow().RespondAsync(session).ConfigureAwait(false);
+      
       guid = await session.ReceiveAsync(@"{
   ""op"": 6,
   ""d"": {
