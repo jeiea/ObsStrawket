@@ -1,8 +1,8 @@
-name: publish
+name: Test & Publish
 
 on:
   push:
-    branches: [release]
+    branches: [main]
 
 jobs:
   publish:
@@ -20,9 +20,8 @@ jobs:
           dotnet-version: "6.0"
       - name: Test
         run: dotnet test
-      - name: Package
-        run: dotnet pack --include-source --configuration Release
-      - name: Publish
-        run: dotnet nuget push ObsStrawket/bin/Release/*.nupkg  --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
-      - name: Create tag
-        run: nbgv tag && git push origin v$(nbgv get-version -v SimpleVersion)$(nbgv get-version -v PrereleaseVersion)
+      - id: versioning
+        name: Set version
+        run: echo "::set-output name=version::$(nbgv get-version -v SimpleVersion)$(nbgv get-version -v PrereleaseVersion)"
+      - name: Publish & Create tag
+        run: "[ $(git tag -l v${{ steps.versioning.outputs.version }}) ] || (dotnet pack --include-source --configuration Release -p:Version=${{ steps.versioning.outputs.version }} && dotnet nuget push ObsStrawket/bin/Release/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json && nbgv tag && git push origin v${{ steps.versioning.outputs.version }})"
