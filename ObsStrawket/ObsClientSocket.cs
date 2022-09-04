@@ -6,6 +6,7 @@ namespace ObsStrawket {
   using System.Collections.Generic;
   using System.Net.WebSockets;
   using System.Threading;
+  using System.Threading.Channels;
   using System.Threading.Tasks;
 
   public class ObsClientSocket : IDisposable {
@@ -89,12 +90,24 @@ namespace ObsStrawket {
 
     private readonly ClientSocket _clientSocket;
     private readonly ILogger? _logger;
+    private Task? _dispatch;
 
     public bool IsConnected { get => _clientSocket.IsConnected; }
+    public ChannelReader<IEvent> Events {
+      get {
+        if (_dispatch != null) {
+          throw new InvalidOperationException("Create first ObsClientSocket with useChannel: true");
+        }
+        return _clientSocket.Events;
+      }
+    }
 
-    public ObsClientSocket(ILogger? logger = null, ClientSocket? client = null) {
+    public ObsClientSocket(ILogger? logger = null, ClientSocket? client = null, bool useChannel = false) {
       _logger = logger;
       _clientSocket = client ?? new ClientSocket(logger);
+      if (!useChannel) {
+        _dispatch = Task.CompletedTask;
+      }
     }
 
     public async Task ConnectAsync(
@@ -104,7 +117,10 @@ namespace ObsStrawket {
       CancellationToken cancellation = default
     ) {
       await _clientSocket.ConnectAsync(uri, password, events, cancellation).ConfigureAwait(false);
-      _ = Task.Run(DispatchEventAsync, cancellation);
+      if (_dispatch != null) {
+        _dispatch = _dispatch.ContinueWith(
+          (_) => DispatchEventAsync(_clientSocket.Events), TaskScheduler.Default);
+      }
     }
 
     public Task CloseAsync() => _clientSocket.CloseAsync();
@@ -117,9 +133,8 @@ namespace ObsStrawket {
       GC.SuppressFinalize(this);
     }
 
-    private async Task DispatchEventAsync() {
+    private async Task DispatchEventAsync(ChannelReader<IEvent> events) {
       using var _1 = _logger?.BeginScope(nameof(DispatchEventAsync));
-      var events = _clientSocket.Events;
       try {
         while (await events.WaitToReadAsync().ConfigureAwait(false)) {
           DispatchEvent(await events.ReadAsync().ConfigureAwait(false));

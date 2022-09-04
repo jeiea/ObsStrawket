@@ -22,17 +22,11 @@ namespace ObsStrawket.Test {
       CancellationTokenSource cancellation = new();
       using var server = new MockServer().Run(cancellation.Token, ServeEchoAsync);
       var tasks = new List<Task<IOpCodeMessage>>();
-      var events = Channel.CreateUnbounded<StudioModeStateChanged>();
 
       try {
-        var client = ClientFlow.GetDebugClient();
+        var client = ClientFlow.GetDebugClient(useChannel: true);
         await client.ConnectAsync(server.Uri, MockServer.Password, cancellation: cancellation.Token).ConfigureAwait(false);
 
-#pragma warning disable VSTHRD101 // Avoid unsupported async delegates
-        client.StudioModeStateChanged += async (e) => {
-          await events.Writer.WriteAsync(e).ConfigureAwait(false);
-        };
-#pragma warning restore VSTHRD101 // Avoid unsupported async delegates
         async Task<IOpCodeMessage> GetStudioModeEnabledAsync() {
           var result = await client.GetStudioModeEnabledAsync(cancellation.Token).ConfigureAwait(false);
           return result;
@@ -40,7 +34,7 @@ namespace ObsStrawket.Test {
 
         async Task<IOpCodeMessage> SetStudioModeEnabledAsync() {
           await client.SetStudioModeEnabledAsync(false, cancellation.Token).ConfigureAwait(false);
-          var changed = await events.Reader.ReadAsync(cancellation.Token).ConfigureAwait(false);
+          var changed = await client.Events.ReadAsync(cancellation.Token).ConfigureAwait(false);
           return changed;
         }
 
