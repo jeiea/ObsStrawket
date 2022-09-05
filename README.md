@@ -13,10 +13,10 @@ But I won't stop you from using this if this works for you.
 
 ## Difference to [obs-websocket-dotnet](https://github.com/BarRaider/obs-websocket-dotnet)
 
-This library uses System.Net.Websockets, compared to websocketsharp used by
-obs-websocket-dotnet.
-
-Of course it supports v5 protocol right now.
+|              |                        ObsStrawket                       | obs-websocket-dotnet                |
+|:------------:|:--------------------------------------------------------:|-------------------------------------|
+| Dependencies | System.Net.Websockets<br>MessagePack<br>Nerdbank.Streams | WebSocket.Client<br>Newtonsoft.Json |
+| Method type  | Asynchronous                                             | Synchronous                         |
 
 ## Example
 
