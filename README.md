@@ -1,5 +1,7 @@
 # ObsStrawket
 
+[![prerelease shield](https://img.shields.io/nuget/vpre/ObsStrawket)](https://www.nuget.org/packages/ObsStrawket) ![Downloads count](https://img.shields.io/nuget/dt/ObsStrawket)
+
 Personal .NET implementation of
 [obs-websocket](https://github.com/obsproject/obs-websocket) protocol v5.
 
