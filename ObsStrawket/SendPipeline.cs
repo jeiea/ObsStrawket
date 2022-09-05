@@ -27,8 +27,12 @@ namespace ObsStrawket {
       _logger = logger;
     }
 
-    public void Run(CancellationToken cancellation = default) {
-      SendTask ??= Task.Run(() => LoopSendAsync(cancellation), cancellation);
+    public void Start() {
+      SendTask ??= Task.Run(LoopSendAsync);
+    }
+
+    public void Stop() {
+      _sendQueue.Writer.TryComplete();
     }
 
     public async Task SendAsync(IOpCodeMessage value, CancellationToken cancellation = default) {
@@ -59,18 +63,17 @@ namespace ObsStrawket {
       _logger?.LogTrace("output awaited {}", value.GetType().Name);
     }
 
-    private async Task LoopSendAsync(CancellationToken cancellation) {
+    private async Task LoopSendAsync() {
       using var _1 = _logger?.BeginScope(nameof(LoopSendAsync));
       var queue = _sendQueue.Reader;
       var bytes = _writer.Reader;
-      var token = cancellation;
 
       try {
-        while (await queue.WaitToReadAsync(token).ConfigureAwait(false)) {
-          int messageLength = await PipelineHelpers.ReadLengthAsync(bytes, _logger, token).ConfigureAwait(false);
-          var readResult = await bytes.ReadAtLeastAsync(messageLength, token).ConfigureAwait(false);
+        while (await queue.WaitToReadAsync().ConfigureAwait(false)) {
+          int messageLength = await PipelineHelpers.ReadLengthAsync(bytes, _logger).ConfigureAwait(false);
+          var readResult = await bytes.ReadAtLeastAsync(messageLength).ConfigureAwait(false);
           _logger?.LogTrace("readResult.Length: {}", readResult.Buffer.Length);
-          var item = await queue.ReadAsync(token).ConfigureAwait(false);
+          var item = await queue.ReadAsync().ConfigureAwait(false);
           try {
             _logger?.LogTrace("read item");
             await SendExclusivelyAsync(item, messageLength, readResult).ConfigureAwait(false);

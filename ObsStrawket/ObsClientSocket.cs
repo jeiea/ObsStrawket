@@ -1939,6 +1939,7 @@ namespace ObsStrawket {
         break;
       }
     }
+
     private void DispatchOutputsEvent(OutputsEvent outputs) {
       OutputsEvent(outputs);
       switch (outputs) {

@@ -33,10 +33,10 @@ namespace ObsStrawket.Test {
 
       try {
         await Task.WhenAll(recordTasks).ConfigureAwait(false);
-        Assert.Fail("exception not fired");
+        Assert.Fail("Exception not fired.");
       }
-      catch (QueueCancelledException) {
-        Debug.WriteLine("Huh?");
+      catch (Exception e) when (e is WebSocketException || e is QueueCancelledException) {
+        Debug.WriteLine("Expected exception thrown.");
       }
     }
 

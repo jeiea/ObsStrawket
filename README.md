@@ -84,7 +84,7 @@ Checkmark means it has test.
 - [ ] MediaInputPlaybackEnded
 - [ ] MediaInputPlaybackStarted
 - [ ] ProfileListChanged
-- [ ] RecordStateChanged
+- [x] RecordStateChanged
 - [ ] ReplayBufferSaved
 - [ ] ReplayBufferStateChanged
 - [ ] SceneCollectionListChanged
@@ -231,12 +231,12 @@ Checkmark means it has test.
 - [ ] SetVideoSettings
 - [ ] Sleep
 - [ ] StartOutput
-- [ ] StartRecord
+- [x] StartRecord
 - [ ] StartReplayBuffer
 - [ ] StartStream
 - [ ] StartVirtualCam
 - [ ] StopOutput
-- [ ] StopRecord
+- [x] StopRecord
 - [ ] StopReplayBuffer
 - [ ] StopStream
 - [ ] StopVirtualCam
