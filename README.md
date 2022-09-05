@@ -13,9 +13,9 @@ But I won't stop you from using this if this works for you.
 
 ## Difference to [obs-websocket-dotnet](https://github.com/BarRaider/obs-websocket-dotnet)
 
-|              |                        ObsStrawket                       | obs-websocket-dotnet                |
-|:------------:|:--------------------------------------------------------:|-------------------------------------|
-| Dependencies | System.Net.Websockets<br>MessagePack<br>Nerdbank.Streams | WebSocket.Client<br>Newtonsoft.Json |
+|              |                        ObsStrawket                       |         obs-websocket-dotnet        |
+|:------------:|:--------------------------------------------------------:|:-----------------------------------:|
+| Dependencies | System.Net.WebSockets<br>MessagePack<br>Nerdbank.Streams | WebSocket.Client<br>Newtonsoft.Json |
 | Method type  | Asynchronous                                             | Synchronous                         |
 
 ## Example
