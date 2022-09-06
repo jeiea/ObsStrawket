@@ -212,7 +212,7 @@ namespace ObsStrawket.DataTypes {
       new (typeof(SendStreamCaption), typeof(RequestResponse)),
       // Record Requests
       new (typeof(GetRecordStatus), typeof(GetRecordStatusResponse), true),
-      new (typeof(ToggleRecord), typeof(RequestResponse), true),
+      new (typeof(ToggleRecord), typeof(ToggleRecordResponse), true),
       new (typeof(StartRecord), typeof(StartRecordResponse), true),
       new (typeof(StopRecord), typeof(StopRecordResponse), true),
       new (typeof(ToggleRecordPause), typeof(RequestResponse), true),

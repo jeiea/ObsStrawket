@@ -97,17 +97,9 @@ namespace ObsStrawket.Test.Utilities {
       var (webSocketContext, session) = await HandshakeAsync(context, token).ConfigureAwait(false);
       using var _ = session;
 
+      await new GetVersionFlow().RespondAsync(session).ConfigureAwait(false);
+
       string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""GetVersion""
-  },
-  ""op"": 6
-}").ConfigureAwait(false);
-
-      await session.SendGetVersionResponseAsync(guid!).ConfigureAwait(false);
-
-      guid = await session.ReceiveAsync(@"{
   ""op"": 6,
   ""d"": {
     ""requestType"": ""GetStudioModeEnabled"",

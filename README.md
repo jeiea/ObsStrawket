@@ -153,7 +153,7 @@ Checkmark means it has test.
 - [ ] GetProfileList
 - [ ] GetProfileParameter
 - [x] GetRecordDirectory
-- [ ] GetRecordStatus
+- [x] GetRecordStatus
 - [ ] GetReplayBufferStatus
 - [ ] GetSceneCollectionList
 - [ ] GetSceneItemBlendMode
@@ -177,7 +177,7 @@ Checkmark means it has test.
 - [ ] GetStreamStatus
 - [ ] GetStudioModeEnabled
 - [ ] GetTransitionKindList
-- [ ] GetVersion
+- [x] GetVersion
 - [ ] GetVideoSettings
 - [ ] GetVirtualCamStatus
 - [ ] OffsetMediaInputCursor
@@ -244,7 +244,7 @@ Checkmark means it has test.
 - [ ] StopVirtualCam
 - [ ] ToggleInputMute
 - [ ] ToggleOutput
-- [ ] ToggleRecord
+- [x] ToggleRecord
 - [ ] ToggleRecordPause
 - [ ] ToggleReplayBuffer
 - [ ] ToggleStream

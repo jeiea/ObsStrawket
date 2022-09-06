@@ -1514,8 +1514,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public Task ToggleRecordAsync(CancellationToken cancellation = default) {
-      return _clientSocket.RequestAsync(new ToggleRecord() { }, cancellation);
+    public async Task<ToggleRecordResponse> ToggleRecordAsync(CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new ToggleRecord() { }, cancellation).ConfigureAwait(false) as ToggleRecordResponse)!;
     }
 
     /// <summary>

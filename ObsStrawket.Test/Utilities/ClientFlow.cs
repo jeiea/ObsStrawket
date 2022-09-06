@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging.Debug;
 using ObsStrawket.DataTypes;
 using ObsStrawket.DataTypes.Predefineds;
+using ObsStrawket.Test.Specs;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -21,8 +22,7 @@ namespace ObsStrawket.Test.Utilities {
       var client = socket ?? GetDebugClient();
       await client.ConnectAsync(uri, MockServer.Password, cancellation: cancellation).ConfigureAwait(false);
 
-      var version = await client.GetVersionAsync(cancellation).ConfigureAwait(false);
-      Assert.Contains("bmp", version.SupportedImageFormats);
+      await new GetVersionFlow().RequestAsync(client).ConfigureAwait(false);
 
       var response = await client.RequestAsync(new RawRequest() {
         RequestId = "2521a51c-7040-4830-8181-492ab5477545",

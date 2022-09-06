@@ -2647,6 +2647,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// - Added in v5.0.0<br />
   /// </summary>
   public class ToggleRecord : RecordRequest { }
+  public class ToggleRecordResponse : RecordRequestResponse {
+    /// <summary>
+    /// Whether the output is active<br />
+    /// </summary>
+    [Key("outputActive")]
+    public bool OutputActive { get; set; }
+  }
 
   /// <summary>
   /// Starts the record output.<br />
