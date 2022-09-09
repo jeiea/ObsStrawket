@@ -1,10 +1,11 @@
 namespace ObsStrawket.Test.Utilities {
   using MessagePack;
-  using Newtonsoft.Json.Linq;
   using System;
   using System.Diagnostics;
   using System.IO;
   using System.Net.WebSockets;
+  using System.Text.Json;
+  using System.Text.Json.JsonDiffPatch;
   using System.Text.RegularExpressions;
   using System.Threading;
   using System.Threading.Tasks;
@@ -129,10 +130,11 @@ namespace ObsStrawket.Test.Utilities {
         _isDisposed = true;
       }
     }
+
     private static void AssertJsonEqual(string expected, string actual) {
-      var expectation = JToken.Parse(expected);
-      var actualJson = JToken.Parse(actual);
-      Assert.True(JToken.DeepEquals(expectation, actualJson), $"JSON expected: {expectation}, actual: {actualJson}");
+      var expectation = JsonDocument.Parse(expected);
+      var actualJson = JsonDocument.Parse(actual);
+      Assert.True(expectation.DeepEquals(actualJson), $"JSON expected: {expectation}, actual: {actualJson}");
     }
   }
 }
