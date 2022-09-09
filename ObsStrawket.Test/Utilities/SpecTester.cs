@@ -1,11 +1,6 @@
-using ObsStrawket.Test.Utilities;
 using System;
-using System.Net;
-using System.Net.Sockets;
 using System.Net.WebSockets;
-using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace ObsStrawket.Test.Utilities {
   interface ITestFlow {
@@ -34,7 +29,8 @@ namespace ObsStrawket.Test.Utilities {
         await flow.RequestAsync(client).ConfigureAwait(false);
         await client.CloseAsync().ConfigureAwait(false);
       }
-      await Task.WhenAll(taskSource.Task, RunClientAsync()).ConfigureAwait(false);
+
+      await TestUtil.WhenAnyThrowsAsync(taskSource.Task, RunClientAsync()).ConfigureAwait(false);
     }
   }
 }

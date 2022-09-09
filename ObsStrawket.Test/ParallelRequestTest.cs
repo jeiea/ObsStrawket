@@ -1,5 +1,4 @@
 using ObsStrawket.DataTypes;
-using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
 using System;
 using System.Collections.Generic;
@@ -51,7 +50,7 @@ namespace ObsStrawket.Test {
           }));
         }
 
-        await Task.WhenAll(tasks).ConfigureAwait(false);
+        await TestUtil.WhenAnyThrowsAsync(tasks).ConfigureAwait(false);
         Assert.All(tasks, t => Assert.True(t.IsCompletedSuccessfully));
         await _serverComplete.Task.ConfigureAwait(false);
       }
@@ -97,7 +96,7 @@ namespace ObsStrawket.Test {
             Debug.WriteLine($"Served {++i} message");
           }
         }, token);
-        await Task.WhenAll(receiveTask, sendTask).ConfigureAwait(false);
+        await TestUtil.WhenAnyThrowsAsync(receiveTask, sendTask).ConfigureAwait(false);
 
         await webSocketContext.WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "", token).ConfigureAwait(false);
         Debug.WriteLine("Served all messages");
