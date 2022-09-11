@@ -190,7 +190,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=eventData>Data payload to emit to all receivers</param>
+    /// <param name="eventData">Data payload to emit to all receivers</param>
     public Task BroadcastCustomEventAsync(Dictionary<string, object?> eventData, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new BroadcastCustomEvent() { EventData = eventData }, cancellation);
     }
@@ -203,9 +203,9 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=vendorName>Name of the vendor to use</param>
-    /// <param name=requestType>The request type to call</param>
-    /// <param name=requestData>Object containing appropriate request data</param>
+    /// <param name="vendorName">Name of the vendor to use</param>
+    /// <param name="requestType">The request type to call</param>
+    /// <param name="requestData">Object containing appropriate request data</param>
     public async Task<CallVendorRequestResponse> CallVendorRequestAsync(string vendorName, string requestType, Dictionary<string, object?>? requestData = null, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new CallVendorRequest() { VendorName = vendorName, VendorRequestType = requestType, RequestData = requestData }, cancellation).ConfigureAwait(false) as CallVendorRequestResponse)!;
     }
@@ -224,7 +224,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=hotkeyName>Name of the hotkey to trigger</param>
+    /// <param name="hotkeyName">Name of the hotkey to trigger</param>
     public Task TriggerHotkeyByNameAsync(string hotkeyName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new TriggerHotkeyByName() { HotkeyName = hotkeyName }, cancellation);
     }
@@ -234,12 +234,11 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=keyId>The OBS key ID to use. See https://github.com/obsproject/obs-studio/blob/master/libobs/obs-hotkeys.h</param>
-    /// <param name=keyModifiers>Object containing key modifiers to apply</param>
-    /// <param name=keyModifiers.shift>Press Shift</param>
-    /// <param name=keyModifiers.control>Press CTRL</param>
-    /// <param name=keyModifiers.alt>Press ALT</param>
-    /// <param name=keyModifiers.command>Press CMD (Mac)</param>
+    /// <param name="keyId">The OBS key ID to use. See https://github.com/obsproject/obs-studio/blob/master/libobs/obs-hotkeys.h</param>
+    /// <param name="shift">Press Shift</param>
+    /// <param name="control">Press CTRL</param>
+    /// <param name="alt">Press ALT</param>
+    /// <param name="command">Press CMD (Mac)</param>
     public Task TriggerHotkeyByKeySequenceAsync(string? keyId = null, bool? shift = null, bool? control = null, bool? alt = null, bool? command = null, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new TriggerHotkeyByKeySequence() { KeyId = keyId, KeyModifiers = new KeyModifiers() { Shift = shift, Control = control, Alt = alt, Command = command } }, cancellation);
     }
@@ -249,8 +248,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sleepMillis>Number of milliseconds to sleep for (if `SERIAL_REALTIME` mode)</param>
-    /// <param name=sleepFrames>Number of frames to sleep for (if `SERIAL_FRAME` mode)</param>
+    /// <param name="sleepMillis">Number of milliseconds to sleep for (if `SERIAL_REALTIME` mode)</param>
+    /// <param name="sleepFrames">Number of frames to sleep for (if `SERIAL_FRAME` mode)</param>
     public Task SleepAsync(int sleepMillis, int sleepFrames, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new Sleep() { SleepMillis = sleepMillis, SleepFrames = sleepFrames }, cancellation);
     }
@@ -260,8 +259,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=realm>The data realm to select. `OBS_WEBSOCKET_DATA_REALM_GLOBAL` or `OBS_WEBSOCKET_DATA_REALM_PROFILE`</param>
-    /// <param name=slotName>The name of the slot to retrieve data from</param>
+    /// <param name="realm">The data realm to select. `OBS_WEBSOCKET_DATA_REALM_GLOBAL` or `OBS_WEBSOCKET_DATA_REALM_PROFILE`</param>
+    /// <param name="slotName">The name of the slot to retrieve data from</param>
     public async Task<GetPersistentDataResponse> GetPersistentDataAsync(string realm, string slotName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetPersistentData() { Realm = realm, SlotName = slotName }, cancellation).ConfigureAwait(false) as GetPersistentDataResponse)!;
     }
@@ -271,9 +270,9 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=realm>The data realm to select. `OBS_WEBSOCKET_DATA_REALM_GLOBAL` or `OBS_WEBSOCKET_DATA_REALM_PROFILE`</param>
-    /// <param name=slotName>The name of the slot to retrieve data from</param>
-    /// <param name=slotValue>The value to apply to the slot</param>
+    /// <param name="realm">The data realm to select. `OBS_WEBSOCKET_DATA_REALM_GLOBAL` or `OBS_WEBSOCKET_DATA_REALM_PROFILE`</param>
+    /// <param name="slotName">The name of the slot to retrieve data from</param>
+    /// <param name="slotValue">The value to apply to the slot</param>
     public Task SetPersistentDataAsync(string realm, string slotName, object? slotValue, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetPersistentData() { Realm = realm, SlotName = slotName, SlotValue = slotValue }, cancellation);
     }
@@ -294,7 +293,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneCollectionName>Name of the scene collection to switch to</param>
+    /// <param name="sceneCollectionName">Name of the scene collection to switch to</param>
     public Task SetCurrentSceneCollectionAsync(string sceneCollectionName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetCurrentSceneCollection() { SceneCollectionName = sceneCollectionName }, cancellation);
     }
@@ -306,7 +305,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneCollectionName>Name for the new scene collection</param>
+    /// <param name="sceneCollectionName">Name for the new scene collection</param>
     public Task CreateSceneCollectionAsync(string sceneCollectionName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new CreateSceneCollection() { SceneCollectionName = sceneCollectionName }, cancellation);
     }
@@ -325,7 +324,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=profileName>Name of the profile to switch to</param>
+    /// <param name="profileName">Name of the profile to switch to</param>
     public Task SetCurrentProfileAsync(string profileName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetCurrentProfile() { ProfileName = profileName }, cancellation);
     }
@@ -335,7 +334,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=profileName>Name for the new profile</param>
+    /// <param name="profileName">Name for the new profile</param>
     public Task CreateProfileAsync(string profileName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new CreateProfile() { ProfileName = profileName }, cancellation);
     }
@@ -345,7 +344,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=profileName>Name of the profile to remove</param>
+    /// <param name="profileName">Name of the profile to remove</param>
     public Task RemoveProfileAsync(string profileName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new RemoveProfile() { ProfileName = profileName }, cancellation);
     }
@@ -355,8 +354,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=parameterCategory>Category of the parameter to get</param>
-    /// <param name=parameterName>Name of the parameter to get</param>
+    /// <param name="parameterCategory">Category of the parameter to get</param>
+    /// <param name="parameterName">Name of the parameter to get</param>
     public async Task<GetProfileParameterResponse> GetProfileParameterAsync(string parameterCategory, string parameterName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetProfileParameter() { ParameterCategory = parameterCategory, ParameterName = parameterName }, cancellation).ConfigureAwait(false) as GetProfileParameterResponse)!;
     }
@@ -366,9 +365,9 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=parameterCategory>Category of the parameter to set</param>
-    /// <param name=parameterName>Name of the parameter to set</param>
-    /// <param name=parameterValue>Value of the parameter to set. Use `null` to delete</param>
+    /// <param name="parameterCategory">Category of the parameter to set</param>
+    /// <param name="parameterName">Name of the parameter to set</param>
+    /// <param name="parameterValue">Value of the parameter to set. Use `null` to delete</param>
     public Task SetProfileParameterAsync(string parameterCategory, string parameterName, string parameterValue, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetProfileParameter() { ParameterCategory = parameterCategory, ParameterName = parameterName, ParameterValue = parameterValue }, cancellation);
     }
@@ -391,12 +390,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=fpsNumerator>Numerator of the fractional FPS value</param>
-    /// <param name=fpsDenominator>Denominator of the fractional FPS value</param>
-    /// <param name=baseWidth>Width of the base (canvas) resolution in pixels</param>
-    /// <param name=baseHeight>Height of the base (canvas) resolution in pixels</param>
-    /// <param name=outputWidth>Width of the output resolution in pixels</param>
-    /// <param name=outputHeight>Height of the output resolution in pixels</param>
+    /// <param name="fpsNumerator">Numerator of the fractional FPS value</param>
+    /// <param name="fpsDenominator">Denominator of the fractional FPS value</param>
+    /// <param name="baseWidth">Width of the base (canvas) resolution in pixels</param>
+    /// <param name="baseHeight">Height of the base (canvas) resolution in pixels</param>
+    /// <param name="outputWidth">Width of the output resolution in pixels</param>
+    /// <param name="outputHeight">Height of the output resolution in pixels</param>
     public Task SetVideoSettingsAsync(int? fpsNumerator = null, int? fpsDenominator = null, int? baseWidth = null, int? baseHeight = null, int? outputWidth = null, int? outputHeight = null, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetVideoSettings() { FpsNumerator = fpsNumerator, FpsDenominator = fpsDenominator, BaseWidth = baseWidth, BaseHeight = baseHeight, OutputWidth = outputWidth, OutputHeight = outputHeight }, cancellation);
     }
@@ -417,8 +416,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=streamServiceType>Type of stream service to apply. Example: `rtmp_common` or `rtmp_custom`</param>
-    /// <param name=streamServiceSettings>Settings to apply to the service</param>
+    /// <param name="streamServiceType">Type of stream service to apply. Example: `rtmp_common` or `rtmp_custom`</param>
+    /// <param name="streamServiceSettings">Settings to apply to the service</param>
     public Task SetStreamServiceSettingsAsync(string streamServiceType, Dictionary<string, object?> streamServiceSettings, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetStreamServiceSettings() { StreamServiceType = streamServiceType, StreamServiceSettings = streamServiceSettings }, cancellation);
     }
@@ -439,7 +438,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sourceName>Name of the source to get the active state of</param>
+    /// <param name="sourceName">Name of the source to get the active state of</param>
     public async Task<GetSourceActiveResponse> GetSourceActiveAsync(string sourceName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSourceActive() { SourceName = sourceName }, cancellation).ConfigureAwait(false) as GetSourceActiveResponse)!;
     }
@@ -454,11 +453,11 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sourceName>Name of the source to take a screenshot of</param>
-    /// <param name=imageFormat>Image compression format to use. Use `GetVersion` to get compatible image formats</param>
-    /// <param name=imageWidth>Width to scale the screenshot to</param>
-    /// <param name=imageHeight>Height to scale the screenshot to</param>
-    /// <param name=imageCompressionQuality>Compression quality to use. 0 for high compression, 100 for uncompressed. -1 to use "default" (whatever that means, idk)</param>
+    /// <param name="sourceName">Name of the source to take a screenshot of</param>
+    /// <param name="imageFormat">Image compression format to use. Use `GetVersion` to get compatible image formats</param>
+    /// <param name="imageWidth">Width to scale the screenshot to</param>
+    /// <param name="imageHeight">Height to scale the screenshot to</param>
+    /// <param name="imageCompressionQuality">Compression quality to use. 0 for high compression, 100 for uncompressed. -1 to use "default" (whatever that means, idk)</param>
     public async Task<GetSourceScreenshotResponse> GetSourceScreenshotAsync(string sourceName, string imageFormat, int? imageWidth = null, int? imageHeight = null, int? imageCompressionQuality = null, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSourceScreenshot() { SourceName = sourceName, ImageFormat = imageFormat, ImageWidth = imageWidth, ImageHeight = imageHeight, ImageCompressionQuality = imageCompressionQuality }, cancellation).ConfigureAwait(false) as GetSourceScreenshotResponse)!;
     }
@@ -473,12 +472,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sourceName>Name of the source to take a screenshot of</param>
-    /// <param name=imageFormat>Image compression format to use. Use `GetVersion` to get compatible image formats</param>
-    /// <param name=imageFilePath>Path to save the screenshot file to. Eg. `C:\Users\user\Desktop\screenshot.png`</param>
-    /// <param name=imageWidth>Width to scale the screenshot to</param>
-    /// <param name=imageHeight>Height to scale the screenshot to</param>
-    /// <param name=imageCompressionQuality>Compression quality to use. 0 for high compression, 100 for uncompressed. -1 to use "default" (whatever that means, idk)</param>
+    /// <param name="sourceName">Name of the source to take a screenshot of</param>
+    /// <param name="imageFormat">Image compression format to use. Use `GetVersion` to get compatible image formats</param>
+    /// <param name="imageFilePath">Path to save the screenshot file to. Eg. `C:\Users\user\Desktop\screenshot.png`</param>
+    /// <param name="imageWidth">Width to scale the screenshot to</param>
+    /// <param name="imageHeight">Height to scale the screenshot to</param>
+    /// <param name="imageCompressionQuality">Compression quality to use. 0 for high compression, 100 for uncompressed. -1 to use "default" (whatever that means, idk)</param>
     public async Task<SaveSourceScreenshotResponse> SaveSourceScreenshotAsync(string sourceName, string imageFormat, string imageFilePath, int? imageWidth = null, int? imageHeight = null, int? imageCompressionQuality = null, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SaveSourceScreenshot() { SourceName = sourceName, ImageFormat = imageFormat, ImageFilePath = imageFilePath, ImageWidth = imageWidth, ImageHeight = imageHeight, ImageCompressionQuality = imageCompressionQuality }, cancellation).ConfigureAwait(false) as SaveSourceScreenshotResponse)!;
     }
@@ -517,7 +516,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Scene to set as the current program scene</param>
+    /// <param name="sceneName">Scene to set as the current program scene</param>
     public Task SetCurrentProgramSceneAsync(string sceneName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetCurrentProgramScene() { SceneName = sceneName }, cancellation);
     }
@@ -540,7 +539,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Scene to set as the current preview scene</param>
+    /// <param name="sceneName">Scene to set as the current preview scene</param>
     public Task SetCurrentPreviewSceneAsync(string sceneName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetCurrentPreviewScene() { SceneName = sceneName }, cancellation);
     }
@@ -550,7 +549,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name for the new scene</param>
+    /// <param name="sceneName">Name for the new scene</param>
     public Task CreateSceneAsync(string sceneName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new CreateScene() { SceneName = sceneName }, cancellation);
     }
@@ -560,7 +559,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name of the scene to remove</param>
+    /// <param name="sceneName">Name of the scene to remove</param>
     public Task RemoveSceneAsync(string sceneName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new RemoveScene() { SceneName = sceneName }, cancellation);
     }
@@ -570,8 +569,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name of the scene to be renamed</param>
-    /// <param name=newSceneName>New name for the scene</param>
+    /// <param name="sceneName">Name of the scene to be renamed</param>
+    /// <param name="newSceneName">New name for the scene</param>
     public Task SetSceneNameAsync(string sceneName, string newSceneName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetSceneName() { SceneName = sceneName, NewSceneName = newSceneName }, cancellation);
     }
@@ -581,7 +580,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name of the scene</param>
+    /// <param name="sceneName">Name of the scene</param>
     public async Task<GetSceneSceneTransitionOverrideResponse> GetSceneSceneTransitionOverrideAsync(string sceneName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSceneSceneTransitionOverride() { SceneName = sceneName }, cancellation).ConfigureAwait(false) as GetSceneSceneTransitionOverrideResponse)!;
     }
@@ -591,9 +590,9 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name of the scene</param>
-    /// <param name=transitionName>Name of the scene transition to use as override. Specify `null` to remove</param>
-    /// <param name=transitionDuration>Duration to use for any overridden transition. Specify `null` to remove</param>
+    /// <param name="sceneName">Name of the scene</param>
+    /// <param name="transitionName">Name of the scene transition to use as override. Specify `null` to remove</param>
+    /// <param name="transitionDuration">Duration to use for any overridden transition. Specify `null` to remove</param>
     public Task SetSceneSceneTransitionOverrideAsync(string sceneName, string? transitionName = null, int? transitionDuration = null, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetSceneSceneTransitionOverride() { SceneName = sceneName, TransitionName = transitionName, TransitionDuration = transitionDuration }, cancellation);
     }
@@ -603,7 +602,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputKind>Restrict the array to only inputs of the specified kind</param>
+    /// <param name="inputKind">Restrict the array to only inputs of the specified kind</param>
     public async Task<GetInputListResponse> GetInputListAsync(string? inputKind = null, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputList() { InputKind = inputKind }, cancellation).ConfigureAwait(false) as GetInputListResponse)!;
     }
@@ -613,7 +612,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=unversioned>True == Return all kinds as unversioned, False == Return with version suffixes (if available)</param>
+    /// <param name="unversioned">True == Return all kinds as unversioned, False == Return with version suffixes (if available)</param>
     public async Task<GetInputKindListResponse> GetInputKindListAsync(bool? unversioned = null, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputKindList() { Unversioned = unversioned }, cancellation).ConfigureAwait(false) as GetInputKindListResponse)!;
     }
@@ -632,11 +631,11 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name of the scene to add the input to as a scene item</param>
-    /// <param name=inputName>Name of the new input to created</param>
-    /// <param name=inputKind>The kind of input to be created</param>
-    /// <param name=inputSettings>Settings object to initialize the input with</param>
-    /// <param name=sceneItemEnabled>Whether to set the created scene item to enabled or disabled</param>
+    /// <param name="sceneName">Name of the scene to add the input to as a scene item</param>
+    /// <param name="inputName">Name of the new input to created</param>
+    /// <param name="inputKind">The kind of input to be created</param>
+    /// <param name="inputSettings">Settings object to initialize the input with</param>
+    /// <param name="sceneItemEnabled">Whether to set the created scene item to enabled or disabled</param>
     public async Task<CreateInputResponse> CreateInputAsync(string sceneName, string inputName, string inputKind, Dictionary<string, object?>? inputSettings = null, bool? sceneItemEnabled = null, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new CreateInput() { SceneName = sceneName, InputName = inputName, InputKind = inputKind, InputSettings = inputSettings, SceneItemEnabled = sceneItemEnabled }, cancellation).ConfigureAwait(false) as CreateInputResponse)!;
     }
@@ -648,7 +647,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the input to remove</param>
+    /// <param name="inputName">Name of the input to remove</param>
     public Task RemoveInputAsync(string inputName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new RemoveInput() { InputName = inputName }, cancellation);
     }
@@ -658,8 +657,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Current input name</param>
-    /// <param name=newInputName>New name for the input</param>
+    /// <param name="inputName">Current input name</param>
+    /// <param name="newInputName">New name for the input</param>
     public Task SetInputNameAsync(string inputName, string newInputName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetInputName() { InputName = inputName, NewInputName = newInputName }, cancellation);
     }
@@ -669,7 +668,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputKind>Input kind to get the default settings for</param>
+    /// <param name="inputKind">Input kind to get the default settings for</param>
     public async Task<GetInputDefaultSettingsResponse> GetInputDefaultSettingsAsync(string inputKind, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputDefaultSettings() { InputKind = inputKind }, cancellation).ConfigureAwait(false) as GetInputDefaultSettingsResponse)!;
     }
@@ -681,7 +680,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the input to get the settings of</param>
+    /// <param name="inputName">Name of the input to get the settings of</param>
     public async Task<GetInputSettingsResponse> GetInputSettingsAsync(string inputName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputSettings() { InputName = inputName }, cancellation).ConfigureAwait(false) as GetInputSettingsResponse)!;
     }
@@ -691,9 +690,9 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the input to set the settings of</param>
-    /// <param name=inputSettings>Object of settings to apply</param>
-    /// <param name=overlay>True == apply the settings on top of existing ones, False == reset the input to its defaults, then apply settings.</param>
+    /// <param name="inputName">Name of the input to set the settings of</param>
+    /// <param name="inputSettings">Object of settings to apply</param>
+    /// <param name="overlay">True == apply the settings on top of existing ones, False == reset the input to its defaults, then apply settings.</param>
     public Task SetInputSettingsAsync(string inputName, Dictionary<string, object?> inputSettings, bool? overlay = null, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetInputSettings() { InputName = inputName, InputSettings = inputSettings, Overlay = overlay }, cancellation);
     }
@@ -703,7 +702,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of input to get the mute state of</param>
+    /// <param name="inputName">Name of input to get the mute state of</param>
     public async Task<GetInputMuteResponse> GetInputMuteAsync(string inputName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputMute() { InputName = inputName }, cancellation).ConfigureAwait(false) as GetInputMuteResponse)!;
     }
@@ -713,8 +712,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the input to set the mute state of</param>
-    /// <param name=inputMuted>Whether to mute the input or not</param>
+    /// <param name="inputName">Name of the input to set the mute state of</param>
+    /// <param name="inputMuted">Whether to mute the input or not</param>
     public Task SetInputMuteAsync(string inputName, bool inputMuted, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetInputMute() { InputName = inputName, InputMuted = inputMuted }, cancellation);
     }
@@ -724,7 +723,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the input to toggle the mute state of</param>
+    /// <param name="inputName">Name of the input to toggle the mute state of</param>
     public async Task<ToggleInputMuteResponse> ToggleInputMuteAsync(string inputName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new ToggleInputMute() { InputName = inputName }, cancellation).ConfigureAwait(false) as ToggleInputMuteResponse)!;
     }
@@ -734,7 +733,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the input to get the volume of</param>
+    /// <param name="inputName">Name of the input to get the volume of</param>
     public async Task<GetInputVolumeResponse> GetInputVolumeAsync(string inputName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputVolume() { InputName = inputName }, cancellation).ConfigureAwait(false) as GetInputVolumeResponse)!;
     }
@@ -744,9 +743,9 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the input to set the volume of</param>
-    /// <param name=inputVolumeMul>Volume setting in mul</param>
-    /// <param name=inputVolumeDb>Volume setting in dB</param>
+    /// <param name="inputName">Name of the input to set the volume of</param>
+    /// <param name="inputVolumeMul">Volume setting in mul</param>
+    /// <param name="inputVolumeDb">Volume setting in dB</param>
     public Task SetInputVolumeAsync(string inputName, double? inputVolumeMul = null, double? inputVolumeDb = null, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetInputVolume() { InputName = inputName, InputVolumeMul = inputVolumeMul, InputVolumeDb = inputVolumeDb }, cancellation);
     }
@@ -756,7 +755,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the input to get the audio balance of</param>
+    /// <param name="inputName">Name of the input to get the audio balance of</param>
     public async Task<GetInputAudioBalanceResponse> GetInputAudioBalanceAsync(string inputName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputAudioBalance() { InputName = inputName }, cancellation).ConfigureAwait(false) as GetInputAudioBalanceResponse)!;
     }
@@ -766,8 +765,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the input to set the audio balance of</param>
-    /// <param name=inputAudioBalance>New audio balance value</param>
+    /// <param name="inputName">Name of the input to set the audio balance of</param>
+    /// <param name="inputAudioBalance">New audio balance value</param>
     public Task SetInputAudioBalanceAsync(string inputName, double inputAudioBalance, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetInputAudioBalance() { InputName = inputName, InputAudioBalance = inputAudioBalance }, cancellation);
     }
@@ -779,7 +778,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the input to get the audio sync offset of</param>
+    /// <param name="inputName">Name of the input to get the audio sync offset of</param>
     public async Task<GetInputAudioSyncOffsetResponse> GetInputAudioSyncOffsetAsync(string inputName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputAudioSyncOffset() { InputName = inputName }, cancellation).ConfigureAwait(false) as GetInputAudioSyncOffsetResponse)!;
     }
@@ -789,8 +788,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the input to set the audio sync offset of</param>
-    /// <param name=inputAudioSyncOffset>New audio sync offset in milliseconds</param>
+    /// <param name="inputName">Name of the input to set the audio sync offset of</param>
+    /// <param name="inputAudioSyncOffset">New audio sync offset in milliseconds</param>
     public Task SetInputAudioSyncOffsetAsync(string inputName, int inputAudioSyncOffset, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetInputAudioSyncOffset() { InputName = inputName, InputAudioSyncOffset = inputAudioSyncOffset }, cancellation);
     }
@@ -806,7 +805,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the input to get the audio monitor type of</param>
+    /// <param name="inputName">Name of the input to get the audio monitor type of</param>
     public async Task<GetInputAudioMonitorTypeResponse> GetInputAudioMonitorTypeAsync(string inputName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputAudioMonitorType() { InputName = inputName }, cancellation).ConfigureAwait(false) as GetInputAudioMonitorTypeResponse)!;
     }
@@ -816,8 +815,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the input to set the audio monitor type of</param>
-    /// <param name=monitorType>Audio monitor type</param>
+    /// <param name="inputName">Name of the input to set the audio monitor type of</param>
+    /// <param name="monitorType">Audio monitor type</param>
     public Task SetInputAudioMonitorTypeAsync(string inputName, MonitoringType monitorType, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetInputAudioMonitorType() { InputName = inputName, MonitorType = monitorType }, cancellation);
     }
@@ -827,7 +826,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the input</param>
+    /// <param name="inputName">Name of the input</param>
     public async Task<GetInputAudioTracksResponse> GetInputAudioTracksAsync(string inputName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputAudioTracks() { InputName = inputName }, cancellation).ConfigureAwait(false) as GetInputAudioTracksResponse)!;
     }
@@ -837,8 +836,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the input</param>
-    /// <param name=inputAudioTracks>Track settings to apply</param>
+    /// <param name="inputName">Name of the input</param>
+    /// <param name="inputAudioTracks">Track settings to apply</param>
     public Task SetInputAudioTracksAsync(string inputName, Dictionary<string, object?> inputAudioTracks, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetInputAudioTracks() { InputName = inputName, InputAudioTracks = inputAudioTracks }, cancellation);
     }
@@ -850,8 +849,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the input</param>
-    /// <param name=propertyName>Name of the list property to get the items of</param>
+    /// <param name="inputName">Name of the input</param>
+    /// <param name="propertyName">Name of the list property to get the items of</param>
     public async Task<GetInputPropertiesListPropertyItemsResponse> GetInputPropertiesListPropertyItemsAsync(string inputName, string propertyName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputPropertiesListPropertyItems() { InputName = inputName, PropertyName = propertyName }, cancellation).ConfigureAwait(false) as GetInputPropertiesListPropertyItemsResponse)!;
     }
@@ -863,8 +862,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the input</param>
-    /// <param name=propertyName>Name of the button property to press</param>
+    /// <param name="inputName">Name of the input</param>
+    /// <param name="propertyName">Name of the button property to press</param>
     public Task PressInputPropertiesButtonAsync(string inputName, string propertyName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new PressInputPropertiesButton() { InputName = inputName, PropertyName = propertyName }, cancellation);
     }
@@ -905,7 +904,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=transitionName>Name of the transition to make active</param>
+    /// <param name="transitionName">Name of the transition to make active</param>
     public Task SetCurrentSceneTransitionAsync(string transitionName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetCurrentSceneTransition() { TransitionName = transitionName }, cancellation);
     }
@@ -915,7 +914,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=transitionDuration>Duration in milliseconds</param>
+    /// <param name="transitionDuration">Duration in milliseconds</param>
     public Task SetCurrentSceneTransitionDurationAsync(int transitionDuration, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetCurrentSceneTransitionDuration() { TransitionDuration = transitionDuration }, cancellation);
     }
@@ -925,8 +924,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=transitionSettings>Settings object to apply to the transition. Can be `{}`</param>
-    /// <param name=overlay>Whether to overlay over the current settings or replace them</param>
+    /// <param name="transitionSettings">Settings object to apply to the transition. Can be `{}`</param>
+    /// <param name="overlay">Whether to overlay over the current settings or replace them</param>
     public Task SetCurrentSceneTransitionSettingsAsync(Dictionary<string, object?> transitionSettings, bool? overlay = null, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetCurrentSceneTransitionSettings() { TransitionSettings = transitionSettings, Overlay = overlay }, cancellation);
     }
@@ -958,8 +957,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=position>New position</param>
-    /// <param name=release>Whether to release the TBar. Only set `false` if you know that you will be sending another position update</param>
+    /// <param name="position">New position</param>
+    /// <param name="release">Whether to release the TBar. Only set `false` if you know that you will be sending another position update</param>
     public Task SetTBarPositionAsync(double position, bool? release = null, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetTBarPosition() { Position = position, Release = release }, cancellation);
     }
@@ -969,7 +968,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sourceName>Name of the source</param>
+    /// <param name="sourceName">Name of the source</param>
     public async Task<GetSourceFilterListResponse> GetSourceFilterListAsync(string sourceName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSourceFilterList() { SourceName = sourceName }, cancellation).ConfigureAwait(false) as GetSourceFilterListResponse)!;
     }
@@ -979,7 +978,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=filterKind>Filter kind to get the default settings for</param>
+    /// <param name="filterKind">Filter kind to get the default settings for</param>
     public async Task<GetSourceFilterDefaultSettingsResponse> GetSourceFilterDefaultSettingsAsync(string filterKind, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSourceFilterDefaultSettings() { FilterKind = filterKind }, cancellation).ConfigureAwait(false) as GetSourceFilterDefaultSettingsResponse)!;
     }
@@ -989,10 +988,10 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sourceName>Name of the source to add the filter to</param>
-    /// <param name=filterName>Name of the new filter to be created</param>
-    /// <param name=filterKind>The kind of filter to be created</param>
-    /// <param name=filterSettings>Settings object to initialize the filter with</param>
+    /// <param name="sourceName">Name of the source to add the filter to</param>
+    /// <param name="filterName">Name of the new filter to be created</param>
+    /// <param name="filterKind">The kind of filter to be created</param>
+    /// <param name="filterSettings">Settings object to initialize the filter with</param>
     public Task CreateSourceFilterAsync(string sourceName, string filterName, string filterKind, Dictionary<string, object?>? filterSettings = null, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new CreateSourceFilter() { SourceName = sourceName, FilterName = filterName, FilterKind = filterKind, FilterSettings = filterSettings }, cancellation);
     }
@@ -1002,8 +1001,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sourceName>Name of the source the filter is on</param>
-    /// <param name=filterName>Name of the filter to remove</param>
+    /// <param name="sourceName">Name of the source the filter is on</param>
+    /// <param name="filterName">Name of the filter to remove</param>
     public Task RemoveSourceFilterAsync(string sourceName, string filterName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new RemoveSourceFilter() { SourceName = sourceName, FilterName = filterName }, cancellation);
     }
@@ -1013,9 +1012,9 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sourceName>Name of the source the filter is on</param>
-    /// <param name=filterName>Current name of the filter</param>
-    /// <param name=newFilterName>New name for the filter</param>
+    /// <param name="sourceName">Name of the source the filter is on</param>
+    /// <param name="filterName">Current name of the filter</param>
+    /// <param name="newFilterName">New name for the filter</param>
     public Task SetSourceFilterNameAsync(string sourceName, string filterName, string newFilterName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetSourceFilterName() { SourceName = sourceName, FilterName = filterName, NewFilterName = newFilterName }, cancellation);
     }
@@ -1025,8 +1024,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sourceName>Name of the source</param>
-    /// <param name=filterName>Name of the filter</param>
+    /// <param name="sourceName">Name of the source</param>
+    /// <param name="filterName">Name of the filter</param>
     public async Task<GetSourceFilterResponse> GetSourceFilterAsync(string sourceName, string filterName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSourceFilter() { SourceName = sourceName, FilterName = filterName }, cancellation).ConfigureAwait(false) as GetSourceFilterResponse)!;
     }
@@ -1036,9 +1035,9 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sourceName>Name of the source the filter is on</param>
-    /// <param name=filterName>Name of the filter</param>
-    /// <param name=filterIndex>New index position of the filter</param>
+    /// <param name="sourceName">Name of the source the filter is on</param>
+    /// <param name="filterName">Name of the filter</param>
+    /// <param name="filterIndex">New index position of the filter</param>
     public Task SetSourceFilterIndexAsync(string sourceName, string filterName, int filterIndex, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetSourceFilterIndex() { SourceName = sourceName, FilterName = filterName, FilterIndex = filterIndex }, cancellation);
     }
@@ -1048,10 +1047,10 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sourceName>Name of the source the filter is on</param>
-    /// <param name=filterName>Name of the filter to set the settings of</param>
-    /// <param name=filterSettings>Object of settings to apply</param>
-    /// <param name=overlay>True == apply the settings on top of existing ones, False == reset the input to its defaults, then apply settings.</param>
+    /// <param name="sourceName">Name of the source the filter is on</param>
+    /// <param name="filterName">Name of the filter to set the settings of</param>
+    /// <param name="filterSettings">Object of settings to apply</param>
+    /// <param name="overlay">True == apply the settings on top of existing ones, False == reset the input to its defaults, then apply settings.</param>
     public Task SetSourceFilterSettingsAsync(string sourceName, string filterName, Dictionary<string, object?> filterSettings, bool? overlay = null, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetSourceFilterSettings() { SourceName = sourceName, FilterName = filterName, FilterSettings = filterSettings, Overlay = overlay }, cancellation);
     }
@@ -1061,9 +1060,9 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sourceName>Name of the source the filter is on</param>
-    /// <param name=filterName>Name of the filter</param>
-    /// <param name=filterEnabled>New enable state of the filter</param>
+    /// <param name="sourceName">Name of the source the filter is on</param>
+    /// <param name="filterName">Name of the filter</param>
+    /// <param name="filterEnabled">New enable state of the filter</param>
     public Task SetSourceFilterEnabledAsync(string sourceName, string filterName, bool filterEnabled, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetSourceFilterEnabled() { SourceName = sourceName, FilterName = filterName, FilterEnabled = filterEnabled }, cancellation);
     }
@@ -1075,7 +1074,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name of the scene to get the items of</param>
+    /// <param name="sceneName">Name of the scene to get the items of</param>
     public async Task<GetSceneItemListResponse> GetSceneItemListAsync(string sceneName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSceneItemList() { SceneName = sceneName }, cancellation).ConfigureAwait(false) as GetSceneItemListResponse)!;
     }
@@ -1089,7 +1088,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name of the group to get the items of</param>
+    /// <param name="sceneName">Name of the group to get the items of</param>
     public async Task<GetGroupSceneItemListResponse> GetGroupSceneItemListAsync(string sceneName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetGroupSceneItemList() { SceneName = sceneName }, cancellation).ConfigureAwait(false) as GetGroupSceneItemListResponse)!;
     }
@@ -1101,9 +1100,9 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name of the scene or group to search in</param>
-    /// <param name=sourceName>Name of the source to find</param>
-    /// <param name=searchOffset>Number of matches to skip during search. >= 0 means first forward. -1 means last (top) item</param>
+    /// <param name="sceneName">Name of the scene or group to search in</param>
+    /// <param name="sourceName">Name of the source to find</param>
+    /// <param name="searchOffset">Number of matches to skip during search. >= 0 means first forward. -1 means last (top) item</param>
     public async Task<GetSceneItemIdResponse> GetSceneItemIdAsync(string sceneName, string sourceName, int? searchOffset = null, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSceneItemId() { SceneName = sceneName, SourceName = sourceName, SearchOffset = searchOffset }, cancellation).ConfigureAwait(false) as GetSceneItemIdResponse)!;
     }
@@ -1115,9 +1114,9 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name of the scene to create the new item in</param>
-    /// <param name=sourceName>Name of the source to add to the scene</param>
-    /// <param name=sceneItemEnabled>Enable state to apply to the scene item on creation</param>
+    /// <param name="sceneName">Name of the scene to create the new item in</param>
+    /// <param name="sourceName">Name of the source to add to the scene</param>
+    /// <param name="sceneItemEnabled">Enable state to apply to the scene item on creation</param>
     public async Task<CreateSceneItemResponse> CreateSceneItemAsync(string sceneName, string sourceName, bool? sceneItemEnabled = null, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new CreateSceneItem() { SceneName = sceneName, SourceName = sourceName, SceneItemEnabled = sceneItemEnabled }, cancellation).ConfigureAwait(false) as CreateSceneItemResponse)!;
     }
@@ -1129,8 +1128,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name of the scene the item is in</param>
-    /// <param name=sceneItemId>Numeric ID of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in</param>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     public Task RemoveSceneItemAsync(string sceneName, int sceneItemId, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new RemoveSceneItem() { SceneName = sceneName, SceneItemId = sceneItemId }, cancellation);
     }
@@ -1142,9 +1141,9 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name of the scene the item is in</param>
-    /// <param name=sceneItemId>Numeric ID of the scene item</param>
-    /// <param name=destinationSceneName>Name of the scene to create the duplicated item in</param>
+    /// <param name="sceneName">Name of the scene the item is in</param>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
+    /// <param name="destinationSceneName">Name of the scene to create the duplicated item in</param>
     public async Task<DuplicateSceneItemResponse> DuplicateSceneItemAsync(string sceneName, int sceneItemId, string? destinationSceneName = null, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new DuplicateSceneItem() { SceneName = sceneName, SceneItemId = sceneItemId, DestinationSceneName = destinationSceneName }, cancellation).ConfigureAwait(false) as DuplicateSceneItemResponse)!;
     }
@@ -1156,8 +1155,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name of the scene the item is in</param>
-    /// <param name=sceneItemId>Numeric ID of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in</param>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     public async Task<GetSceneItemTransformResponse> GetSceneItemTransformAsync(string sceneName, int sceneItemId, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSceneItemTransform() { SceneName = sceneName, SceneItemId = sceneItemId }, cancellation).ConfigureAwait(false) as GetSceneItemTransformResponse)!;
     }
@@ -1167,9 +1166,9 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name of the scene the item is in</param>
-    /// <param name=sceneItemId>Numeric ID of the scene item</param>
-    /// <param name=sceneItemTransform>Object containing scene item transform info to update</param>
+    /// <param name="sceneName">Name of the scene the item is in</param>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
+    /// <param name="sceneItemTransform">Object containing scene item transform info to update</param>
     public Task SetSceneItemTransformAsync(string sceneName, int sceneItemId, Dictionary<string, object?> sceneItemTransform, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetSceneItemTransform() { SceneName = sceneName, SceneItemId = sceneItemId, SceneItemTransform = sceneItemTransform }, cancellation);
     }
@@ -1181,8 +1180,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name of the scene the item is in</param>
-    /// <param name=sceneItemId>Numeric ID of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in</param>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     public async Task<GetSceneItemEnabledResponse> GetSceneItemEnabledAsync(string sceneName, int sceneItemId, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSceneItemEnabled() { SceneName = sceneName, SceneItemId = sceneItemId }, cancellation).ConfigureAwait(false) as GetSceneItemEnabledResponse)!;
     }
@@ -1194,9 +1193,9 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name of the scene the item is in</param>
-    /// <param name=sceneItemId>Numeric ID of the scene item</param>
-    /// <param name=sceneItemEnabled>New enable state of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in</param>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
+    /// <param name="sceneItemEnabled">New enable state of the scene item</param>
     public Task SetSceneItemEnabledAsync(string sceneName, int sceneItemId, bool sceneItemEnabled, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetSceneItemEnabled() { SceneName = sceneName, SceneItemId = sceneItemId, SceneItemEnabled = sceneItemEnabled }, cancellation);
     }
@@ -1208,8 +1207,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name of the scene the item is in</param>
-    /// <param name=sceneItemId>Numeric ID of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in</param>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     public async Task<GetSceneItemLockedResponse> GetSceneItemLockedAsync(string sceneName, int sceneItemId, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSceneItemLocked() { SceneName = sceneName, SceneItemId = sceneItemId }, cancellation).ConfigureAwait(false) as GetSceneItemLockedResponse)!;
     }
@@ -1221,9 +1220,9 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name of the scene the item is in</param>
-    /// <param name=sceneItemId>Numeric ID of the scene item</param>
-    /// <param name=sceneItemLocked>New lock state of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in</param>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
+    /// <param name="sceneItemLocked">New lock state of the scene item</param>
     public Task SetSceneItemLockedAsync(string sceneName, int sceneItemId, bool sceneItemLocked, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetSceneItemLocked() { SceneName = sceneName, SceneItemId = sceneItemId, SceneItemLocked = sceneItemLocked }, cancellation);
     }
@@ -1237,8 +1236,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name of the scene the item is in</param>
-    /// <param name=sceneItemId>Numeric ID of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in</param>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     public async Task<GetSceneItemIndexResponse> GetSceneItemIndexAsync(string sceneName, int sceneItemId, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSceneItemIndex() { SceneName = sceneName, SceneItemId = sceneItemId }, cancellation).ConfigureAwait(false) as GetSceneItemIndexResponse)!;
     }
@@ -1250,9 +1249,9 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name of the scene the item is in</param>
-    /// <param name=sceneItemId>Numeric ID of the scene item</param>
-    /// <param name=sceneItemIndex>New index position of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in</param>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
+    /// <param name="sceneItemIndex">New index position of the scene item</param>
     public Task SetSceneItemIndexAsync(string sceneName, int sceneItemId, int sceneItemIndex, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetSceneItemIndex() { SceneName = sceneName, SceneItemId = sceneItemId, SceneItemIndex = sceneItemIndex }, cancellation);
     }
@@ -1274,8 +1273,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name of the scene the item is in</param>
-    /// <param name=sceneItemId>Numeric ID of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in</param>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     public async Task<GetSceneItemBlendModeResponse> GetSceneItemBlendModeAsync(string sceneName, int sceneItemId, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSceneItemBlendMode() { SceneName = sceneName, SceneItemId = sceneItemId }, cancellation).ConfigureAwait(false) as GetSceneItemBlendModeResponse)!;
     }
@@ -1287,9 +1286,9 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sceneName>Name of the scene the item is in</param>
-    /// <param name=sceneItemId>Numeric ID of the scene item</param>
-    /// <param name=sceneItemBlendMode>New blend mode</param>
+    /// <param name="sceneName">Name of the scene the item is in</param>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
+    /// <param name="sceneItemBlendMode">New blend mode</param>
     public Task SetSceneItemBlendModeAsync(string sceneName, int sceneItemId, string sceneItemBlendMode, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetSceneItemBlendMode() { SceneName = sceneName, SceneItemId = sceneItemId, SceneItemBlendMode = sceneItemBlendMode }, cancellation);
     }
@@ -1398,7 +1397,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=outputName>Output name</param>
+    /// <param name="outputName">Output name</param>
     public async Task<GetOutputStatusResponse> GetOutputStatusAsync(string outputName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetOutputStatus() { OutputName = outputName }, cancellation).ConfigureAwait(false) as GetOutputStatusResponse)!;
     }
@@ -1408,7 +1407,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=outputName>Output name</param>
+    /// <param name="outputName">Output name</param>
     public async Task<ToggleOutputResponse> ToggleOutputAsync(string outputName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new ToggleOutput() { OutputName = outputName }, cancellation).ConfigureAwait(false) as ToggleOutputResponse)!;
     }
@@ -1418,7 +1417,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=outputName>Output name</param>
+    /// <param name="outputName">Output name</param>
     public Task StartOutputAsync(string outputName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new StartOutput() { OutputName = outputName }, cancellation);
     }
@@ -1428,7 +1427,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=outputName>Output name</param>
+    /// <param name="outputName">Output name</param>
     public Task StopOutputAsync(string outputName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new StopOutput() { OutputName = outputName }, cancellation);
     }
@@ -1438,7 +1437,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=outputName>Output name</param>
+    /// <param name="outputName">Output name</param>
     public async Task<GetOutputSettingsResponse> GetOutputSettingsAsync(string outputName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetOutputSettings() { OutputName = outputName }, cancellation).ConfigureAwait(false) as GetOutputSettingsResponse)!;
     }
@@ -1448,8 +1447,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=outputName>Output name</param>
-    /// <param name=outputSettings>Output settings</param>
+    /// <param name="outputName">Output name</param>
+    /// <param name="outputSettings">Output settings</param>
     public Task SetOutputSettingsAsync(string outputName, Dictionary<string, object?> outputSettings, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetOutputSettings() { OutputName = outputName, OutputSettings = outputSettings }, cancellation);
     }
@@ -1495,7 +1494,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=captionText>Caption text</param>
+    /// <param name="captionText">Caption text</param>
     public Task SendStreamCaptionAsync(string captionText, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SendStreamCaption() { CaptionText = captionText }, cancellation);
     }
@@ -1579,7 +1578,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the media input</param>
+    /// <param name="inputName">Name of the media input</param>
     public async Task<GetMediaInputStatusResponse> GetMediaInputStatusAsync(string inputName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetMediaInputStatus() { InputName = inputName }, cancellation).ConfigureAwait(false) as GetMediaInputStatusResponse)!;
     }
@@ -1591,8 +1590,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the media input</param>
-    /// <param name=mediaCursor>New cursor position to set</param>
+    /// <param name="inputName">Name of the media input</param>
+    /// <param name="mediaCursor">New cursor position to set</param>
     public Task SetMediaInputCursorAsync(string inputName, double mediaCursor, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetMediaInputCursor() { InputName = inputName, MediaCursor = mediaCursor }, cancellation);
     }
@@ -1604,8 +1603,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the media input</param>
-    /// <param name=mediaCursorOffset>Value to offset the current cursor position by</param>
+    /// <param name="inputName">Name of the media input</param>
+    /// <param name="mediaCursorOffset">Value to offset the current cursor position by</param>
     public Task OffsetMediaInputCursorAsync(string inputName, int mediaCursorOffset, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new OffsetMediaInputCursor() { InputName = inputName, MediaCursorOffset = mediaCursorOffset }, cancellation);
     }
@@ -1615,8 +1614,8 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the media input</param>
-    /// <param name=mediaAction>Identifier of the `ObsMediaInputAction` enum</param>
+    /// <param name="inputName">Name of the media input</param>
+    /// <param name="mediaAction">Identifier of the `ObsMediaInputAction` enum</param>
     public Task TriggerMediaInputActionAsync(string inputName, string mediaAction, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new TriggerMediaInputAction() { InputName = inputName, MediaAction = mediaAction }, cancellation);
     }
@@ -1635,7 +1634,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=studioModeEnabled>True == Enabled, False == Disabled</param>
+    /// <param name="studioModeEnabled">True == Enabled, False == Disabled</param>
     public Task SetStudioModeEnabledAsync(bool studioModeEnabled, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new SetStudioModeEnabled() { StudioModeEnabled = studioModeEnabled }, cancellation);
     }
@@ -1645,7 +1644,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the input to open the dialog of</param>
+    /// <param name="inputName">Name of the input to open the dialog of</param>
     public Task OpenInputPropertiesDialogAsync(string inputName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new OpenInputPropertiesDialog() { InputName = inputName }, cancellation);
     }
@@ -1655,7 +1654,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the input to open the dialog of</param>
+    /// <param name="inputName">Name of the input to open the dialog of</param>
     public Task OpenInputFiltersDialogAsync(string inputName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new OpenInputFiltersDialog() { InputName = inputName }, cancellation);
     }
@@ -1665,7 +1664,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=inputName>Name of the input to open the dialog of</param>
+    /// <param name="inputName">Name of the input to open the dialog of</param>
     public Task OpenInputInteractDialogAsync(string inputName, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new OpenInputInteractDialog() { InputName = inputName }, cancellation);
     }
@@ -1692,9 +1691,9 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=videoMixType>Type of mix to open</param>
-    /// <param name=monitorIndex>Monitor index, use `GetMonitorList` to obtain index</param>
-    /// <param name=projectorGeometry>Size/Position data for a windowed projector, in Qt Base64 encoded format. Mutually exclusive with `monitorIndex`</param>
+    /// <param name="videoMixType">Type of mix to open</param>
+    /// <param name="monitorIndex">Monitor index, use `GetMonitorList` to obtain index</param>
+    /// <param name="projectorGeometry">Size/Position data for a windowed projector, in Qt Base64 encoded format. Mutually exclusive with `monitorIndex`</param>
     public Task OpenVideoMixProjectorAsync(string videoMixType, int? monitorIndex = null, string? projectorGeometry = null, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new OpenVideoMixProjector() { VideoMixType = videoMixType, MonitorIndex = monitorIndex, ProjectorGeometry = projectorGeometry }, cancellation);
     }
@@ -1706,9 +1705,9 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name=sourceName>Name of the source to open a projector for</param>
-    /// <param name=monitorIndex>Monitor index, use `GetMonitorList` to obtain index</param>
-    /// <param name=projectorGeometry>Size/Position data for a windowed projector, in Qt Base64 encoded format. Mutually exclusive with `monitorIndex`</param>
+    /// <param name="sourceName">Name of the source to open a projector for</param>
+    /// <param name="monitorIndex">Monitor index, use `GetMonitorList` to obtain index</param>
+    /// <param name="projectorGeometry">Size/Position data for a windowed projector, in Qt Base64 encoded format. Mutually exclusive with `monitorIndex`</param>
     public Task OpenSourceProjectorAsync(string sourceName, int? monitorIndex = null, string? projectorGeometry = null, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(new OpenSourceProjector() { SourceName = sourceName, MonitorIndex = monitorIndex, ProjectorGeometry = projectorGeometry }, cancellation);
     }
