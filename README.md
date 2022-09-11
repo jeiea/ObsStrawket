@@ -69,7 +69,7 @@ Checkmark means it has test.
 - [ ] CurrentSceneCollectionChanging
 - [ ] CurrentSceneTransitionChanged
 - [ ] CurrentSceneTransitionDurationChanged
-- [ ] ExitStarted
+- [x] ExitStarted
 - [ ] InputActiveStateChanged
 - [ ] InputAudioBalanceChanged
 - [ ] InputAudioMonitorTypeChanged

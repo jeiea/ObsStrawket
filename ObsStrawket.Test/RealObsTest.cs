@@ -1,7 +1,7 @@
 namespace ObsStrawket.Test.Real {
-  using ObsStrawket.Test.Specs;
   using ObsStrawket.Test.Utilities;
   using System;
+  using System.Diagnostics;
   using System.Threading.Tasks;
   using Xunit;
 
@@ -34,8 +34,11 @@ namespace ObsStrawket.Test.Real {
         return;
       }
       var client = ClientFlow.GetDebugClient(useChannel: true);
-      await client.ConnectAsync(new Uri("ws://127.0.0.1:4455"), "ahrEYXzXKytCIlpI").ConfigureAwait(false);
-      await new ToggleRecordFlow().RequestAsync(client).ConfigureAwait(false);
+      await client.ConnectAsync(new Uri("ws://127.0.0.1:4455"), MockServer.Password).ConfigureAwait(false);
+      while (await client.Events.WaitToReadAsync().ConfigureAwait(false)) {
+        var ev = await client.Events.ReadAsync().ConfigureAwait(false);
+        Debug.WriteLine(ev);
+      }
       return;
     }
   }
