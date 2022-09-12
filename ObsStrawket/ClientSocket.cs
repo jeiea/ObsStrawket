@@ -238,7 +238,7 @@ namespace ObsStrawket {
         }
       }
       _requests.Clear();
-      _events.Writer.TryComplete();
+      _events.Writer.TryComplete(exception);
 
       _clientWebSocket.Dispose();
     }
