@@ -739,15 +739,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   }
 
   [MessagePackObject]
-  public class SaveSourceScreenshotResponse : SourcesRequestResponse {
-    /// <summary>
-    /// Base64-encoded screenshot<br />
-    /// </summary>
-    [Key("imageData")]
-    public string ImageData { get; set; } = "";
-  }
-
-  [MessagePackObject]
   public class ScenesRequest : Request { }
   [MessagePackObject]
   public class ScenesRequestResponse : RequestResponse { }

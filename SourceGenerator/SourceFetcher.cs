@@ -47,11 +47,16 @@ namespace SourceGenerator {
     }
 
     private static void PatchOthers(ObsRequest request) {
-      if (request.RequestType == "ToggleRecord") {
+      switch (request.RequestType) {
+      case "ToggleRecord":
         request.ResponseFields!.Add(new ObsDataFields { ValueName = "outputActive", ValueDescription = "Whether the output is active", ValueType = "Boolean" });
-      }
-      else if (request.RequestType == "ToggleRecordPause") {
+        break;
+      case "ToggleRecordPause":
         request.ResponseFields!.Add(new ObsDataFields { ValueName = "outputPaused", ValueDescription = "Whether the output is paused", ValueType = "Boolean" });
+        break;
+      case "SaveSourceScreenshot":
+        request.ResponseFields!.Clear();
+        break;
       }
       foreach (var field in request.RequestFields!) {
         if (field.ValueDescription!.Contains("OBS_WEBSOCKET_DATA_REALM_GLOBAL")) {

@@ -100,7 +100,7 @@ namespace ObsStrawket {
       }
     }
 
-    public async Task<IRequestResponse?> RequestAsync(IRequest request, CancellationToken cancellation = default) {
+    public async Task<IRequestResponse> RequestAsync(IRequest request, CancellationToken cancellation = default) {
       if (!IsConnected) {
         throw new InvalidOperationException("WebSocket is not connected");
       }

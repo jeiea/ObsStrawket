@@ -116,12 +116,12 @@ Checkmark means it has test.
 
 ## Requests
 
-- [ ] BroadcastCustomEvent
+- [x] BroadcastCustomEvent
 - [ ] CallVendorRequest
 - [ ] CreateInput
 - [x] CreateProfile
-- [ ] CreateScene
-- [ ] CreateSceneCollection
+- [x] CreateScene
+- [x] CreateSceneCollection
 - [ ] CreateSceneItem
 - [ ] CreateSourceFilter
 - [ ] DuplicateSceneItem
@@ -163,14 +163,14 @@ Checkmark means it has test.
 - [ ] GetSceneItemList
 - [ ] GetSceneItemLocked
 - [ ] GetSceneItemTransform
-- [ ] GetSceneList
+- [x] GetSceneList
 - [ ] GetSceneSceneTransitionOverride
 - [ ] GetSceneTransitionList
-- [ ] GetSourceActive
+- [x] GetSourceActive
 - [ ] GetSourceFilter
 - [ ] GetSourceFilterDefaultSettings
 - [ ] GetSourceFilterList
-- [ ] GetSourceScreenshot
+- [x] GetSourceScreenshot
 - [ ] GetSpecialInputs
 - [x] GetStats
 - [ ] GetStreamServiceSettings
@@ -195,7 +195,7 @@ Checkmark means it has test.
 - [ ] RemoveSourceFilter
 - [x] ResumeRecord
 - [ ] SaveReplayBuffer
-- [ ] SaveSourceScreenshot
+- [x] SaveSourceScreenshot
 - [ ] SendStreamCaption
 - [ ] SetCurrentPreviewScene
 - [x] SetCurrentProfile

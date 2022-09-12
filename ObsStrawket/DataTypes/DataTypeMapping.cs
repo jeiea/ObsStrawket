@@ -111,7 +111,7 @@ namespace ObsStrawket.DataTypes {
       // Sources Requests
       new (typeof(GetSourceActive), typeof(GetSourceActiveResponse)),
       new (typeof(GetSourceScreenshot), typeof(GetSourceScreenshotResponse)),
-      new (typeof(SaveSourceScreenshot), typeof(SaveSourceScreenshotResponse)),
+      new (typeof(SaveSourceScreenshot), typeof(RequestResponse)),
       // Scenes Requests
       new (typeof(GetSceneList), typeof(GetSceneListResponse), true),
       new (typeof(GetGroupList), typeof(GetGroupListResponse), true),

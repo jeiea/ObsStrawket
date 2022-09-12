@@ -85,19 +85,28 @@ namespace ObsStrawket.Test.Real {
 
         //new GetRecordDirectoryFlow(),
 
+
+        // Scenes
+        new CreateSceneCollectionFlow(),
+        new CreateSceneFlow(),
+        new GetSceneListFlow(),
+        // Sources
+        new GetSourceActiveFlow(),
+        new GetSourceScreenshotFlow(),
+        new SaveSourceScreenshotFlow(),
+
         // Record
-        new StartRecordFlow(),
-        new PauseRecordFlow(),
-        new ResumeRecordFlow(),
-        new ToggleRecordPauseFlow(),
-        new GetRecordStatusFlow(),
-        new StopRecordFlow(),
-        new ToggleRecordFlow(),
+        //new StartRecordFlow(),
+        //new PauseRecordFlow(),
+        //new ResumeRecordFlow(),
+        //new ToggleRecordPauseFlow(),
+        //new GetRecordStatusFlow(),
+        //new StopRecordFlow(),
+        //new ToggleRecordFlow(),
+
 
 //new CreateInputFlow(),
-//new CreateSceneCollectionFlow(),
 //new CreateSceneItemFlow(),
-//new CreateSceneFlow(),
 //new CreateSourceFilterFlow(),
 //new DuplicateSceneItemFlow(),
 //new GetCurrentPreviewSceneFlow(),
@@ -137,11 +146,9 @@ namespace ObsStrawket.Test.Real {
 //new GetSceneListFlow(),
 //new GetSceneSceneTransitionOverrideFlow(),
 //new GetSceneTransitionListFlow(),
-//new GetSourceActiveFlow(),
 //new GetSourceFilterDefaultSettingsFlow(),
 //new GetSourceFilterListFlow(),
 //new GetSourceFilterFlow(),
-//new GetSourceScreenshotFlow(),
 //new GetSpecialInputsFlow(),
 //new GetStreamServiceSettingsFlow(),
 //new GetStreamStatusFlow(),
@@ -161,7 +168,6 @@ namespace ObsStrawket.Test.Real {
 //new RemoveSceneFlow(),
 //new RemoveSourceFilterFlow(),
 //new SaveReplayBufferFlow(),
-//new SaveSourceScreenshotFlow(),
 //new SendStreamCaptionFlow(),
 //new SetCurrentPreviewSceneFlow(),
 //new SetCurrentProgramSceneFlow(),
