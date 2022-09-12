@@ -65,8 +65,8 @@ Checkmark means it has test.
 - [x] CurrentProfileChanged
 - [x] CurrentProfileChanging
 - [ ] CurrentProgramSceneChanged
-- [ ] CurrentSceneCollectionChanged
-- [ ] CurrentSceneCollectionChanging
+- [x] CurrentSceneCollectionChanged
+- [x] CurrentSceneCollectionChanging
 - [ ] CurrentSceneTransitionChanged
 - [ ] CurrentSceneTransitionDurationChanged
 - [x] ExitStarted
@@ -90,7 +90,7 @@ Checkmark means it has test.
 - [ ] ReplayBufferSaved
 - [ ] ReplayBufferStateChanged
 - [ ] SceneCollectionListChanged
-- [ ] SceneCreated
+- [x] SceneCreated
 - [ ] SceneItemCreated
 - [ ] SceneItemEnableStateChanged
 - [ ] SceneItemListReindexed
@@ -98,7 +98,7 @@ Checkmark means it has test.
 - [ ] SceneItemRemoved
 - [ ] SceneItemSelected
 - [ ] SceneItemTransformChanged
-- [ ] SceneListChanged
+- [x] SceneListChanged
 - [ ] SceneNameChanged
 - [ ] SceneRemoved
 - [ ] SceneTransitionEnded
@@ -131,7 +131,7 @@ Checkmark means it has test.
 - [ ] GetCurrentSceneTransitionCursor
 - [ ] GetGroupList
 - [ ] GetGroupSceneItemList
-- [ ] GetHotkeyList
+- [x] GetHotkeyList
 - [ ] GetInputAudioBalance
 - [ ] GetInputAudioMonitorType
 - [ ] GetInputAudioSyncOffset

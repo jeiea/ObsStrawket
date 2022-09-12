@@ -1,3 +1,8 @@
+## 0.3.0
+
+- Remove SaveSourceScreenshot response's `ImageData` (upstream document is invalid).
+- Verify more requests.
+
 ## 0.2.0
 
 - Add `ObsClientSocket.Connected` event.
