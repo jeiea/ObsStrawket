@@ -15,8 +15,9 @@ namespace ObsStrawket.Serialization {
 
       string eventType = peeker.ReadString();
       if (!DataTypeMapping.EventToTypes.TryGetValue(eventType, out var type)) {
+        peeker = reader.CreatePeekReader();
         reader.Skip();
-        return MessagePackSerializer.Deserialize<RawEvent>(ref reader, options);
+        return MessagePackSerializer.Deserialize<RawEvent>(ref peeker, options);
       }
 
       peeker = reader.CreatePeekReader();

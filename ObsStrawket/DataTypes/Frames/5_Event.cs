@@ -22,7 +22,7 @@ namespace ObsStrawket.DataTypes {
 
   [MessagePackObject]
   public sealed class RawEvent : IEvent {
-    [Key("op")]
+    [IgnoreMember]
     public OpCode Op => OpCode.Event;
 
     [Key("eventType")]

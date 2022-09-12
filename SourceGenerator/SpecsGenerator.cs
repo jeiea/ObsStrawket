@@ -125,7 +125,7 @@ namespace ObsStrawket.Test.Specs {
 
   class {type}Flow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      {response}await client.{type}Async({requestParams}).ConfigureAwait(false);
+      var response = await client.{type}Async({requestParams}).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
@@ -137,8 +137,7 @@ namespace ObsStrawket.Test.Specs {
 "
 .Replace("{type}", request.RequestType)
 .Replace("{usings}", string.Join("\r\n", usings))
-.Replace("{requestParams}", parameters)
-.Replace("{response}", request.ResponseFields!.Count == 0 ? "" : "var response = "));
+.Replace("{requestParams}", parameters));
       }
     }
   }

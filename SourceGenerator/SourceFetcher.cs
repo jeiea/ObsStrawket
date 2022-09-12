@@ -40,15 +40,20 @@ namespace SourceGenerator {
         }
 
         PatchTriggerHotkeyByKeySequence(requestFields);
-        PatchToggleRecord(request);
+        PatchOthers(request);
       }
 
       return protocol;
     }
 
-    private static void PatchToggleRecord(ObsRequest request) {
+    private static void PatchOthers(ObsRequest request) {
       if (request.RequestType == "ToggleRecord") {
         request.ResponseFields!.Add(new ObsDataFields { ValueName = "outputActive", ValueDescription = "Whether the output is active", ValueType = "Boolean" });
+      }
+      foreach (var field in request.RequestFields!) {
+        if (field.ValueDescription!.Contains("OBS_WEBSOCKET_DATA_REALM_GLOBAL")) {
+          request.RequestFields![0].ValueType = "DataRealm";
+        }
       }
     }
 

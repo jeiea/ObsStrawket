@@ -62,8 +62,8 @@ Checkmark means it has test.
 ## Events
 
 - [ ] CurrentPreviewSceneChanged
-- [ ] CurrentProfileChanged
-- [ ] CurrentProfileChanging
+- [x] CurrentProfileChanged
+- [x] CurrentProfileChanging
 - [ ] CurrentProgramSceneChanged
 - [ ] CurrentSceneCollectionChanged
 - [ ] CurrentSceneCollectionChanging
@@ -119,7 +119,7 @@ Checkmark means it has test.
 - [ ] BroadcastCustomEvent
 - [ ] CallVendorRequest
 - [ ] CreateInput
-- [ ] CreateProfile
+- [x] CreateProfile
 - [ ] CreateScene
 - [ ] CreateSceneCollection
 - [ ] CreateSceneItem
@@ -149,7 +149,7 @@ Checkmark means it has test.
 - [ ] GetOutputList
 - [ ] GetOutputSettings
 - [ ] GetOutputStatus
-- [ ] GetPersistentData
+- [x] GetPersistentData
 - [ ] GetProfileList
 - [ ] GetProfileParameter
 - [x] GetRecordDirectory
@@ -172,7 +172,7 @@ Checkmark means it has test.
 - [ ] GetSourceFilterList
 - [ ] GetSourceScreenshot
 - [ ] GetSpecialInputs
-- [ ] GetStats
+- [x] GetStats
 - [ ] GetStreamServiceSettings
 - [ ] GetStreamStatus
 - [ ] GetStudioModeEnabled
@@ -189,7 +189,7 @@ Checkmark means it has test.
 - [ ] PauseRecord
 - [ ] PressInputPropertiesButton
 - [ ] RemoveInput
-- [ ] RemoveProfile
+- [x] RemoveProfile
 - [ ] RemoveScene
 - [ ] RemoveSceneItem
 - [ ] RemoveSourceFilter
@@ -198,7 +198,7 @@ Checkmark means it has test.
 - [ ] SaveSourceScreenshot
 - [ ] SendStreamCaption
 - [ ] SetCurrentPreviewScene
-- [ ] SetCurrentProfile
+- [x] SetCurrentProfile
 - [ ] SetCurrentProgramScene
 - [ ] SetCurrentSceneCollection
 - [ ] SetCurrentSceneTransition
@@ -214,7 +214,7 @@ Checkmark means it has test.
 - [ ] SetInputVolume
 - [ ] SetMediaInputCursor
 - [ ] SetOutputSettings
-- [ ] SetPersistentData
+- [x] SetPersistentData
 - [ ] SetProfileParameter
 - [ ] SetSceneItemBlendMode
 - [ ] SetSceneItemEnabled
@@ -249,7 +249,7 @@ Checkmark means it has test.
 - [ ] ToggleReplayBuffer
 - [ ] ToggleStream
 - [ ] ToggleVirtualCam
-- [ ] TriggerHotkeyByKeySequence
-- [ ] TriggerHotkeyByName
+- [x] TriggerHotkeyByKeySequence
+- [x] TriggerHotkeyByName
 - [ ] TriggerMediaInputAction
 - [ ] TriggerStudioModeTransition

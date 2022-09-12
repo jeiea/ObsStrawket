@@ -282,7 +282,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// The data realm to select. `OBS_WEBSOCKET_DATA_REALM_GLOBAL` or `OBS_WEBSOCKET_DATA_REALM_PROFILE` | None | N/A<br />
     /// </summary>
     [Key("realm")]
-    public string Realm { get; set; } = "";
+    public DataRealm Realm { get; set; }
     /// <summary>
     /// The name of the slot to retrieve data from | None | N/A<br />
     /// </summary>
@@ -310,7 +310,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// The data realm to select. `OBS_WEBSOCKET_DATA_REALM_GLOBAL` or `OBS_WEBSOCKET_DATA_REALM_PROFILE` | None | N/A<br />
     /// </summary>
     [Key("realm")]
-    public string Realm { get; set; } = "";
+    public DataRealm Realm { get; set; }
     /// <summary>
     /// The name of the slot to retrieve data from | None | N/A<br />
     /// </summary>

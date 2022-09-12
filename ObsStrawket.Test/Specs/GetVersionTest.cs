@@ -13,7 +13,13 @@ namespace ObsStrawket.Test.Specs {
   class GetVersionFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetVersionAsync().ConfigureAwait(false);
+      Assert.Contains("GetVersion", response.AvailableRequests);
       Assert.Contains("bmp", response.SupportedImageFormats);
+      Assert.True(response.ObsVersion.Length > 0);
+      Assert.True(response.ObsWebSocketVersion.Length > 0);
+      Assert.True(response.Platform.Length > 0);
+      Assert.True(response.PlatformDescription.Length > 0);
+      Assert.True(response.RpcVersion >= 0);
     }
 
     public async Task RespondAsync(MockServerSession session) {

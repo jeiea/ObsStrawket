@@ -107,4 +107,12 @@ namespace ObsStrawket.DataTypes {
     [EnumMember(Value = "OBS_BLEND_DARKEN")]
     Darken,
   }
+
+  [MessagePackFormatter(typeof(EnumAsStringFormatter<DataRealm>))]
+  public enum DataRealm {
+    [EnumMember(Value = "OBS_WEBSOCKET_DATA_REALM_GLOBAL")]
+    Global,
+    [EnumMember(Value = "OBS_WEBSOCKET_DATA_REALM_PROFILE")]
+    Profile,
+  }
 }

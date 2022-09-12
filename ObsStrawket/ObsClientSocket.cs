@@ -270,7 +270,7 @@ namespace ObsStrawket {
     /// <param name="realm">The data realm to select. <c>OBS_WEBSOCKET_DATA_REALM_GLOBAL</c> or <c>OBS_WEBSOCKET_DATA_REALM_PROFILE</c></param>
     /// <param name="slotName">The name of the slot to retrieve data from</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<GetPersistentDataResponse> GetPersistentDataAsync(string realm, string slotName, CancellationToken cancellation = default) {
+    public async Task<GetPersistentDataResponse> GetPersistentDataAsync(DataRealm realm, string slotName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetPersistentData() { Realm = realm, SlotName = slotName }, cancellation).ConfigureAwait(false) as GetPersistentDataResponse)!;
     }
 
@@ -283,7 +283,7 @@ namespace ObsStrawket {
     /// <param name="slotName">The name of the slot to retrieve data from</param>
     /// <param name="slotValue">The value to apply to the slot</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetPersistentDataAsync(string realm, string slotName, object? slotValue, CancellationToken cancellation = default) {
+    public async Task<RequestResponse> SetPersistentDataAsync(DataRealm realm, string slotName, object? slotValue, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetPersistentData() { Realm = realm, SlotName = slotName, SlotValue = slotValue }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
@@ -1852,7 +1852,6 @@ namespace ObsStrawket {
     public async Task<RequestResponse> OpenSourceProjectorAsync(string sourceName, int? monitorIndex = default, string? projectorGeometry = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new OpenSourceProjector() { SourceName = sourceName, MonitorIndex = monitorIndex, ProjectorGeometry = projectorGeometry }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
-
 
     #endregion
 
