@@ -50,6 +50,9 @@ namespace SourceGenerator {
       if (request.RequestType == "ToggleRecord") {
         request.ResponseFields!.Add(new ObsDataFields { ValueName = "outputActive", ValueDescription = "Whether the output is active", ValueType = "Boolean" });
       }
+      else if (request.RequestType == "ToggleRecordPause") {
+        request.ResponseFields!.Add(new ObsDataFields { ValueName = "outputPaused", ValueDescription = "Whether the output is paused", ValueType = "Boolean" });
+      }
       foreach (var field in request.RequestFields!) {
         if (field.ValueDescription!.Contains("OBS_WEBSOCKET_DATA_REALM_GLOBAL")) {
           request.RequestFields![0].ValueType = "DataRealm";

@@ -13,7 +13,8 @@ namespace ObsStrawket.Test.Specs {
   class GetRecordStatusFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetRecordStatusAsync().ConfigureAwait(false);
-      Assert.Equal("00:00:00.000", response.OutputTimecode);
+      Assert.True(response.OutputActive);
+      Assert.StartsWith("00:00:0", response.OutputTimecode);
     }
 
     public async Task RespondAsync(MockServerSession session) {
@@ -34,11 +35,11 @@ namespace ObsStrawket.Test.Specs {
     },
     ""requestType"": ""GetRecordStatus"",
     ""responseData"": {
-      ""outputActive"": false,
-      ""outputBytes"": 0,
-      ""outputDuration"": 0,
-      ""outputPaused"": false,
-      ""outputTimecode"": ""00:00:00.000""
+      ""outputActive"": true,
+      ""outputBytes"": 1469,
+      ""outputDuration"": 49,
+      ""outputPaused"": true,
+      ""outputTimecode"": ""00:00:00.049""
     }
   },
   ""op"": 7

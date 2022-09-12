@@ -66,31 +66,33 @@ namespace ObsStrawket.Test.Real {
       var client = ClientFlow.GetDebugClient(useChannel: true);
       await client.ConnectAsync(_uri, MockServer.Password).ConfigureAwait(false);
       var flows = new List<ITestFlow>() {
-        // General
-        new GetVersionFlow(),
-        new GetStatsFlow(),
-        new BroadcastCustomEventFlow(),
-        //new CallVendorRequestFlow(),
-        new GetHotkeyListFlow(),
-        new TriggerHotkeyByNameFlow(),
-        //new TriggerHotkeyByKeySequenceFlow(),
-        //new SleepFlow(),
+        //// General
+        //new GetVersionFlow(),
+        //new GetStatsFlow(),
+        //new BroadcastCustomEventFlow(),
+        ////new CallVendorRequestFlow(),
+        //new GetHotkeyListFlow(),
+        //new TriggerHotkeyByNameFlow(),
+        ////new TriggerHotkeyByKeySequenceFlow(),
+        ////new SleepFlow(),
 
-        // Config
-        new CreateProfileFlow(),
-        new SetCurrentProfileFlow(),
-        new SetPersistentDataFlow(),
-        new GetPersistentDataFlow(),
-        new RemoveProfileFlow(),
+        //// Config
+        //new CreateProfileFlow(),
+        //new SetCurrentProfileFlow(),
+        //new SetPersistentDataFlow(),
+        //new GetPersistentDataFlow(),
+        //new RemoveProfileFlow(),
 
-        new GetRecordDirectoryFlow(),
+        //new GetRecordDirectoryFlow(),
 
         // Record
-        //new GetRecordStatusFlow(),
-        //new StartRecordFlow(),
-        //new StopRecordFlow(),
-        //new ToggleRecordFlow(),
-
+        new StartRecordFlow(),
+        new PauseRecordFlow(),
+        new ResumeRecordFlow(),
+        new ToggleRecordPauseFlow(),
+        new GetRecordStatusFlow(),
+        new StopRecordFlow(),
+        new ToggleRecordFlow(),
 
 //new CreateInputFlow(),
 //new CreateSceneCollectionFlow(),
@@ -153,13 +155,11 @@ namespace ObsStrawket.Test.Real {
 //new OpenInputPropertiesDialogFlow(),
 //new OpenSourceProjectorFlow(),
 //new OpenVideoMixProjectorFlow(),
-//new PauseRecordFlow(),
 //new PressInputPropertiesButtonFlow(),
 //new RemoveInputFlow(),
 //new RemoveSceneItemFlow(),
 //new RemoveSceneFlow(),
 //new RemoveSourceFilterFlow(),
-//new ResumeRecordFlow(),
 //new SaveReplayBufferFlow(),
 //new SaveSourceScreenshotFlow(),
 //new SendStreamCaptionFlow(),
@@ -205,7 +205,6 @@ namespace ObsStrawket.Test.Real {
 //new StopVirtualCamFlow(),
 //new ToggleInputMuteFlow(),
 //new ToggleOutputFlow(),
-//new ToggleRecordPauseFlow(),
 //new ToggleReplayBufferFlow(),
 //new ToggleStreamFlow(),
 //new ToggleVirtualCamFlow(),

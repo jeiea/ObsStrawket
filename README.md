@@ -186,14 +186,14 @@ Checkmark means it has test.
 - [ ] OpenInputPropertiesDialog
 - [ ] OpenSourceProjector
 - [ ] OpenVideoMixProjector
-- [ ] PauseRecord
+- [x] PauseRecord
 - [ ] PressInputPropertiesButton
 - [ ] RemoveInput
 - [x] RemoveProfile
 - [ ] RemoveScene
 - [ ] RemoveSceneItem
 - [ ] RemoveSourceFilter
-- [ ] ResumeRecord
+- [x] ResumeRecord
 - [ ] SaveReplayBuffer
 - [ ] SaveSourceScreenshot
 - [ ] SendStreamCaption
@@ -245,7 +245,7 @@ Checkmark means it has test.
 - [ ] ToggleInputMute
 - [ ] ToggleOutput
 - [x] ToggleRecord
-- [ ] ToggleRecordPause
+- [x] ToggleRecordPause
 - [ ] ToggleReplayBuffer
 - [ ] ToggleStream
 - [ ] ToggleVirtualCam

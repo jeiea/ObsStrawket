@@ -2893,6 +2893,14 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   [MessagePackObject]
   public class ToggleRecordPause : RecordRequest { }
+  [MessagePackObject]
+  public class ToggleRecordPauseResponse : RecordRequestResponse {
+    /// <summary>
+    /// Whether the output is paused
+    /// </summary>
+    [Key("outputPaused")]
+    public bool OutputPaused { get; set; }
+  }
 
   /// <summary>
   /// Pauses the record output.<br />

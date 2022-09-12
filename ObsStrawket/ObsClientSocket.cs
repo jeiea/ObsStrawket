@@ -1667,8 +1667,8 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> ToggleRecordPauseAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new ToggleRecordPause() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<ToggleRecordPauseResponse> ToggleRecordPauseAsync(CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new ToggleRecordPause() { }, cancellation).ConfigureAwait(false) as ToggleRecordPauseResponse)!;
     }
 
     /// <summary>
