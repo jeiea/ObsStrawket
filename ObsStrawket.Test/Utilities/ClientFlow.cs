@@ -55,7 +55,7 @@ namespace ObsStrawket.Test.Utilities {
       Assert.True(Directory.Exists(directory.RecordDirectory), $"{directory.RecordDirectory} is not exists.");
 
       var stats = await client.GetStatsAsync(cancellation).ConfigureAwait(false);
-      Assert.Equal(11.508459378338541, stats.CpuUsage);
+      Assert.InRange(stats.CpuUsage, 0, 100);
 
       var startRecord = await client.StartRecordAsync(cancellation).ConfigureAwait(false);
       Assert.NotNull(startRecord);
