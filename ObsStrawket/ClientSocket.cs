@@ -113,19 +113,12 @@ namespace ObsStrawket {
       request.RequestId = guid;
       _logger?.LogInformation("RequestAsync {} start.", request.GetType().Name);
 
-      bool willWaitResponse = DataTypeMapping.RequestToTypes.TryGetValue(request.RequestType, out var typeMapping)
-          && typeMapping.Response != typeof(RequestResponse);
-      IRequestResponse? response = null;
-      if (willWaitResponse) {
-        var waiter = new TaskCompletionSource<IRequestResponse>();
-        _requests[guid] = waiter;
+      var waiter = new TaskCompletionSource<IRequestResponse>();
+      _requests[guid] = waiter;
 
-        await SendSafeAsync(request, token).ConfigureAwait(false);
-        response = await waiter.Task.ConfigureAwait(false);
-      }
-      else {
-        await SendSafeAsync(request, token).ConfigureAwait(false);
-      }
+      await SendSafeAsync(request, token).ConfigureAwait(false);
+      var response = await waiter.Task.ConfigureAwait(false);
+
       _logger?.LogInformation("RequestAsync {} finished.", request.GetType().Name);
       return response;
     }

@@ -121,6 +121,18 @@ namespace ObsStrawket.Test.Utilities {
   }
 }").ConfigureAwait(false);
 
+      await session.SendAsync(@"{
+  ""d"": {
+    ""requestId"": ""{guid}"",
+    ""requestStatus"": {
+      ""code"": 100,
+      ""result"": true
+    },
+    ""requestType"": ""SetStudioModeEnabled""
+  },
+  ""op"": 7
+}".Replace("{guid}", guid)).ConfigureAwait(false);
+
       await session.SendStudioModeStateChangedAsync(true).ConfigureAwait(false);
 
       guid = await session.ReceiveAsync(@"{
