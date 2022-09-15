@@ -1,3 +1,4 @@
+using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
 using System.Threading.Tasks;
 using Xunit;
@@ -15,6 +16,10 @@ namespace ObsStrawket.Test.Specs {
 
     public async Task RequestAsync(ObsClientSocket client) {
       await client.CreateSceneAsync(sceneName: NewScene).ConfigureAwait(false);
+      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      Assert.Equal(NewScene, (changed as SceneListChanged)!.Scenes[0].Name);
+      var created = await client.Events.ReadAsync().ConfigureAwait(false);
+      Assert.Equal(NewScene, (created as SceneCreated)!.SceneName);
     }
 
     public async Task RespondAsync(MockServerSession session) {

@@ -17,10 +17,7 @@ namespace ObsStrawket.Test.Specs {
     public static string NewSceneCollection = "test scene collection";
     public async Task RequestAsync(ObsClientSocket client) {
       await client.CreateSceneCollectionAsync(sceneCollectionName: NewSceneCollection).ConfigureAwait(false);
-      var list = new List<IEvent>();
-      while (client.Events.TryPeek(out _)) {
-        list.Add(await client.Events.ReadAsync().ConfigureAwait(false));
-      }
+      var list = ClientFlow.DrainEvents(client);
       Assert.Contains(list, (x) => x is CurrentSceneCollectionChanging);
       Assert.Contains(list, (x) => x is SceneCreated);
       Assert.Contains(list, (x) => x is SceneCollectionListChanged);

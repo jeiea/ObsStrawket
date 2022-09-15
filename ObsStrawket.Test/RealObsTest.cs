@@ -10,7 +10,7 @@ namespace ObsStrawket.Test.Real {
 
   public class RealObsTest {
     private readonly bool _shouldSkip = false;
-    private readonly Uri _uri = new Uri("ws://127.0.0.1:4455");
+    private readonly Uri _uri = new("ws://127.0.0.1:4455");
 
     public RealObsTest() {
       _shouldSkip = Environment.GetEnvironmentVariable("CI") != null;
@@ -50,7 +50,7 @@ namespace ObsStrawket.Test.Real {
         return;
       }
       var client = ClientFlow.GetDebugClient(useChannel: true);
-      await client.ConnectAsync(new Uri("ws://127.0.0.1:4455"), MockServer.Password).ConfigureAwait(false);
+      await client.ConnectAsync(_uri, MockServer.Password).ConfigureAwait(false);
       while (await client.Events.WaitToReadAsync().ConfigureAwait(false)) {
         var ev = await client.Events.ReadAsync().ConfigureAwait(false);
         Debug.WriteLine(ev);
@@ -87,13 +87,20 @@ namespace ObsStrawket.Test.Real {
 
 
         // Scenes
-        new CreateSceneCollectionFlow(),
+        //new CreateSceneCollectionFlow(),
         new CreateSceneFlow(),
-        new GetSceneListFlow(),
-        // Sources
-        new GetSourceActiveFlow(),
-        new GetSourceScreenshotFlow(),
-        new SaveSourceScreenshotFlow(),
+        //new GetSceneListFlow(),
+
+        // Ui
+        //new GetMonitorListFlow(),
+        new SetStudioModeEnabledFlow(),
+        new SetCurrentProgramSceneFlow(),
+
+        new GetStudioModeEnabledFlow(),
+
+        new CreateInputFlow(),
+        new GetInputListFlow(),
+        new OpenInputPropertiesDialogFlow(),
 
         // Record
         //new StartRecordFlow(),
@@ -104,8 +111,17 @@ namespace ObsStrawket.Test.Real {
         //new StopRecordFlow(),
         //new ToggleRecordFlow(),
 
+        // Sources
+        //new GetSourceActiveFlow(),
+        //new GetSourceScreenshotFlow(),
+        //new SaveSourceScreenshotFlow(),
 
-//new CreateInputFlow(),
+        // Scenes cleanup
+        new RemoveInputFlow(),
+        //new RemoveSceneItemFlow(),
+        new RemoveSceneFlow(),
+
+
 //new CreateSceneItemFlow(),
 //new CreateSourceFilterFlow(),
 //new DuplicateSceneItemFlow(),
@@ -121,14 +137,12 @@ namespace ObsStrawket.Test.Real {
 //new GetInputAudioTracksFlow(),
 //new GetInputDefaultSettingsFlow(),
 //new GetInputKindListFlow(),
-//new GetInputListFlow(),
 //new GetInputMuteFlow(),
 //new GetInputPropertiesListPropertyItemsFlow(),
 //new GetInputSettingsFlow(),
 //new GetInputVolumeFlow(),
 //new GetLastReplayBufferReplayFlow(),
 //new GetMediaInputStatusFlow(),
-//new GetMonitorListFlow(),
 //new GetOutputListFlow(),
 //new GetOutputSettingsFlow(),
 //new GetOutputStatusFlow(),
@@ -152,25 +166,19 @@ namespace ObsStrawket.Test.Real {
 //new GetSpecialInputsFlow(),
 //new GetStreamServiceSettingsFlow(),
 //new GetStreamStatusFlow(),
-//new GetStudioModeEnabledFlow(),
 //new GetTransitionKindListFlow(),
 //new GetVideoSettingsFlow(),
 //new GetVirtualCamStatusFlow(),
 //new OffsetMediaInputCursorFlow(),
 //new OpenInputFiltersDialogFlow(),
 //new OpenInputInteractDialogFlow(),
-//new OpenInputPropertiesDialogFlow(),
 //new OpenSourceProjectorFlow(),
 //new OpenVideoMixProjectorFlow(),
 //new PressInputPropertiesButtonFlow(),
-//new RemoveInputFlow(),
-//new RemoveSceneItemFlow(),
-//new RemoveSceneFlow(),
 //new RemoveSourceFilterFlow(),
 //new SaveReplayBufferFlow(),
 //new SendStreamCaptionFlow(),
 //new SetCurrentPreviewSceneFlow(),
-//new SetCurrentProgramSceneFlow(),
 //new SetCurrentSceneCollectionFlow(),
 //new SetCurrentSceneTransitionDurationFlow(),
 //new SetCurrentSceneTransitionSettingsFlow(),
@@ -198,7 +206,6 @@ namespace ObsStrawket.Test.Real {
 //new SetSourceFilterNameFlow(),
 //new SetSourceFilterSettingsFlow(),
 //new SetStreamServiceSettingsFlow(),
-//new SetStudioModeEnabledFlow(),
 //new SetTBarPositionFlow(),
 //new SetVideoSettingsFlow(),
 //new StartOutputFlow(),
@@ -218,7 +225,8 @@ namespace ObsStrawket.Test.Real {
 //new TriggerStudioModeTransitionFlow(),
       };
       foreach (var flow in flows) {
-        Debug.WriteLine(flow.GetType().Name);
+        Debug.WriteLine($"Test {flow.GetType().Name}");
+        ClientFlow.DrainEvents(client);
         await flow.RequestAsync(client).ConfigureAwait(false);
       }
       return;

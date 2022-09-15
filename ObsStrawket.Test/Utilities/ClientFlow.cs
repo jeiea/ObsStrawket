@@ -3,6 +3,7 @@ using ObsStrawket.DataTypes;
 using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Specs;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
@@ -67,6 +68,14 @@ namespace ObsStrawket.Test.Utilities {
       Assert.True(File.Exists(recording.OutputPath), $"{recording.OutputPath} is not exists.");
 
       await client.CloseAsync().ConfigureAwait(false);
+    }
+
+    public static List<IEvent> DrainEvents(ObsClientSocket client) {
+      var list = new List<IEvent>();
+      while (client.Events.TryRead(out var ev)) {
+        list.Add(ev);
+      }
+      return list;
     }
 
     public static async Task RequestBadAsync(Uri uri, ObsClientSocket? socket = null, CancellationToken cancellation = default) {

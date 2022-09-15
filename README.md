@@ -64,7 +64,7 @@ Checkmark means it has test.
 - [ ] CurrentPreviewSceneChanged
 - [x] CurrentProfileChanged
 - [x] CurrentProfileChanging
-- [ ] CurrentProgramSceneChanged
+- [x] CurrentProgramSceneChanged
 - [x] CurrentSceneCollectionChanged
 - [x] CurrentSceneCollectionChanging
 - [ ] CurrentSceneTransitionChanged
@@ -75,10 +75,10 @@ Checkmark means it has test.
 - [ ] InputAudioMonitorTypeChanged
 - [ ] InputAudioSyncOffsetChanged
 - [ ] InputAudioTracksChanged
-- [ ] InputCreated
+- [x] InputCreated
 - [ ] InputMuteStateChanged
 - [ ] InputNameChanged
-- [ ] InputRemoved
+- [x] InputRemoved
 - [ ] InputShowStateChanged
 - [ ] InputVolumeChanged
 - [ ] InputVolumeMeters
@@ -89,28 +89,28 @@ Checkmark means it has test.
 - [x] RecordStateChanged
 - [ ] ReplayBufferSaved
 - [ ] ReplayBufferStateChanged
-- [ ] SceneCollectionListChanged
+- [x] SceneCollectionListChanged
 - [x] SceneCreated
-- [ ] SceneItemCreated
+- [x] SceneItemCreated
 - [ ] SceneItemEnableStateChanged
 - [ ] SceneItemListReindexed
 - [ ] SceneItemLockStateChanged
-- [ ] SceneItemRemoved
-- [ ] SceneItemSelected
+- [x] SceneItemRemoved
+- [x] SceneItemSelected
 - [ ] SceneItemTransformChanged
 - [x] SceneListChanged
 - [ ] SceneNameChanged
-- [ ] SceneRemoved
-- [ ] SceneTransitionEnded
-- [ ] SceneTransitionStarted
-- [ ] SceneTransitionVideoEnded
+- [x] SceneRemoved
+- [x] SceneTransitionEnded
+- [x] SceneTransitionStarted
+- [x] SceneTransitionVideoEnded
 - [ ] SourceFilterCreated
 - [ ] SourceFilterEnableStateChanged
 - [ ] SourceFilterListReindexed
 - [ ] SourceFilterNameChanged
 - [ ] SourceFilterRemoved
 - [ ] StreamStateChanged
-- [ ] StudioModeStateChanged
+- [x] StudioModeStateChanged
 - [ ] VendorEvent
 - [ ] VirtualcamStateChanged
 
@@ -118,7 +118,7 @@ Checkmark means it has test.
 
 - [x] BroadcastCustomEvent
 - [ ] CallVendorRequest
-- [ ] CreateInput
+- [x] CreateInput
 - [x] CreateProfile
 - [x] CreateScene
 - [x] CreateSceneCollection
@@ -138,14 +138,14 @@ Checkmark means it has test.
 - [ ] GetInputAudioTracks
 - [ ] GetInputDefaultSettings
 - [ ] GetInputKindList
-- [ ] GetInputList
+- [x] GetInputList
 - [ ] GetInputMute
 - [ ] GetInputPropertiesListPropertyItems
 - [ ] GetInputSettings
 - [ ] GetInputVolume
 - [ ] GetLastReplayBufferReplay
 - [ ] GetMediaInputStatus
-- [ ] GetMonitorList
+- [x] GetMonitorList
 - [ ] GetOutputList
 - [ ] GetOutputSettings
 - [ ] GetOutputStatus
@@ -175,7 +175,7 @@ Checkmark means it has test.
 - [x] GetStats
 - [ ] GetStreamServiceSettings
 - [ ] GetStreamStatus
-- [ ] GetStudioModeEnabled
+- [x] GetStudioModeEnabled
 - [ ] GetTransitionKindList
 - [x] GetVersion
 - [ ] GetVideoSettings
@@ -183,14 +183,14 @@ Checkmark means it has test.
 - [ ] OffsetMediaInputCursor
 - [ ] OpenInputFiltersDialog
 - [ ] OpenInputInteractDialog
-- [ ] OpenInputPropertiesDialog
+- [x] OpenInputPropertiesDialog
 - [ ] OpenSourceProjector
 - [ ] OpenVideoMixProjector
 - [x] PauseRecord
 - [ ] PressInputPropertiesButton
-- [ ] RemoveInput
+- [x] RemoveInput
 - [x] RemoveProfile
-- [ ] RemoveScene
+- [x] RemoveScene
 - [ ] RemoveSceneItem
 - [ ] RemoveSourceFilter
 - [x] ResumeRecord
@@ -199,7 +199,7 @@ Checkmark means it has test.
 - [ ] SendStreamCaption
 - [ ] SetCurrentPreviewScene
 - [x] SetCurrentProfile
-- [ ] SetCurrentProgramScene
+- [x] SetCurrentProgramScene
 - [ ] SetCurrentSceneCollection
 - [ ] SetCurrentSceneTransition
 - [ ] SetCurrentSceneTransitionDuration
@@ -228,7 +228,7 @@ Checkmark means it has test.
 - [ ] SetSourceFilterName
 - [ ] SetSourceFilterSettings
 - [ ] SetStreamServiceSettings
-- [ ] SetStudioModeEnabled
+- [x] SetStudioModeEnabled
 - [ ] SetTBarPosition
 - [ ] SetVideoSettings
 - [ ] Sleep
