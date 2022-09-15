@@ -234,7 +234,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Updated array of scenes<br />
     /// </summary>
     [Key("scenes")]
-    public List<Dictionary<string, object?>> Scenes { get; set; } = new();
+    public List<Scene> Scenes { get; set; } = new();
   }
 
   [MessagePackObject]

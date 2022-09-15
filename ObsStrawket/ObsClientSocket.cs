@@ -86,14 +86,27 @@ namespace ObsStrawket {
     public event Action<StudioModeStateChanged> StudioModeStateChanged = delegate { };
     #endregion
 
+    /// <summary>
+    /// Fired when it is connected to OBS
+    /// </summary>
     public event Action<Uri> Connected = delegate { };
+    /// <summary>
+    /// Fired when it is disconnected to OBS
+    /// </summary>
     public event Action<object> Disconnected = delegate { };
 
     private readonly ClientSocket _clientSocket;
     private readonly ILogger? _logger;
     private Task? _dispatch;
 
+    /// <summary>
+    /// Whether it is connected to OBS
+    /// </summary>
     public bool IsConnected { get => _clientSocket.IsConnected; }
+
+    /// <summary>
+    /// All events channel. It can be used only when <c>ObsClientSocket</c> is created with <c>useChannel</c>.
+    /// </summary>
     public ChannelReader<IEvent> Events {
       get {
         if (_dispatch != null) {
@@ -131,9 +144,13 @@ namespace ObsStrawket {
       }
     }
 
+    /// <summary>
+    /// Close this connection. Pending requests will be cancelled.
+    /// </summary>
+    /// <returns></returns>
     public Task CloseAsync() => _clientSocket.CloseAsync();
 
-    public Task<IRequestResponse?> RequestAsync(IRequest request, CancellationToken cancellation = default)
+    public Task<IRequestResponse> RequestAsync(IRequest request, CancellationToken cancellation = default)
       => _clientSocket.RequestAsync(request, cancellation);
 
     public void Dispose() {
