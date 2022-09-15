@@ -181,11 +181,11 @@ Checkmark means it has test.
 - [ ] GetVideoSettings
 - [ ] GetVirtualCamStatus
 - [ ] OffsetMediaInputCursor
-- [ ] OpenInputFiltersDialog
-- [ ] OpenInputInteractDialog
+- [x] OpenInputFiltersDialog
+- [x] OpenInputInteractDialog
 - [x] OpenInputPropertiesDialog
-- [ ] OpenSourceProjector
-- [ ] OpenVideoMixProjector
+- [x] OpenSourceProjector
+- [x] OpenVideoMixProjector
 - [x] PauseRecord
 - [ ] PressInputPropertiesButton
 - [x] RemoveInput

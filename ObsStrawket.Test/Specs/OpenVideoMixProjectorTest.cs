@@ -1,29 +1,31 @@
+using ObsStrawket.DataTypes;
 using ObsStrawket.Test.Utilities;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace ObsStrawket.Test.Specs {
-  public class GetInputListTest {
+  public class OpenVideoMixProjectorTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetInputListFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new OpenVideoMixProjectorFlow()).ConfigureAwait(false);
     }
   }
 
-  class GetInputListFlow : ITestFlow {
+  class OpenVideoMixProjectorFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      var response = await client.GetInputListAsync("browser_source").ConfigureAwait(false);
-      Assert.Equal("browser_source", response.Inputs[0].UnversionedKind);
+      await client.OpenVideoMixProjectorAsync(videoMixType: VideoMixType.Program).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestData"": {
-      ""inputKind"": ""browser_source""
+      ""monitorIndex"": null,
+      ""projectorGeometry"": null,
+      ""videoMixType"": ""OBS_WEBSOCKET_VIDEO_MIX_TYPE_PROGRAM""
     },
     ""requestId"": ""{guid}"",
-    ""requestType"": ""GetInputList""
+    ""requestType"": ""OpenVideoMixProjector""
   },
   ""op"": 6
 }").ConfigureAwait(false);
@@ -34,16 +36,7 @@ namespace ObsStrawket.Test.Specs {
       ""code"": 100,
       ""result"": true
     },
-    ""requestType"": ""GetInputList"",
-    ""responseData"": {
-      ""inputs"": [
-        {
-          ""inputKind"": ""browser_source"",
-          ""inputName"": ""Browser source"",
-          ""unversionedInputKind"": ""browser_source""
-        }
-      ]
-    }
+    ""requestType"": ""OpenVideoMixProjector""
   },
   ""op"": 7
 }".Replace("{guid}", guid)).ConfigureAwait(false);

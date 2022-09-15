@@ -3,27 +3,28 @@ using System.Threading.Tasks;
 using Xunit;
 
 namespace ObsStrawket.Test.Specs {
-  public class GetInputListTest {
+  public class OpenSourceProjectorTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetInputListFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new OpenSourceProjectorFlow()).ConfigureAwait(false);
     }
   }
 
-  class GetInputListFlow : ITestFlow {
+  class OpenSourceProjectorFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      var response = await client.GetInputListAsync("browser_source").ConfigureAwait(false);
-      Assert.Equal("browser_source", response.Inputs[0].UnversionedKind);
+      await client.OpenSourceProjectorAsync(sourceName: CreateInputFlow.InputName).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestData"": {
-      ""inputKind"": ""browser_source""
+      ""monitorIndex"": null,
+      ""projectorGeometry"": null,
+      ""sourceName"": ""Browser source""
     },
     ""requestId"": ""{guid}"",
-    ""requestType"": ""GetInputList""
+    ""requestType"": ""OpenSourceProjector""
   },
   ""op"": 6
 }").ConfigureAwait(false);
@@ -34,16 +35,7 @@ namespace ObsStrawket.Test.Specs {
       ""code"": 100,
       ""result"": true
     },
-    ""requestType"": ""GetInputList"",
-    ""responseData"": {
-      ""inputs"": [
-        {
-          ""inputKind"": ""browser_source"",
-          ""inputName"": ""Browser source"",
-          ""unversionedInputKind"": ""browser_source""
-        }
-      ]
-    }
+    ""requestType"": ""OpenSourceProjector""
   },
   ""op"": 7
 }".Replace("{guid}", guid)).ConfigureAwait(false);

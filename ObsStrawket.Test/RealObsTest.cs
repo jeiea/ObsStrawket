@@ -101,6 +101,10 @@ namespace ObsStrawket.Test.Real {
         new CreateInputFlow(),
         new GetInputListFlow(),
         new OpenInputPropertiesDialogFlow(),
+        new OpenInputFiltersDialogFlow(),
+        new OpenInputInteractDialogFlow(),
+        new OpenSourceProjectorFlow(),
+        new OpenVideoMixProjectorFlow(),
 
         // Record
         //new StartRecordFlow(),
@@ -170,10 +174,6 @@ namespace ObsStrawket.Test.Real {
 //new GetVideoSettingsFlow(),
 //new GetVirtualCamStatusFlow(),
 //new OffsetMediaInputCursorFlow(),
-//new OpenInputFiltersDialogFlow(),
-//new OpenInputInteractDialogFlow(),
-//new OpenSourceProjectorFlow(),
-//new OpenVideoMixProjectorFlow(),
 //new PressInputPropertiesButtonFlow(),
 //new RemoveSourceFilterFlow(),
 //new SaveReplayBufferFlow(),

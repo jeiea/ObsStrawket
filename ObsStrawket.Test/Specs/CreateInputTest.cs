@@ -13,14 +13,15 @@ namespace ObsStrawket.Test.Specs {
   }
 
   class CreateInputFlow : ITestFlow {
-    public static string InputName { get => "Color Source"; }
+    public static string InputName { get => "Browser source"; }
+
     public async Task RequestAsync(ObsClientSocket client) {
-      var response = await client.CreateInputAsync(sceneName: CreateSceneFlow.NewScene, inputName: InputName, inputKind: "color_source_v3", inputSettings: new Dictionary<string, object?>(), sceneItemEnabled: true).ConfigureAwait(false);
+      var response = await client.CreateInputAsync(sceneName: CreateSceneFlow.NewScene, inputName: InputName, inputKind: "browser_source", inputSettings: new Dictionary<string, object?>(), sceneItemEnabled: true).ConfigureAwait(false);
       Assert.Equal(1, response.SceneItemId);
       var created = await client.Events.ReadAsync().ConfigureAwait(false);
       Assert.Equal(InputName, (created as InputCreated)!.InputName);
-      Assert.Equal("color_source", (created as InputCreated)!.UnversionedInputKind);
-      Assert.Equal("color_source_v3", (created as InputCreated)!.InputKind);
+      Assert.Equal("browser_source", (created as InputCreated)!.UnversionedInputKind);
+      Assert.Equal("browser_source", (created as InputCreated)!.InputKind);
       var sceneItemCreated = await client.Events.ReadAsync().ConfigureAwait(false);
       Assert.Equal(1, (sceneItemCreated as SceneItemCreated)!.SceneItemId);
       var sceneItemSelected = await client.Events.ReadAsync().ConfigureAwait(false);
@@ -32,8 +33,8 @@ namespace ObsStrawket.Test.Specs {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestData"": {
-      ""inputKind"": ""color_source_v3"",
-      ""inputName"": ""Color Source"",
+      ""inputKind"": ""browser_source"",
+      ""inputName"": ""Browser source"",
       ""inputSettings"": {},
       ""sceneItemEnabled"": true,
       ""sceneName"": ""test scene""
@@ -52,10 +53,10 @@ namespace ObsStrawket.Test.Specs {
         ""height"": 1080,
         ""width"": 1920
       },
-      ""inputKind"": ""color_source_v3"",
-      ""inputName"": ""Color Source"",
+      ""inputKind"": ""browser_source"",
+      ""inputName"": ""Browser source"",
       ""inputSettings"": {},
-      ""unversionedInputKind"": ""color_source""
+      ""unversionedInputKind"": ""browser_source""
     },
     ""eventIntent"": 8,
     ""eventType"": ""InputCreated""
@@ -79,7 +80,7 @@ namespace ObsStrawket.Test.Specs {
     ""requestStatus"": {
       ""code"": 100,
       ""result"": true
-      ""sourceName"": ""Color Source""
+      ""sourceName"": ""Browser source""
     },
     ""responseData"": {
       ""sceneItemId"": 1

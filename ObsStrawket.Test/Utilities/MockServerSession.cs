@@ -133,8 +133,12 @@ namespace ObsStrawket.Test.Utilities {
 
     private static void AssertJsonEqual(string expected, string actual) {
       var expectation = JsonDocument.Parse(expected);
-      var actualJson = JsonDocument.Parse(actual);
-      Assert.True(expectation.DeepEquals(actualJson), $"JSON expected: {expectation}, actual: {actualJson}");
+      var reality = JsonDocument.Parse(actual);
+      var options = new JsonSerializerOptions() { WriteIndented = true };
+      string expectedJson = JsonSerializer.Serialize(expectation, options);
+      string actualJson = JsonSerializer.Serialize(reality, options);
+      Assert.True(expectation.DeepEquals(reality),
+        $"JSON expected: {expectedJson}, actual: {actualJson}");
     }
   }
 }

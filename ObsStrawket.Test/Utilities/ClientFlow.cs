@@ -70,6 +70,14 @@ namespace ObsStrawket.Test.Utilities {
       await client.CloseAsync().ConfigureAwait(false);
     }
 
+    public static async Task<List<IEvent>> TakeEventsAsync(ObsClientSocket client, int count) {
+      var list = new List<IEvent>();
+      for (int i = 0; i < count; i++) {
+        list.Add(await client.Events.ReadAsync().ConfigureAwait(false));
+      }
+      return list;
+    }
+
     public static List<IEvent> DrainEvents(ObsClientSocket client) {
       var list = new List<IEvent>();
       while (client.Events.TryRead(out var ev)) {

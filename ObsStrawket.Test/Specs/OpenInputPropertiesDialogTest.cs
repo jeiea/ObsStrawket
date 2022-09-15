@@ -19,7 +19,7 @@ namespace ObsStrawket.Test.Specs {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestData"": {
-      ""inputName"": ""Color Source""
+      ""inputName"": ""Browser source""
     },
     ""requestId"": ""{guid}"",
     ""requestType"": ""OpenInputPropertiesDialog""

@@ -22,10 +22,10 @@ namespace ObsStrawket.Test.Specs {
       Assert.Equal("Scene", (sceneListChanged as SceneListChanged)!.Scenes[0].Name);
       var ended = await client.Events.ReadAsync().ConfigureAwait(false);
       Assert.IsType<SceneTransitionVideoEnded>(ended);
-      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal("Scene", (changed as CurrentProgramSceneChanged)!.SceneName);
-      ended = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.IsType<SceneTransitionEnded>(ended);
+
+      var raceEvents = await ClientFlow.TakeEventsAsync(client, 2).ConfigureAwait(false);
+      Assert.Contains(raceEvents, (x) => x is CurrentProgramSceneChanged changed && changed.SceneName == "Scene");
+      Assert.Contains(raceEvents, (x) => x is SceneTransitionEnded ended);
     }
 
     public async Task RespondAsync(MockServerSession session) {

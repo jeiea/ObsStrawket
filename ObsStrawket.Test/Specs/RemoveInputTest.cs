@@ -25,7 +25,7 @@ namespace ObsStrawket.Test.Specs {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestData"": {
-      ""inputName"": ""Color Source""
+      ""inputName"": ""Browser source""
     },
     ""requestId"": ""{guid}"",
     ""requestType"": ""RemoveInput""
@@ -35,7 +35,7 @@ namespace ObsStrawket.Test.Specs {
       await session.SendAsync(@"{
   ""d"": {
     ""eventData"": {
-      ""inputName"": ""Color Source""
+      ""inputName"": ""Browser source""
     },
     ""eventIntent"": 8,
     ""eventType"": ""InputRemoved""
@@ -58,7 +58,7 @@ namespace ObsStrawket.Test.Specs {
     ""eventData"": {
       ""sceneItemId"": 1,
       ""sceneName"": ""test scene"",
-      ""sourceName"": ""Color Source""
+      ""sourceName"": ""Browser source""
     },
     ""eventIntent"": 128,
     ""eventType"": ""SceneItemRemoved""

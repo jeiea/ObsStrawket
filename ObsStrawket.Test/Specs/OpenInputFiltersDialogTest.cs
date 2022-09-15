@@ -3,30 +3,29 @@ using System.Threading.Tasks;
 using Xunit;
 
 namespace ObsStrawket.Test.Specs {
-  public class GetInputListTest {
+  public class OpenInputFiltersDialogTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetInputListFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new OpenInputFiltersDialogFlow()).ConfigureAwait(false);
     }
   }
 
-  class GetInputListFlow : ITestFlow {
+  class OpenInputFiltersDialogFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      var response = await client.GetInputListAsync("browser_source").ConfigureAwait(false);
-      Assert.Equal("browser_source", response.Inputs[0].UnversionedKind);
+      await client.OpenInputFiltersDialogAsync(inputName: CreateInputFlow.InputName).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestData"": {
-      ""inputKind"": ""browser_source""
+      ""inputName"": ""Browser source""
     },
     ""requestId"": ""{guid}"",
-    ""requestType"": ""GetInputList""
+    ""requestType"": ""OpenInputFiltersDialog""
   },
   ""op"": 6
-}").ConfigureAwait(false);
+} ").ConfigureAwait(false);
       await session.SendAsync(@"{
   ""d"": {
     ""requestId"": ""{guid}"",
@@ -34,16 +33,7 @@ namespace ObsStrawket.Test.Specs {
       ""code"": 100,
       ""result"": true
     },
-    ""requestType"": ""GetInputList"",
-    ""responseData"": {
-      ""inputs"": [
-        {
-          ""inputKind"": ""browser_source"",
-          ""inputName"": ""Browser source"",
-          ""unversionedInputKind"": ""browser_source""
-        }
-      ]
-    }
+    ""requestType"": ""OpenInputFiltersDialog""
   },
   ""op"": 7
 }".Replace("{guid}", guid)).ConfigureAwait(false);
