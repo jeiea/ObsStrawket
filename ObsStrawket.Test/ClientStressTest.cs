@@ -15,15 +15,14 @@ namespace ObsStrawket.Test {
       using var server = new MockServer().Run(cancellation.Token);
       int openCloseDifference = 0;
 
-      client.Disconnected += (o) => {
-        Interlocked.Decrement(ref openCloseDifference);
+      client.Connected += (uri) => {
+        Interlocked.Increment(ref openCloseDifference);
         if (Math.Abs(openCloseDifference) > 1) {
           cancellation.Cancel();
         }
       };
-
-      client.Connected += (uri) => {
-        Interlocked.Increment(ref openCloseDifference);
+      client.Disconnected += (o) => {
+        Interlocked.Decrement(ref openCloseDifference);
         if (Math.Abs(openCloseDifference) > 1) {
           cancellation.Cancel();
         }

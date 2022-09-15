@@ -130,17 +130,11 @@ namespace ObsStrawket {
       EventSubscription events = EventSubscription.All,
       CancellationToken cancellation = default
     ) {
-      await _clientSocket.ConnectAsync(uri, password, events, cancellation).ConfigureAwait(false);
+      var target = uri ?? ClientSocket.DefaultUri;
+      await _clientSocket.ConnectAsync(target, password, events, cancellation).ConfigureAwait(false);
       if (_dispatch != null) {
         _dispatch = _dispatch.ContinueWith(
-          (_) => DispatchEventAsync(_clientSocket.Events), TaskScheduler.Default);
-      }
-
-      try {
-        Connected(uri ?? ClientSocket.DefaultUri);
-      }
-      catch (Exception ex) {
-        _logger?.LogWarning(ex, "Connected event hander throws");
+          (_) => DispatchEventAsync(_clientSocket.Events, target), TaskScheduler.Default);
       }
     }
 
@@ -158,18 +152,25 @@ namespace ObsStrawket {
       GC.SuppressFinalize(this);
     }
 
-    private async Task DispatchEventAsync(ChannelReader<IEvent> events) {
+    private async Task DispatchEventAsync(ChannelReader<IEvent> events, Uri uri) {
+      try {
+        Connected(uri);
+      }
+      catch (Exception exception) {
+        _logger?.LogDebug(exception, "Connected event handler throws");
+      }
+
       using var _1 = _logger?.BeginScope(nameof(DispatchEventAsync));
       try {
         while (await events.WaitToReadAsync().ConfigureAwait(false)) {
           DispatchEvent(await events.ReadAsync().ConfigureAwait(false));
         }
+        _logger?.LogTrace("Dispatcher terminated");
         InvokeCloseSafe("Normal closure");
-        _logger?.LogTrace("Exit");
       }
       catch (Exception exception) {
+        _logger?.LogDebug(exception, "Dispatcher terminated with exception");
         InvokeCloseSafe(exception);
-        _logger?.LogDebug(exception, "Exit");
       }
     }
 
@@ -178,7 +179,7 @@ namespace ObsStrawket {
         Disconnected(info);
       }
       catch (Exception ex) {
-        _logger?.LogWarning(ex, "Disconnected event hander throws");
+        _logger?.LogWarning(ex, "Disconnected event handler throws");
       }
     }
 
