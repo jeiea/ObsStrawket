@@ -7,7 +7,7 @@ namespace ObsStrawket.DataTypes {
 
   [MessagePackObject]
   public class OpCodeMessage<T> : IOpCodeMessage where T : new() {
-    public OpCodeMessage(OpCode op, T d = default) {
+    public OpCodeMessage(OpCode op, T d) {
       Op = op;
       Data = d ?? new();
     }
