@@ -3122,7 +3122,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Type of mix to open | None | N/A<br />
     /// </summary>
     [Key("videoMixType")]
-    public string VideoMixType { get; set; } = "";
+    public VideoMixType VideoMixType { get; set; }
     /// <summary>
     /// Monitor index, use `GetMonitorList` to obtain index | None | -1: Opens projector in windowed mode<br />
     /// </summary>

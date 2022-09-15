@@ -115,4 +115,14 @@ namespace ObsStrawket.DataTypes {
     [EnumMember(Value = "OBS_WEBSOCKET_DATA_REALM_PROFILE")]
     Profile,
   }
+
+  [MessagePackFormatter(typeof(EnumAsStringFormatter<VideoMixType>))]
+  public enum VideoMixType {
+    [EnumMember(Value = "OBS_WEBSOCKET_VIDEO_MIX_TYPE_PREVIEW")]
+    Preview,
+    [EnumMember(Value = "OBS_WEBSOCKET_VIDEO_MIX_TYPE_PROGRAM")]
+    Program,
+    [EnumMember(Value = "OBS_WEBSOCKET_VIDEO_MIX_TYPE_MULTIVIEW")]
+    Multiview,
+  }
 }

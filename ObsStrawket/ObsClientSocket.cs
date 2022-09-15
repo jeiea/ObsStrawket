@@ -1852,7 +1852,7 @@ namespace ObsStrawket {
     /// <param name="monitorIndex">Monitor index, use <c>GetMonitorList</c> to obtain index<br />If null, -1: Opens projector in windowed mode</param>
     /// <param name="projectorGeometry">Size/Position data for a windowed projector, in Qt Base64 encoded format. Mutually exclusive with <c>monitorIndex</c><br />If null, N/A</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> OpenVideoMixProjectorAsync(string videoMixType, int? monitorIndex = default, string? projectorGeometry = default, CancellationToken cancellation = default) {
+    public async Task<RequestResponse> OpenVideoMixProjectorAsync(VideoMixType videoMixType, int? monitorIndex = default, string? projectorGeometry = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new OpenVideoMixProjector() { VideoMixType = videoMixType, MonitorIndex = monitorIndex, ProjectorGeometry = projectorGeometry }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
