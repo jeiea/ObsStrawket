@@ -240,12 +240,12 @@ namespace ObsStrawket.DataTypes.Predefineds {
   [MessagePackObject]
   public class Sleep : GeneralRequest {
     /// <summary>
-    /// Number of milliseconds to sleep for (if `SERIAL_REALTIME` mode) | >= 0, <= 50000 | N/A<br />
+    /// Number of milliseconds to sleep for (if `SERIAL_REALTIME` mode) | &gt;= 0, &lt;= 50000 | N/A<br />
     /// </summary>
     [Key("sleepMillis")]
     public int SleepMillis { get; set; }
     /// <summary>
-    /// Number of frames to sleep for (if `SERIAL_FRAME` mode) | >= 0, <= 10000 | N/A<br />
+    /// Number of frames to sleep for (if `SERIAL_FRAME` mode) | &gt;= 0, &lt;= 10000 | N/A<br />
     /// </summary>
     [Key("sleepFrames")]
     public int SleepFrames { get; set; }
@@ -555,22 +555,22 @@ namespace ObsStrawket.DataTypes.Predefineds {
     [Key("fpsDenominator")]
     public int? FpsDenominator { get; set; }
     /// <summary>
-    /// Width of the base (canvas) resolution in pixels | >= 1, <= 4096 | Not changed<br />
+    /// Width of the base (canvas) resolution in pixels | >= 1, &lt;= 4096 | Not changed<br />
     /// </summary>
     [Key("baseWidth")]
     public int? BaseWidth { get; set; }
     /// <summary>
-    /// Height of the base (canvas) resolution in pixels | >= 1, <= 4096 | Not changed<br />
+    /// Height of the base (canvas) resolution in pixels | >= 1, &lt;= 4096 | Not changed<br />
     /// </summary>
     [Key("baseHeight")]
     public int? BaseHeight { get; set; }
     /// <summary>
-    /// Width of the output resolution in pixels | >= 1, <= 4096 | Not changed<br />
+    /// Width of the output resolution in pixels | >= 1, &lt;= 4096 | Not changed<br />
     /// </summary>
     [Key("outputWidth")]
     public int? OutputWidth { get; set; }
     /// <summary>
-    /// Height of the output resolution in pixels | >= 1, <= 4096 | Not changed<br />
+    /// Height of the output resolution in pixels | >= 1, &lt;= 4096 | Not changed<br />
     /// </summary>
     [Key("outputHeight")]
     public int? OutputHeight { get; set; }
@@ -671,17 +671,17 @@ namespace ObsStrawket.DataTypes.Predefineds {
     [Key("imageFormat")]
     public string ImageFormat { get; set; } = "";
     /// <summary>
-    /// Width to scale the screenshot to | >= 8, <= 4096 | Source value is used<br />
+    /// Width to scale the screenshot to | >= 8, &lt;= 4096 | Source value is used<br />
     /// </summary>
     [Key("imageWidth")]
     public int? ImageWidth { get; set; }
     /// <summary>
-    /// Height to scale the screenshot to | >= 8, <= 4096 | Source value is used<br />
+    /// Height to scale the screenshot to | >= 8, &lt;= 4096 | Source value is used<br />
     /// </summary>
     [Key("imageHeight")]
     public int? ImageHeight { get; set; }
     /// <summary>
-    /// Compression quality to use. 0 for high compression, 100 for uncompressed. -1 to use "default" (whatever that means, idk) | >= -1, <= 100 | -1<br />
+    /// Compression quality to use. 0 for high compression, 100 for uncompressed. -1 to use "default" (whatever that means, idk) | >= -1, &lt;= 100 | -1<br />
     /// </summary>
     [Key("imageCompressionQuality")]
     public int? ImageCompressionQuality { get; set; }
@@ -722,17 +722,17 @@ namespace ObsStrawket.DataTypes.Predefineds {
     [Key("imageFilePath")]
     public string ImageFilePath { get; set; } = "";
     /// <summary>
-    /// Width to scale the screenshot to | >= 8, <= 4096 | Source value is used<br />
+    /// Width to scale the screenshot to | >= 8, &lt;= 4096 | Source value is used<br />
     /// </summary>
     [Key("imageWidth")]
     public int? ImageWidth { get; set; }
     /// <summary>
-    /// Height to scale the screenshot to | >= 8, <= 4096 | Source value is used<br />
+    /// Height to scale the screenshot to | >= 8, &lt;= 4096 | Source value is used<br />
     /// </summary>
     [Key("imageHeight")]
     public int? ImageHeight { get; set; }
     /// <summary>
-    /// Compression quality to use. 0 for high compression, 100 for uncompressed. -1 to use "default" (whatever that means, idk) | >= -1, <= 100 | -1<br />
+    /// Compression quality to use. 0 for high compression, 100 for uncompressed. -1 to use "default" (whatever that means, idk) | >= -1, &lt;= 100 | -1<br />
     /// </summary>
     [Key("imageCompressionQuality")]
     public int? ImageCompressionQuality { get; set; }
@@ -940,7 +940,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     [Key("transitionName")]
     public string? TransitionName { get; set; }
     /// <summary>
-    /// Duration to use for any overridden transition. Specify `null` to remove | >= 50, <= 20000 | Unchanged<br />
+    /// Duration to use for any overridden transition. Specify `null` to remove | >= 50, &lt;= 20000 | Unchanged<br />
     /// </summary>
     [Key("transitionDuration")]
     public int? TransitionDuration { get; set; }
@@ -1296,12 +1296,12 @@ namespace ObsStrawket.DataTypes.Predefineds {
     [Key("inputName")]
     public string InputName { get; set; } = "";
     /// <summary>
-    /// Volume setting in mul | >= 0, <= 20 | `inputVolumeDb` should be specified<br />
+    /// Volume setting in mul | >= 0, &lt;= 20 | `inputVolumeDb` should be specified<br />
     /// </summary>
     [Key("inputVolumeMul")]
     public double? InputVolumeMul { get; set; }
     /// <summary>
-    /// Volume setting in dB | >= -100, <= 26 | `inputVolumeMul` should be specified<br />
+    /// Volume setting in dB | >= -100, &lt;= 26 | `inputVolumeMul` should be specified<br />
     /// </summary>
     [Key("inputVolumeDb")]
     public double? InputVolumeDb { get; set; }
@@ -1343,7 +1343,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     [Key("inputName")]
     public string InputName { get; set; } = "";
     /// <summary>
-    /// New audio balance value | >= 0.0, <= 1.0 | N/A<br />
+    /// New audio balance value | >= 0.0, &lt;= 1.0 | N/A<br />
     /// </summary>
     [Key("inputAudioBalance")]
     public double InputAudioBalance { get; set; }
@@ -1386,7 +1386,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     [Key("inputName")]
     public string InputName { get; set; } = "";
     /// <summary>
-    /// New audio sync offset in milliseconds | >= -950, <= 20000 | N/A<br />
+    /// New audio sync offset in milliseconds | >= -950, &lt;= 20000 | N/A<br />
     /// </summary>
     [Key("inputAudioSyncOffset")]
     public int InputAudioSyncOffset { get; set; }
@@ -1640,7 +1640,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   [MessagePackObject]
   public class SetCurrentSceneTransitionDuration : TransitionsRequest {
     /// <summary>
-    /// Duration in milliseconds | >= 50, <= 20000 | N/A<br />
+    /// Duration in milliseconds | >= 50, &lt;= 20000 | N/A<br />
     /// </summary>
     [Key("transitionDuration")]
     public int TransitionDuration { get; set; }
@@ -1699,7 +1699,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   [MessagePackObject]
   public class SetTBarPosition : TransitionsRequest {
     /// <summary>
-    /// New position | >= 0.0, <= 1.0 | N/A<br />
+    /// New position | >= 0.0, &lt;= 1.0 | N/A<br />
     /// </summary>
     [Key("position")]
     public double Position { get; set; }
