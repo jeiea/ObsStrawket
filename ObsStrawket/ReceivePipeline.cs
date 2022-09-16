@@ -19,6 +19,7 @@ namespace ObsStrawket {
     private readonly ILogger? _logger;
     private readonly Channel<IOpCodeMessage> _messages = Channel.CreateUnbounded<IOpCodeMessage>();
     private readonly Pipe _pipe = new();
+    private readonly LazyString bytesBuilder = new();
 
     public ChannelReader<IOpCodeMessage> Messages { get => _messages.Reader; }
 
@@ -106,7 +107,9 @@ namespace ObsStrawket {
           using var handle = memory.Pin();
           var segment = PipelineHelpers.GetSegment(memory);
           var readResult = await _socket.ReceiveAsync(segment, token).ConfigureAwait(false);
-          _logger?.LogDebug("received: {}", BitConverter.ToString(segment.Array, segment.Offset, readResult.Count));
+
+          bytesBuilder.Builder = () => BitConverter.ToString(segment.Array, segment.Offset, readResult.Count);
+          _logger?.LogDebug("received: {}", bytesBuilder);
 
           if (_socket.State == WebSocketState.CloseReceived && readResult.MessageType == WebSocketMessageType.Close) {
             _logger?.LogDebug("Exit by websocket close");
@@ -134,4 +137,22 @@ namespace ObsStrawket {
       }
     }
   }
+
+  internal class LazyString {
+    Func<string> _builder = () => "";
+    string? _evaluated;
+
+    public Func<string> Builder {
+      get => _builder;
+      set {
+        _evaluated = null;
+        _builder = value;
+      }
+    }
+
+    public override string ToString() {
+      return _evaluated ??= Builder();
+    }
+  }
 }
+
