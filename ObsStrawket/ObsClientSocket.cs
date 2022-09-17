@@ -97,6 +97,7 @@ namespace ObsStrawket {
 
     private readonly ClientSocket _clientSocket;
     private readonly ILogger? _logger;
+    private readonly SemaphoreSlim _connectSemaphore = new(1);
     private Task? _dispatch;
 
     /// <summary>
@@ -131,10 +132,17 @@ namespace ObsStrawket {
       CancellationToken cancellation = default
     ) {
       var target = uri ?? ClientSocket.DefaultUri;
-      await _clientSocket.ConnectAsync(target, password, events, cancellation).ConfigureAwait(false);
-      if (_dispatch != null) {
-        _dispatch = _dispatch.ContinueWith(
-          (_) => DispatchEventAsync(_clientSocket.Events, target), TaskScheduler.Default);
+      await _connectSemaphore.WaitAsync(cancellation).ConfigureAwait(false);
+      // _dispatch may be same among multiple threads if restored at the same time.
+      try {
+        await _clientSocket.ConnectAsync(target, password, events, cancellation).ConfigureAwait(false);
+        if (_dispatch != null) {
+          _dispatch = _dispatch.ContinueWith(
+            (_) => DispatchEventAsync(_clientSocket.Events, target), TaskScheduler.Default);
+        }
+      }
+      finally {
+        _connectSemaphore.Release();
       }
     }
 
@@ -157,7 +165,7 @@ namespace ObsStrawket {
         Connected(uri);
       }
       catch (Exception exception) {
-        _logger?.LogDebug(exception, "Connected event handler throws");
+        _logger?.LogWarning(exception, "Connected event handler throws");
       }
 
       using var _1 = _logger?.BeginScope(nameof(DispatchEventAsync));
