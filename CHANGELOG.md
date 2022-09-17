@@ -1,3 +1,10 @@
+## 0.4.0
+
+- Add `VideoMixType`, `StreamServiceType` enum.
+- `SceneListChanged.Scenes` is typed.
+- Fix invalid xml doc comments.
+- Less convincing fix for out of order connect / disconnect events.
+
 ## 0.3.0
 
 - Remove SaveSourceScreenshot response's `ImageData` (upstream document is invalid).
