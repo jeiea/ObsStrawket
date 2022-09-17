@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Debug;
 using ObsStrawket.DataTypes;
 using ObsStrawket.DataTypes.Predefineds;
@@ -15,8 +16,8 @@ namespace ObsStrawket.Test.Utilities {
   internal class ClientFlow {
     private readonly Channel<IEvent> _events = Channel.CreateUnbounded<IEvent>();
 
-    public static ObsClientSocket GetDebugClient(ClientSocket? socket = null, bool useChannel = false) {
-      return new ObsClientSocket(new DebugLoggerProvider().CreateLogger("Client"), socket, useChannel);
+    public static ObsClientSocket GetDebugClient(ClientSocket? socket = null, ILogger? logger = null, bool useChannel = false) {
+      return new ObsClientSocket(logger ?? new DebugLoggerProvider().CreateLogger("Client"), socket, useChannel);
     }
 
     public async Task RunClientAsync(Uri uri, ObsClientSocket? socket = null, CancellationToken cancellation = default) {
