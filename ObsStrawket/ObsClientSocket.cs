@@ -157,6 +157,7 @@ namespace ObsStrawket {
 
     public void Dispose() {
       _clientSocket.Dispose();
+      _connectSemaphore.Dispose();
       GC.SuppressFinalize(this);
     }
 
