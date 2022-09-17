@@ -124,7 +124,7 @@ namespace ObsStrawket {
     }
 
     public async Task CloseAsync(WebSocketCloseStatus status = WebSocketCloseStatus.NormalClosure, string? description = "Client closed websocket", Exception? exception = null) {
-      _logger?.LogInformation("CloseAsync");
+      _logger?.LogInformation("CloseAsync exception: {}", exception?.Message);
       await _writeSemaphore.WaitAsync().ConfigureAwait(false);
       try {
         await CloseInternalAsync(status, description, exception).ConfigureAwait(false);
@@ -186,7 +186,7 @@ namespace ObsStrawket {
 
           await DispatchAsync(message, token).ConfigureAwait(false);
         }
-        _logger?.LogDebug("Close, webSocket.State: {}, cancellation: {}",
+        _logger?.LogDebug("Close. webSocket.State: {}, cancellation: {}",
           _clientWebSocket.State, token.IsCancellationRequested);
         await CloseAsync(exception: new QueueCancelledException("Server closed socket"));
       }
@@ -194,7 +194,7 @@ namespace ObsStrawket {
         await CloseAsync(exception: new QueueCancelledException(innerException: exception)).ConfigureAwait(false);
         _logger?.LogDebug(exception, "Queue cancelled");
       }
-      _logger?.LogTrace("Exit, IsCancellationRequested: {}", token.IsCancellationRequested);
+      _logger?.LogDebug("Exit. IsCancellationRequested: {}", token.IsCancellationRequested);
     }
 
     private async Task DispatchAsync(IOpCodeMessage message, CancellationToken token) {

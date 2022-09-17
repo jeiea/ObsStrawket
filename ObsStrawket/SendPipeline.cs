@@ -45,22 +45,21 @@ namespace ObsStrawket {
       MessagePackSerializer.Serialize(prefixer, value, _serialOptions, token);
       byte[] prefix = BitConverter.GetBytes((int)prefixer.Length);
       prefix.CopyTo(prefixer.Prefix.Span);
-
       token.ThrowIfCancellationRequested();
+
+      _logger?.LogDebug(
+        "prefixer.Length: {uncommit}, prefix: 0x{a3:x2}{a2:x2}{a1:x2}{a0:x2}",
+        prefixer.Length, prefixer.Prefix.Span[3], prefixer.Prefix.Span[2], prefixer.Prefix.Span[1], prefixer.Prefix.Span[0]
+      );
       prefixer.Commit();
 
-      _logger?.LogTrace(
-        "prefixer.Length: {uncommit}, _writer.UnflushedBytes: {unflushed}, prefix: 0x{a3:x2}{a2:x2}{a1:x2}{a0:x2}",
-        prefixer.Length, _writer.Writer.UnflushedBytes,
-        prefixer.Prefix.Span[3], prefixer.Prefix.Span[2], prefixer.Prefix.Span[1], prefixer.Prefix.Span[0]
-      );
       var output = new TaskCompletionSource<object?>();
       await _sendQueue.Writer.WriteAsync(new(output, token), token).ConfigureAwait(false);
       await _writer.Writer.FlushAsync(token).ConfigureAwait(false);
 
-      _logger?.LogTrace("output await {}", value.GetType().Name);
+      _logger?.LogDebug("Await sending {}", value.GetType().Name);
       await output.Task.ConfigureAwait(false);
-      _logger?.LogTrace("output awaited {}", value.GetType().Name);
+      _logger?.LogDebug("Sent {}", value.GetType().Name);
     }
 
     private async Task LoopSendAsync() {
@@ -72,10 +71,9 @@ namespace ObsStrawket {
         while (await queue.WaitToReadAsync().ConfigureAwait(false)) {
           int messageLength = await PipelineHelpers.ReadLengthAsync(bytes, _logger).ConfigureAwait(false);
           var readResult = await bytes.ReadAtLeastAsync(messageLength).ConfigureAwait(false);
-          _logger?.LogTrace("readResult.Length: {}", readResult.Buffer.Length);
+          _logger?.LogDebug("readResult.Length: {}", readResult.Buffer.Length);
           var item = await queue.ReadAsync().ConfigureAwait(false);
           try {
-            _logger?.LogTrace("read item");
             await SendExclusivelyAsync(item, messageLength, readResult).ConfigureAwait(false);
           }
           catch (Exception exception) {
@@ -88,7 +86,7 @@ namespace ObsStrawket {
         }
       }
       catch (Exception fault) {
-        _logger?.LogDebug("quit: {}", fault);
+        _logger?.LogDebug(fault, "Quit");
         _sendQueue.Writer.TryComplete(fault);
         await bytes.CompleteAsync(fault).ConfigureAwait(false);
         while (!queue.Completion.IsCompleted) {
@@ -103,6 +101,7 @@ namespace ObsStrawket {
 
       var (output, cancellation) = item;
       if (cancellation.IsCancellationRequested) {
+        _logger?.LogInformation("User cancelled request");
         output.SetException(new OperationCanceledException(cancellation));
         return;
       }
@@ -124,7 +123,8 @@ namespace ObsStrawket {
           break;
         }
       }
-      _logger?.LogTrace("SetResult null");
+
+      _logger?.LogDebug("Sent request: {} bytes", messageLength);
       output.SetResult(null);
     }
   }

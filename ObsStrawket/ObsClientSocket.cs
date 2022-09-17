@@ -165,7 +165,7 @@ namespace ObsStrawket {
         while (await events.WaitToReadAsync().ConfigureAwait(false)) {
           DispatchEvent(await events.ReadAsync().ConfigureAwait(false));
         }
-        _logger?.LogTrace("Dispatcher terminated");
+        _logger?.LogDebug("Dispatcher terminated");
         InvokeCloseSafe("Normal closure");
       }
       catch (Exception exception) {
