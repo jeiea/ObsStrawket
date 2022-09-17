@@ -172,19 +172,23 @@ namespace ObsStrawket {
     private async Task LoopReceiveAsync(CancellationToken cancellation = default) {
       using var _1 = _logger?.BeginScope(nameof(LoopReceiveAsync));
       var token = cancellation;
+
       try {
+        var receiver = _receiver;
+        var events = _events.Writer;
+
         while (_clientWebSocket.State != WebSocketState.Closed && !token.IsCancellationRequested) {
-          bool isAvailable = await _receiver.Messages.WaitToReadAsync(default).ConfigureAwait(false);
+          bool isAvailable = await receiver.Messages.WaitToReadAsync(default).ConfigureAwait(false);
           if (!isAvailable) {
             break;
           }
-          var message = await _receiver.Messages.ReadAsync(default).ConfigureAwait(false);
+          var message = await receiver.Messages.ReadAsync(default).ConfigureAwait(false);
           _logger?.LogDebug("Received message: {}", message?.GetType().Name ?? "null");
           if (message == null) {
             break;
           }
 
-          await DispatchAsync(message, token).ConfigureAwait(false);
+          await DispatchAsync(message, events, token).ConfigureAwait(false);
         }
         _logger?.LogDebug("Close. webSocket.State: {}, cancellation: {}",
           _clientWebSocket.State, token.IsCancellationRequested);
@@ -197,10 +201,12 @@ namespace ObsStrawket {
       _logger?.LogDebug("Exit. IsCancellationRequested: {}", token.IsCancellationRequested);
     }
 
-    private async Task DispatchAsync(IOpCodeMessage message, CancellationToken token) {
+    private async Task DispatchAsync(
+      IOpCodeMessage message, ChannelWriter<IEvent> events, CancellationToken token
+    ) {
       switch (message) {
       case IEvent ev:
-        await _events.Writer.WriteAsync(ev, token).ConfigureAwait(false);
+        await events.WriteAsync(ev, token).ConfigureAwait(false);
         break;
       case RequestResponse response:
         if (_requests.TryRemove(response.RequestId, out var request)) {
