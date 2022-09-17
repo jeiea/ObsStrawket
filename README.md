@@ -109,7 +109,7 @@ Checkmark means it has test.
 - [ ] SourceFilterListReindexed
 - [ ] SourceFilterNameChanged
 - [ ] SourceFilterRemoved
-- [ ] StreamStateChanged
+- [x] StreamStateChanged
 - [x] StudioModeStateChanged
 - [ ] VendorEvent
 - [ ] VirtualcamStateChanged
@@ -173,8 +173,8 @@ Checkmark means it has test.
 - [x] GetSourceScreenshot
 - [ ] GetSpecialInputs
 - [x] GetStats
-- [ ] GetStreamServiceSettings
-- [ ] GetStreamStatus
+- [x] GetStreamServiceSettings
+- [x] GetStreamStatus
 - [x] GetStudioModeEnabled
 - [ ] GetTransitionKindList
 - [x] GetVersion
@@ -196,7 +196,7 @@ Checkmark means it has test.
 - [x] ResumeRecord
 - [ ] SaveReplayBuffer
 - [x] SaveSourceScreenshot
-- [ ] SendStreamCaption
+- [x] SendStreamCaption
 - [ ] SetCurrentPreviewScene
 - [x] SetCurrentProfile
 - [x] SetCurrentProgramScene
@@ -227,7 +227,7 @@ Checkmark means it has test.
 - [ ] SetSourceFilterIndex
 - [ ] SetSourceFilterName
 - [ ] SetSourceFilterSettings
-- [ ] SetStreamServiceSettings
+- [x] SetStreamServiceSettings
 - [x] SetStudioModeEnabled
 - [ ] SetTBarPosition
 - [ ] SetVideoSettings
@@ -235,19 +235,19 @@ Checkmark means it has test.
 - [ ] StartOutput
 - [x] StartRecord
 - [ ] StartReplayBuffer
-- [ ] StartStream
+- [x] StartStream
 - [ ] StartVirtualCam
 - [ ] StopOutput
 - [x] StopRecord
 - [ ] StopReplayBuffer
-- [ ] StopStream
+- [x] StopStream
 - [ ] StopVirtualCam
 - [ ] ToggleInputMute
 - [ ] ToggleOutput
 - [x] ToggleRecord
 - [x] ToggleRecordPause
 - [ ] ToggleReplayBuffer
-- [ ] ToggleStream
+- [x] ToggleStream
 - [ ] ToggleVirtualCam
 - [x] TriggerHotkeyByKeySequence
 - [x] TriggerHotkeyByName

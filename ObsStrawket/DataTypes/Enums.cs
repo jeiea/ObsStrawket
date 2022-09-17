@@ -125,4 +125,12 @@ namespace ObsStrawket.DataTypes {
     [EnumMember(Value = "OBS_WEBSOCKET_VIDEO_MIX_TYPE_MULTIVIEW")]
     Multiview,
   }
+
+  [MessagePackFormatter(typeof(EnumAsStringFormatter<StreamServiceType>))]
+  public enum StreamServiceType {
+    [EnumMember(Value = "rtmp_common")]
+    RtmpCommon,
+    [EnumMember(Value = "rtmp_custom")]
+    RtmpCustom,
+  }
 }

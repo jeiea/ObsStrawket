@@ -589,7 +589,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Stream service type, like `rtmp_custom` or `rtmp_common`<br />
     /// </summary>
     [Key("streamServiceType")]
-    public string StreamServiceType { get; set; } = "";
+    public StreamServiceType StreamServiceType { get; set; }
     /// <summary>
     /// Stream service settings<br />
     /// </summary>
@@ -609,7 +609,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Type of stream service to apply. Example: `rtmp_common` or `rtmp_custom` | None | N/A<br />
     /// </summary>
     [Key("streamServiceType")]
-    public string StreamServiceType { get; set; } = "";
+    public StreamServiceType StreamServiceType { get; set; }
     /// <summary>
     /// Settings to apply to the service | None | N/A<br />
     /// </summary>

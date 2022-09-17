@@ -468,7 +468,7 @@ namespace ObsStrawket {
     /// <param name="streamServiceType">Type of stream service to apply. Example: <c>rtmp_common</c> or <c>rtmp_custom</c></param>
     /// <param name="streamServiceSettings">Settings to apply to the service</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetStreamServiceSettingsAsync(string streamServiceType, Dictionary<string, object?> streamServiceSettings, CancellationToken cancellation = default) {
+    public async Task<RequestResponse> SetStreamServiceSettingsAsync(StreamServiceType streamServiceType, Dictionary<string, object?> streamServiceSettings, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetStreamServiceSettings() { StreamServiceType = streamServiceType, StreamServiceSettings = streamServiceSettings }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 

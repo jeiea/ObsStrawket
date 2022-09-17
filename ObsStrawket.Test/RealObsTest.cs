@@ -4,7 +4,9 @@ namespace ObsStrawket.Test.Real {
   using System;
   using System.Collections.Generic;
   using System.Diagnostics;
+  using System.IO;
   using System.Net.Sockets;
+  using System.Text.Json;
   using System.Threading.Tasks;
   using Xunit;
 
@@ -63,6 +65,19 @@ namespace ObsStrawket.Test.Real {
       if (_shouldSkip) {
         return;
       }
+
+      // xUnit doesn't support environment variable in visual studio runner.
+      // But I want to do it.
+      string envPath = "../../../env.json.tmp";
+      if (File.Exists(envPath)) {
+        var keyValues = await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(
+          File.OpenRead(envPath)
+        ).ConfigureAwait(false);
+        foreach (var (key, value) in keyValues!) {
+          Environment.SetEnvironmentVariable(key, value);
+        }
+      }
+
       var client = ClientFlow.GetDebugClient(useChannel: true);
       await client.ConnectAsync(_uri, MockServer.Password).ConfigureAwait(false);
       var flows = new List<ITestFlow>() {
@@ -76,35 +91,35 @@ namespace ObsStrawket.Test.Real {
         ////new TriggerHotkeyByKeySequenceFlow(),
         ////new SleepFlow(),
 
-        //// Config
+        //// Test profile setup
         //new CreateProfileFlow(),
         //new SetCurrentProfileFlow(),
+
+        // Config
         //new SetPersistentDataFlow(),
         //new GetPersistentDataFlow(),
-        //new RemoveProfileFlow(),
 
         //new GetRecordDirectoryFlow(),
 
-
-        // Scenes
+        // Test scenes setup
         //new CreateSceneCollectionFlow(),
-        new CreateSceneFlow(),
+        //new CreateSceneFlow(),
         //new GetSceneListFlow(),
 
         // Ui
         //new GetMonitorListFlow(),
-        new SetStudioModeEnabledFlow(),
-        new SetCurrentProgramSceneFlow(),
 
-        new GetStudioModeEnabledFlow(),
+        //new SetStudioModeEnabledFlow(),
+        //new SetCurrentProgramSceneFlow(),
+        //new GetStudioModeEnabledFlow(),
 
-        new CreateInputFlow(),
-        new GetInputListFlow(),
-        new OpenInputPropertiesDialogFlow(),
-        new OpenInputFiltersDialogFlow(),
-        new OpenInputInteractDialogFlow(),
-        new OpenSourceProjectorFlow(),
-        new OpenVideoMixProjectorFlow(),
+        //new CreateInputFlow(),
+        //new GetInputListFlow(),
+        //new OpenInputPropertiesDialogFlow(),
+        //new OpenInputFiltersDialogFlow(),
+        //new OpenInputInteractDialogFlow(),
+        //new OpenSourceProjectorFlow(),
+        //new OpenVideoMixProjectorFlow(),
 
         // Record
         //new StartRecordFlow(),
@@ -115,15 +130,25 @@ namespace ObsStrawket.Test.Real {
         //new StopRecordFlow(),
         //new ToggleRecordFlow(),
 
+        // Stream
+        new SetStreamServiceSettingsFlow(),
+        new GetStreamServiceSettingsFlow(),
+        new StartStreamFlow(),
+        new SendStreamCaptionFlow(),
+        new GetStreamStatusFlow(),
+        new StopStreamFlow(),
+        new ToggleStreamFlow(),
+
         // Sources
         //new GetSourceActiveFlow(),
         //new GetSourceScreenshotFlow(),
         //new SaveSourceScreenshotFlow(),
 
-        // Scenes cleanup
-        new RemoveInputFlow(),
+        // Test scenes and profile cleanup
+        //new RemoveInputFlow(),
         //new RemoveSceneItemFlow(),
-        new RemoveSceneFlow(),
+        //new RemoveSceneFlow(),
+        //new RemoveProfileFlow(),
 
 
 //new CreateSceneItemFlow(),
@@ -168,8 +193,6 @@ namespace ObsStrawket.Test.Real {
 //new GetSourceFilterListFlow(),
 //new GetSourceFilterFlow(),
 //new GetSpecialInputsFlow(),
-//new GetStreamServiceSettingsFlow(),
-//new GetStreamStatusFlow(),
 //new GetTransitionKindListFlow(),
 //new GetVideoSettingsFlow(),
 //new GetVirtualCamStatusFlow(),
@@ -177,7 +200,6 @@ namespace ObsStrawket.Test.Real {
 //new PressInputPropertiesButtonFlow(),
 //new RemoveSourceFilterFlow(),
 //new SaveReplayBufferFlow(),
-//new SendStreamCaptionFlow(),
 //new SetCurrentPreviewSceneFlow(),
 //new SetCurrentSceneCollectionFlow(),
 //new SetCurrentSceneTransitionDurationFlow(),
@@ -205,21 +227,17 @@ namespace ObsStrawket.Test.Real {
 //new SetSourceFilterIndexFlow(),
 //new SetSourceFilterNameFlow(),
 //new SetSourceFilterSettingsFlow(),
-//new SetStreamServiceSettingsFlow(),
 //new SetTBarPositionFlow(),
 //new SetVideoSettingsFlow(),
 //new StartOutputFlow(),
 //new StartReplayBufferFlow(),
-//new StartStreamFlow(),
 //new StartVirtualCamFlow(),
 //new StopOutputFlow(),
 //new StopReplayBufferFlow(),
-//new StopStreamFlow(),
 //new StopVirtualCamFlow(),
 //new ToggleInputMuteFlow(),
 //new ToggleOutputFlow(),
 //new ToggleReplayBufferFlow(),
-//new ToggleStreamFlow(),
 //new ToggleVirtualCamFlow(),
 //new TriggerMediaInputActionFlow(),
 //new TriggerStudioModeTransitionFlow(),
