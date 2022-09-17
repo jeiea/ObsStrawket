@@ -70,7 +70,7 @@ namespace ObsStrawket.Test {
       }
       catch (Exception ex) {
         logger.LogError("OpenClose mismatch: {}", ex);
-        string error = await logger.GetAllAsync().ConfigureAwait(false);
+        string error = logger.GetAll();
         throw new Exception(error);
       }
 

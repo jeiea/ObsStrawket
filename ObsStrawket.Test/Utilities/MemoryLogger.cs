@@ -13,7 +13,7 @@ namespace ObsStrawket.Test.Utilities {
     private static StringBuilder? _builder;
 
     private readonly IExternalScopeProvider _scopeProvider = new LoggerExternalScopeProvider();
-    private readonly Channel<string> _messages = Channel.CreateUnbounded<string>();
+    private readonly List<string> _messages = new();
 
     public IDisposable BeginScope<TState>(TState state) where TState : notnull {
       return _scopeProvider.Push(state);
@@ -43,18 +43,20 @@ namespace ObsStrawket.Test.Utilities {
         builder.Append("| ");
       }, "");
       builder.Append(formatter(state, exception));
-      _ = _messages.Writer.WriteAsync(builder.ToString());
+      lock (_messages) {
+        _messages.Add(builder.ToString());
+      }
       builder.Clear();
     }
 
-    public async Task<string> GetAllAsync() {
-      _messages.Writer.TryComplete();
-
-      var builder = new StringBuilder();
-      await foreach (string message in _messages.Reader.ReadAllAsync()) {
-        builder.AppendLine(message);
+    public string GetAll() {
+      lock (_messages) {
+        var builder = new StringBuilder();
+        foreach (string message in _messages) {
+          builder.AppendLine(message);
+        }
+        return builder.ToString();
       }
-      return builder.ToString();
     }
   }
 }
