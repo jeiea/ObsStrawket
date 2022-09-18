@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -39,53 +38,10 @@ namespace SourceGenerator {
           continue;
         }
 
-        PatchTriggerHotkeyByKeySequence(requestFields);
         PatchOthers(request);
       }
 
       return protocol;
-    }
-
-    private static void PatchOthers(ObsRequest request) {
-      switch (request.RequestType) {
-      case "GetOutputList":
-        request.ResponseFields!.Add(new ObsDataFields { ValueName = "outputs", ValueDescription = "List of outputs", ValueType = "Output[]" });
-        break;
-      case "ToggleRecord":
-        request.ResponseFields!.Add(new ObsDataFields { ValueName = "outputActive", ValueDescription = "Whether the output is active", ValueType = "Boolean" });
-        break;
-      case "ToggleRecordPause":
-        request.ResponseFields!.Add(new ObsDataFields { ValueName = "outputPaused", ValueDescription = "Whether the output is paused", ValueType = "Boolean" });
-        break;
-      case "SaveSourceScreenshot":
-        request.ResponseFields!.Clear();
-        break;
-      }
-      foreach (var field in request.RequestFields!) {
-        if (field.ValueName == "videoMixType") {
-          field.ValueType = "VideoMixType";
-        }
-        else if (field.ValueName == "streamServiceType") {
-          field.ValueType = "StreamServiceType";
-        }
-        else if (field.ValueDescription!.Contains("OBS_WEBSOCKET_DATA_REALM_GLOBAL")) {
-          field.ValueType = "DataRealm";
-        }
-      }
-    }
-
-    private static void PatchTriggerHotkeyByKeySequence(List<ObsRequestField> requestFields) {
-      int index = requestFields.FindIndex(x => x.ValueName == "keyModifiers");
-      if (index == -1) {
-        return;
-      }
-
-      requestFields.RemoveAt(index);
-      foreach (var field in requestFields) {
-        if (field.ValueName!.StartsWith("keyModifiers.")) {
-          field.ValueName = field.ValueName.Replace("keyModifiers.", "");
-        }
-      }
     }
 
     public async Task<ProtocolJson> GetProtocolJsonAsync() {
@@ -96,6 +52,60 @@ namespace SourceGenerator {
       string protocolJson = await _http.GetStringAsync($"{_rawRoot}/docs/generated/protocol.json").ConfigureAwait(false);
       await File.WriteAllTextAsync(ProtocolJsonPath, protocolJson).ConfigureAwait(false);
       return JsonSerializer.Deserialize<ProtocolJson>(protocolJson)!;
+    }
+
+    private static void PatchOthers(ObsRequest request) {
+      switch (request.RequestType) {
+      case "GetOutputList":
+        request.ResponseFields!.Add(new ObsDataField { ValueName = "outputs", ValueDescription = "List of outputs", ValueType = "Array<Output>" });
+        break;
+      case "ToggleRecord":
+        request.ResponseFields!.Add(new ObsDataField { ValueName = "outputActive", ValueDescription = "Whether the output is active", ValueType = "Boolean" });
+        break;
+      case "ToggleRecordPause":
+        request.ResponseFields!.Add(new ObsDataField { ValueName = "outputPaused", ValueDescription = "Whether the output is paused", ValueType = "Boolean" });
+        break;
+      case "SaveSourceScreenshot":
+        request.ResponseFields!.Clear();
+        break;
+      }
+
+      foreach (var field in request.RequestFields!) {
+        if (GetCustomType(field.ValueName!, out string? type)) {
+          field.ValueType = type;
+        }
+      }
+      foreach (var field in request.ResponseFields!) {
+        if (GetCustomType(field.ValueName!, out string? type)) {
+          field.ValueType = type;
+        }
+      }
+    }
+
+    private static bool GetCustomType(string name, out string? type) {
+      switch (name) {
+      case "videoMixType":
+        type = "VideoMixType";
+        return true;
+      case "keyModifiers":
+        type = "KeyModifiers";
+        return true;
+      case "scenes":
+        type = "Array<Scene>";
+        return true;
+      case "inputs":
+        type = "Array<Input>";
+        return true;
+      case "streamServiceType":
+        type = "StreamServiceType";
+        return true;
+      case "realm":
+        type = "DataRealm";
+        return true;
+      default:
+        type = null;
+        return false;
+      }
     }
   }
 }

@@ -1,58 +1,59 @@
-namespace ObsStrawket.DataTypes.Predefineds {
-  using MessagePack;
-  using ObsStrawket.DataTypes;
-  using System.Collections.Generic;
-  /*
-  Generated file
-  input: https://raw.githubusercontent.com/obsproject/obs-websocket/master/docs/generated/protocol.md
-  process: https://gchq.github.io/CyberChef/#recipe=Find_/_Replace(%7B'option':'Regex','string':'%5E.*?(?%3D%5C%5Cn%23%23%20General%20Requests)'%7D,'',true,false,false,true)Find_/_Replace(%7B'option':'Regex','string':'%5E%23%23%20(%5C%5Cw%2B)%20(%5C%5Cw%2B)?%20?Requests'%7D,'public%20class%20$1$2Request%20:%20Request%20%7B%5C%5Cn%7D%5C%5Cnpublic%20class%20$1$2RequestResponse%20:%20RequestResponse%20%7B%5C%5Cn%7D%5C%5Cn',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'(?:%5E%7C%5C%5Cn)%23%23%23%20(.*?)%5C%5Cn%5C%5Cn(.*?)%5C%5Cn-%20Complexity.*?%5C%5Cn(.*?)%5C%5Cn%5C%5Cn(.*?)(?:---%5C%5Cn%7C(?%3Dpublic)%7C$)'%7D,'///%20%3Csummary%3E%5C%5Cn///%20$2%5C%5Cn$3%5C%5Cn///%20%3C/summary%3E%5C%5Cnpublic%20class%20$1%20%7B%5C%5Cn$4%5C%5Cn%7D%5C%5Cn',true,false,false,true)Find_/_Replace(%7B'option':'Regex','string':'%5C%5Cn%5C%5C%7C%20Name.*?%5C%5Cn.*?%5C%5Cn'%7D,'',true,false,false,true)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20Array%26lt;(.*?)%26gt;%20%5C%5C%7C'%7D,'%7C%20$1%5B%5D%20%7C',true,false,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20String%5C%5Cb'%7D,'%7C%20string',true,false,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20Any%5C%5Cb'%7D,'%7C%20object?',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20Boolean%5C%5Cb'%7D,'%7C%20bool',true,false,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20Object(%5C%5C%5B%5C%5C%5D)?%20%5C%5C%7C'%7D,'%7C%20Dictionary%3Cstring,%20object?%3E$1%20%7C',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20(%5B%5E%7C%5D*?)%5C%5C%5B%5C%5C%5D%20%5C%5C%7C'%7D,'%7C%20List%3C$1%3E%20%7C',true,false,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20Number%20%5C%5C%7C(?%3D.*?(?:index%7Coffset%7Cmilli%7Cframe%7Cnumerator%7Cdenominator%7Cpixel%7Cwidth%7Cheight%7Cquality%7C%5C%5Cbid%5C%5Cb%7Cnumber%20of%7Cversion%7Cduration))'%7D,'%7C%20int%20%7C',true,true,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7C%20Number%20%5C%5C%7C'%7D,'%7C%20double%20%7C',true,true,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5Cn%5C%5C*%5C%5C*Request%20Fields:%5C%5C*%5C%5C*'%7D,'',true,false,false,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5Cnpublic%20class%20(%5C%5Cw%2B)%20((?:(?!%5C%5Cn%5C%5C%7D).)*?%5C%5Cn)%5C%5C*%5C%5C*Response%20Fields:%5C%5C*%5C%5C*%5C%5Cn(.*?)%5C%5Cn%5C%5C%7D'%7D,'%5C%5Cnpublic%20class%20$1%20$2%7D%5C%5Cnpublic%20class%20$1Response%20%7B%5C%5Cn$3%7D%5C%5Cn',true,false,false,true)Find_/_Replace(%7B'option':'Regex','string':'(?%3C%3Dpublic%20class%20(%5C%5Cw%2B)%20:%20Request%20%5C%5C%7B%5C%5Cn%5C%5C%7D.*?)(public%20class%20%5C%5Cw%2B?(Response)?)%20%5C%5C%7B'%7D,'$2%20:%20$1$3%20%7B',true,false,false,true)Find_/_Replace(%7B'option':'Regex','string':'%5C%5Cn%5C%5C%7C%20(%5C%5C?)?(%5B%5C%5Cw.%5D%2B)%20%5C%5C%7C%20(.*?)%20%5C%5C%7C%20(.*?)%20%5C%5C%7C(?%3D%5C%5Cn)'%7D,'%5C%5Cn///%20%3Csummary%3E%5C%5Cn///%20$4%5C%5Cn///%20%3C/summary%3E%5C%5Cn%5BKey(%22$2%22)%5D%5C%5Cnpublic%20$3$1%20$2%20%7B%20get;%20set;%20%7D',true,false,false,true)Find_/_Replace(%7B'option':'Regex','string':'%5E(public%20(?:List%7CDictionary)%3C.*?%3E%20%5C%5Cw%2B%20.*?%5C%5C%7D)'%7D,'$1%20%3D%20new();',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5E(public%20string%20%5C%5Cw%2B%20.*?%5C%5C%7D)'%7D,'$1%20%3D%20%22%22;',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5E(?!///%20)(%5B%5E%5C%5Cn%5D%2B)(?%3D(?:(?!%3Csummary%3E).)*?%3C/summary%3E)'%7D,'///%20$1',true,false,true,true)Find_/_Replace(%7B'option':'Regex','string':'%5E(///%20(?!%5C%5C%3C).*?)%5C%5Cn'%7D,'$1%3Cbr%20/%3E%5C%5Cn',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5C%7B%5C%5Cn%5C%5C%7D'%7D,'%7B%20%7D',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5C%5Cn%2B'%7D,'%5C%5Cn',true,false,true,false)Find_/_Replace(%7B'option':'Regex','string':'%5E%5C%5C%7D%5C%5Cn'%7D,'%7D%5C%5Cn%5C%5Cn',true,false,true,false)Subsection('%5C%5Cw%2B%20%5C%5C%7B',true,true,false)To_Upper_case('Word')Regular_expression('User%20defined','',false,false,true,false,false,false,'Highlight%20matches')
-  */
+using MessagePack;
+using ObsStrawket.DataTypes;
+using System.Collections.Generic;
 
-  [MessagePackObject]
-  public class GeneralRequest : Request { }
-  [MessagePackObject]
-  public class GeneralRequestResponse : RequestResponse { }
+namespace ObsStrawket.DataTypes.Predefineds {
+
   /// <summary>
   /// Gets data about the current plugin and RPC version.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetVersion : GeneralRequest { }
-  [MessagePackObject]
-  public class GetVersionResponse : GeneralRequestResponse {
+  public class GetVersion : Request { }
+
+  /// <summary>
+  /// Response of GetVersion
+  /// </summary>
+  public class GetVersionResponse : RequestResponse {
     /// <summary>
-    /// Current OBS Studio version<br />
+    /// Current OBS Studio version
     /// </summary>
     [Key("obsVersion")]
     public string ObsVersion { get; set; } = "";
+
     /// <summary>
-    /// Current obs-websocket version<br />
+    /// Current obs-websocket version
     /// </summary>
     [Key("obsWebSocketVersion")]
     public string ObsWebSocketVersion { get; set; } = "";
+
     /// <summary>
-    /// Current latest obs-websocket RPC version<br />
+    /// Current latest obs-websocket RPC version
     /// </summary>
     [Key("rpcVersion")]
     public int RpcVersion { get; set; }
+
     /// <summary>
-    /// Array of available RPC requests for the currently negotiated RPC version<br />
+    /// Array of available RPC requests for the currently negotiated RPC version
     /// </summary>
     [Key("availableRequests")]
     public List<string> AvailableRequests { get; set; } = new();
+
     /// <summary>
-    /// Image formats available in `GetSourceScreenshot` and `SaveSourceScreenshot` requests.<br />
+    /// Image formats available in <c>GetSourceScreenshot</c> and <c>SaveSourceScreenshot</c> requests.
     /// </summary>
     [Key("supportedImageFormats")]
     public List<string> SupportedImageFormats { get; set; } = new();
+
     /// <summary>
-    /// Name of the platform. Usually `windows`, `macos`, or `ubuntu` (linux flavor). Not guaranteed to be any of those<br />
+    /// Name of the platform. Usually <c>windows</c>, <c>macos</c>, or <c>ubuntu</c> (linux flavor). Not guaranteed to be any of those
     /// </summary>
     [Key("platform")]
     public string Platform { get; set; } = "";
+
     /// <summary>
-    /// Description of the platform, like `Windows 10 (10.0)`<br />
+    /// Description of the platform, like <c>Windows 10 (10.0)</c>
     /// </summary>
     [Key("platformDescription")]
     public string PlatformDescription { get; set; } = "";
@@ -60,79 +61,92 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets statistics about OBS, obs-websocket, and the current session.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetStats : GeneralRequest { }
-  [MessagePackObject]
-  public class GetStatsResponse : GeneralRequestResponse {
+  public class GetStats : Request { }
+
+  /// <summary>
+  /// Response of GetStats
+  /// </summary>
+  public class GetStatsResponse : RequestResponse {
     /// <summary>
-    /// Current CPU usage in percent<br />
+    /// Current CPU usage in percent
     /// </summary>
     [Key("cpuUsage")]
     public double CpuUsage { get; set; }
+
     /// <summary>
-    /// Amount of memory in MB currently being used by OBS<br />
+    /// Amount of memory in MB currently being used by OBS
     /// </summary>
     [Key("memoryUsage")]
     public double MemoryUsage { get; set; }
+
     /// <summary>
-    /// Available disk space on the device being used for recording storage<br />
+    /// Available disk space on the device being used for recording storage
     /// </summary>
     [Key("availableDiskSpace")]
     public double AvailableDiskSpace { get; set; }
+
     /// <summary>
-    /// Current FPS being rendered<br />
+    /// Current FPS being rendered
     /// </summary>
     [Key("activeFps")]
     public double ActiveFps { get; set; }
+
     /// <summary>
-    /// Average time in milliseconds that OBS is taking to render a frame<br />
+    /// Average time in milliseconds that OBS is taking to render a frame
     /// </summary>
     [Key("averageFrameRenderTime")]
     public double AverageFrameRenderTime { get; set; }
+
     /// <summary>
-    /// Number of frames skipped by OBS in the render thread<br />
+    /// Number of frames skipped by OBS in the render thread
     /// </summary>
     [Key("renderSkippedFrames")]
     public int RenderSkippedFrames { get; set; }
+
     /// <summary>
-    /// Total number of frames outputted by the render thread<br />
+    /// Total number of frames outputted by the render thread
     /// </summary>
     [Key("renderTotalFrames")]
     public int RenderTotalFrames { get; set; }
+
     /// <summary>
-    /// Number of frames skipped by OBS in the output thread<br />
+    /// Number of frames skipped by OBS in the output thread
     /// </summary>
     [Key("outputSkippedFrames")]
     public int OutputSkippedFrames { get; set; }
+
     /// <summary>
-    /// Total number of frames outputted by the output thread<br />
+    /// Total number of frames outputted by the output thread
     /// </summary>
     [Key("outputTotalFrames")]
     public int OutputTotalFrames { get; set; }
+
     /// <summary>
-    /// Total number of messages received by obs-websocket from the client<br />
+    /// Total number of messages received by obs-websocket from the client
     /// </summary>
     [Key("webSocketSessionIncomingMessages")]
     public int WebSocketSessionIncomingMessages { get; set; }
+
     /// <summary>
-    /// Total number of messages sent by obs-websocket to the client<br />
+    /// Total number of messages sent by obs-websocket to the client
     /// </summary>
     [Key("webSocketSessionOutgoingMessages")]
     public int WebSocketSessionOutgoingMessages { get; set; }
   }
 
   /// <summary>
-  /// Broadcasts a `CustomEvent` to all WebSocket clients. Receivers are clients which are identified and subscribed.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Broadcasts a <c>CustomEvent</c> to all WebSocket clients. Receivers are clients which are identified and subscribed.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class BroadcastCustomEvent : GeneralRequest {
+  public class BroadcastCustomEvent : Request {
     /// <summary>
-    /// Data payload to emit to all receivers | None | N/A<br />
+    /// Data payload to emit to all receivers
     /// </summary>
     [Key("eventData")]
     public Dictionary<string, object?> EventData { get; set; } = new();
@@ -140,44 +154,52 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Call a request registered to a vendor.<br />
+  /// <br />
   /// A vendor is a unique name registered by a third-party plugin or script, which allows for custom requests and events to be added to obs-websocket.<br />
   /// If a plugin or script implements vendor requests or events, documentation is expected to be provided with them.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class CallVendorRequest : GeneralRequest {
+  public class CallVendorRequest : Request {
     /// <summary>
-    /// Name of the vendor to use | None | N/A<br />
+    /// Name of the vendor to use
     /// </summary>
     [Key("vendorName")]
     public string VendorName { get; set; } = "";
+
     /// <summary>
-    /// The request type to call | None | N/A<br />
+    /// The request type to call
     /// </summary>
     [Key("requestType")]
     public string VendorRequestType { get; set; } = "";
+
     /// <summary>
-    /// Object containing appropriate request data | None | {}<br />
+    /// Object containing appropriate request data<br />
+    /// If null, {}
     /// </summary>
     [Key("requestData")]
-    public Dictionary<string, object?>? RequestData { get; set; }
+    public Dictionary<string, object?>? RequestData { get; set; } = new();
   }
 
-  [MessagePackObject]
-  public class CallVendorRequestResponse : GeneralRequestResponse {
+  /// <summary>
+  /// Response of CallVendorRequest
+  /// </summary>
+  public class CallVendorRequestResponse : RequestResponse {
     /// <summary>
-    /// Echoed of `vendorName`<br />
+    /// Echoed of <c>vendorName</c>
     /// </summary>
     [Key("vendorName")]
     public string VendorName { get; set; } = "";
+
     /// <summary>
-    /// Echoed of `requestType`<br />
+    /// Echoed of <c>requestType</c>
     /// </summary>
     [Key("requestType")]
     public string VendorRequestType { get; set; } = "";
+
     /// <summary>
-    /// Object containing appropriate response data. {} if request does not provide any response data<br />
+    /// Object containing appropriate response data. {} if request does not provide any response data
     /// </summary>
     [Key("responseData")]
     public Dictionary<string, object?> ResponseData { get; set; } = new();
@@ -185,29 +207,32 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets an array of all hotkey names in OBS<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetHotkeyList : GeneralRequest { }
-  [MessagePackObject]
-  public class GetHotkeyListResponse : GeneralRequestResponse {
+  public class GetHotkeyList : Request { }
+
+  /// <summary>
+  /// Response of GetHotkeyList
+  /// </summary>
+  public class GetHotkeyListResponse : RequestResponse {
     /// <summary>
-    /// Array of hotkey names<br />
+    /// Array of hotkey names
     /// </summary>
     [Key("hotkeys")]
     public List<string> Hotkeys { get; set; } = new();
   }
 
   /// <summary>
-  /// Triggers a hotkey using its name. See `GetHotkeyList`<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Triggers a hotkey using its name. See <c>GetHotkeyList</c><br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class TriggerHotkeyByName : GeneralRequest {
+  public class TriggerHotkeyByName : Request {
     /// <summary>
-    /// Name of the hotkey to trigger | None | N/A<br />
+    /// Name of the hotkey to trigger
     /// </summary>
     [Key("hotkeyName")]
     public string HotkeyName { get; set; } = "";
@@ -215,55 +240,452 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Triggers a hotkey using a sequence of keys.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class TriggerHotkeyByKeySequence : GeneralRequest {
+  public class TriggerHotkeyByKeySequence : Request {
     /// <summary>
-    /// The OBS key ID to use. See https://github.com/obsproject/obs-studio/blob/master/libobs/obs-hotkeys.h | None | Not pressed<br />
+    /// The OBS key ID to use. See https://github.com/obsproject/obs-studio/blob/master/libobs/obs-hotkeys.h<br />
+    /// If null, Not pressed
     /// </summary>
     [Key("keyId")]
-    public string? KeyId { get; set; }
+    public string? KeyId { get; set; } = "";
+
     /// <summary>
-    /// Object containing key modifiers to apply | None | Ignored<br />
+    /// Object containing key modifiers to apply<br />
+    /// If null, Ignored
     /// </summary>
     [Key("keyModifiers")]
-    public KeyModifiers KeyModifiers { get; set; } = new();
+    public KeyModifiers? KeyModifiers { get; set; } = new();
   }
 
   /// <summary>
-  /// Sleeps for a time duration or number of frames. Only available in request batches with types `SERIAL_REALTIME` or `SERIAL_FRAME`.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Sleeps for a time duration or number of frames. Only available in request batches with types <c>SERIAL_REALTIME</c> or <c>SERIAL_FRAME</c>.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class Sleep : GeneralRequest {
+  public class Sleep : Request {
     /// <summary>
-    /// Number of milliseconds to sleep for (if `SERIAL_REALTIME` mode) | &gt;= 0, &lt;= 50000 | N/A<br />
+    /// Number of milliseconds to sleep for (if <c>SERIAL_REALTIME</c> mode)
     /// </summary>
     [Key("sleepMillis")]
     public int SleepMillis { get; set; }
+
     /// <summary>
-    /// Number of frames to sleep for (if `SERIAL_FRAME` mode) | &gt;= 0, &lt;= 10000 | N/A<br />
+    /// Number of frames to sleep for (if <c>SERIAL_FRAME</c> mode)
     /// </summary>
     [Key("sleepFrames")]
     public int SleepFrames { get; set; }
   }
 
-  [MessagePackObject]
-  public class ConfigRequest : Request { }
-  [MessagePackObject]
-  public class ConfigRequestResponse : RequestResponse { }
   /// <summary>
-  /// Gets the current directory that the record output is set to.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Gets the value of a "slot" from the selected persistent data realm.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetRecordDirectory : ConfigRequest { }
+  public class GetPersistentData : Request {
+    /// <summary>
+    /// The data realm to select. <c>OBS_WEBSOCKET_DATA_REALM_GLOBAL</c> or <c>OBS_WEBSOCKET_DATA_REALM_PROFILE</c>
+    /// </summary>
+    [Key("realm")]
+    public DataRealm Realm { get; set; } = new();
+
+    /// <summary>
+    /// The name of the slot to retrieve data from
+    /// </summary>
+    [Key("slotName")]
+    public string SlotName { get; set; } = "";
+  }
+
+  /// <summary>
+  /// Response of GetPersistentData
+  /// </summary>
+  public class GetPersistentDataResponse : RequestResponse {
+    /// <summary>
+    /// Value associated with the slot. <c>null</c> if not set
+    /// </summary>
+    [Key("slotValue")]
+    public object? SlotValue { get; set; }
+  }
+
+  /// <summary>
+  /// Sets the value of a "slot" from the selected persistent data realm.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
+  /// </summary>
   [MessagePackObject]
-  public class GetRecordDirectoryResponse : ConfigRequestResponse {
+  public class SetPersistentData : Request {
+    /// <summary>
+    /// The data realm to select. <c>OBS_WEBSOCKET_DATA_REALM_GLOBAL</c> or <c>OBS_WEBSOCKET_DATA_REALM_PROFILE</c>
+    /// </summary>
+    [Key("realm")]
+    public DataRealm Realm { get; set; } = new();
+
+    /// <summary>
+    /// The name of the slot to retrieve data from
+    /// </summary>
+    [Key("slotName")]
+    public string SlotName { get; set; } = "";
+
+    /// <summary>
+    /// The value to apply to the slot
+    /// </summary>
+    [Key("slotValue")]
+    public object? SlotValue { get; set; }
+  }
+
+  /// <summary>
+  /// Gets an array of all scene collections<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
+  /// </summary>
+  [MessagePackObject]
+  public class GetSceneCollectionList : Request { }
+
+  /// <summary>
+  /// Response of GetSceneCollectionList
+  /// </summary>
+  public class GetSceneCollectionListResponse : RequestResponse {
+    /// <summary>
+    /// The name of the current scene collection
+    /// </summary>
+    [Key("currentSceneCollectionName")]
+    public string CurrentSceneCollectionName { get; set; } = "";
+
+    /// <summary>
+    /// Array of all available scene collections
+    /// </summary>
+    [Key("sceneCollections")]
+    public List<string> SceneCollections { get; set; } = new();
+  }
+
+  /// <summary>
+  /// Switches to a scene collection.<br />
+  /// <br />
+  /// Note: This will block until the collection has finished changing.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
+  /// </summary>
+  [MessagePackObject]
+  public class SetCurrentSceneCollection : Request {
+    /// <summary>
+    /// Name of the scene collection to switch to
+    /// </summary>
+    [Key("sceneCollectionName")]
+    public string SceneCollectionName { get; set; } = "";
+  }
+
+  /// <summary>
+  /// Creates a new scene collection, switching to it in the process.<br />
+  /// <br />
+  /// Note: This will block until the collection has finished changing.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
+  /// </summary>
+  [MessagePackObject]
+  public class CreateSceneCollection : Request {
+    /// <summary>
+    /// Name for the new scene collection
+    /// </summary>
+    [Key("sceneCollectionName")]
+    public string SceneCollectionName { get; set; } = "";
+  }
+
+  /// <summary>
+  /// Gets an array of all profiles<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
+  /// </summary>
+  [MessagePackObject]
+  public class GetProfileList : Request { }
+
+  /// <summary>
+  /// Response of GetProfileList
+  /// </summary>
+  public class GetProfileListResponse : RequestResponse {
+    /// <summary>
+    /// The name of the current profile
+    /// </summary>
+    [Key("currentProfileName")]
+    public string CurrentProfileName { get; set; } = "";
+
+    /// <summary>
+    /// Array of all available profiles
+    /// </summary>
+    [Key("profiles")]
+    public List<string> Profiles { get; set; } = new();
+  }
+
+  /// <summary>
+  /// Switches to a profile.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
+  /// </summary>
+  [MessagePackObject]
+  public class SetCurrentProfile : Request {
+    /// <summary>
+    /// Name of the profile to switch to
+    /// </summary>
+    [Key("profileName")]
+    public string ProfileName { get; set; } = "";
+  }
+
+  /// <summary>
+  /// Creates a new profile, switching to it in the process<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
+  /// </summary>
+  [MessagePackObject]
+  public class CreateProfile : Request {
+    /// <summary>
+    /// Name for the new profile
+    /// </summary>
+    [Key("profileName")]
+    public string ProfileName { get; set; } = "";
+  }
+
+  /// <summary>
+  /// Removes a profile. If the current profile is chosen, it will change to a different profile first.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
+  /// </summary>
+  [MessagePackObject]
+  public class RemoveProfile : Request {
+    /// <summary>
+    /// Name of the profile to remove
+    /// </summary>
+    [Key("profileName")]
+    public string ProfileName { get; set; } = "";
+  }
+
+  /// <summary>
+  /// Gets a parameter from the current profile's configuration.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
+  /// </summary>
+  [MessagePackObject]
+  public class GetProfileParameter : Request {
+    /// <summary>
+    /// Category of the parameter to get
+    /// </summary>
+    [Key("parameterCategory")]
+    public string ParameterCategory { get; set; } = "";
+
+    /// <summary>
+    /// Name of the parameter to get
+    /// </summary>
+    [Key("parameterName")]
+    public string ParameterName { get; set; } = "";
+  }
+
+  /// <summary>
+  /// Response of GetProfileParameter
+  /// </summary>
+  public class GetProfileParameterResponse : RequestResponse {
+    /// <summary>
+    /// Value associated with the parameter. <c>null</c> if not set and no default
+    /// </summary>
+    [Key("parameterValue")]
+    public string? ParameterValue { get; set; }
+
+    /// <summary>
+    /// Default value associated with the parameter. <c>null</c> if no default
+    /// </summary>
+    [Key("defaultParameterValue")]
+    public string? DefaultParameterValue { get; set; }
+  }
+
+  /// <summary>
+  /// Sets the value of a parameter in the current profile's configuration.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
+  /// </summary>
+  [MessagePackObject]
+  public class SetProfileParameter : Request {
+    /// <summary>
+    /// Category of the parameter to set
+    /// </summary>
+    [Key("parameterCategory")]
+    public string ParameterCategory { get; set; } = "";
+
+    /// <summary>
+    /// Name of the parameter to set
+    /// </summary>
+    [Key("parameterName")]
+    public string ParameterName { get; set; } = "";
+
+    /// <summary>
+    /// Value of the parameter to set. Use <c>null</c> to delete
+    /// </summary>
+    [Key("parameterValue")]
+    public string? ParameterValue { get; set; }
+  }
+
+  /// <summary>
+  /// Gets the current video settings.<br />
+  /// <br />
+  /// Note: To get the true FPS value, divide the FPS numerator by the FPS denominator. Example: <c>60000/1001</c><br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
+  /// </summary>
+  [MessagePackObject]
+  public class GetVideoSettings : Request { }
+
+  /// <summary>
+  /// Response of GetVideoSettings
+  /// </summary>
+  public class GetVideoSettingsResponse : RequestResponse {
+    /// <summary>
+    /// Numerator of the fractional FPS value
+    /// </summary>
+    [Key("fpsNumerator")]
+    public int FpsNumerator { get; set; }
+
+    /// <summary>
+    /// Denominator of the fractional FPS value
+    /// </summary>
+    [Key("fpsDenominator")]
+    public int FpsDenominator { get; set; }
+
+    /// <summary>
+    /// Width of the base (canvas) resolution in pixels
+    /// </summary>
+    [Key("baseWidth")]
+    public int BaseWidth { get; set; }
+
+    /// <summary>
+    /// Height of the base (canvas) resolution in pixels
+    /// </summary>
+    [Key("baseHeight")]
+    public int BaseHeight { get; set; }
+
+    /// <summary>
+    /// Width of the output resolution in pixels
+    /// </summary>
+    [Key("outputWidth")]
+    public int OutputWidth { get; set; }
+
+    /// <summary>
+    /// Height of the output resolution in pixels
+    /// </summary>
+    [Key("outputHeight")]
+    public int OutputHeight { get; set; }
+  }
+
+  /// <summary>
+  /// Sets the current video settings.<br />
+  /// <br />
+  /// Note: Fields must be specified in pairs. For example, you cannot set only <c>baseWidth</c> without needing to specify <c>baseHeight</c>.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
+  /// </summary>
+  [MessagePackObject]
+  public class SetVideoSettings : Request {
+    /// <summary>
+    /// Numerator of the fractional FPS value<br />
+    /// If null, Not changed
+    /// </summary>
+    [Key("fpsNumerator")]
+    public int? FpsNumerator { get; set; }
+
+    /// <summary>
+    /// Denominator of the fractional FPS value<br />
+    /// If null, Not changed
+    /// </summary>
+    [Key("fpsDenominator")]
+    public int? FpsDenominator { get; set; }
+
+    /// <summary>
+    /// Width of the base (canvas) resolution in pixels<br />
+    /// If null, Not changed
+    /// </summary>
+    [Key("baseWidth")]
+    public int? BaseWidth { get; set; }
+
+    /// <summary>
+    /// Height of the base (canvas) resolution in pixels<br />
+    /// If null, Not changed
+    /// </summary>
+    [Key("baseHeight")]
+    public int? BaseHeight { get; set; }
+
+    /// <summary>
+    /// Width of the output resolution in pixels<br />
+    /// If null, Not changed
+    /// </summary>
+    [Key("outputWidth")]
+    public int? OutputWidth { get; set; }
+
+    /// <summary>
+    /// Height of the output resolution in pixels<br />
+    /// If null, Not changed
+    /// </summary>
+    [Key("outputHeight")]
+    public int? OutputHeight { get; set; }
+  }
+
+  /// <summary>
+  /// Gets the current stream service settings (stream destination).<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
+  /// </summary>
+  [MessagePackObject]
+  public class GetStreamServiceSettings : Request { }
+
+  /// <summary>
+  /// Response of GetStreamServiceSettings
+  /// </summary>
+  public class GetStreamServiceSettingsResponse : RequestResponse {
+    /// <summary>
+    /// Stream service type, like <c>rtmp_custom</c> or <c>rtmp_common</c>
+    /// </summary>
+    [Key("streamServiceType")]
+    public StreamServiceType StreamServiceType { get; set; } = new();
+
+    /// <summary>
+    /// Stream service settings
+    /// </summary>
+    [Key("streamServiceSettings")]
+    public Dictionary<string, object?> StreamServiceSettings { get; set; } = new();
+  }
+
+  /// <summary>
+  /// Sets the current stream service settings (stream destination).<br />
+  /// <br />
+  /// Note: Simple RTMP settings can be set with type <c>rtmp_custom</c> and the settings fields <c>server</c> and <c>key</c>.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
+  /// </summary>
+  [MessagePackObject]
+  public class SetStreamServiceSettings : Request {
+    /// <summary>
+    /// Type of stream service to apply. Example: <c>rtmp_common</c> or <c>rtmp_custom</c>
+    /// </summary>
+    [Key("streamServiceType")]
+    public StreamServiceType StreamServiceType { get; set; } = new();
+
+    /// <summary>
+    /// Settings to apply to the service
+    /// </summary>
+    [Key("streamServiceSettings")]
+    public Dictionary<string, object?> StreamServiceSettings { get; set; } = new();
+  }
+
+  /// <summary>
+  /// Gets the current directory that the record output is set to.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
+  /// </summary>
+  [MessagePackObject]
+  public class GetRecordDirectory : Request { }
+
+  /// <summary>
+  /// Response of GetRecordDirectory
+  /// </summary>
+  public class GetRecordDirectoryResponse : RequestResponse {
     /// <summary>
     /// Output directory
     /// </summary>
@@ -272,379 +694,33 @@ namespace ObsStrawket.DataTypes.Predefineds {
   }
 
   /// <summary>
-  /// Gets the value of a "slot" from the selected persistent data realm.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
-  /// </summary>
-  [MessagePackObject]
-  public class GetPersistentData : ConfigRequest {
-    /// <summary>
-    /// The data realm to select. `OBS_WEBSOCKET_DATA_REALM_GLOBAL` or `OBS_WEBSOCKET_DATA_REALM_PROFILE` | None | N/A<br />
-    /// </summary>
-    [Key("realm")]
-    public DataRealm Realm { get; set; }
-    /// <summary>
-    /// The name of the slot to retrieve data from | None | N/A<br />
-    /// </summary>
-    [Key("slotName")]
-    public string SlotName { get; set; } = "";
-  }
-
-  [MessagePackObject]
-  public class GetPersistentDataResponse : ConfigRequestResponse {
-    /// <summary>
-    /// Value associated with the slot. `null` if not set<br />
-    /// </summary>
-    [Key("slotValue")]
-    public object? SlotValue { get; set; }
-  }
-
-  /// <summary>
-  /// Sets the value of a "slot" from the selected persistent data realm.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
-  /// </summary>
-  [MessagePackObject]
-  public class SetPersistentData : ConfigRequest {
-    /// <summary>
-    /// The data realm to select. `OBS_WEBSOCKET_DATA_REALM_GLOBAL` or `OBS_WEBSOCKET_DATA_REALM_PROFILE` | None | N/A<br />
-    /// </summary>
-    [Key("realm")]
-    public DataRealm Realm { get; set; }
-    /// <summary>
-    /// The name of the slot to retrieve data from | None | N/A<br />
-    /// </summary>
-    [Key("slotName")]
-    public string SlotName { get; set; } = "";
-    /// <summary>
-    /// The value to apply to the slot | None | N/A<br />
-    /// </summary>
-    [Key("slotValue")]
-    public object? SlotValue { get; set; }
-  }
-
-  /// <summary>
-  /// Gets an array of all scene collections<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
-  /// </summary>
-  [MessagePackObject]
-  public class GetSceneCollectionList : ConfigRequest { }
-  [MessagePackObject]
-  public class GetSceneCollectionListResponse : ConfigRequestResponse {
-    /// <summary>
-    /// The name of the current scene collection<br />
-    /// </summary>
-    [Key("currentSceneCollectionName")]
-    public string CurrentSceneCollectionName { get; set; } = "";
-    /// <summary>
-    /// Array of all available scene collections<br />
-    /// </summary>
-    [Key("sceneCollections")]
-    public List<string> SceneCollections { get; set; } = new();
-  }
-
-  /// <summary>
-  /// Switches to a scene collection.<br />
-  /// Note: This will block until the collection has finished changing.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
-  /// </summary>
-  [MessagePackObject]
-  public class SetCurrentSceneCollection : ConfigRequest {
-    /// <summary>
-    /// Name of the scene collection to switch to | None | N/A<br />
-    /// </summary>
-    [Key("sceneCollectionName")]
-    public string SceneCollectionName { get; set; } = "";
-  }
-
-  /// <summary>
-  /// Creates a new scene collection, switching to it in the process.<br />
-  /// Note: This will block until the collection has finished changing.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
-  /// </summary>
-  [MessagePackObject]
-  public class CreateSceneCollection : ConfigRequest {
-    /// <summary>
-    /// Name for the new scene collection | None | N/A<br />
-    /// </summary>
-    [Key("sceneCollectionName")]
-    public string SceneCollectionName { get; set; } = "";
-  }
-
-  /// <summary>
-  /// Gets an array of all profiles<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
-  /// </summary>
-  [MessagePackObject]
-  public class GetProfileList : ConfigRequest { }
-  [MessagePackObject]
-  public class GetProfileListResponse : ConfigRequestResponse {
-    /// <summary>
-    /// The name of the current profile<br />
-    /// </summary>
-    [Key("currentProfileName")]
-    public string CurrentProfileName { get; set; } = "";
-    /// <summary>
-    /// Array of all available profiles<br />
-    /// </summary>
-    [Key("profiles")]
-    public List<string> Profiles { get; set; } = new();
-  }
-
-  /// <summary>
-  /// Switches to a profile.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
-  /// </summary>
-  [MessagePackObject]
-  public class SetCurrentProfile : ConfigRequest {
-    /// <summary>
-    /// Name of the profile to switch to | None | N/A<br />
-    /// </summary>
-    [Key("profileName")]
-    public string ProfileName { get; set; } = "";
-  }
-
-  /// <summary>
-  /// Creates a new profile, switching to it in the process<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
-  /// </summary>
-  [MessagePackObject]
-  public class CreateProfile : ConfigRequest {
-    /// <summary>
-    /// Name for the new profile | None | N/A<br />
-    /// </summary>
-    [Key("profileName")]
-    public string ProfileName { get; set; } = "";
-  }
-
-  /// <summary>
-  /// Removes a profile. If the current profile is chosen, it will change to a different profile first.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
-  /// </summary>
-  [MessagePackObject]
-  public class RemoveProfile : ConfigRequest {
-    /// <summary>
-    /// Name of the profile to remove | None | N/A<br />
-    /// </summary>
-    [Key("profileName")]
-    public string ProfileName { get; set; } = "";
-  }
-
-  /// <summary>
-  /// Gets a parameter from the current profile's configuration.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
-  /// </summary>
-  [MessagePackObject]
-  public class GetProfileParameter : ConfigRequest {
-    /// <summary>
-    /// Category of the parameter to get | None | N/A<br />
-    /// </summary>
-    [Key("parameterCategory")]
-    public string ParameterCategory { get; set; } = "";
-    /// <summary>
-    /// Name of the parameter to get | None | N/A<br />
-    /// </summary>
-    [Key("parameterName")]
-    public string ParameterName { get; set; } = "";
-  }
-
-  [MessagePackObject]
-  public class GetProfileParameterResponse : ConfigRequestResponse {
-    /// <summary>
-    /// Value associated with the parameter. `null` if not set and no default<br />
-    /// </summary>
-    [Key("parameterValue")]
-    public string ParameterValue { get; set; } = "";
-    /// <summary>
-    /// Default value associated with the parameter. `null` if no default<br />
-    /// </summary>
-    [Key("defaultParameterValue")]
-    public string DefaultParameterValue { get; set; } = "";
-  }
-
-  /// <summary>
-  /// Sets the value of a parameter in the current profile's configuration.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
-  /// </summary>
-  [MessagePackObject]
-  public class SetProfileParameter : ConfigRequest {
-    /// <summary>
-    /// Category of the parameter to set | None | N/A<br />
-    /// </summary>
-    [Key("parameterCategory")]
-    public string ParameterCategory { get; set; } = "";
-    /// <summary>
-    /// Name of the parameter to set | None | N/A<br />
-    /// </summary>
-    [Key("parameterName")]
-    public string ParameterName { get; set; } = "";
-    /// <summary>
-    /// Value of the parameter to set. Use `null` to delete | None | N/A<br />
-    /// </summary>
-    [Key("parameterValue")]
-    public string ParameterValue { get; set; } = "";
-  }
-
-  /// <summary>
-  /// Gets the current video settings.<br />
-  /// Note: To get the true FPS value, divide the FPS numerator by the FPS denominator. Example: `60000/1001`<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
-  /// </summary>
-  [MessagePackObject]
-  public class GetVideoSettings : ConfigRequest { }
-  [MessagePackObject]
-  public class GetVideoSettingsResponse : ConfigRequestResponse {
-    /// <summary>
-    /// Numerator of the fractional FPS value<br />
-    /// </summary>
-    [Key("fpsNumerator")]
-    public int FpsNumerator { get; set; }
-    /// <summary>
-    /// Denominator of the fractional FPS value<br />
-    /// </summary>
-    [Key("fpsDenominator")]
-    public int FpsDenominator { get; set; }
-    /// <summary>
-    /// Width of the base (canvas) resolution in pixels<br />
-    /// </summary>
-    [Key("baseWidth")]
-    public int BaseWidth { get; set; }
-    /// <summary>
-    /// Height of the base (canvas) resolution in pixels<br />
-    /// </summary>
-    [Key("baseHeight")]
-    public int BaseHeight { get; set; }
-    /// <summary>
-    /// Width of the output resolution in pixels<br />
-    /// </summary>
-    [Key("outputWidth")]
-    public int OutputWidth { get; set; }
-    /// <summary>
-    /// Height of the output resolution in pixels<br />
-    /// </summary>
-    [Key("outputHeight")]
-    public int OutputHeight { get; set; }
-  }
-
-  /// <summary>
-  /// Sets the current video settings.<br />
-  /// Note: Fields must be specified in pairs. For example, you cannot set only `baseWidth` without needing to specify `baseHeight`.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
-  /// </summary>
-  [MessagePackObject]
-  public class SetVideoSettings : ConfigRequest {
-    /// <summary>
-    /// Numerator of the fractional FPS value | >= 1 | Not changed<br />
-    /// </summary>
-    [Key("fpsNumerator")]
-    public int? FpsNumerator { get; set; }
-    /// <summary>
-    /// Denominator of the fractional FPS value | >= 1 | Not changed<br />
-    /// </summary>
-    [Key("fpsDenominator")]
-    public int? FpsDenominator { get; set; }
-    /// <summary>
-    /// Width of the base (canvas) resolution in pixels | >= 1, &lt;= 4096 | Not changed<br />
-    /// </summary>
-    [Key("baseWidth")]
-    public int? BaseWidth { get; set; }
-    /// <summary>
-    /// Height of the base (canvas) resolution in pixels | >= 1, &lt;= 4096 | Not changed<br />
-    /// </summary>
-    [Key("baseHeight")]
-    public int? BaseHeight { get; set; }
-    /// <summary>
-    /// Width of the output resolution in pixels | >= 1, &lt;= 4096 | Not changed<br />
-    /// </summary>
-    [Key("outputWidth")]
-    public int? OutputWidth { get; set; }
-    /// <summary>
-    /// Height of the output resolution in pixels | >= 1, &lt;= 4096 | Not changed<br />
-    /// </summary>
-    [Key("outputHeight")]
-    public int? OutputHeight { get; set; }
-  }
-
-  /// <summary>
-  /// Gets the current stream service settings (stream destination).<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
-  /// </summary>
-  [MessagePackObject]
-  public class GetStreamServiceSettings : ConfigRequest { }
-  [MessagePackObject]
-  public class GetStreamServiceSettingsResponse : ConfigRequestResponse {
-    /// <summary>
-    /// Stream service type, like `rtmp_custom` or `rtmp_common`<br />
-    /// </summary>
-    [Key("streamServiceType")]
-    public StreamServiceType StreamServiceType { get; set; }
-    /// <summary>
-    /// Stream service settings<br />
-    /// </summary>
-    [Key("streamServiceSettings")]
-    public Dictionary<string, object?> StreamServiceSettings { get; set; } = new();
-  }
-
-  /// <summary>
-  /// Sets the current stream service settings (stream destination).<br />
-  /// Note: Simple RTMP settings can be set with type `rtmp_custom` and the settings fields `server` and `key`.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
-  /// </summary>
-  [MessagePackObject]
-  public class SetStreamServiceSettings : ConfigRequest {
-    /// <summary>
-    /// Type of stream service to apply. Example: `rtmp_common` or `rtmp_custom` | None | N/A<br />
-    /// </summary>
-    [Key("streamServiceType")]
-    public StreamServiceType StreamServiceType { get; set; }
-    /// <summary>
-    /// Settings to apply to the service | None | N/A<br />
-    /// </summary>
-    [Key("streamServiceSettings")]
-    public Dictionary<string, object?> StreamServiceSettings { get; set; } = new();
-  }
-
-  [MessagePackObject]
-  public class SourcesRequest : Request { }
-  [MessagePackObject]
-  public class SourcesRequestResponse : RequestResponse { }
-  /// <summary>
   /// Gets the active and show state of a source.<br />
+  /// <br />
   /// **Compatible with inputs and scenes.**<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetSourceActive : SourcesRequest {
+  public class GetSourceActive : Request {
     /// <summary>
-    /// Name of the source to get the active state of | None | N/A<br />
+    /// Name of the source to get the active state of
     /// </summary>
     [Key("sourceName")]
     public string SourceName { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class GetSourceActiveResponse : SourcesRequestResponse {
+  /// <summary>
+  /// Response of GetSourceActive
+  /// </summary>
+  public class GetSourceActiveResponse : RequestResponse {
     /// <summary>
-    /// Whether the source is showing in Program<br />
+    /// Whether the source is showing in Program
     /// </summary>
     [Key("videoActive")]
     public bool VideoActive { get; set; }
+
     /// <summary>
-    /// Whether the source is showing in the UI (Preview, Projector, Properties)<br />
+    /// Whether the source is showing in the UI (Preview, Projector, Properties)
     /// </summary>
     [Key("videoShowing")]
     public bool VideoShowing { get; set; }
@@ -652,45 +728,56 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets a Base64-encoded screenshot of a source.<br />
-  /// The `imageWidth` and `imageHeight` parameters are treated as "scale to inner", meaning the smallest ratio will be used and the aspect ratio of the original resolution is kept.<br />
-  /// If `imageWidth` and `imageHeight` are not specified, the compressed image will use the full resolution of the source.<br />
+  /// <br />
+  /// The <c>imageWidth</c> and <c>imageHeight</c> parameters are treated as "scale to inner", meaning the smallest ratio will be used and the aspect ratio of the original resolution is kept.<br />
+  /// If <c>imageWidth</c> and <c>imageHeight</c> are not specified, the compressed image will use the full resolution of the source.<br />
+  /// <br />
   /// **Compatible with inputs and scenes.**<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetSourceScreenshot : SourcesRequest {
+  public class GetSourceScreenshot : Request {
     /// <summary>
-    /// Name of the source to take a screenshot of | None | N/A<br />
+    /// Name of the source to take a screenshot of
     /// </summary>
     [Key("sourceName")]
     public string SourceName { get; set; } = "";
+
     /// <summary>
-    /// Image compression format to use. Use `GetVersion` to get compatible image formats | None | N/A<br />
+    /// Image compression format to use. Use <c>GetVersion</c> to get compatible image formats
     /// </summary>
     [Key("imageFormat")]
     public string ImageFormat { get; set; } = "";
+
     /// <summary>
-    /// Width to scale the screenshot to | >= 8, &lt;= 4096 | Source value is used<br />
+    /// Width to scale the screenshot to<br />
+    /// If null, Source value is used
     /// </summary>
     [Key("imageWidth")]
     public int? ImageWidth { get; set; }
+
     /// <summary>
-    /// Height to scale the screenshot to | >= 8, &lt;= 4096 | Source value is used<br />
+    /// Height to scale the screenshot to<br />
+    /// If null, Source value is used
     /// </summary>
     [Key("imageHeight")]
     public int? ImageHeight { get; set; }
+
     /// <summary>
-    /// Compression quality to use. 0 for high compression, 100 for uncompressed. -1 to use "default" (whatever that means, idk) | >= -1, &lt;= 100 | -1<br />
+    /// Compression quality to use. 0 for high compression, 100 for uncompressed. -1 to use "default" (whatever that means, idk)<br />
+    /// If null, -1
     /// </summary>
     [Key("imageCompressionQuality")]
     public int? ImageCompressionQuality { get; set; }
   }
 
-  [MessagePackObject]
-  public class GetSourceScreenshotResponse : SourcesRequestResponse {
+  /// <summary>
+  /// Response of GetSourceScreenshot
+  /// </summary>
+  public class GetSourceScreenshotResponse : RequestResponse {
     /// <summary>
-    /// Base64-encoded screenshot<br />
+    /// Base64-encoded screenshot
     /// </summary>
     [Key("imageData")]
     public string ImageData { get; set; } = "";
@@ -698,71 +785,82 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Saves a screenshot of a source to the filesystem.<br />
-  /// The `imageWidth` and `imageHeight` parameters are treated as "scale to inner", meaning the smallest ratio will be used and the aspect ratio of the original resolution is kept.<br />
-  /// If `imageWidth` and `imageHeight` are not specified, the compressed image will use the full resolution of the source.<br />
+  /// <br />
+  /// The <c>imageWidth</c> and <c>imageHeight</c> parameters are treated as "scale to inner", meaning the smallest ratio will be used and the aspect ratio of the original resolution is kept.<br />
+  /// If <c>imageWidth</c> and <c>imageHeight</c> are not specified, the compressed image will use the full resolution of the source.<br />
+  /// <br />
   /// **Compatible with inputs and scenes.**<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SaveSourceScreenshot : SourcesRequest {
+  public class SaveSourceScreenshot : Request {
     /// <summary>
-    /// Name of the source to take a screenshot of | None | N/A<br />
+    /// Name of the source to take a screenshot of
     /// </summary>
     [Key("sourceName")]
     public string SourceName { get; set; } = "";
+
     /// <summary>
-    /// Image compression format to use. Use `GetVersion` to get compatible image formats | None | N/A<br />
+    /// Image compression format to use. Use <c>GetVersion</c> to get compatible image formats
     /// </summary>
     [Key("imageFormat")]
     public string ImageFormat { get; set; } = "";
+
     /// <summary>
-    /// Path to save the screenshot file to. Eg. `C:\Users\user\Desktop\screenshot.png` | None | N/A<br />
+    /// Path to save the screenshot file to. Eg. <c>C:\Users\user\Desktop\screenshot.png</c>
     /// </summary>
     [Key("imageFilePath")]
     public string ImageFilePath { get; set; } = "";
+
     /// <summary>
-    /// Width to scale the screenshot to | >= 8, &lt;= 4096 | Source value is used<br />
+    /// Width to scale the screenshot to<br />
+    /// If null, Source value is used
     /// </summary>
     [Key("imageWidth")]
     public int? ImageWidth { get; set; }
+
     /// <summary>
-    /// Height to scale the screenshot to | >= 8, &lt;= 4096 | Source value is used<br />
+    /// Height to scale the screenshot to<br />
+    /// If null, Source value is used
     /// </summary>
     [Key("imageHeight")]
     public int? ImageHeight { get; set; }
+
     /// <summary>
-    /// Compression quality to use. 0 for high compression, 100 for uncompressed. -1 to use "default" (whatever that means, idk) | >= -1, &lt;= 100 | -1<br />
+    /// Compression quality to use. 0 for high compression, 100 for uncompressed. -1 to use "default" (whatever that means, idk)<br />
+    /// If null, -1
     /// </summary>
     [Key("imageCompressionQuality")]
     public int? ImageCompressionQuality { get; set; }
   }
 
-  [MessagePackObject]
-  public class ScenesRequest : Request { }
-  [MessagePackObject]
-  public class ScenesRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets an array of all scenes in OBS.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetSceneList : ScenesRequest { }
-  [MessagePackObject]
-  public class GetSceneListResponse : ScenesRequestResponse {
+  public class GetSceneList : Request { }
+
+  /// <summary>
+  /// Response of GetSceneList
+  /// </summary>
+  public class GetSceneListResponse : RequestResponse {
     /// <summary>
-    /// Current program scene<br />
+    /// Current program scene
     /// </summary>
     [Key("currentProgramSceneName")]
     public string CurrentProgramSceneName { get; set; } = "";
+
     /// <summary>
-    /// Current preview scene. `null` if not in studio mode<br />
+    /// Current preview scene. <c>null</c> if not in studio mode
     /// </summary>
     [Key("currentPreviewSceneName")]
-    public string CurrentPreviewSceneName { get; set; } = "";
+    public string? CurrentPreviewSceneName { get; set; }
+
     /// <summary>
-    /// Array of scenes<br />
+    /// Array of scenes
     /// </summary>
     [Key("scenes")]
     public List<Scene> Scenes { get; set; } = new();
@@ -770,16 +868,20 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets an array of all groups in OBS.<br />
+  /// <br />
   /// Groups in OBS are actually scenes, but renamed and modified. In obs-websocket, we treat them as scenes where we can.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetGroupList : ScenesRequest { }
-  [MessagePackObject]
-  public class GetGroupListResponse : ScenesRequestResponse {
+  public class GetGroupList : Request { }
+
+  /// <summary>
+  /// Response of GetGroupList
+  /// </summary>
+  public class GetGroupListResponse : RequestResponse {
     /// <summary>
-    /// Array of group names<br />
+    /// Array of group names
     /// </summary>
     [Key("groups")]
     public List<string> Groups { get; set; } = new();
@@ -787,15 +889,18 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the current program scene.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetCurrentProgramScene : ScenesRequest { }
-  [MessagePackObject]
-  public class GetCurrentProgramSceneResponse : ScenesRequestResponse {
+  public class GetCurrentProgramScene : Request { }
+
+  /// <summary>
+  /// Response of GetCurrentProgramScene
+  /// </summary>
+  public class GetCurrentProgramSceneResponse : RequestResponse {
     /// <summary>
-    /// Current program scene<br />
+    /// Current program scene
     /// </summary>
     [Key("currentProgramSceneName")]
     public string CurrentProgramSceneName { get; set; } = "";
@@ -803,13 +908,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the current program scene.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetCurrentProgramScene : ScenesRequest {
+  public class SetCurrentProgramScene : Request {
     /// <summary>
-    /// Scene to set as the current program scene | None | N/A<br />
+    /// Scene to set as the current program scene
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
@@ -817,16 +922,20 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the current preview scene.<br />
+  /// <br />
   /// Only available when studio mode is enabled.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetCurrentPreviewScene : ScenesRequest { }
-  [MessagePackObject]
-  public class GetCurrentPreviewSceneResponse : ScenesRequestResponse {
+  public class GetCurrentPreviewScene : Request { }
+
+  /// <summary>
+  /// Response of GetCurrentPreviewScene
+  /// </summary>
+  public class GetCurrentPreviewSceneResponse : RequestResponse {
     /// <summary>
-    /// Current preview scene<br />
+    /// Current preview scene
     /// </summary>
     [Key("currentPreviewSceneName")]
     public string CurrentPreviewSceneName { get; set; } = "";
@@ -834,14 +943,15 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the current preview scene.<br />
+  /// <br />
   /// Only available when studio mode is enabled.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetCurrentPreviewScene : ScenesRequest {
+  public class SetCurrentPreviewScene : Request {
     /// <summary>
-    /// Scene to set as the current preview scene | None | N/A<br />
+    /// Scene to set as the current preview scene
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
@@ -849,13 +959,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Creates a new scene in OBS.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class CreateScene : ScenesRequest {
+  public class CreateScene : Request {
     /// <summary>
-    /// Name for the new scene | None | N/A<br />
+    /// Name for the new scene
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
@@ -863,13 +973,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Removes a scene from OBS.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class RemoveScene : ScenesRequest {
+  public class RemoveScene : Request {
     /// <summary>
-    /// Name of the scene to remove | None | N/A<br />
+    /// Name of the scene to remove
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
@@ -877,18 +987,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the name of a scene (rename).<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetSceneName : ScenesRequest {
+  public class SetSceneName : Request {
     /// <summary>
-    /// Name of the scene to be renamed | None | N/A<br />
+    /// Name of the scene to be renamed
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
+
     /// <summary>
-    /// New name for the scene | None | N/A<br />
+    /// New name for the scene
     /// </summary>
     [Key("newSceneName")]
     public string NewSceneName { get; set; } = "";
@@ -896,78 +1007,84 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the scene transition overridden for a scene.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetSceneSceneTransitionOverride : ScenesRequest {
+  public class GetSceneSceneTransitionOverride : Request {
     /// <summary>
-    /// Name of the scene | None | N/A<br />
+    /// Name of the scene
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
-  }
-
-  [MessagePackObject]
-  public class GetSceneSceneTransitionOverrideResponse : ScenesRequestResponse {
-    /// <summary>
-    /// Name of the overridden scene transition, else `null`<br />
-    /// </summary>
-    [Key("transitionName")]
-    public string TransitionName { get; set; } = "";
-    /// <summary>
-    /// Duration of the overridden scene transition, else `null`<br />
-    /// </summary>
-    [Key("transitionDuration")]
-    public int TransitionDuration { get; set; }
   }
 
   /// <summary>
-  /// Gets the scene transition overridden for a scene.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Response of GetSceneSceneTransitionOverride
   /// </summary>
-  [MessagePackObject]
-  public class SetSceneSceneTransitionOverride : ScenesRequest {
+  public class GetSceneSceneTransitionOverrideResponse : RequestResponse {
     /// <summary>
-    /// Name of the scene | None | N/A<br />
-    /// </summary>
-    [Key("sceneName")]
-    public string SceneName { get; set; } = "";
-    /// <summary>
-    /// Name of the scene transition to use as override. Specify `null` to remove | None | Unchanged<br />
+    /// Name of the overridden scene transition, else <c>null</c>
     /// </summary>
     [Key("transitionName")]
     public string? TransitionName { get; set; }
+
     /// <summary>
-    /// Duration to use for any overridden transition. Specify `null` to remove | >= 50, &lt;= 20000 | Unchanged<br />
+    /// Duration of the overridden scene transition, else <c>null</c>
     /// </summary>
     [Key("transitionDuration")]
     public int? TransitionDuration { get; set; }
   }
 
-  [MessagePackObject]
-  public class InputsRequest : Request { }
-  [MessagePackObject]
-  public class InputsRequestResponse : RequestResponse { }
   /// <summary>
-  /// Gets an array of all inputs in OBS.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Gets the scene transition overridden for a scene.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetInputList : InputsRequest {
+  public class SetSceneSceneTransitionOverride : Request {
     /// <summary>
-    /// Restrict the array to only inputs of the specified kind | None | All kinds included<br />
+    /// Name of the scene
     /// </summary>
-    [Key("inputKind")]
-    public string? InputKind { get; set; }
+    [Key("sceneName")]
+    public string SceneName { get; set; } = "";
+
+    /// <summary>
+    /// Name of the scene transition to use as override. Specify <c>null</c> to remove<br />
+    /// If null, Unchanged
+    /// </summary>
+    [Key("transitionName")]
+    public string? TransitionName { get; set; }
+
+    /// <summary>
+    /// Duration to use for any overridden transition. Specify <c>null</c> to remove<br />
+    /// If null, Unchanged
+    /// </summary>
+    [Key("transitionDuration")]
+    public int? TransitionDuration { get; set; }
   }
 
+  /// <summary>
+  /// Gets an array of all inputs in OBS.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
+  /// </summary>
   [MessagePackObject]
-  public class GetInputListResponse : InputsRequestResponse {
+  public class GetInputList : Request {
     /// <summary>
-    /// Array of inputs<br />
+    /// Restrict the array to only inputs of the specified kind<br />
+    /// If null, All kinds included
+    /// </summary>
+    [Key("inputKind")]
+    public string? InputKind { get; set; } = "";
+  }
+
+  /// <summary>
+  /// Response of GetInputList
+  /// </summary>
+  public class GetInputListResponse : RequestResponse {
+    /// <summary>
+    /// Array of inputs
     /// </summary>
     [Key("inputs")]
     public List<Input> Inputs { get; set; } = new();
@@ -975,22 +1092,25 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets an array of all available input kinds in OBS.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetInputKindList : InputsRequest {
+  public class GetInputKindList : Request {
     /// <summary>
-    /// True == Return all kinds as unversioned, False == Return with version suffixes (if available) | None | false<br />
+    /// True == Return all kinds as unversioned, False == Return with version suffixes (if available)<br />
+    /// If null, false
     /// </summary>
     [Key("unversioned")]
     public bool? Unversioned { get; set; }
   }
 
-  [MessagePackObject]
-  public class GetInputKindListResponse : InputsRequestResponse {
+  /// <summary>
+  /// Response of GetInputKindList
+  /// </summary>
+  public class GetInputKindListResponse : RequestResponse {
     /// <summary>
-    /// Array of input kinds<br />
+    /// Array of input kinds
     /// </summary>
     [Key("inputKinds")]
     public List<string> InputKinds { get; set; } = new();
@@ -998,83 +1118,99 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the names of all special inputs.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetSpecialInputs : InputsRequest { }
-  [MessagePackObject]
-  public class GetSpecialInputsResponse : InputsRequestResponse {
+  public class GetSpecialInputs : Request { }
+
+  /// <summary>
+  /// Response of GetSpecialInputs
+  /// </summary>
+  public class GetSpecialInputsResponse : RequestResponse {
     /// <summary>
-    /// Name of the Desktop Audio input<br />
+    /// Name of the Desktop Audio input
     /// </summary>
     [Key("desktop1")]
-    public string? Desktop1 { get; set; }
+    public string Desktop1 { get; set; } = "";
+
     /// <summary>
-    /// Name of the Desktop Audio 2 input<br />
+    /// Name of the Desktop Audio 2 input
     /// </summary>
     [Key("desktop2")]
-    public string? Desktop2 { get; set; }
+    public string Desktop2 { get; set; } = "";
+
     /// <summary>
-    /// Name of the Mic/Auxiliary Audio input<br />
+    /// Name of the Mic/Auxiliary Audio input
     /// </summary>
     [Key("mic1")]
-    public string? Mic1 { get; set; }
+    public string Mic1 { get; set; } = "";
+
     /// <summary>
-    /// Name of the Mic/Auxiliary Audio 2 input<br />
+    /// Name of the Mic/Auxiliary Audio 2 input
     /// </summary>
     [Key("mic2")]
-    public string? Mic2 { get; set; }
+    public string Mic2 { get; set; } = "";
+
     /// <summary>
-    /// Name of the Mic/Auxiliary Audio 3 input<br />
+    /// Name of the Mic/Auxiliary Audio 3 input
     /// </summary>
     [Key("mic3")]
-    public string? Mic3 { get; set; }
+    public string Mic3 { get; set; } = "";
+
     /// <summary>
-    /// Name of the Mic/Auxiliary Audio 4 input<br />
+    /// Name of the Mic/Auxiliary Audio 4 input
     /// </summary>
     [Key("mic4")]
-    public string? Mic4 { get; set; }
+    public string Mic4 { get; set; } = "";
   }
 
   /// <summary>
   /// Creates a new input, adding it as a scene item to the specified scene.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class CreateInput : InputsRequest {
+  public class CreateInput : Request {
     /// <summary>
-    /// Name of the scene to add the input to as a scene item | None | N/A<br />
+    /// Name of the scene to add the input to as a scene item
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
+
     /// <summary>
-    /// Name of the new input to created | None | N/A<br />
+    /// Name of the new input to created
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
+
     /// <summary>
-    /// The kind of input to be created | None | N/A<br />
+    /// The kind of input to be created
     /// </summary>
     [Key("inputKind")]
     public string InputKind { get; set; } = "";
+
     /// <summary>
-    /// Settings object to initialize the input with | None | Default settings used<br />
+    /// Settings object to initialize the input with<br />
+    /// If null, Default settings used
     /// </summary>
     [Key("inputSettings")]
-    public Dictionary<string, object?>? InputSettings { get; set; }
+    public Dictionary<string, object?>? InputSettings { get; set; } = new();
+
     /// <summary>
-    /// Whether to set the created scene item to enabled or disabled | None | True<br />
+    /// Whether to set the created scene item to enabled or disabled<br />
+    /// If null, True
     /// </summary>
     [Key("sceneItemEnabled")]
     public bool? SceneItemEnabled { get; set; }
   }
 
-  [MessagePackObject]
-  public class CreateInputResponse : InputsRequestResponse {
+  /// <summary>
+  /// Response of CreateInput
+  /// </summary>
+  public class CreateInputResponse : RequestResponse {
     /// <summary>
-    /// ID of the newly created scene item<br />
+    /// ID of the newly created scene item
     /// </summary>
     [Key("sceneItemId")]
     public int SceneItemId { get; set; }
@@ -1082,14 +1218,15 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Removes an existing input.<br />
+  /// <br />
   /// Note: Will immediately remove all associated scene items.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class RemoveInput : InputsRequest {
+  public class RemoveInput : Request {
     /// <summary>
-    /// Name of the input to remove | None | N/A<br />
+    /// Name of the input to remove
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
@@ -1097,18 +1234,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the name of an input (rename).<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetInputName : InputsRequest {
+  public class SetInputName : Request {
     /// <summary>
-    /// Current input name | None | N/A<br />
+    /// Current input name
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
+
     /// <summary>
-    /// New name for the input | None | N/A<br />
+    /// New name for the input
     /// </summary>
     [Key("newInputName")]
     public string NewInputName { get; set; } = "";
@@ -1116,22 +1254,24 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the default settings for an input kind.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetInputDefaultSettings : InputsRequest {
+  public class GetInputDefaultSettings : Request {
     /// <summary>
-    /// Input kind to get the default settings for | None | N/A<br />
+    /// Input kind to get the default settings for
     /// </summary>
     [Key("inputKind")]
     public string InputKind { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class GetInputDefaultSettingsResponse : InputsRequestResponse {
+  /// <summary>
+  /// Response of GetInputDefaultSettings
+  /// </summary>
+  public class GetInputDefaultSettingsResponse : RequestResponse {
     /// <summary>
-    /// Object of default settings for the input kind<br />
+    /// Object of default settings for the input kind
     /// </summary>
     [Key("defaultInputSettings")]
     public Dictionary<string, object?> DefaultInputSettings { get; set; } = new();
@@ -1139,28 +1279,32 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the settings of an input.<br />
-  /// Note: Does not include defaults. To create the entire settings object, overlay `inputSettings` over the `defaultInputSettings` provided by `GetInputDefaultSettings`.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// <br />
+  /// Note: Does not include defaults. To create the entire settings object, overlay <c>inputSettings</c> over the <c>defaultInputSettings</c> provided by <c>GetInputDefaultSettings</c>.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetInputSettings : InputsRequest {
+  public class GetInputSettings : Request {
     /// <summary>
-    /// Name of the input to get the settings of | None | N/A<br />
+    /// Name of the input to get the settings of
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class GetInputSettingsResponse : InputsRequestResponse {
+  /// <summary>
+  /// Response of GetInputSettings
+  /// </summary>
+  public class GetInputSettingsResponse : RequestResponse {
     /// <summary>
-    /// Object of settings for the input<br />
+    /// Object of settings for the input
     /// </summary>
     [Key("inputSettings")]
     public Dictionary<string, object?> InputSettings { get; set; } = new();
+
     /// <summary>
-    /// The kind of the input<br />
+    /// The kind of the input
     /// </summary>
     [Key("inputKind")]
     public string InputKind { get; set; } = "";
@@ -1168,23 +1312,26 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the settings of an input.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetInputSettings : InputsRequest {
+  public class SetInputSettings : Request {
     /// <summary>
-    /// Name of the input to set the settings of | None | N/A<br />
+    /// Name of the input to set the settings of
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
+
     /// <summary>
-    /// Object of settings to apply | None | N/A<br />
+    /// Object of settings to apply
     /// </summary>
     [Key("inputSettings")]
     public Dictionary<string, object?> InputSettings { get; set; } = new();
+
     /// <summary>
-    /// True == apply the settings on top of existing ones, False == reset the input to its defaults, then apply settings. | None | true<br />
+    /// True == apply the settings on top of existing ones, False == reset the input to its defaults, then apply settings.<br />
+    /// If null, true
     /// </summary>
     [Key("overlay")]
     public bool? Overlay { get; set; }
@@ -1192,22 +1339,24 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the audio mute state of an input.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetInputMute : InputsRequest {
+  public class GetInputMute : Request {
     /// <summary>
-    /// Name of input to get the mute state of | None | N/A<br />
+    /// Name of input to get the mute state of
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class GetInputMuteResponse : InputsRequestResponse {
+  /// <summary>
+  /// Response of GetInputMute
+  /// </summary>
+  public class GetInputMuteResponse : RequestResponse {
     /// <summary>
-    /// Whether the input is muted<br />
+    /// Whether the input is muted
     /// </summary>
     [Key("inputMuted")]
     public bool InputMuted { get; set; }
@@ -1215,18 +1364,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the audio mute state of an input.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetInputMute : InputsRequest {
+  public class SetInputMute : Request {
     /// <summary>
-    /// Name of the input to set the mute state of | None | N/A<br />
+    /// Name of the input to set the mute state of
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
+
     /// <summary>
-    /// Whether to mute the input or not | None | N/A<br />
+    /// Whether to mute the input or not
     /// </summary>
     [Key("inputMuted")]
     public bool InputMuted { get; set; }
@@ -1234,22 +1384,24 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Toggles the audio mute state of an input.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class ToggleInputMute : InputsRequest {
+  public class ToggleInputMute : Request {
     /// <summary>
-    /// Name of the input to toggle the mute state of | None | N/A<br />
+    /// Name of the input to toggle the mute state of
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class ToggleInputMuteResponse : InputsRequestResponse {
+  /// <summary>
+  /// Response of ToggleInputMute
+  /// </summary>
+  public class ToggleInputMuteResponse : RequestResponse {
     /// <summary>
-    /// Whether the input has been muted or unmuted<br />
+    /// Whether the input has been muted or unmuted
     /// </summary>
     [Key("inputMuted")]
     public bool InputMuted { get; set; }
@@ -1257,27 +1409,30 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the current volume setting of an input.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetInputVolume : InputsRequest {
+  public class GetInputVolume : Request {
     /// <summary>
-    /// Name of the input to get the volume of | None | N/A<br />
+    /// Name of the input to get the volume of
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class GetInputVolumeResponse : InputsRequestResponse {
+  /// <summary>
+  /// Response of GetInputVolume
+  /// </summary>
+  public class GetInputVolumeResponse : RequestResponse {
     /// <summary>
-    /// Volume setting in mul<br />
+    /// Volume setting in mul
     /// </summary>
     [Key("inputVolumeMul")]
     public double InputVolumeMul { get; set; }
+
     /// <summary>
-    /// Volume setting in dB<br />
+    /// Volume setting in dB
     /// </summary>
     [Key("inputVolumeDb")]
     public double InputVolumeDb { get; set; }
@@ -1285,23 +1440,27 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the volume setting of an input.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetInputVolume : InputsRequest {
+  public class SetInputVolume : Request {
     /// <summary>
-    /// Name of the input to set the volume of | None | N/A<br />
+    /// Name of the input to set the volume of
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
+
     /// <summary>
-    /// Volume setting in mul | >= 0, &lt;= 20 | `inputVolumeDb` should be specified<br />
+    /// Volume setting in mul<br />
+    /// If null, <c>inputVolumeDb</c> should be specified
     /// </summary>
     [Key("inputVolumeMul")]
     public double? InputVolumeMul { get; set; }
+
     /// <summary>
-    /// Volume setting in dB | >= -100, &lt;= 26 | `inputVolumeMul` should be specified<br />
+    /// Volume setting in dB<br />
+    /// If null, <c>inputVolumeMul</c> should be specified
     /// </summary>
     [Key("inputVolumeDb")]
     public double? InputVolumeDb { get; set; }
@@ -1309,22 +1468,24 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the audio balance of an input.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetInputAudioBalance : InputsRequest {
+  public class GetInputAudioBalance : Request {
     /// <summary>
-    /// Name of the input to get the audio balance of | None | N/A<br />
+    /// Name of the input to get the audio balance of
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class GetInputAudioBalanceResponse : InputsRequestResponse {
+  /// <summary>
+  /// Response of GetInputAudioBalance
+  /// </summary>
+  public class GetInputAudioBalanceResponse : RequestResponse {
     /// <summary>
-    /// Audio balance value from 0.0-1.0<br />
+    /// Audio balance value from 0.0-1.0
     /// </summary>
     [Key("inputAudioBalance")]
     public double InputAudioBalance { get; set; }
@@ -1332,18 +1493,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the audio balance of an input.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetInputAudioBalance : InputsRequest {
+  public class SetInputAudioBalance : Request {
     /// <summary>
-    /// Name of the input to set the audio balance of | None | N/A<br />
+    /// Name of the input to set the audio balance of
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
+
     /// <summary>
-    /// New audio balance value | >= 0.0, &lt;= 1.0 | N/A<br />
+    /// New audio balance value
     /// </summary>
     [Key("inputAudioBalance")]
     public double InputAudioBalance { get; set; }
@@ -1351,23 +1513,26 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the audio sync offset of an input.<br />
+  /// <br />
   /// Note: The audio sync offset can be negative too!<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetInputAudioSyncOffset : InputsRequest {
+  public class GetInputAudioSyncOffset : Request {
     /// <summary>
-    /// Name of the input to get the audio sync offset of | None | N/A<br />
+    /// Name of the input to get the audio sync offset of
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class GetInputAudioSyncOffsetResponse : InputsRequestResponse {
+  /// <summary>
+  /// Response of GetInputAudioSyncOffset
+  /// </summary>
+  public class GetInputAudioSyncOffsetResponse : RequestResponse {
     /// <summary>
-    /// Audio sync offset in milliseconds<br />
+    /// Audio sync offset in milliseconds
     /// </summary>
     [Key("inputAudioSyncOffset")]
     public int InputAudioSyncOffset { get; set; }
@@ -1375,18 +1540,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the audio sync offset of an input.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetInputAudioSyncOffset : InputsRequest {
+  public class SetInputAudioSyncOffset : Request {
     /// <summary>
-    /// Name of the input to set the audio sync offset of | None | N/A<br />
+    /// Name of the input to set the audio sync offset of
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
+
     /// <summary>
-    /// New audio sync offset in milliseconds | >= -950, &lt;= 20000 | N/A<br />
+    /// New audio sync offset in milliseconds
     /// </summary>
     [Key("inputAudioSyncOffset")]
     public int InputAudioSyncOffset { get; set; }
@@ -1394,68 +1560,75 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the audio monitor type of an input.<br />
+  /// <br />
   /// The available audio monitor types are:<br />
-  /// - `OBS_MONITORING_TYPE_NONE`<br />
-  /// - `OBS_MONITORING_TYPE_MONITOR_ONLY`<br />
-  /// - `OBS_MONITORING_TYPE_MONITOR_AND_OUTPUT`<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// <br />
+  /// - <c>OBS_MONITORING_TYPE_NONE</c><br />
+  /// - <c>OBS_MONITORING_TYPE_MONITOR_ONLY</c><br />
+  /// - <c>OBS_MONITORING_TYPE_MONITOR_AND_OUTPUT</c><br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetInputAudioMonitorType : InputsRequest {
+  public class GetInputAudioMonitorType : Request {
     /// <summary>
-    /// Name of the input to get the audio monitor type of | None | N/A<br />
+    /// Name of the input to get the audio monitor type of
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class GetInputAudioMonitorTypeResponse : InputsRequestResponse {
+  /// <summary>
+  /// Response of GetInputAudioMonitorType
+  /// </summary>
+  public class GetInputAudioMonitorTypeResponse : RequestResponse {
     /// <summary>
-    /// Audio monitor type<br />
+    /// Audio monitor type
     /// </summary>
     [Key("monitorType")]
-    public MonitoringType MonitorType { get; set; }
+    public MonitoringType MonitorType { get; set; } = new();
   }
 
   /// <summary>
   /// Sets the audio monitor type of an input.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetInputAudioMonitorType : InputsRequest {
+  public class SetInputAudioMonitorType : Request {
     /// <summary>
-    /// Name of the input to set the audio monitor type of | None | N/A<br />
+    /// Name of the input to set the audio monitor type of
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
+
     /// <summary>
-    /// Audio monitor type | None | N/A<br />
+    /// Audio monitor type
     /// </summary>
     [Key("monitorType")]
-    public MonitoringType MonitorType { get; set; }
+    public MonitoringType MonitorType { get; set; } = new();
   }
 
   /// <summary>
   /// Gets the enable state of all audio tracks of an input.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetInputAudioTracks : InputsRequest {
+  public class GetInputAudioTracks : Request {
     /// <summary>
-    /// Name of the input | None | N/A<br />
+    /// Name of the input
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class GetInputAudioTracksResponse : InputsRequestResponse {
+  /// <summary>
+  /// Response of GetInputAudioTracks
+  /// </summary>
+  public class GetInputAudioTracksResponse : RequestResponse {
     /// <summary>
-    /// Object of audio tracks and associated enable states<br />
+    /// Object of audio tracks and associated enable states
     /// </summary>
     [Key("inputAudioTracks")]
     public Dictionary<string, object?> InputAudioTracks { get; set; } = new();
@@ -1463,18 +1636,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the enable state of audio tracks of an input.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetInputAudioTracks : InputsRequest {
+  public class SetInputAudioTracks : Request {
     /// <summary>
-    /// Name of the input | None | N/A<br />
+    /// Name of the input
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
+
     /// <summary>
-    /// Track settings to apply | None | N/A<br />
+    /// Track settings to apply
     /// </summary>
     [Key("inputAudioTracks")]
     public Dictionary<string, object?> InputAudioTracks { get; set; } = new();
@@ -1482,28 +1656,32 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the items of a list property from an input's properties.<br />
+  /// <br />
   /// Note: Use this in cases where an input provides a dynamic, selectable list of items. For example, display capture, where it provides a list of available displays.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetInputPropertiesListPropertyItems : InputsRequest {
+  public class GetInputPropertiesListPropertyItems : Request {
     /// <summary>
-    /// Name of the input | None | N/A<br />
+    /// Name of the input
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
+
     /// <summary>
-    /// Name of the list property to get the items of | None | N/A<br />
+    /// Name of the list property to get the items of
     /// </summary>
     [Key("propertyName")]
     public string PropertyName { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class GetInputPropertiesListPropertyItemsResponse : InputsRequestResponse {
+  /// <summary>
+  /// Response of GetInputPropertiesListPropertyItems
+  /// </summary>
+  public class GetInputPropertiesListPropertyItemsResponse : RequestResponse {
     /// <summary>
-    /// Array of items in the list property<br />
+    /// Array of items in the list property
     /// </summary>
     [Key("propertyItems")]
     public List<Dictionary<string, object?>> PropertyItems { get; set; } = new();
@@ -1511,40 +1689,46 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Presses a button in the properties of an input.<br />
+  /// <br />
+  /// Some known <c>propertyName</c> values are:<br />
+  /// <br />
+  /// - <c>refreshnocache</c> - Browser source reload button<br />
+  /// <br />
   /// Note: Use this in cases where there is a button in the properties of an input that cannot be accessed in any other way. For example, browser sources, where there is a refresh button.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class PressInputPropertiesButton : InputsRequest {
+  public class PressInputPropertiesButton : Request {
     /// <summary>
-    /// Name of the input | None | N/A<br />
+    /// Name of the input
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
+
     /// <summary>
-    /// Name of the button property to press | None | N/A<br />
+    /// Name of the button property to press
     /// </summary>
     [Key("propertyName")]
     public string PropertyName { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class TransitionsRequest : Request { }
-  [MessagePackObject]
-  public class TransitionsRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets an array of all available transition kinds.<br />
-  /// Similar to `GetInputKindList`<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// <br />
+  /// Similar to <c>GetInputKindList</c><br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetTransitionKindList : TransitionsRequest { }
-  [MessagePackObject]
-  public class GetTransitionKindListResponse : TransitionsRequestResponse {
+  public class GetTransitionKindList : Request { }
+
+  /// <summary>
+  /// Response of GetTransitionKindList
+  /// </summary>
+  public class GetTransitionKindListResponse : RequestResponse {
     /// <summary>
-    /// Array of transition kinds<br />
+    /// Array of transition kinds
     /// </summary>
     [Key("transitionKinds")]
     public List<string> TransitionKinds { get; set; } = new();
@@ -1552,25 +1736,30 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets an array of all scene transitions in OBS.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetSceneTransitionList : TransitionsRequest { }
-  [MessagePackObject]
-  public class GetSceneTransitionListResponse : TransitionsRequestResponse {
+  public class GetSceneTransitionList : Request { }
+
+  /// <summary>
+  /// Response of GetSceneTransitionList
+  /// </summary>
+  public class GetSceneTransitionListResponse : RequestResponse {
     /// <summary>
-    /// Name of the current scene transition. Can be null<br />
+    /// Name of the current scene transition. Can be null
     /// </summary>
     [Key("currentSceneTransitionName")]
-    public string CurrentSceneTransitionName { get; set; } = "";
+    public string? CurrentSceneTransitionName { get; set; }
+
     /// <summary>
-    /// Kind of the current scene transition. Can be null<br />
+    /// Kind of the current scene transition. Can be null
     /// </summary>
     [Key("currentSceneTransitionKind")]
-    public string CurrentSceneTransitionKind { get; set; } = "";
+    public string? CurrentSceneTransitionKind { get; set; }
+
     /// <summary>
-    /// Array of transitions<br />
+    /// Array of transitions
     /// </summary>
     [Key("transitions")]
     public List<Dictionary<string, object?>> Transitions { get; set; } = new();
@@ -1578,55 +1767,64 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets information about the current scene transition.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetCurrentSceneTransition : TransitionsRequest { }
-  [MessagePackObject]
-  public class GetCurrentSceneTransitionResponse : TransitionsRequestResponse {
+  public class GetCurrentSceneTransition : Request { }
+
+  /// <summary>
+  /// Response of GetCurrentSceneTransition
+  /// </summary>
+  public class GetCurrentSceneTransitionResponse : RequestResponse {
     /// <summary>
-    /// Name of the transition<br />
+    /// Name of the transition
     /// </summary>
     [Key("transitionName")]
     public string TransitionName { get; set; } = "";
+
     /// <summary>
-    /// Kind of the transition<br />
+    /// Kind of the transition
     /// </summary>
     [Key("transitionKind")]
     public string TransitionKind { get; set; } = "";
+
     /// <summary>
-    /// Whether the transition uses a fixed (unconfigurable) duration<br />
+    /// Whether the transition uses a fixed (unconfigurable) duration
     /// </summary>
     [Key("transitionFixed")]
     public bool TransitionFixed { get; set; }
+
     /// <summary>
-    /// Configured transition duration in milliseconds. `null` if transition is fixed<br />
+    /// Configured transition duration in milliseconds. <c>null</c> if transition is fixed
     /// </summary>
     [Key("transitionDuration")]
-    public int TransitionDuration { get; set; }
+    public int? TransitionDuration { get; set; }
+
     /// <summary>
-    /// Whether the transition supports being configured<br />
+    /// Whether the transition supports being configured
     /// </summary>
     [Key("transitionConfigurable")]
     public bool TransitionConfigurable { get; set; }
+
     /// <summary>
-    /// Object of settings for the transition. `null` if transition is not configurable<br />
+    /// Object of settings for the transition. <c>null</c> if transition is not configurable
     /// </summary>
     [Key("transitionSettings")]
-    public Dictionary<string, object?> TransitionSettings { get; set; } = new();
+    public Dictionary<string, object?>? TransitionSettings { get; set; } = new();
   }
 
   /// <summary>
   /// Sets the current scene transition.<br />
+  /// <br />
   /// Small note: While the namespace of scene transitions is generally unique, that uniqueness is not a guarantee as it is with other resources like inputs.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetCurrentSceneTransition : TransitionsRequest {
+  public class SetCurrentSceneTransition : Request {
     /// <summary>
-    /// Name of the transition to make active | None | N/A<br />
+    /// Name of the transition to make active
     /// </summary>
     [Key("transitionName")]
     public string TransitionName { get; set; } = "";
@@ -1634,13 +1832,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the duration of the current scene transition, if it is not fixed.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetCurrentSceneTransitionDuration : TransitionsRequest {
+  public class SetCurrentSceneTransitionDuration : Request {
     /// <summary>
-    /// Duration in milliseconds | >= 50, &lt;= 20000 | N/A<br />
+    /// Duration in milliseconds
     /// </summary>
     [Key("transitionDuration")]
     public int TransitionDuration { get; set; }
@@ -1648,18 +1846,20 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the settings of the current scene transition.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetCurrentSceneTransitionSettings : TransitionsRequest {
+  public class SetCurrentSceneTransitionSettings : Request {
     /// <summary>
-    /// Settings object to apply to the transition. Can be `{}` | None | N/A<br />
+    /// Settings object to apply to the transition. Can be <c>{}</c>
     /// </summary>
     [Key("transitionSettings")]
     public Dictionary<string, object?> TransitionSettings { get; set; } = new();
+
     /// <summary>
-    /// Whether to overlay over the current settings or replace them | None | true<br />
+    /// Whether to overlay over the current settings or replace them<br />
+    /// If null, true
     /// </summary>
     [Key("overlay")]
     public bool? Overlay { get; set; }
@@ -1667,71 +1867,76 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the cursor position of the current scene transition.<br />
-  /// Note: `transitionCursor` will return 1.0 when the transition is inactive.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// <br />
+  /// Note: <c>transitionCursor</c> will return 1.0 when the transition is inactive.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetCurrentSceneTransitionCursor : TransitionsRequest { }
-  [MessagePackObject]
-  public class GetCurrentSceneTransitionCursorResponse : TransitionsRequestResponse {
+  public class GetCurrentSceneTransitionCursor : Request { }
+
+  /// <summary>
+  /// Response of GetCurrentSceneTransitionCursor
+  /// </summary>
+  public class GetCurrentSceneTransitionCursorResponse : RequestResponse {
     /// <summary>
-    /// Cursor position, between 0.0 and 1.0<br />
+    /// Cursor position, between 0.0 and 1.0
     /// </summary>
     [Key("transitionCursor")]
     public double TransitionCursor { get; set; }
   }
 
   /// <summary>
-  /// Triggers the current scene transition. Same functionality as the `Transition` button in studio mode.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Triggers the current scene transition. Same functionality as the <c>Transition</c> button in studio mode.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class TriggerStudioModeTransition : TransitionsRequest { }
+  public class TriggerStudioModeTransition : Request { }
 
   /// <summary>
   /// Sets the position of the TBar.<br />
+  /// <br />
   /// **Very important note**: This will be deprecated and replaced in a future version of obs-websocket.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetTBarPosition : TransitionsRequest {
+  public class SetTBarPosition : Request {
     /// <summary>
-    /// New position | >= 0.0, &lt;= 1.0 | N/A<br />
+    /// New position
     /// </summary>
     [Key("position")]
     public double Position { get; set; }
+
     /// <summary>
-    /// Whether to release the TBar. Only set `false` if you know that you will be sending another position update | None | `true`<br />
+    /// Whether to release the TBar. Only set <c>false</c> if you know that you will be sending another position update<br />
+    /// If null, <c>true</c>
     /// </summary>
     [Key("release")]
     public bool? Release { get; set; }
   }
 
-  [MessagePackObject]
-  public class FiltersRequest : Request { }
-  [MessagePackObject]
-  public class FiltersRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets an array of all of a source's filters.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetSourceFilterList : FiltersRequest {
+  public class GetSourceFilterList : Request {
     /// <summary>
-    /// Name of the source | None | N/A<br />
+    /// Name of the source
     /// </summary>
     [Key("sourceName")]
     public string SourceName { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class GetSourceFilterListResponse : FiltersRequestResponse {
+  /// <summary>
+  /// Response of GetSourceFilterList
+  /// </summary>
+  public class GetSourceFilterListResponse : RequestResponse {
     /// <summary>
-    /// Array of filters<br />
+    /// Array of filters
     /// </summary>
     [Key("filters")]
     public List<Dictionary<string, object?>> Filters { get; set; } = new();
@@ -1739,22 +1944,24 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the default settings for a filter kind.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetSourceFilterDefaultSettings : FiltersRequest {
+  public class GetSourceFilterDefaultSettings : Request {
     /// <summary>
-    /// Filter kind to get the default settings for | None | N/A<br />
+    /// Filter kind to get the default settings for
     /// </summary>
     [Key("filterKind")]
     public string FilterKind { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class GetSourceFilterDefaultSettingsResponse : FiltersRequestResponse {
+  /// <summary>
+  /// Response of GetSourceFilterDefaultSettings
+  /// </summary>
+  public class GetSourceFilterDefaultSettingsResponse : RequestResponse {
     /// <summary>
-    /// Object of default settings for the filter kind<br />
+    /// Object of default settings for the filter kind
     /// </summary>
     [Key("defaultFilterSettings")]
     public Dictionary<string, object?> DefaultFilterSettings { get; set; } = new();
@@ -1762,47 +1969,52 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Creates a new filter, adding it to the specified source.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class CreateSourceFilter : FiltersRequest {
+  public class CreateSourceFilter : Request {
     /// <summary>
-    /// Name of the source to add the filter to | None | N/A<br />
+    /// Name of the source to add the filter to
     /// </summary>
     [Key("sourceName")]
     public string SourceName { get; set; } = "";
+
     /// <summary>
-    /// Name of the new filter to be created | None | N/A<br />
+    /// Name of the new filter to be created
     /// </summary>
     [Key("filterName")]
     public string FilterName { get; set; } = "";
+
     /// <summary>
-    /// The kind of filter to be created | None | N/A<br />
+    /// The kind of filter to be created
     /// </summary>
     [Key("filterKind")]
     public string FilterKind { get; set; } = "";
+
     /// <summary>
-    /// Settings object to initialize the filter with | None | Default settings used<br />
+    /// Settings object to initialize the filter with<br />
+    /// If null, Default settings used
     /// </summary>
     [Key("filterSettings")]
-    public Dictionary<string, object?>? FilterSettings { get; set; }
+    public Dictionary<string, object?>? FilterSettings { get; set; } = new();
   }
 
   /// <summary>
   /// Removes a filter from a source.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class RemoveSourceFilter : FiltersRequest {
+  public class RemoveSourceFilter : Request {
     /// <summary>
-    /// Name of the source the filter is on | None | N/A<br />
+    /// Name of the source the filter is on
     /// </summary>
     [Key("sourceName")]
     public string SourceName { get; set; } = "";
+
     /// <summary>
-    /// Name of the filter to remove | None | N/A<br />
+    /// Name of the filter to remove
     /// </summary>
     [Key("filterName")]
     public string FilterName { get; set; } = "";
@@ -1810,23 +2022,25 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the name of a source filter (rename).<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetSourceFilterName : FiltersRequest {
+  public class SetSourceFilterName : Request {
     /// <summary>
-    /// Name of the source the filter is on | None | N/A<br />
+    /// Name of the source the filter is on
     /// </summary>
     [Key("sourceName")]
     public string SourceName { get; set; } = "";
+
     /// <summary>
-    /// Current name of the filter | None | N/A<br />
+    /// Current name of the filter
     /// </summary>
     [Key("filterName")]
     public string FilterName { get; set; } = "";
+
     /// <summary>
-    /// New name for the filter | None | N/A<br />
+    /// New name for the filter
     /// </summary>
     [Key("newFilterName")]
     public string NewFilterName { get; set; } = "";
@@ -1834,42 +2048,48 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the info for a specific source filter.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetSourceFilter : FiltersRequest {
+  public class GetSourceFilter : Request {
     /// <summary>
-    /// Name of the source | None | N/A<br />
+    /// Name of the source
     /// </summary>
     [Key("sourceName")]
     public string SourceName { get; set; } = "";
+
     /// <summary>
-    /// Name of the filter | None | N/A<br />
+    /// Name of the filter
     /// </summary>
     [Key("filterName")]
     public string FilterName { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class GetSourceFilterResponse : FiltersRequestResponse {
+  /// <summary>
+  /// Response of GetSourceFilter
+  /// </summary>
+  public class GetSourceFilterResponse : RequestResponse {
     /// <summary>
-    /// Whether the filter is enabled<br />
+    /// Whether the filter is enabled
     /// </summary>
     [Key("filterEnabled")]
     public bool FilterEnabled { get; set; }
+
     /// <summary>
-    /// Index of the filter in the list, beginning at 0<br />
+    /// Index of the filter in the list, beginning at 0
     /// </summary>
     [Key("filterIndex")]
     public int FilterIndex { get; set; }
+
     /// <summary>
-    /// The kind of filter<br />
+    /// The kind of filter
     /// </summary>
     [Key("filterKind")]
     public string FilterKind { get; set; } = "";
+
     /// <summary>
-    /// Settings object associated with the filter<br />
+    /// Settings object associated with the filter
     /// </summary>
     [Key("filterSettings")]
     public Dictionary<string, object?> FilterSettings { get; set; } = new();
@@ -1877,23 +2097,25 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the index position of a filter on a source.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetSourceFilterIndex : FiltersRequest {
+  public class SetSourceFilterIndex : Request {
     /// <summary>
-    /// Name of the source the filter is on | None | N/A<br />
+    /// Name of the source the filter is on
     /// </summary>
     [Key("sourceName")]
     public string SourceName { get; set; } = "";
+
     /// <summary>
-    /// Name of the filter | None | N/A<br />
+    /// Name of the filter
     /// </summary>
     [Key("filterName")]
     public string FilterName { get; set; } = "";
+
     /// <summary>
-    /// New index position of the filter | >= 0 | N/A<br />
+    /// New index position of the filter
     /// </summary>
     [Key("filterIndex")]
     public int FilterIndex { get; set; }
@@ -1901,28 +2123,32 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the settings of a source filter.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetSourceFilterSettings : FiltersRequest {
+  public class SetSourceFilterSettings : Request {
     /// <summary>
-    /// Name of the source the filter is on | None | N/A<br />
+    /// Name of the source the filter is on
     /// </summary>
     [Key("sourceName")]
     public string SourceName { get; set; } = "";
+
     /// <summary>
-    /// Name of the filter to set the settings of | None | N/A<br />
+    /// Name of the filter to set the settings of
     /// </summary>
     [Key("filterName")]
     public string FilterName { get; set; } = "";
+
     /// <summary>
-    /// Object of settings to apply | None | N/A<br />
+    /// Object of settings to apply
     /// </summary>
     [Key("filterSettings")]
     public Dictionary<string, object?> FilterSettings { get; set; } = new();
+
     /// <summary>
-    /// True == apply the settings on top of existing ones, False == reset the input to its defaults, then apply settings. | None | true<br />
+    /// True == apply the settings on top of existing ones, False == reset the input to its defaults, then apply settings.<br />
+    /// If null, true
     /// </summary>
     [Key("overlay")]
     public bool? Overlay { get; set; }
@@ -1930,51 +2156,52 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the enable state of a source filter.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetSourceFilterEnabled : FiltersRequest {
+  public class SetSourceFilterEnabled : Request {
     /// <summary>
-    /// Name of the source the filter is on | None | N/A<br />
+    /// Name of the source the filter is on
     /// </summary>
     [Key("sourceName")]
     public string SourceName { get; set; } = "";
+
     /// <summary>
-    /// Name of the filter | None | N/A<br />
+    /// Name of the filter
     /// </summary>
     [Key("filterName")]
     public string FilterName { get; set; } = "";
+
     /// <summary>
-    /// New enable state of the filter | None | N/A<br />
+    /// New enable state of the filter
     /// </summary>
     [Key("filterEnabled")]
     public bool FilterEnabled { get; set; }
   }
 
-  [MessagePackObject]
-  public class SceneItemsRequest : Request { }
-  [MessagePackObject]
-  public class SceneItemsRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets a list of all scene items in a scene.<br />
+  /// <br />
   /// Scenes only<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetSceneItemList : SceneItemsRequest {
+  public class GetSceneItemList : Request {
     /// <summary>
-    /// Name of the scene to get the items of | None | N/A<br />
+    /// Name of the scene to get the items of
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class GetSceneItemListResponse : SceneItemsRequestResponse {
+  /// <summary>
+  /// Response of GetSceneItemList
+  /// </summary>
+  public class GetSceneItemListResponse : RequestResponse {
     /// <summary>
-    /// Array of scene items in the scene<br />
+    /// Array of scene items in the scene
     /// </summary>
     [Key("sceneItems")]
     public List<Dictionary<string, object?>> SceneItems { get; set; } = new();
@@ -1982,24 +2209,28 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Basically GetSceneItemList, but for groups.<br />
+  /// <br />
   /// Using groups at all in OBS is discouraged, as they are very broken under the hood.<br />
+  /// <br />
   /// Groups only<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetGroupSceneItemList : SceneItemsRequest {
+  public class GetGroupSceneItemList : Request {
     /// <summary>
-    /// Name of the group to get the items of | None | N/A<br />
+    /// Name of the group to get the items of
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class GetGroupSceneItemListResponse : SceneItemsRequestResponse {
+  /// <summary>
+  /// Response of GetGroupSceneItemList
+  /// </summary>
+  public class GetGroupSceneItemListResponse : RequestResponse {
     /// <summary>
-    /// Array of scene items in the group<br />
+    /// Array of scene items in the group
     /// </summary>
     [Key("sceneItems")]
     public List<Dictionary<string, object?>> SceneItems { get; set; } = new();
@@ -2007,33 +2238,39 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Searches a scene for a source, and returns its id.<br />
+  /// <br />
   /// Scenes and Groups<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetSceneItemId : SceneItemsRequest {
+  public class GetSceneItemId : Request {
     /// <summary>
-    /// Name of the scene or group to search in | None | N/A<br />
+    /// Name of the scene or group to search in
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
+
     /// <summary>
-    /// Name of the source to find | None | N/A<br />
+    /// Name of the source to find
     /// </summary>
     [Key("sourceName")]
     public string SourceName { get; set; } = "";
+
     /// <summary>
-    /// Number of matches to skip during search. >= 0 means first forward. -1 means last (top) item | >= -1 | 0<br />
+    /// Number of matches to skip during search. &gt;= 0 means first forward. -1 means last (top) item<br />
+    /// If null, 0
     /// </summary>
     [Key("searchOffset")]
     public int? SearchOffset { get; set; }
   }
 
-  [MessagePackObject]
-  public class GetSceneItemIdResponse : SceneItemsRequestResponse {
+  /// <summary>
+  /// Response of GetSceneItemId
+  /// </summary>
+  public class GetSceneItemIdResponse : RequestResponse {
     /// <summary>
-    /// Numeric ID of the scene item<br />
+    /// Numeric ID of the scene item
     /// </summary>
     [Key("sceneItemId")]
     public int SceneItemId { get; set; }
@@ -2041,33 +2278,39 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Creates a new scene item using a source.<br />
+  /// <br />
   /// Scenes only<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class CreateSceneItem : SceneItemsRequest {
+  public class CreateSceneItem : Request {
     /// <summary>
-    /// Name of the scene to create the new item in | None | N/A<br />
+    /// Name of the scene to create the new item in
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
+
     /// <summary>
-    /// Name of the source to add to the scene | None | N/A<br />
+    /// Name of the source to add to the scene
     /// </summary>
     [Key("sourceName")]
     public string SourceName { get; set; } = "";
+
     /// <summary>
-    /// Enable state to apply to the scene item on creation | None | True<br />
+    /// Enable state to apply to the scene item on creation<br />
+    /// If null, True
     /// </summary>
     [Key("sceneItemEnabled")]
     public bool? SceneItemEnabled { get; set; }
   }
 
-  [MessagePackObject]
-  public class CreateSceneItemResponse : SceneItemsRequestResponse {
+  /// <summary>
+  /// Response of CreateSceneItem
+  /// </summary>
+  public class CreateSceneItemResponse : RequestResponse {
     /// <summary>
-    /// Numeric ID of the scene item<br />
+    /// Numeric ID of the scene item
     /// </summary>
     [Key("sceneItemId")]
     public int SceneItemId { get; set; }
@@ -2075,19 +2318,21 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Removes a scene item from a scene.<br />
+  /// <br />
   /// Scenes only<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class RemoveSceneItem : SceneItemsRequest {
+  public class RemoveSceneItem : Request {
     /// <summary>
-    /// Name of the scene the item is in | None | N/A<br />
+    /// Name of the scene the item is in
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
+
     /// <summary>
-    /// Numeric ID of the scene item | >= 0 | N/A<br />
+    /// Numeric ID of the scene item
     /// </summary>
     [Key("sceneItemId")]
     public int SceneItemId { get; set; }
@@ -2095,33 +2340,39 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Duplicates a scene item, copying all transform and crop info.<br />
+  /// <br />
   /// Scenes only<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class DuplicateSceneItem : SceneItemsRequest {
+  public class DuplicateSceneItem : Request {
     /// <summary>
-    /// Name of the scene the item is in | None | N/A<br />
+    /// Name of the scene the item is in
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
+
     /// <summary>
-    /// Numeric ID of the scene item | >= 0 | N/A<br />
+    /// Numeric ID of the scene item
     /// </summary>
     [Key("sceneItemId")]
     public int SceneItemId { get; set; }
+
     /// <summary>
-    /// Name of the scene to create the duplicated item in | None | `sceneName` is assumed<br />
+    /// Name of the scene to create the duplicated item in<br />
+    /// If null, <c>sceneName</c> is assumed
     /// </summary>
     [Key("destinationSceneName")]
-    public string? DestinationSceneName { get; set; }
+    public string? DestinationSceneName { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class DuplicateSceneItemResponse : SceneItemsRequestResponse {
+  /// <summary>
+  /// Response of DuplicateSceneItem
+  /// </summary>
+  public class DuplicateSceneItemResponse : RequestResponse {
     /// <summary>
-    /// Numeric ID of the duplicated scene item<br />
+    /// Numeric ID of the duplicated scene item
     /// </summary>
     [Key("sceneItemId")]
     public int SceneItemId { get; set; }
@@ -2129,28 +2380,32 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the transform and crop info of a scene item.<br />
+  /// <br />
   /// Scenes and Groups<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetSceneItemTransform : SceneItemsRequest {
+  public class GetSceneItemTransform : Request {
     /// <summary>
-    /// Name of the scene the item is in | None | N/A<br />
+    /// Name of the scene the item is in
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
+
     /// <summary>
-    /// Numeric ID of the scene item | >= 0 | N/A<br />
+    /// Numeric ID of the scene item
     /// </summary>
     [Key("sceneItemId")]
     public int SceneItemId { get; set; }
   }
 
-  [MessagePackObject]
-  public class GetSceneItemTransformResponse : SceneItemsRequestResponse {
+  /// <summary>
+  /// Response of GetSceneItemTransform
+  /// </summary>
+  public class GetSceneItemTransformResponse : RequestResponse {
     /// <summary>
-    /// Object containing scene item transform info<br />
+    /// Object containing scene item transform info
     /// </summary>
     [Key("sceneItemTransform")]
     public Dictionary<string, object?> SceneItemTransform { get; set; } = new();
@@ -2158,23 +2413,25 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the transform and crop info of a scene item.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetSceneItemTransform : SceneItemsRequest {
+  public class SetSceneItemTransform : Request {
     /// <summary>
-    /// Name of the scene the item is in | None | N/A<br />
+    /// Name of the scene the item is in
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
+
     /// <summary>
-    /// Numeric ID of the scene item | >= 0 | N/A<br />
+    /// Numeric ID of the scene item
     /// </summary>
     [Key("sceneItemId")]
     public int SceneItemId { get; set; }
+
     /// <summary>
-    /// Object containing scene item transform info to update | None | N/A<br />
+    /// Object containing scene item transform info to update
     /// </summary>
     [Key("sceneItemTransform")]
     public Dictionary<string, object?> SceneItemTransform { get; set; } = new();
@@ -2182,28 +2439,32 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the enable state of a scene item.<br />
+  /// <br />
   /// Scenes and Groups<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetSceneItemEnabled : SceneItemsRequest {
+  public class GetSceneItemEnabled : Request {
     /// <summary>
-    /// Name of the scene the item is in | None | N/A<br />
+    /// Name of the scene the item is in
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
+
     /// <summary>
-    /// Numeric ID of the scene item | >= 0 | N/A<br />
+    /// Numeric ID of the scene item
     /// </summary>
     [Key("sceneItemId")]
     public int SceneItemId { get; set; }
   }
 
-  [MessagePackObject]
-  public class GetSceneItemEnabledResponse : SceneItemsRequestResponse {
+  /// <summary>
+  /// Response of GetSceneItemEnabled
+  /// </summary>
+  public class GetSceneItemEnabledResponse : RequestResponse {
     /// <summary>
-    /// Whether the scene item is enabled. `true` for enabled, `false` for disabled<br />
+    /// Whether the scene item is enabled. <c>true</c> for enabled, <c>false</c> for disabled
     /// </summary>
     [Key("sceneItemEnabled")]
     public bool SceneItemEnabled { get; set; }
@@ -2211,24 +2472,27 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the enable state of a scene item.<br />
+  /// <br />
   /// Scenes and Groups<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetSceneItemEnabled : SceneItemsRequest {
+  public class SetSceneItemEnabled : Request {
     /// <summary>
-    /// Name of the scene the item is in | None | N/A<br />
+    /// Name of the scene the item is in
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
+
     /// <summary>
-    /// Numeric ID of the scene item | >= 0 | N/A<br />
+    /// Numeric ID of the scene item
     /// </summary>
     [Key("sceneItemId")]
     public int SceneItemId { get; set; }
+
     /// <summary>
-    /// New enable state of the scene item | None | N/A<br />
+    /// New enable state of the scene item
     /// </summary>
     [Key("sceneItemEnabled")]
     public bool SceneItemEnabled { get; set; }
@@ -2236,28 +2500,32 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the lock state of a scene item.<br />
+  /// <br />
   /// Scenes and Groups<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetSceneItemLocked : SceneItemsRequest {
+  public class GetSceneItemLocked : Request {
     /// <summary>
-    /// Name of the scene the item is in | None | N/A<br />
+    /// Name of the scene the item is in
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
+
     /// <summary>
-    /// Numeric ID of the scene item | >= 0 | N/A<br />
+    /// Numeric ID of the scene item
     /// </summary>
     [Key("sceneItemId")]
     public int SceneItemId { get; set; }
   }
 
-  [MessagePackObject]
-  public class GetSceneItemLockedResponse : SceneItemsRequestResponse {
+  /// <summary>
+  /// Response of GetSceneItemLocked
+  /// </summary>
+  public class GetSceneItemLockedResponse : RequestResponse {
     /// <summary>
-    /// Whether the scene item is locked. `true` for locked, `false` for unlocked<br />
+    /// Whether the scene item is locked. <c>true</c> for locked, <c>false</c> for unlocked
     /// </summary>
     [Key("sceneItemLocked")]
     public bool SceneItemLocked { get; set; }
@@ -2265,24 +2533,27 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the lock state of a scene item.<br />
+  /// <br />
   /// Scenes and Group<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetSceneItemLocked : SceneItemsRequest {
+  public class SetSceneItemLocked : Request {
     /// <summary>
-    /// Name of the scene the item is in | None | N/A<br />
+    /// Name of the scene the item is in
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
+
     /// <summary>
-    /// Numeric ID of the scene item | >= 0 | N/A<br />
+    /// Numeric ID of the scene item
     /// </summary>
     [Key("sceneItemId")]
     public int SceneItemId { get; set; }
+
     /// <summary>
-    /// New lock state of the scene item | None | N/A<br />
+    /// New lock state of the scene item
     /// </summary>
     [Key("sceneItemLocked")]
     public bool SceneItemLocked { get; set; }
@@ -2290,29 +2561,34 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the index position of a scene item in a scene.<br />
+  /// <br />
   /// An index of 0 is at the bottom of the source list in the UI.<br />
+  /// <br />
   /// Scenes and Groups<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetSceneItemIndex : SceneItemsRequest {
+  public class GetSceneItemIndex : Request {
     /// <summary>
-    /// Name of the scene the item is in | None | N/A<br />
+    /// Name of the scene the item is in
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
+
     /// <summary>
-    /// Numeric ID of the scene item | >= 0 | N/A<br />
+    /// Numeric ID of the scene item
     /// </summary>
     [Key("sceneItemId")]
     public int SceneItemId { get; set; }
   }
 
-  [MessagePackObject]
-  public class GetSceneItemIndexResponse : SceneItemsRequestResponse {
+  /// <summary>
+  /// Response of GetSceneItemIndex
+  /// </summary>
+  public class GetSceneItemIndexResponse : RequestResponse {
     /// <summary>
-    /// Index position of the scene item<br />
+    /// Index position of the scene item
     /// </summary>
     [Key("sceneItemIndex")]
     public int SceneItemIndex { get; set; }
@@ -2320,24 +2596,27 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the index position of a scene item in a scene.<br />
+  /// <br />
   /// Scenes and Groups<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetSceneItemIndex : SceneItemsRequest {
+  public class SetSceneItemIndex : Request {
     /// <summary>
-    /// Name of the scene the item is in | None | N/A<br />
+    /// Name of the scene the item is in
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
+
     /// <summary>
-    /// Numeric ID of the scene item | >= 0 | N/A<br />
+    /// Numeric ID of the scene item
     /// </summary>
     [Key("sceneItemId")]
     public int SceneItemId { get; set; }
+
     /// <summary>
-    /// New index position of the scene item | >= 0 | N/A<br />
+    /// New index position of the scene item
     /// </summary>
     [Key("sceneItemIndex")]
     public int SceneItemIndex { get; set; }
@@ -2345,36 +2624,42 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the blend mode of a scene item.<br />
+  /// <br />
   /// Blend modes:<br />
-  /// - `OBS_BLEND_NORMAL`<br />
-  /// - `OBS_BLEND_ADDITIVE`<br />
-  /// - `OBS_BLEND_SUBTRACT`<br />
-  /// - `OBS_BLEND_SCREEN`<br />
-  /// - `OBS_BLEND_MULTIPLY`<br />
-  /// - `OBS_BLEND_LIGHTEN`<br />
-  /// - `OBS_BLEND_DARKEN`<br />
+  /// <br />
+  /// - <c>OBS_BLEND_NORMAL</c><br />
+  /// - <c>OBS_BLEND_ADDITIVE</c><br />
+  /// - <c>OBS_BLEND_SUBTRACT</c><br />
+  /// - <c>OBS_BLEND_SCREEN</c><br />
+  /// - <c>OBS_BLEND_MULTIPLY</c><br />
+  /// - <c>OBS_BLEND_LIGHTEN</c><br />
+  /// - <c>OBS_BLEND_DARKEN</c><br />
+  /// <br />
   /// Scenes and Groups<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetSceneItemBlendMode : SceneItemsRequest {
+  public class GetSceneItemBlendMode : Request {
     /// <summary>
-    /// Name of the scene the item is in | None | N/A<br />
+    /// Name of the scene the item is in
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
+
     /// <summary>
-    /// Numeric ID of the scene item | >= 0 | N/A<br />
+    /// Numeric ID of the scene item
     /// </summary>
     [Key("sceneItemId")]
     public int SceneItemId { get; set; }
   }
 
-  [MessagePackObject]
-  public class GetSceneItemBlendModeResponse : SceneItemsRequestResponse {
+  /// <summary>
+  /// Response of GetSceneItemBlendMode
+  /// </summary>
+  public class GetSceneItemBlendModeResponse : RequestResponse {
     /// <summary>
-    /// Current blend mode<br />
+    /// Current blend mode
     /// </summary>
     [Key("sceneItemBlendMode")]
     public string SceneItemBlendMode { get; set; } = "";
@@ -2382,44 +2667,46 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the blend mode of a scene item.<br />
+  /// <br />
   /// Scenes and Groups<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetSceneItemBlendMode : SceneItemsRequest {
+  public class SetSceneItemBlendMode : Request {
     /// <summary>
-    /// Name of the scene the item is in | None | N/A<br />
+    /// Name of the scene the item is in
     /// </summary>
     [Key("sceneName")]
     public string SceneName { get; set; } = "";
+
     /// <summary>
-    /// Numeric ID of the scene item | >= 0 | N/A<br />
+    /// Numeric ID of the scene item
     /// </summary>
     [Key("sceneItemId")]
     public int SceneItemId { get; set; }
+
     /// <summary>
-    /// New blend mode | None | N/A<br />
+    /// New blend mode
     /// </summary>
     [Key("sceneItemBlendMode")]
     public string SceneItemBlendMode { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class OutputsRequest : Request { }
-  [MessagePackObject]
-  public class OutputsRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets the status of the virtualcam output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetVirtualCamStatus : OutputsRequest { }
-  [MessagePackObject]
-  public class GetVirtualCamStatusResponse : OutputsRequestResponse {
+  public class GetVirtualCamStatus : Request { }
+
+  /// <summary>
+  /// Response of GetVirtualCamStatus
+  /// </summary>
+  public class GetVirtualCamStatusResponse : RequestResponse {
     /// <summary>
-    /// Whether the output is active<br />
+    /// Whether the output is active
     /// </summary>
     [Key("outputActive")]
     public bool OutputActive { get; set; }
@@ -2427,15 +2714,18 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Toggles the state of the virtualcam output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class ToggleVirtualCam : OutputsRequest { }
-  [MessagePackObject]
-  public class ToggleVirtualCamResponse : OutputsRequestResponse {
+  public class ToggleVirtualCam : Request { }
+
+  /// <summary>
+  /// Response of ToggleVirtualCam
+  /// </summary>
+  public class ToggleVirtualCamResponse : RequestResponse {
     /// <summary>
-    /// Whether the output is active<br />
+    /// Whether the output is active
     /// </summary>
     [Key("outputActive")]
     public bool OutputActive { get; set; }
@@ -2443,31 +2733,34 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Starts the virtualcam output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class StartVirtualCam : OutputsRequest { }
+  public class StartVirtualCam : Request { }
 
   /// <summary>
   /// Stops the virtualcam output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class StopVirtualCam : OutputsRequest { }
+  public class StopVirtualCam : Request { }
 
   /// <summary>
   /// Gets the status of the replay buffer output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetReplayBufferStatus : OutputsRequest { }
-  [MessagePackObject]
-  public class GetReplayBufferStatusResponse : OutputsRequestResponse {
+  public class GetReplayBufferStatus : Request { }
+
+  /// <summary>
+  /// Response of GetReplayBufferStatus
+  /// </summary>
+  public class GetReplayBufferStatusResponse : RequestResponse {
     /// <summary>
-    /// Whether the output is active<br />
+    /// Whether the output is active
     /// </summary>
     [Key("outputActive")]
     public bool OutputActive { get; set; }
@@ -2475,15 +2768,18 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Toggles the state of the replay buffer output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class ToggleReplayBuffer : OutputsRequest { }
-  [MessagePackObject]
-  public class ToggleReplayBufferResponse : OutputsRequestResponse {
+  public class ToggleReplayBuffer : Request { }
+
+  /// <summary>
+  /// Response of ToggleReplayBuffer
+  /// </summary>
+  public class ToggleReplayBufferResponse : RequestResponse {
     /// <summary>
-    /// Whether the output is active<br />
+    /// Whether the output is active
     /// </summary>
     [Key("outputActive")]
     public bool OutputActive { get; set; }
@@ -2491,39 +2787,42 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Starts the replay buffer output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class StartReplayBuffer : OutputsRequest { }
+  public class StartReplayBuffer : Request { }
 
   /// <summary>
   /// Stops the replay buffer output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class StopReplayBuffer : OutputsRequest { }
+  public class StopReplayBuffer : Request { }
 
   /// <summary>
   /// Saves the contents of the replay buffer output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SaveReplayBuffer : OutputsRequest { }
+  public class SaveReplayBuffer : Request { }
 
   /// <summary>
   /// Gets the filename of the last replay buffer save file.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetLastReplayBufferReplay : OutputsRequest { }
-  [MessagePackObject]
-  public class GetLastReplayBufferReplayResponse : OutputsRequestResponse {
+  public class GetLastReplayBufferReplay : Request { }
+
+  /// <summary>
+  /// Response of GetLastReplayBufferReplay
+  /// </summary>
+  public class GetLastReplayBufferReplayResponse : RequestResponse {
     /// <summary>
-    /// File path<br />
+    /// File path
     /// </summary>
     [Key("savedReplayPath")]
     public string SavedReplayPath { get; set; } = "";
@@ -2531,71 +2830,85 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the list of available outputs.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetOutputList : OutputsRequest { }
+  public class GetOutputList : Request { }
 
-  [MessagePackObject]
-  public class GetOutputListResponse : OutputsRequestResponse {
+  /// <summary>
+  /// Response of GetOutputList
+  /// </summary>
+  public class GetOutputListResponse : RequestResponse {
+    /// <summary>
+    /// List of outputs
+    /// </summary>
     [Key("outputs")]
     public List<Output> Outputs { get; set; } = new();
   }
 
   /// <summary>
   /// Gets the status of an output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetOutputStatus : OutputsRequest {
+  public class GetOutputStatus : Request {
     /// <summary>
-    /// Output name | None | N/A<br />
+    /// Output name
     /// </summary>
     [Key("outputName")]
     public string OutputName { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class GetOutputStatusResponse : OutputsRequestResponse {
+  /// <summary>
+  /// Response of GetOutputStatus
+  /// </summary>
+  public class GetOutputStatusResponse : RequestResponse {
     /// <summary>
-    /// Whether the output is active<br />
+    /// Whether the output is active
     /// </summary>
     [Key("outputActive")]
     public bool OutputActive { get; set; }
+
     /// <summary>
-    /// Whether the output is reconnecting<br />
+    /// Whether the output is reconnecting
     /// </summary>
     [Key("outputReconnecting")]
     public bool OutputReconnecting { get; set; }
+
     /// <summary>
-    /// Current formatted timecode string for the output<br />
+    /// Current formatted timecode string for the output
     /// </summary>
     [Key("outputTimecode")]
     public string OutputTimecode { get; set; } = "";
+
     /// <summary>
-    /// Current duration in milliseconds for the output<br />
+    /// Current duration in milliseconds for the output
     /// </summary>
     [Key("outputDuration")]
     public int OutputDuration { get; set; }
+
     /// <summary>
-    /// Congestion of the output<br />
+    /// Congestion of the output
     /// </summary>
     [Key("outputCongestion")]
     public double OutputCongestion { get; set; }
+
     /// <summary>
-    /// Number of bytes sent by the output<br />
+    /// Number of bytes sent by the output
     /// </summary>
     [Key("outputBytes")]
     public int OutputBytes { get; set; }
+
     /// <summary>
-    /// Number of frames skipped by the output's process<br />
+    /// Number of frames skipped by the output's process
     /// </summary>
     [Key("outputSkippedFrames")]
     public int OutputSkippedFrames { get; set; }
+
     /// <summary>
-    /// Total number of frames delivered by the output's process<br />
+    /// Total number of frames delivered by the output's process
     /// </summary>
     [Key("outputTotalFrames")]
     public int OutputTotalFrames { get; set; }
@@ -2603,22 +2916,24 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Toggles the status of an output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class ToggleOutput : OutputsRequest {
+  public class ToggleOutput : Request {
     /// <summary>
-    /// Output name | None | N/A<br />
+    /// Output name
     /// </summary>
     [Key("outputName")]
     public string OutputName { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class ToggleOutputResponse : OutputsRequestResponse {
+  /// <summary>
+  /// Response of ToggleOutput
+  /// </summary>
+  public class ToggleOutputResponse : RequestResponse {
     /// <summary>
-    /// Whether the output is active<br />
+    /// Whether the output is active
     /// </summary>
     [Key("outputActive")]
     public bool OutputActive { get; set; }
@@ -2626,13 +2941,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Starts an output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class StartOutput : OutputsRequest {
+  public class StartOutput : Request {
     /// <summary>
-    /// Output name | None | N/A<br />
+    /// Output name
     /// </summary>
     [Key("outputName")]
     public string OutputName { get; set; } = "";
@@ -2640,13 +2955,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Stops an output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class StopOutput : OutputsRequest {
+  public class StopOutput : Request {
     /// <summary>
-    /// Output name | None | N/A<br />
+    /// Output name
     /// </summary>
     [Key("outputName")]
     public string OutputName { get; set; } = "";
@@ -2654,22 +2969,24 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets the settings of an output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetOutputSettings : OutputsRequest {
+  public class GetOutputSettings : Request {
     /// <summary>
-    /// Output name | None | N/A<br />
+    /// Output name
     /// </summary>
     [Key("outputName")]
     public string OutputName { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class GetOutputSettingsResponse : OutputsRequestResponse {
+  /// <summary>
+  /// Response of GetOutputSettings
+  /// </summary>
+  public class GetOutputSettingsResponse : RequestResponse {
     /// <summary>
-    /// Output settings<br />
+    /// Output settings
     /// </summary>
     [Key("outputSettings")]
     public Dictionary<string, object?> OutputSettings { get; set; } = new();
@@ -2677,73 +2994,80 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Sets the settings of an output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetOutputSettings : OutputsRequest {
+  public class SetOutputSettings : Request {
     /// <summary>
-    /// Output name | None | N/A<br />
+    /// Output name
     /// </summary>
     [Key("outputName")]
     public string OutputName { get; set; } = "";
+
     /// <summary>
-    /// Output settings | None | N/A<br />
+    /// Output settings
     /// </summary>
     [Key("outputSettings")]
     public Dictionary<string, object?> OutputSettings { get; set; } = new();
   }
 
-  [MessagePackObject]
-  public class StreamRequest : Request { }
-  [MessagePackObject]
-  public class StreamRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets the status of the stream output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetStreamStatus : StreamRequest { }
-  [MessagePackObject]
-  public class GetStreamStatusResponse : StreamRequestResponse {
+  public class GetStreamStatus : Request { }
+
+  /// <summary>
+  /// Response of GetStreamStatus
+  /// </summary>
+  public class GetStreamStatusResponse : RequestResponse {
     /// <summary>
-    /// Whether the output is active<br />
+    /// Whether the output is active
     /// </summary>
     [Key("outputActive")]
     public bool OutputActive { get; set; }
+
     /// <summary>
-    /// Whether the output is currently reconnecting<br />
+    /// Whether the output is currently reconnecting
     /// </summary>
     [Key("outputReconnecting")]
     public bool OutputReconnecting { get; set; }
+
     /// <summary>
-    /// Current formatted timecode string for the output<br />
+    /// Current formatted timecode string for the output
     /// </summary>
     [Key("outputTimecode")]
     public string OutputTimecode { get; set; } = "";
+
     /// <summary>
-    /// Current duration in milliseconds for the output<br />
+    /// Current duration in milliseconds for the output
     /// </summary>
     [Key("outputDuration")]
     public int OutputDuration { get; set; }
+
     /// <summary>
-    /// Congestion of the output<br />
+    /// Congestion of the output
     /// </summary>
     [Key("outputCongestion")]
     public double OutputCongestion { get; set; }
+
     /// <summary>
-    /// Number of bytes sent by the output<br />
+    /// Number of bytes sent by the output
     /// </summary>
     [Key("outputBytes")]
     public int OutputBytes { get; set; }
+
     /// <summary>
-    /// Number of frames skipped by the output's process<br />
+    /// Number of frames skipped by the output's process
     /// </summary>
     [Key("outputSkippedFrames")]
     public int OutputSkippedFrames { get; set; }
+
     /// <summary>
-    /// Total number of frames delivered by the output's process<br />
+    /// Total number of frames delivered by the output's process
     /// </summary>
     [Key("outputTotalFrames")]
     public int OutputTotalFrames { get; set; }
@@ -2751,15 +3075,18 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Toggles the status of the stream output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class ToggleStream : StreamRequest { }
-  [MessagePackObject]
-  public class ToggleStreamResponse : StreamRequestResponse {
+  public class ToggleStream : Request { }
+
+  /// <summary>
+  /// Response of ToggleStream
+  /// </summary>
+  public class ToggleStreamResponse : RequestResponse {
     /// <summary>
-    /// New state of the stream output<br />
+    /// New state of the stream output
     /// </summary>
     [Key("outputActive")]
     public bool OutputActive { get; set; }
@@ -2767,69 +3094,72 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Starts the stream output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class StartStream : StreamRequest { }
+  public class StartStream : Request { }
 
   /// <summary>
   /// Stops the stream output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class StopStream : StreamRequest { }
+  public class StopStream : Request { }
 
   /// <summary>
   /// Sends CEA-608 caption text over the stream output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SendStreamCaption : StreamRequest {
+  public class SendStreamCaption : Request {
     /// <summary>
-    /// Caption text | None | N/A<br />
+    /// Caption text
     /// </summary>
     [Key("captionText")]
     public string CaptionText { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class RecordRequest : Request { }
-  [MessagePackObject]
-  public class RecordRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets the status of the record output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetRecordStatus : RecordRequest { }
-  [MessagePackObject]
-  public class GetRecordStatusResponse : RecordRequestResponse {
+  public class GetRecordStatus : Request { }
+
+  /// <summary>
+  /// Response of GetRecordStatus
+  /// </summary>
+  public class GetRecordStatusResponse : RequestResponse {
     /// <summary>
-    /// Whether the output is active<br />
+    /// Whether the output is active
     /// </summary>
     [Key("outputActive")]
     public bool OutputActive { get; set; }
+
     /// <summary>
-    /// Whether the output is paused<br />
+    /// Whether the output is paused
     /// </summary>
-    [Key("outputPaused")]
-    public bool OutputPaused { get; set; }
+    [Key("ouputPaused")]
+    public bool OuputPaused { get; set; }
+
     /// <summary>
-    /// Current formatted timecode string for the output<br />
+    /// Current formatted timecode string for the output
     /// </summary>
     [Key("outputTimecode")]
     public string OutputTimecode { get; set; } = "";
+
     /// <summary>
-    /// Current duration in milliseconds for the output<br />
+    /// Current duration in milliseconds for the output
     /// </summary>
     [Key("outputDuration")]
     public int OutputDuration { get; set; }
+
     /// <summary>
-    /// Number of bytes sent by the output<br />
+    /// Number of bytes sent by the output
     /// </summary>
     [Key("outputBytes")]
     public int OutputBytes { get; set; }
@@ -2837,15 +3167,18 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Toggles the status of the record output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class ToggleRecord : RecordRequest { }
-  [MessagePackObject]
-  public class ToggleRecordResponse : RecordRequestResponse {
+  public class ToggleRecord : Request { }
+
+  /// <summary>
+  /// Response of ToggleRecord
+  /// </summary>
+  public class ToggleRecordResponse : RequestResponse {
     /// <summary>
-    /// Whether the output is active<br />
+    /// Whether the output is active
     /// </summary>
     [Key("outputActive")]
     public bool OutputActive { get; set; }
@@ -2853,25 +3186,26 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Starts the record output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class StartRecord : RecordRequest { }
-  [MessagePackObject]
-  public class StartRecordResponse : RecordRequestResponse { }
+  public class StartRecord : Request { }
 
   /// <summary>
   /// Stops the record output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class StopRecord : RecordRequest { }
-  [MessagePackObject]
-  public class StopRecordResponse : RecordRequestResponse {
+  public class StopRecord : Request { }
+
+  /// <summary>
+  /// Response of StopRecord
+  /// </summary>
+  public class StopRecordResponse : RequestResponse {
     /// <summary>
-    /// File name for the saved recording<br />
+    /// File name for the saved recording
     /// </summary>
     [Key("outputPath")]
     public string OutputPath { get; set; } = "";
@@ -2879,13 +3213,16 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Toggles pause on the record output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class ToggleRecordPause : RecordRequest { }
-  [MessagePackObject]
-  public class ToggleRecordPauseResponse : RecordRequestResponse {
+  public class ToggleRecordPause : Request { }
+
+  /// <summary>
+  /// Response of ToggleRecordPause
+  /// </summary>
+  public class ToggleRecordPauseResponse : RequestResponse {
     /// <summary>
     /// Whether the output is paused
     /// </summary>
@@ -2895,81 +3232,85 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Pauses the record output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class PauseRecord : RecordRequest { }
+  public class PauseRecord : Request { }
 
   /// <summary>
   /// Resumes the record output.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class ResumeRecord : RecordRequest { }
+  public class ResumeRecord : Request { }
 
-  [MessagePackObject]
-  public class MediaInputsRequest : Request { }
-  [MessagePackObject]
-  public class MediaInputsRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets the status of a media input.<br />
+  /// <br />
   /// Media States:<br />
-  /// - `OBS_MEDIA_STATE_NONE`<br />
-  /// - `OBS_MEDIA_STATE_PLAYING`<br />
-  /// - `OBS_MEDIA_STATE_OPENING`<br />
-  /// - `OBS_MEDIA_STATE_BUFFERING`<br />
-  /// - `OBS_MEDIA_STATE_PAUSED`<br />
-  /// - `OBS_MEDIA_STATE_STOPPED`<br />
-  /// - `OBS_MEDIA_STATE_ENDED`<br />
-  /// - `OBS_MEDIA_STATE_ERROR`<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// <br />
+  /// - <c>OBS_MEDIA_STATE_NONE</c><br />
+  /// - <c>OBS_MEDIA_STATE_PLAYING</c><br />
+  /// - <c>OBS_MEDIA_STATE_OPENING</c><br />
+  /// - <c>OBS_MEDIA_STATE_BUFFERING</c><br />
+  /// - <c>OBS_MEDIA_STATE_PAUSED</c><br />
+  /// - <c>OBS_MEDIA_STATE_STOPPED</c><br />
+  /// - <c>OBS_MEDIA_STATE_ENDED</c><br />
+  /// - <c>OBS_MEDIA_STATE_ERROR</c><br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetMediaInputStatus : MediaInputsRequest {
+  public class GetMediaInputStatus : Request {
     /// <summary>
-    /// Name of the media input | None | N/A<br />
+    /// Name of the media input
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class GetMediaInputStatusResponse : MediaInputsRequestResponse {
+  /// <summary>
+  /// Response of GetMediaInputStatus
+  /// </summary>
+  public class GetMediaInputStatusResponse : RequestResponse {
     /// <summary>
-    /// State of the media input<br />
+    /// State of the media input
     /// </summary>
     [Key("mediaState")]
-    public MediaState MediaState { get; set; }
+    public string MediaState { get; set; } = "";
+
     /// <summary>
-    /// Total duration of the playing media in milliseconds. `null` if not playing<br />
+    /// Total duration of the playing media in milliseconds. <c>null</c> if not playing
     /// </summary>
     [Key("mediaDuration")]
-    public int MediaDuration { get; set; }
+    public int? MediaDuration { get; set; }
+
     /// <summary>
-    /// Position of the cursor in milliseconds. `null` if not playing<br />
+    /// Position of the cursor in milliseconds. <c>null</c> if not playing
     /// </summary>
     [Key("mediaCursor")]
-    public int MediaCursor { get; set; }
+    public int? MediaCursor { get; set; }
   }
 
   /// <summary>
   /// Sets the cursor position of a media input.<br />
+  /// <br />
   /// This request does not perform bounds checking of the cursor position.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetMediaInputCursor : MediaInputsRequest {
+  public class SetMediaInputCursor : Request {
     /// <summary>
-    /// Name of the media input | None | N/A<br />
+    /// Name of the media input
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
+
     /// <summary>
-    /// New cursor position to set | >= 0 | N/A<br />
+    /// New cursor position to set
     /// </summary>
     [Key("mediaCursor")]
     public double MediaCursor { get; set; }
@@ -2977,19 +3318,21 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Offsets the current cursor position of a media input by the specified value.<br />
+  /// <br />
   /// This request does not perform bounds checking of the cursor position.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class OffsetMediaInputCursor : MediaInputsRequest {
+  public class OffsetMediaInputCursor : Request {
     /// <summary>
-    /// Name of the media input | None | N/A<br />
+    /// Name of the media input
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
+
     /// <summary>
-    /// Value to offset the current cursor position by | None | N/A<br />
+    /// Value to offset the current cursor position by
     /// </summary>
     [Key("mediaCursorOffset")]
     public int MediaCursorOffset { get; set; }
@@ -2997,38 +3340,38 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Triggers an action on a media input.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class TriggerMediaInputAction : MediaInputsRequest {
+  public class TriggerMediaInputAction : Request {
     /// <summary>
-    /// Name of the media input | None | N/A<br />
+    /// Name of the media input
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
+
     /// <summary>
-    /// Identifier of the `ObsMediaInputAction` enum | None | N/A<br />
+    /// Identifier of the <c>ObsMediaInputAction</c> enum
     /// </summary>
     [Key("mediaAction")]
     public string MediaAction { get; set; } = "";
   }
 
-  [MessagePackObject]
-  public class UiRequest : Request { }
-  [MessagePackObject]
-  public class UiRequestResponse : RequestResponse { }
   /// <summary>
   /// Gets whether studio is enabled.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetStudioModeEnabled : UiRequest { }
-  [MessagePackObject]
-  public class GetStudioModeEnabledResponse : UiRequestResponse {
+  public class GetStudioModeEnabled : Request { }
+
+  /// <summary>
+  /// Response of GetStudioModeEnabled
+  /// </summary>
+  public class GetStudioModeEnabledResponse : RequestResponse {
     /// <summary>
-    /// Whether studio mode is enabled<br />
+    /// Whether studio mode is enabled
     /// </summary>
     [Key("studioModeEnabled")]
     public bool StudioModeEnabled { get; set; }
@@ -3036,13 +3379,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Enables or disables studio mode<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class SetStudioModeEnabled : UiRequest {
+  public class SetStudioModeEnabled : Request {
     /// <summary>
-    /// True == Enabled, False == Disabled | None | N/A<br />
+    /// True == Enabled, False == Disabled
     /// </summary>
     [Key("studioModeEnabled")]
     public bool StudioModeEnabled { get; set; }
@@ -3050,13 +3393,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Opens the properties dialog of an input.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class OpenInputPropertiesDialog : UiRequest {
+  public class OpenInputPropertiesDialog : Request {
     /// <summary>
-    /// Name of the input to open the dialog of | None | N/A<br />
+    /// Name of the input to open the dialog of
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
@@ -3064,13 +3407,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Opens the filters dialog of an input.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class OpenInputFiltersDialog : UiRequest {
+  public class OpenInputFiltersDialog : Request {
     /// <summary>
-    /// Name of the input to open the dialog of | None | N/A<br />
+    /// Name of the input to open the dialog of
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
@@ -3078,13 +3421,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Opens the interact dialog of an input.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class OpenInputInteractDialog : UiRequest {
+  public class OpenInputInteractDialog : Request {
     /// <summary>
-    /// Name of the input to open the dialog of | None | N/A<br />
+    /// Name of the input to open the dialog of
     /// </summary>
     [Key("inputName")]
     public string InputName { get; set; } = "";
@@ -3092,15 +3435,18 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Gets a list of connected monitors and information about them.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class GetMonitorList : UiRequest { }
-  [MessagePackObject]
-  public class GetMonitorListResponse : UiRequestResponse {
+  public class GetMonitorList : Request { }
+
+  /// <summary>
+  /// Response of GetMonitorList
+  /// </summary>
+  public class GetMonitorListResponse : RequestResponse {
     /// <summary>
-    /// a list of detected monitors with some information<br />
+    /// a list of detected monitors with some information
     /// </summary>
     [Key("monitors")]
     public List<Dictionary<string, object?>> Monitors { get; set; } = new();
@@ -3108,56 +3454,67 @@ namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
   /// Opens a projector for a specific output video mix.<br />
+  /// <br />
   /// Mix types:<br />
-  /// - `OBS_WEBSOCKET_VIDEO_MIX_TYPE_PREVIEW`<br />
-  /// - `OBS_WEBSOCKET_VIDEO_MIX_TYPE_PROGRAM`<br />
-  /// - `OBS_WEBSOCKET_VIDEO_MIX_TYPE_MULTIVIEW`<br />
+  /// <br />
+  /// - <c>OBS_WEBSOCKET_VIDEO_MIX_TYPE_PREVIEW</c><br />
+  /// - <c>OBS_WEBSOCKET_VIDEO_MIX_TYPE_PROGRAM</c><br />
+  /// - <c>OBS_WEBSOCKET_VIDEO_MIX_TYPE_MULTIVIEW</c><br />
+  /// <br />
   /// Note: This request serves to provide feature parity with 4.x. It is very likely to be changed/deprecated in a future release.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class OpenVideoMixProjector : UiRequest {
+  public class OpenVideoMixProjector : Request {
     /// <summary>
-    /// Type of mix to open | None | N/A<br />
+    /// Type of mix to open
     /// </summary>
     [Key("videoMixType")]
-    public VideoMixType VideoMixType { get; set; }
+    public VideoMixType VideoMixType { get; set; } = new();
+
     /// <summary>
-    /// Monitor index, use `GetMonitorList` to obtain index | None | -1: Opens projector in windowed mode<br />
+    /// Monitor index, use <c>GetMonitorList</c> to obtain index<br />
+    /// If null, -1: Opens projector in windowed mode
     /// </summary>
     [Key("monitorIndex")]
     public int? MonitorIndex { get; set; }
+
     /// <summary>
-    /// Size/Position data for a windowed projector, in Qt Base64 encoded format. Mutually exclusive with `monitorIndex` | None | N/A<br />
+    /// Size/Position data for a windowed projector, in Qt Base64 encoded format. Mutually exclusive with <c>monitorIndex</c><br />
+    /// If null, N/A
     /// </summary>
     [Key("projectorGeometry")]
-    public string? ProjectorGeometry { get; set; }
+    public string? ProjectorGeometry { get; set; } = "";
   }
 
   /// <summary>
   /// Opens a projector for a source.<br />
+  /// <br />
   /// Note: This request serves to provide feature parity with 4.x. It is very likely to be changed/deprecated in a future release.<br />
-  /// - Latest Supported RPC Version: `1`<br />
-  /// - Added in v5.0.0<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
   /// </summary>
   [MessagePackObject]
-  public class OpenSourceProjector : UiRequest {
+  public class OpenSourceProjector : Request {
     /// <summary>
-    /// Name of the source to open a projector for | None | N/A<br />
+    /// Name of the source to open a projector for
     /// </summary>
     [Key("sourceName")]
     public string SourceName { get; set; } = "";
+
     /// <summary>
-    /// Monitor index, use `GetMonitorList` to obtain index | None | -1: Opens projector in windowed mode<br />
+    /// Monitor index, use <c>GetMonitorList</c> to obtain index<br />
+    /// If null, -1: Opens projector in windowed mode
     /// </summary>
     [Key("monitorIndex")]
     public int? MonitorIndex { get; set; }
+
     /// <summary>
-    /// Size/Position data for a windowed projector, in Qt Base64 encoded format. Mutually exclusive with `monitorIndex` | None | N/A<br />
+    /// Size/Position data for a windowed projector, in Qt Base64 encoded format. Mutually exclusive with <c>monitorIndex</c><br />
+    /// If null, N/A
     /// </summary>
     [Key("projectorGeometry")]
-    public string? ProjectorGeometry { get; set; }
+    public string? ProjectorGeometry { get; set; } = "";
   }
-
 }

@@ -36,10 +36,10 @@ namespace SourceGenerator {
     public string Category { get; set; } = "";
 
     [JsonPropertyName("dataFields")]
-    public List<ObsDataFields>? DataFields { get; set; }
+    public List<ObsDataField>? DataFields { get; set; }
   }
 
-  public record class ObsDataFields {
+  public record class ObsDataField {
     [JsonPropertyName("valueName")]
     public string? ValueName { get; set; }
 
@@ -96,6 +96,6 @@ namespace SourceGenerator {
     public List<ObsRequestField>? RequestFields { get; set; }
 
     [JsonPropertyName("responseFields")]
-    public List<ObsDataFields>? ResponseFields { get; set; }
+    public List<ObsDataField>? ResponseFields { get; set; }
   }
 }
