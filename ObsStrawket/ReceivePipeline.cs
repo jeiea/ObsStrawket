@@ -116,12 +116,12 @@ namespace ObsStrawket {
             break;
           }
 
+          _logger?.LogDebug("Advancing prefixer {} bytes", readResult.Count);
           prefixer.Advance(readResult.Count);
-          _logger?.LogDebug("Advanced prefixer {} bytes", readResult.Count);
           if (readResult.EndOfMessage) {
             BitConverter.GetBytes((int)prefixer.Length).CopyTo(prefixer.Prefix.Span);
+            _logger?.LogDebug("Committing message length: {}", prefixer.Length);
             prefixer.Commit();
-            _logger?.LogDebug("Committed message length: {}", prefixer.Length);
             var result = await writer.FlushAsync(token).ConfigureAwait(false);
             if (result.IsCompleted) {
               break;
