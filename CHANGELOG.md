@@ -1,3 +1,7 @@
+## 0.5.0
+
+- Support `GetOutputList`.
+
 ## 0.4.0
 
 - Add `VideoMixType`, `StreamServiceType` enum.

@@ -146,7 +146,7 @@ Checkmark means it has test.
 - [ ] GetLastReplayBufferReplay
 - [ ] GetMediaInputStatus
 - [x] GetMonitorList
-- [ ] GetOutputList
+- [x] GetOutputList
 - [ ] GetOutputSettings
 - [ ] GetOutputStatus
 - [x] GetPersistentData
