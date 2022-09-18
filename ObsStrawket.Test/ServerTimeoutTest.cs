@@ -35,8 +35,32 @@ namespace ObsStrawket.Test {
         await TestUtil.WhenAnyThrowsAsync(recordTasks).ConfigureAwait(false);
         Assert.Fail("Exception not fired.");
       }
-      catch (Exception e) when (e is WebSocketException || e is QueueCancelledException) {
-        Debug.WriteLine("Expected exception thrown.");
+      catch (OperationCanceledException e) {
+      /*
+        System.OperationCanceledException : The operation was canceled.
+        ---- System.IO.IOException : Unable to write data to the transport connection: An existing connection was forcibly closed by the remote host..
+        -------- System.Net.Sockets.SocketException : An existing connection was forcibly closed by the remote host.
+
+        Stack Trace:
+          System.Net.WebSockets.ManagedWebSocket.SendFrameFallbackAsync(MessageOpcode opcode, Boolean endOfMessage, Boolean disableCompression, ReadOnlyMemory`1 payloadBuffer, Task lockTask, CancellationToken cancellationToken)
+          ObsStrawket.SendPipeline.SendExclusivelyAsync(Deferred`1 item, Int32 messageLength, ReadResult readResult) in ObsStrawket\SendPipeline.cs:line 120
+       */
+        Debug.WriteLine($"Expected exception: {e.Message}");
+      }
+      catch (WebSocketException e) {
+        /*
+          System.Net.WebSockets.WebSocketException : The remote party closed the WebSocket connection without completing the close handshake.
+          ---- System.IO.IOException : Unable to write data to the transport connection: An existing connection was forcibly closed by the remote host..
+          -------- System.Net.Sockets.SocketException : An existing connection was forcibly closed by the remote host.
+
+          Stack Trace: 
+            ManagedWebSocket.SendFrameFallbackAsync(MessageOpcode opcode, Boolean endOfMessage, Boolean disableCompression, ReadOnlyMemory`1 payloadBuffer, Task lockTask, CancellationToken cancellationToken)
+            SendPipeline.SendExclusivelyAsync(Deferred`1 item, Int32 messageLength, ReadResult readResult) line 120
+         */
+        Debug.WriteLine($"Expected exception: {e.Message}");
+      }
+      catch (QueueCancelledException e) {
+        Debug.WriteLine($"Expected exception: {e.Message}");
       }
     }
 
