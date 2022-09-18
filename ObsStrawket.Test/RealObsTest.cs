@@ -121,6 +121,9 @@ namespace ObsStrawket.Test.Real {
         //new OpenSourceProjectorFlow(),
         //new OpenVideoMixProjectorFlow(),
 
+        // Outputs
+        new GetOutputListFlow(),
+
         // Record
         //new StartRecordFlow(),
         //new PauseRecordFlow(),
@@ -131,13 +134,13 @@ namespace ObsStrawket.Test.Real {
         //new ToggleRecordFlow(),
 
         // Stream
-        new SetStreamServiceSettingsFlow(),
-        new GetStreamServiceSettingsFlow(),
-        new StartStreamFlow(),
-        new SendStreamCaptionFlow(),
-        new GetStreamStatusFlow(),
-        new StopStreamFlow(),
-        new ToggleStreamFlow(),
+        //new SetStreamServiceSettingsFlow(),
+        //new GetStreamServiceSettingsFlow(),
+        //new StartStreamFlow(),
+        //new SendStreamCaptionFlow(),
+        //new GetStreamStatusFlow(),
+        //new StopStreamFlow(),
+        //new ToggleStreamFlow(),
 
         // Sources
         //new GetSourceActiveFlow(),
@@ -172,7 +175,6 @@ namespace ObsStrawket.Test.Real {
 //new GetInputVolumeFlow(),
 //new GetLastReplayBufferReplayFlow(),
 //new GetMediaInputStatusFlow(),
-//new GetOutputListFlow(),
 //new GetOutputSettingsFlow(),
 //new GetOutputStatusFlow(),
 //new GetProfileListFlow(),

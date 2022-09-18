@@ -1,6 +1,9 @@
 namespace ObsStrawket.DataTypes {
   using MessagePack;
+  using MessagePack.Formatters;
+  using ObsStrawket.Serialization;
   using System;
+  using System.Runtime.Serialization;
 
   // GetOutputList
   // https://github.com/obsproject/obs-websocket/blob/5f8a0122bdd0146fdb33968f6bdf6ab624851e7a/src/utils/Obs_ArrayHelper.cpp#L335
@@ -22,18 +25,26 @@ namespace ObsStrawket.DataTypes {
     public bool Active { get; set; }
 
     [Key("outputFlags")]
+    [MessagePackFormatter(typeof(OutputFlagsMapFormatter))]
     public OutputFlags Flags { get; set; }
   }
 
+  // https://github.com/obsproject/obs-websocket/blob/7893ae5caafecddb9589fe90719809b4f528f03e/src/utils/Obs_ArrayHelper.cpp#L339
   [Flags]
+  [MessagePackFormatter(typeof(EnumAsStringFormatter<OutputFlags>))]
   public enum OutputFlags {
-    OBS_OUTPUT_VIDEO = 1 << 0,
-    OBS_OUTPUT_AUDIO = 1 << 1,
-    OBS_OUTPUT_AV = OBS_OUTPUT_VIDEO | OBS_OUTPUT_AUDIO,
-    OBS_OUTPUT_ENCODED = 1 << 2,
-    OBS_OUTPUT_SERVICE = 1 << 3,
-    OBS_OUTPUT_MULTI_TRACK = 1 << 4,
-    OBS_OUTPUT_CAN_PAUSE = 1 << 5,
+    [EnumMember(Value = "OBS_OUTPUT_VIDEO")]
+    Video = 1 << 0,
+    [EnumMember(Value = "OBS_OUTPUT_AUDIO")]
+    Audio = 1 << 1,
+    [EnumMember(Value = "OBS_OUTPUT_ENCODED")]
+    Encoded = 1 << 2,
+    [EnumMember(Value = "OBS_OUTPUT_SERVICE")]
+    Service = 1 << 3,
+    [EnumMember(Value = "OBS_OUTPUT_MULTI_TRACK")]
+    MultiTrack = 1 << 4,
+    [EnumMember(Value = "OBS_OUTPUT_CAN_PAUSE")]
+    CanPause = 1 << 5,
   }
 
   // https://github.com/obsproject/obs-websocket/blob/5f8a0122bdd0146fdb33968f6bdf6ab624851e7a/src/utils/Obs_ArrayHelper.cpp#L87

@@ -48,6 +48,9 @@ namespace SourceGenerator {
 
     private static void PatchOthers(ObsRequest request) {
       switch (request.RequestType) {
+      case "GetOutputList":
+        request.ResponseFields!.Add(new ObsDataFields { ValueName = "outputs", ValueDescription = "List of outputs", ValueType = "Output[]" });
+        break;
       case "ToggleRecord":
         request.ResponseFields!.Add(new ObsDataFields { ValueName = "outputActive", ValueDescription = "Whether the output is active", ValueType = "Boolean" });
         break;
@@ -59,8 +62,14 @@ namespace SourceGenerator {
         break;
       }
       foreach (var field in request.RequestFields!) {
-        if (field.ValueDescription!.Contains("OBS_WEBSOCKET_DATA_REALM_GLOBAL")) {
-          request.RequestFields![0].ValueType = "DataRealm";
+        if (field.ValueName == "videoMixType") {
+          field.ValueType = "VideoMixType";
+        }
+        else if (field.ValueName == "streamServiceType") {
+          field.ValueType = "StreamServiceType";
+        }
+        else if (field.ValueDescription!.Contains("OBS_WEBSOCKET_DATA_REALM_GLOBAL")) {
+          field.ValueType = "DataRealm";
         }
       }
     }

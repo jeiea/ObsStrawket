@@ -1526,8 +1526,8 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> GetOutputListAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetOutputList() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<GetOutputListResponse> GetOutputListAsync(CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new GetOutputList() { }, cancellation).ConfigureAwait(false) as GetOutputListResponse)!;
     }
 
     /// <summary>
