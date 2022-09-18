@@ -1,3 +1,8 @@
+## 0.6.0
+
+- Fix some doc comment issues.
+- Support more requests (including `GetSceneSceneTransitionOverride`).
+
 ## 0.5.0
 
 - Support `GetOutputList`.
