@@ -39,13 +39,15 @@ namespace ObsStrawket.DataTypes.Predefineds {");
             file.WriteLine();
             file.WriteLine("    /// <summary>");
             file.Write("    /// {0}", TransformHelper.EscapeForXml(field.ValueDescription!));
-            if (field.ValueOptionalBehavior == null) {
-              file.WriteLine();
-            }
-            else {
+            if (field.ValueRestrictions != null) {
               file.WriteLine("<br />");
-              file.WriteLine("    /// If null, {0}", TransformHelper.EscapeForXml(field.ValueOptionalBehavior));
+              file.Write("    /// It should be {0}", TransformHelper.EscapeForXml(field.ValueRestrictions!));
             }
+            if (field.ValueOptionalBehavior != null) {
+              file.WriteLine("<br />");
+              file.Write("    /// If null, {0}", TransformHelper.EscapeForXml(field.ValueOptionalBehavior));
+            }
+            file.WriteLine();
             file.WriteLine("    /// </summary>");
             file.WriteLine("    [Key(\"{0}\")]", field.ValueName);
             file.WriteLine("    {0}", MakeFieldDeclaration(
