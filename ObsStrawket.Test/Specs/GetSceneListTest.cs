@@ -1,3 +1,4 @@
+using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
 using System.Threading.Tasks;
 using Xunit;
@@ -11,9 +12,14 @@ namespace ObsStrawket.Test.Specs {
   }
 
   class GetSceneListFlow : ITestFlow {
-    public async Task RequestAsync(ObsClientSocket client) {
+    public static async Task<GetSceneListResponse> GetSceneListAsync(ObsClientSocket client) {
       var response = await client.GetSceneListAsync().ConfigureAwait(false);
       Assert.NotEmpty(response.Scenes);
+      return response;
+    }
+
+    public async Task RequestAsync(ObsClientSocket client) {
+      await GetSceneListAsync(client).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {

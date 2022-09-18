@@ -15,6 +15,7 @@ namespace ObsStrawket.Test.Specs {
 
   class CreateSceneCollectionFlow : ITestFlow {
     public static string NewSceneCollection = "test scene collection";
+
     public async Task RequestAsync(ObsClientSocket client) {
       await client.CreateSceneCollectionAsync(sceneCollectionName: NewSceneCollection).ConfigureAwait(false);
       var list = ClientFlow.DrainEvents(client);

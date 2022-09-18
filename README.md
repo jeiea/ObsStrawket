@@ -129,7 +129,7 @@ Checkmark means it has test.
 - [ ] GetCurrentProgramScene
 - [ ] GetCurrentSceneTransition
 - [ ] GetCurrentSceneTransitionCursor
-- [ ] GetGroupList
+- [x] GetGroupList
 - [ ] GetGroupSceneItemList
 - [x] GetHotkeyList
 - [ ] GetInputAudioBalance
@@ -150,12 +150,12 @@ Checkmark means it has test.
 - [ ] GetOutputSettings
 - [ ] GetOutputStatus
 - [x] GetPersistentData
-- [ ] GetProfileList
-- [ ] GetProfileParameter
+- [x] GetProfileList
+- [x] GetProfileParameter
 - [x] GetRecordDirectory
 - [x] GetRecordStatus
 - [ ] GetReplayBufferStatus
-- [ ] GetSceneCollectionList
+- [x] GetSceneCollectionList
 - [ ] GetSceneItemBlendMode
 - [ ] GetSceneItemEnabled
 - [ ] GetSceneItemId
@@ -164,7 +164,7 @@ Checkmark means it has test.
 - [ ] GetSceneItemLocked
 - [ ] GetSceneItemTransform
 - [x] GetSceneList
-- [ ] GetSceneSceneTransitionOverride
+- [x] GetSceneSceneTransitionOverride
 - [ ] GetSceneTransitionList
 - [x] GetSourceActive
 - [ ] GetSourceFilter
@@ -178,7 +178,7 @@ Checkmark means it has test.
 - [x] GetStudioModeEnabled
 - [ ] GetTransitionKindList
 - [x] GetVersion
-- [ ] GetVideoSettings
+- [x] GetVideoSettings
 - [ ] GetVirtualCamStatus
 - [ ] OffsetMediaInputCursor
 - [x] OpenInputFiltersDialog
@@ -200,7 +200,7 @@ Checkmark means it has test.
 - [ ] SetCurrentPreviewScene
 - [x] SetCurrentProfile
 - [x] SetCurrentProgramScene
-- [ ] SetCurrentSceneCollection
+- [x] SetCurrentSceneCollection
 - [ ] SetCurrentSceneTransition
 - [ ] SetCurrentSceneTransitionDuration
 - [ ] SetCurrentSceneTransitionSettings
@@ -215,14 +215,14 @@ Checkmark means it has test.
 - [ ] SetMediaInputCursor
 - [ ] SetOutputSettings
 - [x] SetPersistentData
-- [ ] SetProfileParameter
+- [x] SetProfileParameter
 - [ ] SetSceneItemBlendMode
 - [ ] SetSceneItemEnabled
 - [ ] SetSceneItemIndex
 - [ ] SetSceneItemLocked
 - [ ] SetSceneItemTransform
-- [ ] SetSceneName
-- [ ] SetSceneSceneTransitionOverride
+- [x] SetSceneName
+- [x] SetSceneSceneTransitionOverride
 - [ ] SetSourceFilterEnabled
 - [ ] SetSourceFilterIndex
 - [ ] SetSourceFilterName
@@ -230,7 +230,7 @@ Checkmark means it has test.
 - [x] SetStreamServiceSettings
 - [x] SetStudioModeEnabled
 - [ ] SetTBarPosition
-- [ ] SetVideoSettings
+- [x] SetVideoSettings
 - [ ] Sleep
 - [ ] StartOutput
 - [x] StartRecord
