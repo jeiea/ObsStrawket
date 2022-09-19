@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 
 namespace ObsStrawket.Test.Utilities {
   public static class TestUtil {
+    public static double Epsilon = 0.00000003;
+
     public static Task WhenAnyThrowsAsync(params Task[] tasks) {
       return WhenAnyThrowsAsync(tasks as IEnumerable<Task>);
     }

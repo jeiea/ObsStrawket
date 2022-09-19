@@ -1,5 +1,6 @@
 using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -16,16 +17,15 @@ namespace ObsStrawket.Test.Specs {
       await client.RemoveSceneAsync(sceneName: CreateSceneFlow.NewScene).ConfigureAwait(false);
       var removed = await client.Events.ReadAsync().ConfigureAwait(false);
       Assert.Equal(CreateSceneFlow.NewScene, (removed as SceneRemoved)!.SceneName);
-      var started = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.IsType<SceneTransitionStarted>(started);
-      var sceneListChanged = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal("Scene", (sceneListChanged as SceneListChanged)!.Scenes[0].Name);
-      var ended = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.IsType<SceneTransitionVideoEnded>(ended);
 
-      var raceEvents = await ClientFlow.TakeEventsAsync(client, 2).ConfigureAwait(false);
-      Assert.Contains(raceEvents, (x) => x is CurrentProgramSceneChanged changed && changed.SceneName == "Scene");
-      Assert.Contains(raceEvents, (x) => x is SceneTransitionEnded ended);
+      while (true) {
+        var ev = await client.Events.ReadAsync().ConfigureAwait(false);
+        if (ev is SceneListChanged changed) {
+          Assert.NotEmpty(changed.Scenes);
+          Assert.DoesNotContain(changed.Scenes, (x) => x.Name == CreateSceneFlow.NewScene);
+          break;
+        }
+      }
     }
 
     public async Task RespondAsync(MockServerSession session) {

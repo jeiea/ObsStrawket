@@ -14,14 +14,15 @@ namespace ObsStrawket.Test.Specs {
 
   class CreateInputFlow : ITestFlow {
     public static string InputName { get => "Browser source"; }
+    public static string InputKind { get => "browser_source"; }
 
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.CreateInputAsync(sceneName: CreateSceneFlow.NewScene, inputName: InputName, inputKind: "browser_source", inputSettings: new Dictionary<string, object?>(), sceneItemEnabled: true).ConfigureAwait(false);
       Assert.Equal(1, response.SceneItemId);
       var created = await client.Events.ReadAsync().ConfigureAwait(false);
       Assert.Equal(InputName, (created as InputCreated)!.InputName);
-      Assert.Equal("browser_source", (created as InputCreated)!.UnversionedInputKind);
-      Assert.Equal("browser_source", (created as InputCreated)!.InputKind);
+      Assert.Equal(InputKind, (created as InputCreated)!.UnversionedInputKind);
+      Assert.Equal(InputKind, (created as InputCreated)!.InputKind);
       var sceneItemCreated = await client.Events.ReadAsync().ConfigureAwait(false);
       Assert.Equal(1, (sceneItemCreated as SceneItemCreated)!.SceneItemId);
       var sceneItemSelected = await client.Events.ReadAsync().ConfigureAwait(false);

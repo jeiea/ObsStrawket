@@ -61,7 +61,7 @@ Checkmark means it has test.
 
 ## Events
 
-- [ ] CurrentPreviewSceneChanged
+- [x] CurrentPreviewSceneChanged
 - [x] CurrentProfileChanged
 - [x] CurrentProfileChanging
 - [x] CurrentProgramSceneChanged
@@ -71,16 +71,16 @@ Checkmark means it has test.
 - [ ] CurrentSceneTransitionDurationChanged
 - [x] ExitStarted
 - [ ] InputActiveStateChanged
-- [ ] InputAudioBalanceChanged
-- [ ] InputAudioMonitorTypeChanged
-- [ ] InputAudioSyncOffsetChanged
-- [ ] InputAudioTracksChanged
+- [x] InputAudioBalanceChanged
+- [x] InputAudioMonitorTypeChanged
+- [x] InputAudioSyncOffsetChanged
+- [x] InputAudioTracksChanged
 - [x] InputCreated
-- [ ] InputMuteStateChanged
-- [ ] InputNameChanged
+- [x] InputMuteStateChanged
+- [x] InputNameChanged
 - [x] InputRemoved
 - [ ] InputShowStateChanged
-- [ ] InputVolumeChanged
+- [x] InputVolumeChanged
 - [ ] InputVolumeMeters
 - [ ] MediaInputActionTriggered
 - [ ] MediaInputPlaybackEnded
@@ -125,24 +125,24 @@ Checkmark means it has test.
 - [ ] CreateSceneItem
 - [ ] CreateSourceFilter
 - [ ] DuplicateSceneItem
-- [ ] GetCurrentPreviewScene
-- [ ] GetCurrentProgramScene
+- [x] GetCurrentPreviewScene
+- [x] GetCurrentProgramScene
 - [ ] GetCurrentSceneTransition
 - [ ] GetCurrentSceneTransitionCursor
 - [x] GetGroupList
 - [ ] GetGroupSceneItemList
 - [x] GetHotkeyList
-- [ ] GetInputAudioBalance
-- [ ] GetInputAudioMonitorType
-- [ ] GetInputAudioSyncOffset
-- [ ] GetInputAudioTracks
-- [ ] GetInputDefaultSettings
-- [ ] GetInputKindList
+- [x] GetInputAudioBalance
+- [x] GetInputAudioMonitorType
+- [x] GetInputAudioSyncOffset
+- [x] GetInputAudioTracks
+- [x] GetInputDefaultSettings
+- [x] GetInputKindList
 - [x] GetInputList
-- [ ] GetInputMute
-- [ ] GetInputPropertiesListPropertyItems
-- [ ] GetInputSettings
-- [ ] GetInputVolume
+- [x] GetInputMute
+- [x] GetInputPropertiesListPropertyItems
+- [x] GetInputSettings
+- [x] GetInputVolume
 - [ ] GetLastReplayBufferReplay
 - [ ] GetMediaInputStatus
 - [x] GetMonitorList
@@ -171,7 +171,7 @@ Checkmark means it has test.
 - [ ] GetSourceFilterDefaultSettings
 - [ ] GetSourceFilterList
 - [x] GetSourceScreenshot
-- [ ] GetSpecialInputs
+- [x] GetSpecialInputs
 - [x] GetStats
 - [x] GetStreamServiceSettings
 - [x] GetStreamStatus
@@ -187,7 +187,7 @@ Checkmark means it has test.
 - [x] OpenSourceProjector
 - [x] OpenVideoMixProjector
 - [x] PauseRecord
-- [ ] PressInputPropertiesButton
+- [x] PressInputPropertiesButton
 - [x] RemoveInput
 - [x] RemoveProfile
 - [x] RemoveScene
@@ -197,21 +197,21 @@ Checkmark means it has test.
 - [ ] SaveReplayBuffer
 - [x] SaveSourceScreenshot
 - [x] SendStreamCaption
-- [ ] SetCurrentPreviewScene
+- [x] SetCurrentPreviewScene
 - [x] SetCurrentProfile
 - [x] SetCurrentProgramScene
 - [x] SetCurrentSceneCollection
 - [ ] SetCurrentSceneTransition
 - [ ] SetCurrentSceneTransitionDuration
 - [ ] SetCurrentSceneTransitionSettings
-- [ ] SetInputAudioBalance
-- [ ] SetInputAudioMonitorType
-- [ ] SetInputAudioSyncOffset
-- [ ] SetInputAudioTracks
-- [ ] SetInputMute
-- [ ] SetInputName
-- [ ] SetInputSettings
-- [ ] SetInputVolume
+- [x] SetInputAudioBalance
+- [x] SetInputAudioMonitorType
+- [x] SetInputAudioSyncOffset
+- [x] SetInputAudioTracks
+- [x] SetInputMute
+- [x] SetInputName
+- [x] SetInputSettings
+- [x] SetInputVolume
 - [ ] SetMediaInputCursor
 - [ ] SetOutputSettings
 - [x] SetPersistentData
@@ -242,7 +242,7 @@ Checkmark means it has test.
 - [ ] StopReplayBuffer
 - [x] StopStream
 - [ ] StopVirtualCam
-- [ ] ToggleInputMute
+- [x] ToggleInputMute
 - [ ] ToggleOutput
 - [x] ToggleRecord
 - [x] ToggleRecordPause

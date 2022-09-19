@@ -111,11 +111,11 @@ namespace ObsStrawket.Test.Real {
         //new SetPersistentDataFlow(),
         //new GetPersistentDataFlow(),
 
-        new CreateSceneCollectionFlow(), // setup sandbox scene collection
-        new GetSceneCollectionListFlow(),
-        new SetCurrentSceneCollectionFlow(),
+        //new CreateSceneCollectionFlow(), // setup sandbox scene collection
+        //new GetSceneCollectionListFlow(),
+        //new SetCurrentSceneCollectionFlow(),
 
-        //new CreateSceneFlow(), // setup sandbox scene
+        new CreateSceneFlow(), // setup sandbox scene
         //new GetSceneListFlow(),
 
         //new GetGroupListFlow(),
@@ -126,8 +126,6 @@ namespace ObsStrawket.Test.Real {
 // Scene items
 //new GetGroupSceneItemListFlow(),
 
-        // UI
-        //new GetMonitorListFlow(),
 
         //new SetStudioModeEnabledFlow(), // setup studio mode
         //new SetCurrentProgramSceneFlow(),
@@ -136,16 +134,38 @@ namespace ObsStrawket.Test.Real {
         //new GetCurrentPreviewSceneFlow(),
         //new GetStudioModeEnabledFlow(), // reset studio mode to false
 
-        //new CreateInputFlow(),
-        //new GetInputListFlow(),
+        //new GetMonitorListFlow(), // UI
         //new OpenInputPropertiesDialogFlow(),
         //new OpenInputFiltersDialogFlow(),
         //new OpenInputInteractDialogFlow(),
         //new OpenSourceProjectorFlow(),
         //new OpenVideoMixProjectorFlow(),
 
-        // Outputs
-        //new GetOutputListFlow(),
+        new CreateInputFlow(), // Inputs
+        //new GetInputListFlow(),
+        //new GetInputKindListFlow(),
+        //new GetSpecialInputsFlow(),
+        //new SetInputNameFlow(),
+        //new GetInputDefaultSettingsFlow(),
+        //new SetInputSettingsFlow(),
+        //new GetInputSettingsFlow(),
+        //new SetInputMuteFlow(),
+        //new GetInputMuteFlow(),
+        //new ToggleInputMuteFlow(),
+        //new SetInputVolumeFlow(),
+        //new GetInputVolumeFlow(),
+        //new SetInputAudioBalanceFlow(),
+        //new GetInputAudioBalanceFlow(),
+        //new SetInputAudioSyncOffsetFlow(),
+        //new GetInputAudioSyncOffsetFlow(),
+        //new SetInputAudioMonitorTypeFlow(),
+        //new GetInputAudioMonitorTypeFlow(),
+        new SetInputAudioTracksFlow(),
+        new GetInputAudioTracksFlow(),
+        new GetInputPropertiesListPropertyItemsFlow(),
+        new PressInputPropertiesButtonFlow(),
+
+        //new GetOutputListFlow(), // Outputs
 
         //new StartRecordFlow(),
         //new PauseRecordFlow(),
@@ -167,9 +187,9 @@ namespace ObsStrawket.Test.Real {
         //new GetSourceScreenshotFlow(),
         //new SaveSourceScreenshotFlow(),
 
-        //new RemoveInputFlow(), // cleanups
+        new RemoveInputFlow(), // cleanups
         //new RemoveSceneItemFlow(),
-        //new RemoveSceneFlow(),
+        new RemoveSceneFlow(),
         //new RemoveProfileFlow(),
 
 
@@ -178,16 +198,6 @@ namespace ObsStrawket.Test.Real {
 //new DuplicateSceneItemFlow(),
 //new GetCurrentSceneTransitionCursorFlow(),
 //new GetCurrentSceneTransitionFlow(),
-//new GetInputAudioBalanceFlow(),
-//new GetInputAudioMonitorTypeFlow(),
-//new GetInputAudioSyncOffsetFlow(),
-//new GetInputAudioTracksFlow(),
-//new GetInputDefaultSettingsFlow(),
-//new GetInputKindListFlow(),
-//new GetInputMuteFlow(),
-//new GetInputPropertiesListPropertyItemsFlow(),
-//new GetInputSettingsFlow(),
-//new GetInputVolumeFlow(),
 //new GetLastReplayBufferReplayFlow(),
 //new GetMediaInputStatusFlow(),
 //new GetOutputSettingsFlow(),
@@ -205,24 +215,14 @@ namespace ObsStrawket.Test.Real {
 //new GetSourceFilterDefaultSettingsFlow(),
 //new GetSourceFilterListFlow(),
 //new GetSourceFilterFlow(),
-//new GetSpecialInputsFlow(),
 //new GetTransitionKindListFlow(),
 //new GetVirtualCamStatusFlow(),
 //new OffsetMediaInputCursorFlow(),
-//new PressInputPropertiesButtonFlow(),
 //new RemoveSourceFilterFlow(),
 //new SaveReplayBufferFlow(),
 //new SetCurrentSceneTransitionDurationFlow(),
 //new SetCurrentSceneTransitionSettingsFlow(),
 //new SetCurrentSceneTransitionFlow(),
-//new SetInputAudioBalanceFlow(),
-//new SetInputAudioMonitorTypeFlow(),
-//new SetInputAudioSyncOffsetFlow(),
-//new SetInputAudioTracksFlow(),
-//new SetInputMuteFlow(),
-//new SetInputNameFlow(),
-//new SetInputSettingsFlow(),
-//new SetInputVolumeFlow(),
 //new SetMediaInputCursorFlow(),
 //new SetOutputSettingsFlow(),
 //new SetSceneItemBlendModeFlow(),
@@ -241,7 +241,6 @@ namespace ObsStrawket.Test.Real {
 //new StopOutputFlow(),
 //new StopReplayBufferFlow(),
 //new StopVirtualCamFlow(),
-//new ToggleInputMuteFlow(),
 //new ToggleOutputFlow(),
 //new ToggleReplayBufferFlow(),
 //new ToggleVirtualCamFlow(),

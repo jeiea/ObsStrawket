@@ -16,9 +16,9 @@ namespace ObsStrawket.Test.Specs {
       await client.RemoveInputAsync(inputName: CreateInputFlow.InputName).ConfigureAwait(false);
       var removed = await client.Events.ReadAsync().ConfigureAwait(false);
       Assert.Equal(CreateInputFlow.InputName, (removed as InputRemoved)!.InputName);
-      var itemRemoved = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(CreateSceneFlow.NewScene, (itemRemoved as SceneItemRemoved)!.SceneName);
-      Assert.Equal(CreateInputFlow.InputName, (itemRemoved as SceneItemRemoved)!.SourceName);
+      //var itemRemoved = await client.Events.ReadAsync().ConfigureAwait(false);
+      //Assert.Equal(CreateSceneFlow.NewScene, (itemRemoved as SceneItemRemoved)!.SceneName);
+      //Assert.Equal(CreateInputFlow.InputName, (itemRemoved as SceneItemRemoved)!.SourceName);
     }
 
     public async Task RespondAsync(MockServerSession session) {
