@@ -31,6 +31,7 @@ namespace SourceGenerator {
         "Scene Items", "Outputs", "Stream", "Record", "Media Inputs", "Ui", "High-Volume",
       }.Select(x => x.ToLower()).ToList();
       protocol.Requests = protocol.Requests.OrderBy(x => categoryOrder.IndexOf(x.Category!)).ToList();
+      protocol.Events = protocol.Events.OrderBy(x => categoryOrder.IndexOf(x.Category!)).ToList();
 
       foreach (var request in protocol.Requests) {
         var requestFields = request.RequestFields;
@@ -40,6 +41,19 @@ namespace SourceGenerator {
 
         PatchOthers(request);
       }
+      foreach (var request in protocol.Events) {
+        var requestFields = request.DataFields;
+        if (requestFields == null) {
+          continue;
+        }
+
+        foreach (var field in request.DataFields!) {
+          if (GetCustomType(field.ValueName!, out string? type)) {
+            field.ValueType = type;
+          }
+        }
+      }
+
 
       return protocol;
     }
@@ -84,6 +98,12 @@ namespace SourceGenerator {
 
     private static bool GetCustomType(string name, out string? type) {
       switch (name) {
+      case "outputState":
+        type = "OutputState";
+        return true;
+      case "monitorType":
+        type = "MonitoringType";
+        return true;
       case "videoMixType":
         type = "VideoMixType";
         return true;

@@ -7,10 +7,6 @@ namespace SourceGenerator {
     private static Regex nullPattern = new Regex(@"\bnull\b");
 
     public static string ToCSharpType(string type, string description) {
-      if (description == "Audio monitor type") {
-        return "MonitoringType";
-      }
-
       string s1 = type
         .Replace("Array", "List")
         .Replace("String", "string")
