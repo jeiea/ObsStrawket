@@ -48,7 +48,7 @@ namespace ObsStrawket.Serialization {
       writer.Write("d");
 
       switch (value) {
-      case IEvent @event:
+      case IObsEvent @event:
         EventFormatter.Instance.Serialize(ref writer, @event, options);
         break;
       case IRequest request:

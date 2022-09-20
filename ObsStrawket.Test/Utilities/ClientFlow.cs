@@ -14,7 +14,7 @@ using Xunit;
 
 namespace ObsStrawket.Test.Utilities {
   internal class ClientFlow {
-    private readonly Channel<IEvent> _events = Channel.CreateUnbounded<IEvent>();
+    private readonly Channel<IObsEvent> _events = Channel.CreateUnbounded<IObsEvent>();
 
     public static ObsClientSocket GetDebugClient(ClientSocket? socket = null, ILogger? logger = null, bool useChannel = false) {
       return new ObsClientSocket(logger ?? new DebugLoggerProvider().CreateLogger("Client"), socket, useChannel);
@@ -71,16 +71,16 @@ namespace ObsStrawket.Test.Utilities {
       await client.CloseAsync().ConfigureAwait(false);
     }
 
-    public static async Task<List<IEvent>> TakeEventsAsync(ObsClientSocket client, int count) {
-      var list = new List<IEvent>();
+    public static async Task<List<IObsEvent>> TakeEventsAsync(ObsClientSocket client, int count) {
+      var list = new List<IObsEvent>();
       for (int i = 0; i < count; i++) {
         list.Add(await client.Events.ReadAsync().ConfigureAwait(false));
       }
       return list;
     }
 
-    public static List<IEvent> DrainEvents(ObsClientSocket client) {
-      var list = new List<IEvent>();
+    public static List<IObsEvent> DrainEvents(ObsClientSocket client) {
+      var list = new List<IObsEvent>();
       while (client.Events.TryRead(out var ev)) {
         list.Add(ev);
       }
@@ -112,7 +112,7 @@ namespace ObsStrawket.Test.Utilities {
     }
 
 #pragma warning disable VSTHRD100 // Avoid async void methods
-    private async void QueueEvent(IEvent @event) {
+    private async void QueueEvent(IObsEvent @event) {
       try {
         await _events.Writer.WriteAsync(@event);
       }

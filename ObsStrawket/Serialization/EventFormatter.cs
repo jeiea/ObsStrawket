@@ -4,10 +4,10 @@ namespace ObsStrawket.Serialization {
   using ObsStrawket.DataTypes;
   using System;
 
-  class EventFormatter : IMessagePackFormatter<IEvent> {
+  class EventFormatter : IMessagePackFormatter<IObsEvent> {
     public static readonly EventFormatter Instance = new();
 
-    public IEvent Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
+    public IObsEvent Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
       var peeker = reader.CreatePeekReader();
       if (!FormatterUtil.SeekByKey(ref peeker, "eventType")) {
         throw new UnexpectedProtocolException();
@@ -23,11 +23,11 @@ namespace ObsStrawket.Serialization {
       peeker = reader.CreatePeekReader();
       reader.Skip();
       return FormatterUtil.SeekByKey(ref peeker, "eventData")
-        ? (MessagePackSerializer.Deserialize(type, ref peeker, options) as IEvent)!
-        : (Activator.CreateInstance(type) as IEvent)!;
+        ? (MessagePackSerializer.Deserialize(type, ref peeker, options) as IObsEvent)!
+        : (Activator.CreateInstance(type) as IObsEvent)!;
     }
 
-    public void Serialize(ref MessagePackWriter writer, IEvent value, MessagePackSerializerOptions options) {
+    public void Serialize(ref MessagePackWriter writer, IObsEvent value, MessagePackSerializerOptions options) {
       if (value is RawEvent raw) {
         MessagePackSerializer.Serialize(ref writer, raw, options);
       }

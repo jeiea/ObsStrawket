@@ -25,12 +25,12 @@ namespace ObsStrawket {
     private bool _isOpen = false;
     private SendPipeline _sender;
     private ReceivePipeline _receiver;
-    private Channel<IEvent> _events = Channel.CreateUnbounded<IEvent>();
+    private Channel<IObsEvent> _events = Channel.CreateUnbounded<IObsEvent>();
     private Task? _receiveLoop;
 
     public bool IsConnected => _clientWebSocket.State == WebSocketState.Open;
 
-    public ChannelReader<IEvent> Events => _events.Reader;
+    public ChannelReader<IObsEvent> Events => _events.Reader;
 
     public Action<ClientWebSocket> SetOptions { get; set; } = delegate { };
 
@@ -61,7 +61,7 @@ namespace ObsStrawket {
           }
         }
 
-        _events = Channel.CreateUnbounded<IEvent>();
+        _events = Channel.CreateUnbounded<IObsEvent>();
         _cancellation = new();
         _clientWebSocket = new ClientWebSocket();
         _clientWebSocket.Options.AddSubProtocol("obswebsocket.msgpack");
@@ -203,10 +203,10 @@ namespace ObsStrawket {
     }
 
     private async Task DispatchAsync(
-      IOpCodeMessage message, ChannelWriter<IEvent> events, CancellationToken token
+      IOpCodeMessage message, ChannelWriter<IObsEvent> events, CancellationToken token
     ) {
       switch (message) {
-      case IEvent ev:
+      case IObsEvent ev:
         await events.WriteAsync(ev, token).ConfigureAwait(false);
         break;
       case RequestResponse response:

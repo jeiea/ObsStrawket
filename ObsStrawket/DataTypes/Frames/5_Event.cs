@@ -3,14 +3,14 @@ using ObsStrawket.DataTypes.Predefineds;
 using System.Collections.Generic;
 
 namespace ObsStrawket.DataTypes {
-  public interface IEvent : IOpCodeMessage {
+  public interface IObsEvent : IOpCodeMessage {
     public string EventType { get; }
 
     public EventSubscription EventIntent { get; set; }
   }
 
   [MessagePackObject]
-  public class Event : IEvent {
+  public class ObsEvent : IObsEvent {
     [IgnoreMember]
     public OpCode Op => OpCode.Event;
 
@@ -22,7 +22,7 @@ namespace ObsStrawket.DataTypes {
   }
 
   [MessagePackObject]
-  public sealed class RawEvent : IEvent {
+  public sealed class RawEvent : IObsEvent {
     [IgnoreMember]
     public OpCode Op => OpCode.Event;
 

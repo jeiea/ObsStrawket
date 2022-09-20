@@ -7,61 +7,61 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// General event.
   /// </summary>
   [MessagePackObject]
-  public class GeneralEvent : Event { }
+  public class GeneralEvent : ObsEvent { }
 
   /// <summary>
   /// Config event.
   /// </summary>
   [MessagePackObject]
-  public class ConfigEvent : Event { }
+  public class ConfigEvent : ObsEvent { }
 
   /// <summary>
   /// Scenes event.
   /// </summary>
   [MessagePackObject]
-  public class ScenesEvent : Event { }
+  public class ScenesEvent : ObsEvent { }
 
   /// <summary>
   /// Inputs event.
   /// </summary>
   [MessagePackObject]
-  public class InputsEvent : Event { }
+  public class InputsEvent : ObsEvent { }
 
   /// <summary>
   /// Transitions event.
   /// </summary>
   [MessagePackObject]
-  public class TransitionsEvent : Event { }
+  public class TransitionsEvent : ObsEvent { }
 
   /// <summary>
   /// Filters event.
   /// </summary>
   [MessagePackObject]
-  public class FiltersEvent : Event { }
+  public class FiltersEvent : ObsEvent { }
 
   /// <summary>
   /// Scene items event.
   /// </summary>
   [MessagePackObject]
-  public class SceneItemsEvent : Event { }
+  public class SceneItemsEvent : ObsEvent { }
 
   /// <summary>
   /// Outputs event.
   /// </summary>
   [MessagePackObject]
-  public class OutputsEvent : Event { }
+  public class OutputsEvent : ObsEvent { }
 
   /// <summary>
   /// Media inputs event.
   /// </summary>
   [MessagePackObject]
-  public class MediaInputsEvent : Event { }
+  public class MediaInputsEvent : ObsEvent { }
 
   /// <summary>
   /// Ui event.
   /// </summary>
   [MessagePackObject]
-  public class UiEvent : Event { }
+  public class UiEvent : ObsEvent { }
 
   /// <summary>
   /// OBS has begun the shutdown process.<br />

@@ -15,7 +15,7 @@ namespace ObsStrawket {
     /// <summary>
     /// All events.
     /// </summary>
-    public event Action<IEvent> Event = delegate { { } };
+    public event Action<IObsEvent> Event = delegate { { } };
 
     /// <summary>
     /// General event group.
@@ -432,7 +432,7 @@ namespace ObsStrawket {
     /// <summary>
     /// All events channel. It can be used only when <c>ObsClientSocket</c> is created with <c>useChannel</c>.
     /// </summary>
-    public ChannelReader<IEvent> Events {
+    public ChannelReader<IObsEvent> Events {
       get {
         if (_dispatch != null) {
           throw new InvalidOperationException("Create first ObsClientSocket with useChannel: true");
@@ -485,7 +485,7 @@ namespace ObsStrawket {
       GC.SuppressFinalize(this);
     }
 
-    private async Task DispatchEventAsync(ChannelReader<IEvent> events, Uri uri) {
+    private async Task DispatchEventAsync(ChannelReader<IObsEvent> events, Uri uri) {
       try {
         Connected(uri);
       }
@@ -2207,7 +2207,7 @@ namespace ObsStrawket {
     #endregion
 
     #region Event dispatch
-    private void DispatchEvent(IEvent message) {
+    private void DispatchEvent(IObsEvent message) {
       try {
         Event(message);
       }
@@ -2222,7 +2222,7 @@ namespace ObsStrawket {
       }
     }
 
-    private void DispatchSpecificEvent(IEvent message) {
+    private void DispatchSpecificEvent(IObsEvent message) {
       switch (message) {
       case GeneralEvent general:
         DispatchGeneralEvent(general);
