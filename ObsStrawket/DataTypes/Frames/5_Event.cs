@@ -1,7 +1,8 @@
-namespace ObsStrawket.DataTypes {
-  using MessagePack;
-  using System.Collections.Generic;
+using MessagePack;
+using ObsStrawket.DataTypes.Predefineds;
+using System.Collections.Generic;
 
+namespace ObsStrawket.DataTypes {
   public interface IEvent : IOpCodeMessage {
     public string EventType { get; }
 

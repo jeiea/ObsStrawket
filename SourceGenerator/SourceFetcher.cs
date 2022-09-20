@@ -59,13 +59,14 @@ namespace SourceGenerator {
     }
 
     public async Task<ProtocolJson> GetProtocolJsonAsync() {
+      var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase,  };
       if (File.Exists(ProtocolJsonPath)) {
-        return (await JsonSerializer.DeserializeAsync<ProtocolJson>(File.OpenRead(ProtocolJsonPath)).ConfigureAwait(false))!;
+        return (await JsonSerializer.DeserializeAsync<ProtocolJson>(File.OpenRead(ProtocolJsonPath), options).ConfigureAwait(false))!;
       }
 
       string protocolJson = await _http.GetStringAsync($"{_rawRoot}/docs/generated/protocol.json").ConfigureAwait(false);
       await File.WriteAllTextAsync(ProtocolJsonPath, protocolJson).ConfigureAwait(false);
-      return JsonSerializer.Deserialize<ProtocolJson>(protocolJson)!;
+      return JsonSerializer.Deserialize<ProtocolJson>(protocolJson, options)!;
     }
 
     private static void PatchOthers(ObsRequest request) {

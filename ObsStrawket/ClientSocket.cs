@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using ObsStrawket.DataTypes;
+using ObsStrawket.DataTypes.Predefineds;
 using System;
 using System.Collections.Concurrent;
 using System.Net.WebSockets;
@@ -75,7 +76,7 @@ namespace ObsStrawket {
         _sender.Start();
         var hello = (Hello)(await _receiver.Messages.ReadAsync(cancellation).ConfigureAwait(false))!;
         if (hello == null) {
-          throw new Exception(GetCloseMessage() ?? "Handshake failure");
+          throw new ObsWebSocketException(GetCloseMessage() ?? "Handshake failure");
         }
         if (hello.RpcVersion > _supportedRpcVersion) {
           _logger?.LogWarning("OBS RPC version({hello}) is newer than supported version({supported}).", hello.RpcVersion, _supportedRpcVersion);
@@ -261,7 +262,7 @@ namespace ObsStrawket {
         return null;
       }
       if (password == null) {
-        throw new Exception("Password requested.");
+        throw new ObsWebSocketException("Password requested.");
       }
       string base64Secret = ApplySha256Base64($"{password}{auth.Salt}");
       return ApplySha256Base64($"{base64Secret}{auth.Challenge}");

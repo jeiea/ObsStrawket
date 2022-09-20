@@ -99,7 +99,7 @@ Checkmark means it has test.
 - [x] SceneItemSelected
 - [ ] SceneItemTransformChanged
 - [x] SceneListChanged
-- [ ] SceneNameChanged
+- [x] SceneNameChanged
 - [x] SceneRemoved
 - [x] SceneTransitionEnded
 - [x] SceneTransitionStarted

@@ -1,101 +1,113 @@
+using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace SourceGenerator {
   public record class ProtocolJson {
-    [JsonPropertyName("events")]
+    public List<ObsEnum> Enums { get; set; } = new();
+
     public List<ObsEvent> Events { get; set; } = new();
 
-    [JsonPropertyName("requests")]
     public List<ObsRequest> Requests { get; set; } = new();
   }
 
-  public record class ObsEvent {
-    [JsonPropertyName("eventType")]
-    public string EventType { get; set; } = "";
+  public record class ObsEnum {
+    public string EnumType { get; set; } = "";
 
-    [JsonPropertyName("description")]
+    public List<ObsEnumIdentifier> EnumIdentifiers { get; set; } = new();
+
+  }
+
+  public record class ObsEnumIdentifier {
     public string Description { get; set; } = "";
 
-    [JsonPropertyName("eventSubscription")]
-    public string EventSubscription { get; set; } = "";
+    public string EnumIdentifier { get; set; } = "";
 
-    [JsonPropertyName("complexity")]
-    public int Complexity { get; set; }
-
-    [JsonPropertyName("rpcVersion")]
+    [JsonConverter(typeof(StringToNumberConverter))]
     public string RpcVersion { get; set; } = "";
 
-    [JsonPropertyName("deprecated")]
     public bool Deprecated { get; set; }
 
-    [JsonPropertyName("initialVersion")]
     public string InitialVersion { get; set; } = "";
 
-    [JsonPropertyName("category")]
+    public object EnumValue { get; set; } = 0;
+  }
+
+  public record class ObsEvent {
+    public string EventType { get; set; } = "";
+
+    public string Description { get; set; } = "";
+
+    public string EventSubscription { get; set; } = "";
+
+    public int Complexity { get; set; }
+
+    public string RpcVersion { get; set; } = "";
+
+    public bool Deprecated { get; set; }
+
+    public string InitialVersion { get; set; } = "";
+
     public string Category { get; set; } = "";
 
-    [JsonPropertyName("dataFields")]
     public List<ObsDataField>? DataFields { get; set; }
   }
 
   public record class ObsDataField {
-    [JsonPropertyName("valueName")]
     public string? ValueName { get; set; }
 
-    [JsonPropertyName("valueType")]
     public string? ValueType { get; set; }
 
-    [JsonPropertyName("valueDescription")]
     public string? ValueDescription { get; set; }
   }
 
   public record class ObsRequestField {
-    [JsonPropertyName("valueName")]
     public string? ValueName { get; set; }
 
-    [JsonPropertyName("valueType")]
     public string? ValueType { get; set; }
 
-    [JsonPropertyName("valueDescription")]
     public string? ValueDescription { get; set; }
 
-    [JsonPropertyName("valueRestrictions")]
     public string? ValueRestrictions { get; set; }
 
-    [JsonPropertyName("valueOptional")]
     public bool ValueOptional { get; set; }
 
-    [JsonPropertyName("valueOptionalBehavior")]
     public string? ValueOptionalBehavior { get; set; }
   };
 
   public record class ObsRequest {
-    [JsonPropertyName("requestType")]
     public string? RequestType { get; set; }
 
-    [JsonPropertyName("description")]
     public string? Description { get; set; }
 
-    [JsonPropertyName("complexity")]
     public int Complexity { get; set; }
 
-    [JsonPropertyName("rpcVersion")]
     public string? RpcVersion { get; set; }
 
-    [JsonPropertyName("deprecated")]
     public bool Deprecated { get; set; }
 
-    [JsonPropertyName("initialVersion")]
     public string? InitialVersion { get; set; }
 
-    [JsonPropertyName("category")]
     public string? Category { get; set; }
 
-    [JsonPropertyName("requestFields")]
     public List<ObsRequestField>? RequestFields { get; set; }
 
-    [JsonPropertyName("responseFields")]
     public List<ObsDataField>? ResponseFields { get; set; }
+  }
+
+  class StringToNumberConverter : JsonConverter<string> {
+    public StringToNumberConverter() : base() { }
+
+    public override string Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+      if (reader.TokenType == JsonTokenType.Number) {
+        return reader.GetInt32().ToString();
+      }
+      return reader.GetString()!;
+    }
+
+    public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options) {
+      throw new NotImplementedException();
+    }
   }
 }
