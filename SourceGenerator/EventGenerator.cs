@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -25,7 +24,7 @@ namespace ObsStrawket.DataTypes.Predefineds {");
         file.WriteLine("  /// {0}{1} event.", char.ToUpper(category[0]), category[1..]);
         file.WriteLine("  /// </summary>");
         file.WriteLine("  [MessagePackObject]");
-        string pascalCategory = string.Concat(ToPascalCase(category));
+        string pascalCategory = TransformHelper.ToPascalCase(category);
         file.WriteLine("  public class {0}Event : Event {{ }}", pascalCategory);
       }
 
@@ -40,7 +39,7 @@ namespace ObsStrawket.DataTypes.Predefineds {");
           file.WriteLine("  [Obsolete]");
         }
         file.WriteLine("  [MessagePackObject]");
-        string pascalCategory = string.Concat(ToPascalCase(ev.Category));
+        string pascalCategory = TransformHelper.ToPascalCase(ev.Category);
         file.Write("  public class {0} : {1}Event {{", ev.EventType, pascalCategory);
         if (ev.DataFields!.Count == 0) {
           file.WriteLine(" }");
@@ -61,22 +60,6 @@ namespace ObsStrawket.DataTypes.Predefineds {");
       }
 
       file.WriteLine("}");
-    }
-
-    private static IEnumerable<char> ToPascalCase(string category) {
-      bool isStart = true;
-      foreach (char c in category) {
-        if (isStart) {
-          yield return char.ToUpper(c);
-          isStart = false;
-        }
-        else if (c == ' ') {
-          isStart = true;
-        }
-        else {
-          yield return c;
-        }
-      }
     }
 
     private static string MakeFieldDeclaration(string name, string type, string description) {

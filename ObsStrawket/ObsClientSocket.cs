@@ -4,86 +4,410 @@ namespace ObsStrawket {
   using ObsStrawket.DataTypes.Predefineds;
   using System;
   using System.Collections.Generic;
-  using System.Net.WebSockets;
   using System.Threading;
   using System.Threading.Channels;
   using System.Threading.Tasks;
 
   public class ObsClientSocket : IDisposable {
-    #region Events
-    public event Action<IEvent> Event = delegate { };
 
+    #region Events
+
+    /// <summary>
+    /// All events.
+    /// </summary>
+    public event Action<IEvent> Event = delegate { { } };
+
+    /// <summary>
+    /// General event group.
+    /// </summary>
     public event Action<GeneralEvent> GeneralEvent = delegate { };
+    /// <summary>
+    /// OBS has begun the shutdown process.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<ExitStarted> ExitStarted = delegate { };
+    /// <summary>
+    /// An event has been emitted from a vendor.<br />
+    /// <br />
+    /// A vendor is a unique name registered by a third-party plugin or script, which allows for custom requests and events to be added to obs-websocket.<br />
+    /// If a plugin or script implements vendor requests or events, documentation is expected to be provided with them.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<VendorEvent> VendorEvent = delegate { };
 
+    /// <summary>
+    /// Config event group.
+    /// </summary>
     public event Action<ConfigEvent> ConfigEvent = delegate { };
+    /// <summary>
+    /// The current scene collection has begun changing.<br />
+    /// <br />
+    /// Note: We recommend using this event to trigger a pause of all polling requests, as performing any requests during a<br />
+    /// scene collection change is considered undefined behavior and can cause crashes!<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<CurrentSceneCollectionChanging> CurrentSceneCollectionChanging = delegate { };
+    /// <summary>
+    /// The current scene collection has changed.<br />
+    /// <br />
+    /// Note: If polling has been paused during <c>CurrentSceneCollectionChanging</c>, this is the que to restart polling.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<CurrentSceneCollectionChanged> CurrentSceneCollectionChanged = delegate { };
+    /// <summary>
+    /// The scene collection list has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<SceneCollectionListChanged> SceneCollectionListChanged = delegate { };
+    /// <summary>
+    /// The current profile has begun changing.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<CurrentProfileChanging> CurrentProfileChanging = delegate { };
+    /// <summary>
+    /// The current profile has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<CurrentProfileChanged> CurrentProfileChanged = delegate { };
+    /// <summary>
+    /// The profile list has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<ProfileListChanged> ProfileListChanged = delegate { };
 
+    /// <summary>
+    /// Scenes event group.
+    /// </summary>
     public event Action<ScenesEvent> ScenesEvent = delegate { };
+    /// <summary>
+    /// A new scene has been created.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<SceneCreated> SceneCreated = delegate { };
+    /// <summary>
+    /// A scene has been removed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<SceneRemoved> SceneRemoved = delegate { };
+    /// <summary>
+    /// The name of a scene has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<SceneNameChanged> SceneNameChanged = delegate { };
+    /// <summary>
+    /// The current program scene has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<CurrentProgramSceneChanged> CurrentProgramSceneChanged = delegate { };
+    /// <summary>
+    /// The current preview scene has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<CurrentPreviewSceneChanged> CurrentPreviewSceneChanged = delegate { };
+    /// <summary>
+    /// The list of scenes has changed.<br />
+    /// <br />
+    /// TODO: Make OBS fire this event when scenes are reordered.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<SceneListChanged> SceneListChanged = delegate { };
 
+    /// <summary>
+    /// Inputs event group.
+    /// </summary>
     public event Action<InputsEvent> InputsEvent = delegate { };
+    /// <summary>
+    /// An input has been created.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<InputCreated> InputCreated = delegate { };
+    /// <summary>
+    /// An input has been removed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<InputRemoved> InputRemoved = delegate { };
+    /// <summary>
+    /// The name of an input has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<InputNameChanged> InputNameChanged = delegate { };
+    /// <summary>
+    /// An input's active state has changed.<br />
+    /// <br />
+    /// When an input is active, it means it's being shown by the program feed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<InputActiveStateChanged> InputActiveStateChanged = delegate { };
+    /// <summary>
+    /// An input's show state has changed.<br />
+    /// <br />
+    /// When an input is showing, it means it's being shown by the preview or a dialog.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<InputShowStateChanged> InputShowStateChanged = delegate { };
+    /// <summary>
+    /// An input's mute state has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<InputMuteStateChanged> InputMuteStateChanged = delegate { };
+    /// <summary>
+    /// An input's volume level has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<InputVolumeChanged> InputVolumeChanged = delegate { };
+    /// <summary>
+    /// The audio balance value of an input has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<InputAudioBalanceChanged> InputAudioBalanceChanged = delegate { };
+    /// <summary>
+    /// The sync offset of an input has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<InputAudioSyncOffsetChanged> InputAudioSyncOffsetChanged = delegate { };
+    /// <summary>
+    /// The audio tracks of an input have changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<InputAudioTracksChanged> InputAudioTracksChanged = delegate { };
+    /// <summary>
+    /// The monitor type of an input has changed.<br />
+    /// <br />
+    /// Available types are:<br />
+    /// <br />
+    /// - <c>OBS_MONITORING_TYPE_NONE</c><br />
+    /// - <c>OBS_MONITORING_TYPE_MONITOR_ONLY</c><br />
+    /// - <c>OBS_MONITORING_TYPE_MONITOR_AND_OUTPUT</c><br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<InputAudioMonitorTypeChanged> InputAudioMonitorTypeChanged = delegate { };
+    /// <summary>
+    /// A high-volume event providing volume levels of all active inputs every 50 milliseconds.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<InputVolumeMeters> InputVolumeMeters = delegate { };
 
+    /// <summary>
+    /// Transitions event group.
+    /// </summary>
     public event Action<TransitionsEvent> TransitionsEvent = delegate { };
+    /// <summary>
+    /// The current scene transition has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<CurrentSceneTransitionChanged> CurrentSceneTransitionChanged = delegate { };
+    /// <summary>
+    /// The current scene transition duration has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<CurrentSceneTransitionDurationChanged> CurrentSceneTransitionDurationChanged = delegate { };
+    /// <summary>
+    /// A scene transition has started.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<SceneTransitionStarted> SceneTransitionStarted = delegate { };
+    /// <summary>
+    /// A scene transition has completed fully.<br />
+    /// <br />
+    /// Note: Does not appear to trigger when the transition is interrupted by the user.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<SceneTransitionEnded> SceneTransitionEnded = delegate { };
+    /// <summary>
+    /// A scene transition's video has completed fully.<br />
+    /// <br />
+    /// Useful for stinger transitions to tell when the video *actually* ends.<br />
+    /// <c>SceneTransitionEnded</c> only signifies the cut point, not the completion of transition playback.<br />
+    /// <br />
+    /// Note: Appears to be called by every transition, regardless of relevance.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<SceneTransitionVideoEnded> SceneTransitionVideoEnded = delegate { };
 
+    /// <summary>
+    /// Filters event group.
+    /// </summary>
     public event Action<FiltersEvent> FiltersEvent = delegate { };
+    /// <summary>
+    /// A source's filter list has been reindexed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<SourceFilterListReindexed> SourceFilterListReindexed = delegate { };
+    /// <summary>
+    /// A filter has been added to a source.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<SourceFilterCreated> SourceFilterCreated = delegate { };
+    /// <summary>
+    /// A filter has been removed from a source.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<SourceFilterRemoved> SourceFilterRemoved = delegate { };
+    /// <summary>
+    /// The name of a source filter has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<SourceFilterNameChanged> SourceFilterNameChanged = delegate { };
+    /// <summary>
+    /// A source filter's enable state has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<SourceFilterEnableStateChanged> SourceFilterEnableStateChanged = delegate { };
 
+    /// <summary>
+    /// Scene items event group.
+    /// </summary>
     public event Action<SceneItemsEvent> SceneItemsEvent = delegate { };
+    /// <summary>
+    /// A scene item has been created.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<SceneItemCreated> SceneItemCreated = delegate { };
+    /// <summary>
+    /// A scene item has been removed.<br />
+    /// <br />
+    /// This event is not emitted when the scene the item is in is removed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<SceneItemRemoved> SceneItemRemoved = delegate { };
+    /// <summary>
+    /// A scene's item list has been reindexed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<SceneItemListReindexed> SceneItemListReindexed = delegate { };
+    /// <summary>
+    /// A scene item's enable state has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<SceneItemEnableStateChanged> SceneItemEnableStateChanged = delegate { };
+    /// <summary>
+    /// A scene item's lock state has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<SceneItemLockStateChanged> SceneItemLockStateChanged = delegate { };
+    /// <summary>
+    /// A scene item has been selected in the Ui.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<SceneItemSelected> SceneItemSelected = delegate { };
+    /// <summary>
+    /// The transform/crop of a scene item has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<SceneItemTransformChanged> SceneItemTransformChanged = delegate { };
 
+    /// <summary>
+    /// Outputs event group.
+    /// </summary>
     public event Action<OutputsEvent> OutputsEvent = delegate { };
+    /// <summary>
+    /// The state of the stream output has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<StreamStateChanged> StreamStateChanged = delegate { };
+    /// <summary>
+    /// The state of the record output has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<RecordStateChanged> RecordStateChanged = delegate { };
+    /// <summary>
+    /// The state of the replay buffer output has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<ReplayBufferStateChanged> ReplayBufferStateChanged = delegate { };
+    /// <summary>
+    /// The state of the virtualcam output has changed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<VirtualcamStateChanged> VirtualcamStateChanged = delegate { };
+    /// <summary>
+    /// The replay buffer has been saved.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<ReplayBufferSaved> ReplayBufferSaved = delegate { };
 
+    /// <summary>
+    /// Media inputs event group.
+    /// </summary>
     public event Action<MediaInputsEvent> MediaInputsEvent = delegate { };
+    /// <summary>
+    /// A media input has started playing.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<MediaInputPlaybackStarted> MediaInputPlaybackStarted = delegate { };
+    /// <summary>
+    /// A media input has finished playing.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<MediaInputPlaybackEnded> MediaInputPlaybackEnded = delegate { };
+    /// <summary>
+    /// An action has been performed on an input.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<MediaInputActionTriggered> MediaInputActionTriggered = delegate { };
 
+    /// <summary>
+    /// Ui event group.
+    /// </summary>
     public event Action<UiEvent> UiEvent = delegate { };
+    /// <summary>
+    /// Studio mode has been enabled or disabled.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
     public event Action<StudioModeStateChanged> StudioModeStateChanged = delegate { };
+
     #endregion
 
     /// <summary>

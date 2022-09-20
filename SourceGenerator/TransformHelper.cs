@@ -1,10 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace SourceGenerator {
   internal static class TransformHelper {
-    private static Regex nullPattern = new Regex(@"\bnull\b");
+    private static readonly Regex nullPattern = new(@"\bnull\b");
+
+    public static string ToPascalCase(string category) {
+      return string.Concat(ToPascalCaseEnumerable(category));
+    }
 
     public static string ToCSharpType(string type, string description) {
       string s1 = type
@@ -32,5 +37,22 @@ namespace SourceGenerator {
       xml = Regex.Replace(xml, "`(.*?)`", "<c>$1</c>");
       return xml;
     }
+
+    private static IEnumerable<char> ToPascalCaseEnumerable(string category) {
+      bool isStart = true;
+      foreach (char c in category) {
+        if (isStart) {
+          yield return char.ToUpper(c);
+          isStart = false;
+        }
+        else if (c == ' ') {
+          isStart = true;
+        }
+        else {
+          yield return c;
+        }
+      }
+    }
+
   }
 }
