@@ -104,7 +104,6 @@ namespace ObsStrawket {
 
         while (!token.IsCancellationRequested) {
           var memory = prefixer.GetMemory(sizeHint);
-          using var handle = memory.Pin();
           var segment = PipelineHelpers.GetSegment(memory);
           var readResult = await _socket.ReceiveAsync(segment, token).ConfigureAwait(false);
 

@@ -109,7 +109,6 @@ namespace ObsStrawket {
       var buffer = readResult.Buffer;
       long bytesRemaining = messageLength;
       foreach (var memory in buffer) {
-        using var _2 = memory.Pin();
         int count = Math.Min(memory.Length, (int)bytesRemaining);
         bytesRemaining -= count;
         bool isEnd = bytesRemaining <= 0;
