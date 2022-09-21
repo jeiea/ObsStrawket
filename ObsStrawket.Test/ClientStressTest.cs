@@ -13,7 +13,7 @@ namespace ObsStrawket.Test {
     [Fact]
     public async Task TestAsync() {
       var logger = new MemoryLogger();
-      var client = ClientFlow.GetDebugClient(logger: logger);
+      var client = ClientFlow.GetDebugClient(logger: null);
       using var server = new MockServer().Run(default);
       int openCloseDifference = 0;
       var failures = Channel.CreateUnbounded<string>();
@@ -43,10 +43,23 @@ namespace ObsStrawket.Test {
       });
 
       var tasks = new List<Task>();
-      for (int i = 0; i < 50; i++) {
+      int step = 5;
+      int delayMilliseconds = 150;
+      int round = (int)Math.Pow(step, 3);
+      for (int i = 0; i < round; i++) {
+        int t = i;
         tasks.Add(Task.Run(async () => {
           try {
+            await Task.Delay((int)((double)t / round * delayMilliseconds));
             await client.ConnectAsync(server.Uri, MockServer.Password).ConfigureAwait(false);
+          }
+          catch (Exception ex) {
+            Debug.WriteLine(ex);
+          }
+        }));
+        tasks.Add(Task.Run(async () => {
+          try {
+            await Task.Delay((int)((double)t / step % step / step * delayMilliseconds));
             var version = await client.GetVersionAsync().ConfigureAwait(false);
             Assert.Contains("bmp", version.SupportedImageFormats);
           }
@@ -56,13 +69,14 @@ namespace ObsStrawket.Test {
         }));
         tasks.Add(Task.Run(async () => {
           try {
+            await Task.Delay((int)((double)t % step / step * delayMilliseconds));
             await client.CloseAsync();
           }
           catch (Exception ex) {
             Debug.WriteLine(ex);
           }
         }));
-        await Task.Delay(i * 4).ConfigureAwait(false);
+        await Task.Delay(delayMilliseconds).ConfigureAwait(false);
       }
       await TestUtil.WhenAnyThrowsAsync(tasks).ConfigureAwait(false);
 
