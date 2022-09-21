@@ -20,16 +20,18 @@ namespace ObsStrawket.Test {
 
       client.Connected += (uri) => {
         Interlocked.Increment(ref openCloseDifference);
-        logger.LogDebug("Connected: {}", openCloseDifference);
-        if (Math.Abs(openCloseDifference) > 1) {
-          _ = failures.Writer.WriteAsync($"open close difference {openCloseDifference}");
+        int difference = openCloseDifference;
+        logger.LogDebug("Connected: {}", difference);
+        if (Math.Abs(difference) > 1) {
+          _ = failures.Writer.WriteAsync($"open close difference {difference}");
         }
       };
       client.Disconnected += (o) => {
         Interlocked.Decrement(ref openCloseDifference);
-        logger.LogDebug("Disconnected: {}", openCloseDifference);
-        if (Math.Abs(openCloseDifference) > 1) {
-          _ = failures.Writer.WriteAsync($"open close difference {openCloseDifference}");
+        int difference = openCloseDifference;
+        logger.LogDebug("Disconnected: {}", difference);
+        if (Math.Abs(difference) > 1) {
+          _ = failures.Writer.WriteAsync($"open close difference {difference}");
         }
       };
 

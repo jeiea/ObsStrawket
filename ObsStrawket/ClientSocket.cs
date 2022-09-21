@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ObsStrawket {
   /// <summary>
-  /// Low level client interface
+  /// Low level client interface.
   /// </summary>
   public class ClientSocket : IDisposable {
     internal static Uri DefaultUri => new("ws://127.0.0.1:4455");
