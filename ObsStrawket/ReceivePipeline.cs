@@ -1,10 +1,8 @@
 using MessagePack;
 using Microsoft.Extensions.Logging;
-using Nerdbank.Streams;
 using ObsStrawket.DataTypes;
 using ObsStrawket.Serialization;
 using System;
-using System.Buffers;
 using System.IO.Pipelines;
 using System.Net.WebSockets;
 using System.Threading;
@@ -30,11 +28,11 @@ namespace ObsStrawket {
     }
 
     public void Run(CancellationToken token) {
-      ReceiveTask ??= LoopWebSocketReadAsync(token: token);
+      ReceiveTask ??= LoopWebSocketReceiveAsync(token: token);
     }
 
-    private async Task LoopWebSocketReadAsync(int sizeHint = 0, CancellationToken token = default) {
-      using var _1 = _logger?.BeginScope(nameof(LoopWebSocketReadAsync));
+    private async Task LoopWebSocketReceiveAsync(int sizeHint = 0, CancellationToken token = default) {
+      using var _1 = _logger?.BeginScope(nameof(LoopWebSocketReceiveAsync));
       var options = new PipeOptions(useSynchronizationContext: false);
       var deserialization = Task.CompletedTask;
 
@@ -56,7 +54,7 @@ namespace ObsStrawket {
             break;
           }
 
-          _logger?.LogDebug("Advancing prefixer {} bytes", readResult.Count);
+          _logger?.LogDebug("Read {} bytes", readResult.Count);
           writer.Advance(readResult.Count);
           if (readResult.EndOfMessage) {
             var completedPipe = pipe;
@@ -78,14 +76,11 @@ namespace ObsStrawket {
     }
 
     private static async Task<IOpCodeMessage> DeserializeAsync(Pipe pipe, CancellationToken token = default) {
-      int length = (int)pipe.Writer.UnflushedBytes;
-
-      await pipe.Writer.CompleteAsync().ConfigureAwait(false);
-      var result = await pipe.Reader.ReadAtLeastAsync(length, token).ConfigureAwait(false);
-      var buffer = result.Buffer.Slice(0, length);
+      var buffer = await PipelineHelpers.RealAllAsync(pipe, token).ConfigureAwait(false);
       var message = MessagePackSerializer.Deserialize<IOpCodeMessage>(buffer, _serialOptions, token);
       return message;
     }
+
   }
 
   internal class LazyString {
