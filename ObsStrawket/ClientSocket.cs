@@ -20,7 +20,7 @@ namespace ObsStrawket {
     private const int _supportedRpcVersion = 1;
 
     private readonly ConcurrentDictionary<string, TaskCompletionSource<IRequestResponse>> _requests = new();
-    private readonly SemaphoreSlim _writeSemaphore = new(1);
+    private readonly SemaphoreSlim _connectSemaphore = new(1);
     private readonly ILogger? _logger;
 
     private ClientWebSocket _clientWebSocket = new();
@@ -56,7 +56,7 @@ namespace ObsStrawket {
 
       var url = uri ?? DefaultUri;
       _logger?.LogInformation("ConnectAsync to {}.", url);
-      await _writeSemaphore.WaitAsync(cancellation).ConfigureAwait(false);
+      await _connectSemaphore.WaitAsync(cancellation).ConfigureAwait(false);
       try {
         if (_isOpen) {
           try {
@@ -103,7 +103,7 @@ namespace ObsStrawket {
         _logger?.LogInformation("ConnectAsync to {} complete.", url);
       }
       finally {
-        _writeSemaphore.Release();
+        _connectSemaphore.Release();
       }
     }
 
@@ -123,7 +123,7 @@ namespace ObsStrawket {
       var waiter = new TaskCompletionSource<IRequestResponse>();
       _requests[guid] = waiter;
 
-      await SendSafeAsync(request, token).ConfigureAwait(false);
+      await _sender.SendAsync(request, token).ConfigureAwait(false);
       var response = await waiter.Task.ConfigureAwait(false);
 
       _logger?.LogInformation("RequestAsync {} finished.", request.GetType().Name);
@@ -132,30 +132,20 @@ namespace ObsStrawket {
 
     public async Task CloseAsync(WebSocketCloseStatus status = WebSocketCloseStatus.NormalClosure, string? description = "Client closed websocket", Exception? exception = null) {
       _logger?.LogInformation("CloseAsync exception: {}", exception?.Message);
-      await _writeSemaphore.WaitAsync().ConfigureAwait(false);
+      await _connectSemaphore.WaitAsync().ConfigureAwait(false);
       try {
         await CloseInternalAsync(status, description, exception).ConfigureAwait(false);
         _logger?.LogInformation("CloseAsync complete.");
       }
       finally {
-        _writeSemaphore.Release();
+        _connectSemaphore.Release();
       }
     }
 
     public void Dispose() {
       Reset(new ObsWebSocketException("Socket disposed"));
-      _writeSemaphore.Dispose();
+      _connectSemaphore.Dispose();
       GC.SuppressFinalize(this);
-    }
-
-    private async Task SendSafeAsync(IRequest request, CancellationToken token) {
-      await _writeSemaphore.WaitAsync(token).ConfigureAwait(false);
-      try {
-        await _sender.SendAsync(request, token).ConfigureAwait(false);
-      }
-      finally {
-        _writeSemaphore.Release();
-      }
     }
 
     private async Task CloseInternalAsync(WebSocketCloseStatus status = WebSocketCloseStatus.NormalClosure, string? description = null, Exception? exception = null) {
