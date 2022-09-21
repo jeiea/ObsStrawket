@@ -11,6 +11,9 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace ObsStrawket {
+  /// <summary>
+  /// Low level client interface
+  /// </summary>
   public class ClientSocket : IDisposable {
     internal static Uri DefaultUri => new("ws://127.0.0.1:4455");
 
@@ -28,6 +31,9 @@ namespace ObsStrawket {
     private Channel<IObsEvent> _events = Channel.CreateUnbounded<IObsEvent>();
     private Task? _receiveLoop;
 
+    /// <summary>
+    /// Whether it is connected to websocket server
+    /// </summary>
     public bool IsConnected => _clientWebSocket.State == WebSocketState.Open;
 
     public ChannelReader<IObsEvent> Events => _events.Reader;
@@ -74,7 +80,7 @@ namespace ObsStrawket {
 
         _receiver.Run(_cancellation.Token);
         _sender.Start();
-        var hello = (Hello)(await _receiver.Messages.ReadAsync(cancellation).ConfigureAwait(false))!;
+        var hello = (Hello)await ReceiveMessageAsync(cancellation).ConfigureAwait(false);
         if (hello == null) {
           throw new ObsWebSocketException(GetCloseMessage() ?? "Handshake failure");
         }
@@ -89,7 +95,7 @@ namespace ObsStrawket {
         };
         await _sender.SendAsync(identify, cancellation).ConfigureAwait(false);
 
-        if (await _receiver.Messages.ReadAsync(cancellation).ConfigureAwait(false) is not Identified identified) {
+        if (await ReceiveMessageAsync(cancellation).ConfigureAwait(false) is not Identified identified) {
           throw new AuthenticationFailureException(GetCloseMessage());
         }
 
@@ -173,6 +179,7 @@ namespace ObsStrawket {
     private async Task LoopReceiveAsync(CancellationToken cancellation = default) {
       using var _1 = _logger?.BeginScope(nameof(LoopReceiveAsync));
       var token = cancellation;
+      _logger?.LogDebug("Start");
 
       try {
         var receiver = _receiver;
@@ -183,7 +190,7 @@ namespace ObsStrawket {
           if (!isAvailable) {
             break;
           }
-          var message = await receiver.Messages.ReadAsync(default).ConfigureAwait(false);
+          var message = await ReceiveMessageAsync(default).ConfigureAwait(false);
           _logger?.LogDebug("Received message: {}", message?.GetType().Name ?? "null");
           if (message == null) {
             break;
@@ -200,6 +207,11 @@ namespace ObsStrawket {
         _logger?.LogDebug(exception, "Queue cancelled");
       }
       _logger?.LogDebug("Exit. IsCancellationRequested: {}", token.IsCancellationRequested);
+    }
+
+    private async Task<IOpCodeMessage> ReceiveMessageAsync(CancellationToken cancellation) {
+      var deserialization = await _receiver.Messages.ReadAsync(cancellation).ConfigureAwait(false);
+      return await deserialization.ConfigureAwait(false)!;
     }
 
     private async Task DispatchAsync(
