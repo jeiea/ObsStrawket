@@ -1,55 +1,80 @@
-namespace ObsStrawket.DataTypes
-{
-    using MessagePack;
-    using System.Collections.Generic;
+using MessagePack;
+using System.Collections.Generic;
+using System.Net.WebSockets;
+
+namespace ObsStrawket.DataTypes {
+  /// <summary>
+  /// Sent from: Identified client<br />
+  /// Sent to: obs-websocket<br />
+  /// Description: Client is making a request to obs-websocket.Eg get current scene, create source.
+  /// </summary>
+  public interface IRequest : IOpCodeMessage {
+    /// <summary>
+    /// The string identifying request type.
+    /// </summary>
+    public string RequestType { get; }
 
     /// <summary>
-    /// Client is making a request to obs-websocket. Eg get current scene, create source.<br />
-    /// Identified client -> obs-websocket
+    /// Unique identifier for response matching.
     /// </summary>
-    /// <example><code>{
-    ///   "op": 6,
-    ///   "d": {
-    ///     "requestType": "SetCurrentProgramScene",
-    ///     "requestId": "f819dcf0-89cc-11eb-8f0e-382c4ac93b9c",
-    ///     "requestData": {
-    ///       "sceneName": "Scene 12"
-    ///     }
-    ///   }
-    /// }</code></example>
-    public interface IRequest : IOpCodeMessage
-    {
-        public string RequestType { get; }
+    public string RequestId { get; set; }
+  }
 
-        public string RequestId { get; set; }
-    }
+  /// <summary>
+  /// Sent from: Identified client<br />
+  /// Sent to: obs-websocket<br />
+  /// Description: Client is making a request to obs-websocket.Eg get current scene, create source.
+  /// </summary>
+  [MessagePackObject]
+  public class Request : IRequest {
+    /// <summary>
+    /// Request (OpCode 6)
+    /// </summary>
+    [IgnoreMember]
+    public OpCode Op => OpCode.Request;
 
-    [MessagePackObject]
-    public class Request : IRequest
-    {
-        [IgnoreMember]
-        public OpCode Op => OpCode.Request;
+    /// <summary>
+    /// The string identifying request type.
+    /// </summary>
+    [IgnoreMember]
+    public string RequestType { get => GetType().Name; }
 
-        [IgnoreMember]
-        public string RequestType { get => GetType().Name; }
+    /// <summary>
+    /// Unique identifier for response matching.
+    /// </summary>
+    [IgnoreMember]
+    public string RequestId { get; set; } = "";
+  }
 
-        [IgnoreMember]
-        public string RequestId { get; set; } = "";
-    }
+  /// <summary>
+  /// Sent from: Identified client<br />
+  /// Sent to: obs-websocket<br />
+  /// Description: Client is making a request to obs-websocket.Eg get current scene, create source.
+  /// </summary>
+  [MessagePackObject]
+  public class RawRequest : IRequest {
+    /// <summary>
+    /// Request (OpCode 6)
+    /// </summary>
+    [IgnoreMember]
+    public OpCode Op => OpCode.Request;
 
-    [MessagePackObject]
-    public class RawRequest : IRequest
-    {
-        [IgnoreMember]
-        public OpCode Op => OpCode.Request;
+    /// <summary>
+    /// The string identifying request type.
+    /// </summary>
+    [Key("requestType")]
+    public string RequestType { get; set; } = "";
 
-        [Key("requestType")]
-        public string RequestType { get; set; } = "";
+    /// <summary>
+    /// Unique identifier for response matching.
+    /// </summary>
+    [Key("requestId")]
+    public string RequestId { get; set; } = "";
 
-        [Key("requestId")]
-        public string RequestId { get; set; } = "";
-
-        [Key("requestData")]
-        public Dictionary<string, object?>? RequestData { get; set; }
-    }
+    /// <summary>
+    /// Raw request data.
+    /// </summary>
+    [Key("requestData")]
+    public Dictionary<string, object?>? RequestData { get; set; }
+  }
 }
