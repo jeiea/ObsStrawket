@@ -512,7 +512,7 @@ namespace ObsStrawket {
     }
 
     private async Task DispatchEventAsync(ChannelReader<IObsEvent> events, Uri uri) {
-      _logger?.BeginScope("DispatchEventAsync");
+      using var _1 = _logger?.BeginScope(nameof(DispatchEventAsync));
       _logger?.LogDebug("Start");
 
       try {
@@ -522,7 +522,6 @@ namespace ObsStrawket {
         _logger?.LogWarning(exception, "Connected event handler throws");
       }
 
-      using var _1 = _logger?.BeginScope(nameof(DispatchEventAsync));
       try {
         while (await events.WaitToReadAsync().ConfigureAwait(false)) {
           DispatchEvent(await events.ReadAsync().ConfigureAwait(false));

@@ -17,7 +17,7 @@ namespace ObsStrawket.Test.Utilities {
     private readonly Channel<IObsEvent> _events = Channel.CreateUnbounded<IObsEvent>();
 
     public static ObsClientSocket GetDebugClient(ClientSocket? socket = null, ILogger? logger = null, bool useChannel = false) {
-      return new ObsClientSocket(logger ?? new DebugLoggerProvider().CreateLogger("Client"), socket, useChannel);
+      return new ObsClientSocket(logger, socket, useChannel);
     }
 
     public async Task RunClientAsync(Uri uri, ObsClientSocket? socket = null, CancellationToken cancellation = default) {

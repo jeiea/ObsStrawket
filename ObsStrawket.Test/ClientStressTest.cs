@@ -12,8 +12,28 @@ namespace ObsStrawket.Test {
   public class ClientStressTest {
     [Fact]
     public async Task TestAsync() {
+      await StressTestHelper.RunParameterizedAsync(200, 4).ConfigureAwait(false);
+    }
+  }
+
+  public class ClientStressTest2 {
+    [Fact]
+    public async Task TestAsync() {
+      await StressTestHelper.RunParameterizedAsync(80, 4).ConfigureAwait(false);
+    }
+  }
+
+  public class ClientStressTest3 {
+    [Fact]
+    public async Task TestAsync() {
+      await StressTestHelper.RunParameterizedAsync(5, 4).ConfigureAwait(false);
+    }
+  }
+
+  internal static class StressTestHelper {
+    public static async Task RunParameterizedAsync(int delay, int division) {
       var logger = new MemoryLogger();
-      var client = ClientFlow.GetDebugClient(logger: null);
+      var client = ClientFlow.GetDebugClient();
       using var server = new MockServer().Run(default);
       int openCloseDifference = 0;
       var failures = Channel.CreateUnbounded<string>();
@@ -43,14 +63,14 @@ namespace ObsStrawket.Test {
       });
 
       var tasks = new List<Task>();
-      int step = 5;
-      int delayMilliseconds = 150;
-      int round = (int)Math.Pow(step, 3);
-      for (int i = 0; i < round; i++) {
-        int t = i;
+      foreach (
+        var (connectDelayMs, requestDelayMs, closeDelayMs, nextDelayMs)
+        in GeneratePermutation(delay, division)
+      ) {
+        //Debug.WriteLine($"{connectDelayMs} {requestDelayMs} {closeDelayMs} {nextDelayMs}");
         tasks.Add(Task.Run(async () => {
           try {
-            await Task.Delay((int)((double)t / round * delayMilliseconds));
+            await Task.Delay(connectDelayMs).ConfigureAwait(false);
             await client.ConnectAsync(server.Uri, MockServer.Password).ConfigureAwait(false);
           }
           catch (Exception ex) {
@@ -59,7 +79,7 @@ namespace ObsStrawket.Test {
         }));
         tasks.Add(Task.Run(async () => {
           try {
-            await Task.Delay((int)((double)t / step % step / step * delayMilliseconds));
+            await Task.Delay(requestDelayMs).ConfigureAwait(false);
             var version = await client.GetVersionAsync().ConfigureAwait(false);
             Assert.Contains("bmp", version.SupportedImageFormats);
           }
@@ -69,14 +89,14 @@ namespace ObsStrawket.Test {
         }));
         tasks.Add(Task.Run(async () => {
           try {
-            await Task.Delay((int)((double)t % step / step * delayMilliseconds));
-            await client.CloseAsync();
+            await Task.Delay(closeDelayMs).ConfigureAwait(false);
+            await client.CloseAsync().ConfigureAwait(false);
           }
           catch (Exception ex) {
             Debug.WriteLine(ex);
           }
         }));
-        await Task.Delay(delayMilliseconds).ConfigureAwait(false);
+        await Task.Delay(nextDelayMs).ConfigureAwait(false);
       }
       await TestUtil.WhenAnyThrowsAsync(tasks).ConfigureAwait(false);
 
@@ -91,6 +111,19 @@ namespace ObsStrawket.Test {
       }
 
       Assert.InRange(openCloseDifference, 0, 1);
+    }
+
+    private static IEnumerable<(int, int, int, int)> GeneratePermutation(int max, int division) {
+      int step = max / division;
+      for (int i1 = 0; i1 < max; i1 += step) {
+        for (int i2 = 0; i2 < max; i2 += step) {
+          for (int i3 = 0; i3 < max; i3 += step) {
+            for (int i4 = 0; i4 < max; i4 += step) {
+              yield return (i1, i2, i3, i4);
+            }
+          }
+        }
+      }
     }
   }
 }
