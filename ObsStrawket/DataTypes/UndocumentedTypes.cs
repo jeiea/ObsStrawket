@@ -16,7 +16,7 @@ namespace ObsStrawket.DataTypes {
   [MessagePackObject]
   public class Output {
     /// <summary>
-    /// 
+    /// Name of the output.
     /// </summary>
     [Key("outputName")]
     public string Name { get; set; } = "";

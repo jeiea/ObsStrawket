@@ -1,6 +1,9 @@
-namespace ObsStrawket.DataTypes {
-  using MessagePack;
+using MessagePack;
 
+namespace ObsStrawket.DataTypes {
+  /// <summary>
+  /// Data for representing OBS hotkey combination.
+  /// </summary>
   [MessagePackObject]
   public class KeyModifiers {
     /// <summary>

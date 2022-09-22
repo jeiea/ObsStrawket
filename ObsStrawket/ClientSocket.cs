@@ -36,16 +36,34 @@ namespace ObsStrawket {
     /// </summary>
     public bool IsConnected => _isOpen && _clientWebSocket.State == WebSocketState.Open;
 
+    /// <summary>
+    /// It emits all of received OBS events.
+    /// </summary>
     public ChannelReader<IObsEvent> Events => _events.Reader;
 
+    /// <summary>
+    /// Set addition websocket options.
+    /// </summary>
     public Action<ClientWebSocket> SetOptions { get; set; } = delegate { };
 
+    /// <summary>
+    /// Create low level OBS websocket client.
+    /// </summary>
+    /// <param name="logger">Logger for library debugging.</param>
     public ClientSocket(ILogger? logger = null) {
       _logger = logger;
       _sender = new(_clientWebSocket);
       _receiver = new(_clientWebSocket);
     }
 
+    /// <summary>
+    ///  Connect to OBS websocket server.
+    /// </summary>
+    /// <param name="uri">Destination uri. Use <c>ws://localhost:4455</c> if null.</param>
+    /// <param name="password">Password for handshake.</param>
+    /// <param name="events">Event categories to subscribe.</param>
+    /// <param name="cancellation">Token for cancellation.</param>
+    /// <exception cref="AuthenticationFailureException"></exception>
     public async Task ConnectAsync(
       Uri? uri = null,
       string? password = null,
@@ -108,6 +126,13 @@ namespace ObsStrawket {
       }
     }
 
+    /// <summary>
+    /// Low level request method. It can send <see cref="RawRequest"/>.
+    /// </summary>
+    /// <param name="request">Request data.</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <returns>Response from websocket server.</returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public async Task<IRequestResponse> RequestAsync(IRequest request, CancellationToken cancellation = default) {
       if (!IsConnected) {
         throw new InvalidOperationException("WebSocket is not connected");
@@ -131,6 +156,9 @@ namespace ObsStrawket {
       return response;
     }
 
+    /// <summary>
+    /// Close this connection. Pending requests will be cancelled.
+    /// </summary>
     public async Task CloseAsync(WebSocketCloseStatus status = WebSocketCloseStatus.NormalClosure, string? description = "Client closed websocket", Exception? exception = null) {
       _logger?.LogInformation("CloseAsync exception: {}", exception?.Message);
       await _connectSemaphore.WaitAsync().ConfigureAwait(false);
@@ -143,6 +171,9 @@ namespace ObsStrawket {
       }
     }
 
+    /// <summary>
+    /// Dispose this forever.
+    /// </summary>
     public void Dispose() {
       Reset(new ObsWebSocketException("Socket disposed"));
       _connectSemaphore.Dispose();
@@ -199,7 +230,7 @@ namespace ObsStrawket {
       _logger?.LogDebug("Exit. IsCancellationRequested: {}", token.IsCancellationRequested);
     }
 
-    private async Task<IOpCodeMessage> ReceiveMessageAsync(
+    private async static Task<IOpCodeMessage> ReceiveMessageAsync(
       ChannelReader<Task<IOpCodeMessage>> receiver, CancellationToken cancellation
     ) {
       var deserialization = await receiver.ReadAsync(cancellation).ConfigureAwait(false);

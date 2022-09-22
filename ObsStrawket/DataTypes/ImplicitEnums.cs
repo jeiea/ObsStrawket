@@ -48,9 +48,6 @@ namespace ObsStrawket.DataTypes {
     Resumed,
   }
 
-  /// <summary>
-  /// 
-  /// </summary>
   [MessagePackFormatter(typeof(EnumAsStringFormatter<MediaInputAction>))]
   public enum MediaInputAction {
     [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_NONE")]

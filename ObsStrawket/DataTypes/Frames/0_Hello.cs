@@ -25,7 +25,7 @@ namespace ObsStrawket.DataTypes {
   [MessagePackObject]
   public class Hello : IOpCodeMessage {
     /// <summary>
-    /// Hello (OpCode 0)
+    /// <see cref="OpCode.Hello"/> (OpCode 0)
     /// </summary>
     [IgnoreMember]
     public OpCode Op => OpCode.Hello;

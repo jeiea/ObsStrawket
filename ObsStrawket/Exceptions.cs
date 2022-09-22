@@ -1,28 +1,49 @@
+using ObsStrawket.DataTypes;
+using System;
+
 namespace ObsStrawket {
-  using ObsStrawket.DataTypes;
-  using System;
-
+  /// <summary>
+  /// All library exceptions derive this unless it is thrown from more under the hood.
+  /// </summary>
   public class ObsWebSocketException : Exception {
-    public ObsWebSocketException(string? message = null, Exception? innerException = null) : base(message, innerException) { }
+    /// <summary>
+    /// 
+    /// </summary>
+    internal ObsWebSocketException(string? message = null, Exception? innerException = null) : base(message, innerException) { }
   }
 
+  /// <summary>
+  /// Found unexpected byte during deserialization.
+  /// </summary>
   public class UnexpectedProtocolException : ObsWebSocketException {
-    public UnexpectedProtocolException(string? message = null) : base(message ?? "It's not seem to be obs websocket message") { }
+    internal UnexpectedProtocolException(string? message = null) : base(message ?? "It's not seem to be obs websocket message") { }
   }
 
+  /// <summary>
+  /// Request is cancelled due to premature socket close, etc.
+  /// </summary>
   public class QueueCancelledException : ObsWebSocketException {
-    public QueueCancelledException(string message = "Connection closed before operation", Exception? innerException = null) : base(message, innerException) { }
+    internal QueueCancelledException(string message = "Connection closed before operation", Exception? innerException = null) : base(message, innerException) { }
   }
 
+  /// <summary>
+  /// Received unsuccessful response.
+  /// </summary>
   public class FailureResponseException : ObsWebSocketException {
+    /// <summary>
+    /// Matching OBS response.
+    /// </summary>
     public IRequestResponse Response { get; set; }
 
-    public FailureResponseException(IRequestResponse response) : base($"{response.RequestStatus.Code}: {response.RequestStatus.Comment}") {
+    internal FailureResponseException(IRequestResponse response) : base($"{response.RequestStatus.Code}: {response.RequestStatus.Comment}") {
       Response = response;
     }
   }
 
+  /// <summary>
+  /// Failed to authenticate.
+  /// </summary>
   public class AuthenticationFailureException : ObsWebSocketException {
-    public AuthenticationFailureException(string? message = null) : base(message ?? "OBS Authentication failure") { }
+    internal AuthenticationFailureException(string? message = null) : base(message ?? "OBS Authentication failure") { }
   }
 }

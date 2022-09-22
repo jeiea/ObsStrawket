@@ -104,7 +104,7 @@ namespace ObsStrawket.DataTypes {
   [MessagePackObject]
   public class RequestStatus {
     /// <summary>
-    /// <c>true</c> if the request resulted in <c>RequestStatus::Success</c>. False if otherwise.
+    /// <c>true</c> if the request resulted in <see cref="RequestStatusCode.Success"/>. False if otherwise.
     /// </summary>
     [Key("result")]
     public bool Result { get; set; }

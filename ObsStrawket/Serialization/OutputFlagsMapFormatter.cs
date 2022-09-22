@@ -1,9 +1,9 @@
-namespace ObsStrawket.Serialization {
-  using MessagePack;
-  using MessagePack.Formatters;
-  using ObsStrawket.DataTypes;
-  using System;
+using MessagePack;
+using MessagePack.Formatters;
+using ObsStrawket.DataTypes;
+using System;
 
+namespace ObsStrawket.Serialization {
   public class OutputFlagsMapFormatter : IMessagePackFormatter<OutputFlags> {
     internal static readonly OutputFlagsMapFormatter Instance = new();
     private static readonly EnumAsStringFormatter<OutputFlags> _enumFormatter = new();

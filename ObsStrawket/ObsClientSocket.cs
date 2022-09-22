@@ -1,13 +1,13 @@
-namespace ObsStrawket {
-  using Microsoft.Extensions.Logging;
-  using ObsStrawket.DataTypes;
-  using ObsStrawket.DataTypes.Predefineds;
-  using System;
-  using System.Collections.Generic;
-  using System.Threading;
-  using System.Threading.Channels;
-  using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using ObsStrawket.DataTypes;
+using ObsStrawket.DataTypes.Predefineds;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Channels;
+using System.Threading.Tasks;
 
+namespace ObsStrawket {
   /// <summary>
   /// High level client interface.
   /// </summary>
@@ -18,7 +18,7 @@ namespace ObsStrawket {
     /// <summary>
     /// All events.
     /// </summary>
-    public event Action<IObsEvent> Event = delegate { { } };
+    public event Action<IObsEvent> Event = delegate { };
 
     /// <summary>
     /// General event group.
@@ -433,7 +433,7 @@ namespace ObsStrawket {
     public bool IsConnected { get => _clientSocket.IsConnected; }
 
     /// <summary>
-    /// All events channel. It can be used only when <c>ObsClientSocket</c> is created with <c>useChannel</c>.
+    /// It emits all of received OBS events. It can be used only when <see cref="ObsClientSocket"/> is created with <c>useChannel</c>.
     /// </summary>
     public ChannelReader<IObsEvent> Events {
       get {
@@ -445,12 +445,12 @@ namespace ObsStrawket {
     }
 
     /// <summary>
-    /// Create OBS websocket client. It can be reused unless <c>Dispose()</c> is called.
+    /// Create OBS websocket client. It can be reused unless <see cref="Dispose"/> is called.
     /// </summary>
     /// <param name="logger">Logger for library debugging.</param>
     /// <param name="client">Lower level client for custom behavior.</param>
     /// <param name="useChannel">Use channel for event receive.<br />
-    /// Caution: If <c>Events</c> is not consumed it will cause memory leak.
+    /// Caution: If <see cref="Events"/> is not consumed it will cause memory leak.
     /// </param>
     public ObsClientSocket(ILogger? logger = null, ClientSocket? client = null, bool useChannel = false) {
       _logger = logger;
@@ -494,7 +494,7 @@ namespace ObsStrawket {
     public Task CloseAsync() => _clientSocket.CloseAsync();
 
     /// <summary>
-    /// Low level request method. It can send <c>RawRequest</c>.
+    /// Low level request method. It can send <see cref="RawRequest"/>.
     /// </summary>
     /// <param name="request">Request data.</param>
     /// <param name="cancellation">Token for cancellation</param>

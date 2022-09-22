@@ -10,6 +10,9 @@ RequestStatus::(\w+)\n([\s\S]*?)\nIdentifier Value: (\d+)\n([\s\S]*?)(?=RequestS
 ///</summary>
 $1 = $3,
    */
+  /// <summary>
+  /// Result code of request processing.
+  /// </summary>
   public enum RequestStatusCode {
     /// <summary>
     /// Unknown status, should never be used.<br />
