@@ -71,9 +71,15 @@ namespace ObsStrawket.DataTypes {
   /// </summary>
   [MessagePackObject]
   public class HelloAuthentication {
+    /// <summary>
+    /// Additional input to a one-way function that hashes base64 secret.
+    /// </summary>
     [Key("challenge")]
     public string Challenge { get; set; } = "";
 
+    /// <summary>
+    /// Random base64 string provided as an additional input to a one-way function that hashes password.
+    /// </summary>
     [Key("salt")]
     public string Salt { get; set; } = "";
   }
