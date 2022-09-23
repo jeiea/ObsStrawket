@@ -52,7 +52,8 @@ namespace ObsStrawket.DataTypes.Predefineds {");
           file.Write("    {0}", identifier.EnumIdentifier);
           if (isStringEnum) {
             file.WriteLine(',');
-          } else {
+          }
+          else {
             string str = $"{identifier.EnumValue}";
             if (str[0] == '(') {
               str = str[1..(str.Length - 1)];

@@ -475,12 +475,10 @@ namespace ObsStrawket {
     ) {
       var target = uri ?? ClientSocket.DefaultUri;
       await _connectSemaphore.WaitAsync(cancellation).ConfigureAwait(false);
-      // _dispatch may be same among multiple threads if restored at the same time.
       try {
         await _clientSocket.ConnectAsync(target, password, events, cancellation).ConfigureAwait(false);
         if (_dispatch != null) {
-          _dispatch = _dispatch.ContinueWith(
-            (_) => DispatchEventAsync(_clientSocket.Events, target), TaskScheduler.Default);
+          _dispatch = DispatchEventAsync(_dispatch, _clientSocket.Events, target);
         }
       }
       finally {
@@ -511,7 +509,9 @@ namespace ObsStrawket {
       GC.SuppressFinalize(this);
     }
 
-    private async Task DispatchEventAsync(ChannelReader<IObsEvent> events, Uri uri) {
+    private async Task DispatchEventAsync(Task former, ChannelReader<IObsEvent> events, Uri uri) {
+      await former.ConfigureAwait(false);
+
       using var _1 = _logger?.BeginScope(nameof(DispatchEventAsync));
       _logger?.LogDebug("Start");
 

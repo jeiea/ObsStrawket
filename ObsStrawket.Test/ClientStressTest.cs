@@ -26,7 +26,7 @@ namespace ObsStrawket.Test {
   public class ClientStressTest3 {
     [Fact]
     public async Task TestAsync() {
-      await StressTestHelper.RunParameterizedAsync(5, 4).ConfigureAwait(false);
+      await StressTestHelper.RunParameterizedAsync(5, 5).ConfigureAwait(false);
     }
   }
 
@@ -114,7 +114,7 @@ namespace ObsStrawket.Test {
     }
 
     private static IEnumerable<(int, int, int, int)> GeneratePermutation(int max, int division) {
-      int step = max / division;
+      int step = Math.Max(1, max / division);
       for (int i1 = 0; i1 < max; i1 += step) {
         for (int i2 = 0; i2 < max; i2 += step) {
           for (int i3 = 0; i3 < max; i3 += step) {
