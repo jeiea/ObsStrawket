@@ -1,3 +1,13 @@
+## 0.7.0
+
+- (**BREAKING**) Strongly typed some requests and events.
+  - `SceneItemListReindexed`
+  - `GetSceneItemList`
+  - `GetGroupSceneItemList`
+  - `GetSceneItemBlendMode`
+  - `SetSceneItemBlendMode`
+- Fix out of order connect / disconnect events.
+
 ## 0.6.0
 
 - Fix some doc comment issues.
@@ -9,8 +19,8 @@
 
 ## 0.4.0
 
-- Add `VideoMixType`, `StreamServiceType` enum.
-- `SceneListChanged.Scenes` is typed.
+- (**BREAKING**) Add `VideoMixType`, `StreamServiceType` enum.
+- (**BREAKING**) `SceneListChanged.Scenes` is typed.
 - Fix invalid xml doc comments.
 - Less convincing fix for out of order connect / disconnect events.
 

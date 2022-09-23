@@ -1,15 +1,15 @@
-namespace ObsStrawket.Test.Real {
-  using ObsStrawket.Test.Specs;
-  using ObsStrawket.Test.Utilities;
-  using System;
-  using System.Collections.Generic;
-  using System.Diagnostics;
-  using System.IO;
-  using System.Net.Sockets;
-  using System.Text.Json;
-  using System.Threading.Tasks;
-  using Xunit;
+using ObsStrawket.Test.Specs;
+using ObsStrawket.Test.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Net.Sockets;
+using System.Text.Json;
+using System.Threading.Tasks;
+using Xunit;
 
+namespace ObsStrawket.Test.Real {
   public class RealObsTest {
     private readonly bool _shouldSkip = false;
     private readonly Uri _uri = new("ws://127.0.0.1:4455");
@@ -123,9 +123,6 @@ namespace ObsStrawket.Test.Real {
         //new SetSceneSceneTransitionOverrideFlow(),
         //new GetSceneSceneTransitionOverrideFlow(),
 
-// Scene items
-//new GetGroupSceneItemListFlow(),
-
 
         //new SetStudioModeEnabledFlow(), // setup studio mode
         //new SetCurrentProgramSceneFlow(),
@@ -160,10 +157,27 @@ namespace ObsStrawket.Test.Real {
         //new GetInputAudioSyncOffsetFlow(),
         //new SetInputAudioMonitorTypeFlow(),
         //new GetInputAudioMonitorTypeFlow(),
-        new SetInputAudioTracksFlow(),
-        new GetInputAudioTracksFlow(),
-        new GetInputPropertiesListPropertyItemsFlow(),
-        new PressInputPropertiesButtonFlow(),
+        //new SetInputAudioTracksFlow(),
+        //new GetInputAudioTracksFlow(),
+        //new GetInputPropertiesListPropertyItemsFlow(),
+        //new PressInputPropertiesButtonFlow(),
+
+        new CreateSceneItemFlow(), // Setup scene item
+        new DuplicateSceneItemFlow(),
+        //new GetSceneItemIdFlow(),
+        //new GetSceneItemListFlow(),
+        //new GetGroupSceneItemListFlow(),
+        //new SetSceneItemEnabledFlow(),
+        //new GetSceneItemEnabledFlow(),
+        //new SetSceneItemLockedFlow(),
+        //new GetSceneItemLockedFlow(),
+        new SetSceneItemTransformFlow(),
+        //new GetSceneItemTransformFlow(),
+        //new SetSceneItemBlendModeFlow(),
+        //new GetSceneItemBlendModeFlow(),
+        //new SetSceneItemIndexFlow(),
+        //new GetSceneItemIndexFlow(),
+        new RemoveSceneItemFlow(),
 
         //new GetOutputListFlow(), // Outputs
 
@@ -187,15 +201,12 @@ namespace ObsStrawket.Test.Real {
         //new GetSourceScreenshotFlow(),
         //new SaveSourceScreenshotFlow(),
 
-        new RemoveInputFlow(), // cleanups
-        //new RemoveSceneItemFlow(),
+        new RemoveInputFlow(), // cleanup input
         new RemoveSceneFlow(),
         //new RemoveProfileFlow(),
 
 
-//new CreateSceneItemFlow(),
 //new CreateSourceFilterFlow(),
-//new DuplicateSceneItemFlow(),
 //new GetCurrentSceneTransitionCursorFlow(),
 //new GetCurrentSceneTransitionFlow(),
 //new GetLastReplayBufferReplayFlow(),
@@ -203,33 +214,20 @@ namespace ObsStrawket.Test.Real {
 //new GetOutputSettingsFlow(),
 //new GetOutputStatusFlow(),
 //new GetReplayBufferStatusFlow(),
-//new GetSceneItemBlendModeFlow(),
-//new GetSceneItemEnabledFlow(),
-//new GetSceneItemIdFlow(),
-//new GetSceneItemIndexFlow(),
-//new GetSceneItemListFlow(),
-//new GetSceneItemLockedFlow(),
-//new GetSceneItemTransformFlow(),
-//new GetSceneListFlow(),
 //new GetSceneTransitionListFlow(),
 //new GetSourceFilterDefaultSettingsFlow(),
-//new GetSourceFilterListFlow(),
 //new GetSourceFilterFlow(),
+//new GetSourceFilterListFlow(),
 //new GetTransitionKindListFlow(),
 //new GetVirtualCamStatusFlow(),
 //new OffsetMediaInputCursorFlow(),
 //new RemoveSourceFilterFlow(),
 //new SaveReplayBufferFlow(),
 //new SetCurrentSceneTransitionDurationFlow(),
-//new SetCurrentSceneTransitionSettingsFlow(),
 //new SetCurrentSceneTransitionFlow(),
+//new SetCurrentSceneTransitionSettingsFlow(),
 //new SetMediaInputCursorFlow(),
 //new SetOutputSettingsFlow(),
-//new SetSceneItemBlendModeFlow(),
-//new SetSceneItemEnabledFlow(),
-//new SetSceneItemIndexFlow(),
-//new SetSceneItemLockedFlow(),
-//new SetSceneItemTransformFlow(),
 //new SetSourceFilterEnabledFlow(),
 //new SetSourceFilterIndexFlow(),
 //new SetSourceFilterNameFlow(),

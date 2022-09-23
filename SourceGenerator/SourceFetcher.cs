@@ -48,7 +48,10 @@ namespace SourceGenerator {
         }
 
         foreach (var field in request.DataFields!) {
-          if (GetCustomType(field.ValueName!, out string? type)) {
+          if (field.ValueName == "sceneItems") {
+            field.ValueType = "Array<BasicSceneItem>";
+          }
+          else if (GetCustomType(field.ValueName!, out string? type)) {
             field.ValueType = type;
           }
         }
@@ -113,6 +116,12 @@ namespace SourceGenerator {
         return true;
       case "scenes":
         type = "Array<Scene>";
+        return true;
+      case "sceneItems":
+        type = "Array<SceneItem>";
+        return true;
+      case "sceneItemBlendMode":
+        type = "BlendingType";
         return true;
       case "inputs":
         type = "Array<Input>";

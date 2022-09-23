@@ -2225,7 +2225,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Array of scene items in the scene
     /// </summary>
     [Key("sceneItems")]
-    public List<Dictionary<string, object?>> SceneItems { get; set; } = new();
+    public List<SceneItem> SceneItems { get; set; } = new();
   }
 
   /// <summary>
@@ -2254,7 +2254,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Array of scene items in the group
     /// </summary>
     [Key("sceneItems")]
-    public List<Dictionary<string, object?>> SceneItems { get; set; } = new();
+    public List<SceneItem> SceneItems { get; set; } = new();
   }
 
   /// <summary>
@@ -2696,7 +2696,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Current blend mode
     /// </summary>
     [Key("sceneItemBlendMode")]
-    public string SceneItemBlendMode { get; set; } = "";
+    public BlendingType SceneItemBlendMode { get; set; }
   }
 
   /// <summary>
@@ -2725,7 +2725,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// New blend mode
     /// </summary>
     [Key("sceneItemBlendMode")]
-    public string SceneItemBlendMode { get; set; } = "";
+    public BlendingType SceneItemBlendMode { get; set; }
   }
 
   /// <summary>

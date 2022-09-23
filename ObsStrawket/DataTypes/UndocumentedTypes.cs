@@ -2,6 +2,7 @@ using MessagePack;
 using MessagePack.Formatters;
 using ObsStrawket.Serialization;
 using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace ObsStrawket.DataTypes {
@@ -140,4 +141,51 @@ namespace ObsStrawket.DataTypes {
     [Key("unversionedInputKind")]
     public string UnversionedKind { get; set; } = "";
   }
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
+  //https://github.com/obsproject/obs-websocket/blob/265899f76f88a5be74747308fff3d35347ce43c5/src/utils/Obs_ArrayHelper.cpp#L142
+  /// <summary>
+  /// Represents reindexed scene item.
+  /// </summary>
+  [MessagePackObject]
+  public class BasicSceneItem {
+    [Key("sceneItemId")]
+    public int Id { get; set; }
+
+    [Key("sceneItemIndex")]
+    public int Index { get; set; }
+  }
+
+  //https://github.com/obsproject/obs-websocket/blob/265899f76f88a5be74747308fff3d35347ce43c5/src/utils/Obs_ArrayHelper.cpp#L142
+  /// <summary>
+  /// Represents scene item.
+  /// </summary>
+  [MessagePackObject]
+  public class SceneItem : BasicSceneItem {
+    [Key("sceneItemEnabled")]
+    public bool? Enabled { get; set; }
+
+    [Key("sceneItemLocked")]
+    public bool? Locked { get; set; }
+
+    [Key("sceneItemTransform")]
+    public Dictionary<string, object>? Transform { get; set; }
+
+    [Key("sceneItemBlendMode")]
+    public BlendingType? BlendMode { get; set; }
+
+    [Key("sourceName")]
+    public string? SourceName { get; set; }
+
+    [Key("sourceType")]
+    public SourceType? SourceType { get; set; }
+
+    [Key("inputKind")]
+    public string? InputKind { get; set; }
+
+    [Key("isGroup")]
+    public bool? IsGroup { get; set; }
+  }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

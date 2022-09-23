@@ -3,28 +3,31 @@ using System.Threading.Tasks;
 using Xunit;
 
 namespace ObsStrawket.Test.Specs {
-  public class SetSceneSceneTransitionOverrideTest {
+  public class GetSceneItemIndexTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new SetSceneSceneTransitionOverrideFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetSceneItemIndexFlow()).ConfigureAwait(false);
     }
   }
 
-  class SetSceneSceneTransitionOverrideFlow : ITestFlow {
+  class GetSceneItemIndexFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetSceneSceneTransitionOverrideAsync(sceneName: CreateSceneFlow.NewScene, transitionName: "Fade", transitionDuration: 200).ConfigureAwait(false);
+      var response = await client.GetSceneItemIndexAsync(
+        sceneName: CreateSceneFlow.NewScene,
+        sceneItemId: CreateSceneItemFlow.CreatedItemId
+      ).ConfigureAwait(false);
+      Assert.Equal(SetSceneItemIndexFlow.NewIndex, response.SceneItemIndex);
     }
 
     public async Task RespondAsync(MockServerSession session) {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestData"": {
-      ""sceneName"": ""test scene"",
-      ""transitionDuration"": 200,
-      ""transitionName"": ""Fade""
+      ""sceneItemId"": 2,
+      ""sceneName"": ""test scene""
     },
     ""requestId"": ""{guid}"",
-    ""requestType"": ""SetSceneSceneTransitionOverride""
+    ""requestType"": ""GetSceneItemIndex""
   },
   ""op"": 6
 }").ConfigureAwait(false);
@@ -35,7 +38,10 @@ namespace ObsStrawket.Test.Specs {
       ""code"": 100,
       ""result"": true
     },
-    ""requestType"": ""SetSceneSceneTransitionOverride""
+    ""requestType"": ""GetSceneItemIndex"",
+    ""responseData"": {
+      ""sceneItemIndex"": 2
+    }
   },
   ""op"": 7
 }".Replace("{guid}", guid)).ConfigureAwait(false);

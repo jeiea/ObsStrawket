@@ -844,7 +844,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Array of scene item objects
     /// </summary>
     [Key("sceneItems")]
-    public List<Dictionary<string, object?>> SceneItems { get; set; } = new();
+    public List<BasicSceneItem> SceneItems { get; set; } = new();
   }
 
   /// <summary>

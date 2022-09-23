@@ -1768,7 +1768,7 @@ namespace ObsStrawket {
     /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="sceneItemBlendMode">New blend mode</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetSceneItemBlendModeAsync(string sceneName, int sceneItemId, string sceneItemBlendMode, CancellationToken cancellation = default) {
+    public async Task<RequestResponse> SetSceneItemBlendModeAsync(string sceneName, int sceneItemId, BlendingType sceneItemBlendMode, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetSceneItemBlendMode() { SceneName = sceneName, SceneItemId = sceneItemId, SceneItemBlendMode = sceneItemBlendMode }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 

@@ -94,9 +94,9 @@ Checkmark means it has test.
 - [x] SceneCollectionListChanged
 - [x] SceneCreated
 - [x] SceneItemCreated
-- [ ] SceneItemEnableStateChanged
-- [ ] SceneItemListReindexed
-- [ ] SceneItemLockStateChanged
+- [x] SceneItemEnableStateChanged
+- [x] SceneItemListReindexed
+- [x] SceneItemLockStateChanged
 - [x] SceneItemRemoved
 - [x] SceneItemSelected
 - [ ] SceneItemTransformChanged
@@ -124,15 +124,15 @@ Checkmark means it has test.
 - [x] CreateProfile
 - [x] CreateScene
 - [x] CreateSceneCollection
-- [ ] CreateSceneItem
+- [x] CreateSceneItem
 - [ ] CreateSourceFilter
-- [ ] DuplicateSceneItem
+- [x] DuplicateSceneItem
 - [x] GetCurrentPreviewScene
 - [x] GetCurrentProgramScene
 - [ ] GetCurrentSceneTransition
 - [ ] GetCurrentSceneTransitionCursor
 - [x] GetGroupList
-- [ ] GetGroupSceneItemList
+- [x] GetGroupSceneItemList
 - [x] GetHotkeyList
 - [x] GetInputAudioBalance
 - [x] GetInputAudioMonitorType
@@ -158,13 +158,13 @@ Checkmark means it has test.
 - [x] GetRecordStatus
 - [ ] GetReplayBufferStatus
 - [x] GetSceneCollectionList
-- [ ] GetSceneItemBlendMode
-- [ ] GetSceneItemEnabled
-- [ ] GetSceneItemId
-- [ ] GetSceneItemIndex
-- [ ] GetSceneItemList
-- [ ] GetSceneItemLocked
-- [ ] GetSceneItemTransform
+- [x] GetSceneItemBlendMode
+- [x] GetSceneItemEnabled
+- [x] GetSceneItemId
+- [x] GetSceneItemIndex
+- [x] GetSceneItemList
+- [x] GetSceneItemLocked
+- [x] GetSceneItemTransform
 - [x] GetSceneList
 - [x] GetSceneSceneTransitionOverride
 - [ ] GetSceneTransitionList
@@ -193,7 +193,7 @@ Checkmark means it has test.
 - [x] RemoveInput
 - [x] RemoveProfile
 - [x] RemoveScene
-- [ ] RemoveSceneItem
+- [x] RemoveSceneItem
 - [ ] RemoveSourceFilter
 - [x] ResumeRecord
 - [ ] SaveReplayBuffer
@@ -218,11 +218,11 @@ Checkmark means it has test.
 - [ ] SetOutputSettings
 - [x] SetPersistentData
 - [x] SetProfileParameter
-- [ ] SetSceneItemBlendMode
-- [ ] SetSceneItemEnabled
-- [ ] SetSceneItemIndex
-- [ ] SetSceneItemLocked
-- [ ] SetSceneItemTransform
+- [x] SetSceneItemBlendMode
+- [x] SetSceneItemEnabled
+- [x] SetSceneItemIndex
+- [x] SetSceneItemLocked
+- [x] SetSceneItemTransform
 - [x] SetSceneName
 - [x] SetSceneSceneTransitionOverride
 - [ ] SetSourceFilterEnabled
