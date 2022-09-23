@@ -48,68 +48,107 @@ namespace ObsStrawket.DataTypes {
     Resumed,
   }
 
-  [MessagePackFormatter(typeof(EnumAsStringFormatter<MediaInputAction>))]
-  public enum MediaInputAction {
-    [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_NONE")]
-    None,
-    [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PLAY")]
-    Play,
-    [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PAUSE")]
-    Pause,
-    [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP")]
-    Stop,
-    [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART")]
-    Restart,
-    [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_NEXT")]
-    Next,
-    [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PREVIOUS")]
-    Previous,
-  }
-
+  /// <summary>
+  /// The desktop audio monitoring type.
+  /// </summary>
   [MessagePackFormatter(typeof(EnumAsStringFormatter<MonitoringType>))]
   public enum MonitoringType {
+    /// <summary>
+    /// Do not monitor
+    /// </summary>
     [EnumMember(Value = "OBS_MONITORING_TYPE_NONE")]
     None,
+    /// <summary>
+    /// Send to monitor device, no outputs
+    /// </summary>
     [EnumMember(Value = "OBS_MONITORING_TYPE_MONITOR_ONLY")]
     Only,
+    /// <summary>
+    /// Send to monitor device and outputs
+    /// </summary>
     [EnumMember(Value = "OBS_MONITORING_TYPE_MONITOR_AND_OUTPUT")]
     Output,
   }
 
+  /// <summary>
+  /// State of the media.
+  /// </summary>
   [MessagePackFormatter(typeof(EnumAsStringFormatter<MediaState>))]
   public enum MediaState {
+    /// <summary>
+    /// Invalid or unsupported state.
+    /// </summary>
     [EnumMember(Value = "OBS_MEDIA_STATE_NONE")]
     None,
+    /// <summary>
+    /// </summary>
     [EnumMember(Value = "OBS_MEDIA_STATE_PLAYING")]
     Playing,
+    /// <summary>
+    /// </summary>
     [EnumMember(Value = "OBS_MEDIA_STATE_OPENING")]
     Opening,
+    /// <summary>
+    /// </summary>
     [EnumMember(Value = "OBS_MEDIA_STATE_BUFFERING")]
     Buffering,
+    /// <summary>
+    /// </summary>
     [EnumMember(Value = "OBS_MEDIA_STATE_PAUSED")]
     Paused,
+    /// <summary>
+    /// </summary>
     [EnumMember(Value = "OBS_MEDIA_STATE_STOPPED")]
     Stopped,
+    /// <summary>
+    /// </summary>
     [EnumMember(Value = "OBS_MEDIA_STATE_ENDED")]
     Ended,
+    /// <summary>
+    /// </summary>
     [EnumMember(Value = "OBS_MEDIA_STATE_ERROR")]
     Error,
   }
 
+  /// <summary>
+  /// The bounding box type of a scene item. Bounding boxes are used to
+  /// stretch/position the source relative to a specific bounding box of a specific size.
+  /// </summary>
   [MessagePackFormatter(typeof(EnumAsStringFormatter<BoundsType>))]
   public enum BoundsType {
+    /// <summary>
+    /// No bounding box
+    /// </summary>
     [EnumMember(Value = "OBS_BOUNDS_NONE")]
     None,
+    /// <summary>
+    /// Stretch to the bounding box without preserving aspect ratio
+    /// </summary>
     [EnumMember(Value = "OBS_BOUNDS_STRETCH")]
     Stretch,
+    /// <summary>
+    /// Scales with aspect ratio to inner bounding box rectangle
+    /// </summary>
     [EnumMember(Value = "OBS_BOUNDS_SCALE_INNER")]
     Inner,
+    /// <summary>
+    /// Scales with aspect ratio to outer bounding box rectangle
+    /// </summary>
     [EnumMember(Value = "OBS_BOUNDS_SCALE_OUTER")]
     Outer,
+    /// <summary>
+    /// Scales with aspect ratio to the bounding box width
+    /// </summary>
     [EnumMember(Value = "OBS_BOUNDS_SCALE_TO_WIDTH")]
     Width,
+    /// <summary>
+    /// Scales with aspect ratio to the bounding box height
+    /// </summary>
     [EnumMember(Value = "OBS_BOUNDS_SCALE_TO_HEIGHT")]
     Height,
+    /// <summary>
+    /// Scales with aspect ratio, but only to the size of the source maximum
+    /// </summary>
     [EnumMember(Value = "OBS_BOUNDS_MAX_ONLY")]
     Only,
   }
@@ -176,20 +215,37 @@ namespace ObsStrawket.DataTypes {
     Profile,
   }
 
+  /// <summary>
+  /// Represents projector for a specific output video mix.
+  /// </summary>
   [MessagePackFormatter(typeof(EnumAsStringFormatter<VideoMixType>))]
   public enum VideoMixType {
+    /// <summary>
+    /// Studio mode preview
+    /// </summary>
     [EnumMember(Value = "OBS_WEBSOCKET_VIDEO_MIX_TYPE_PREVIEW")]
     Preview,
+    /// <summary>
+    /// </summary>
     [EnumMember(Value = "OBS_WEBSOCKET_VIDEO_MIX_TYPE_PROGRAM")]
     Program,
+    /// <summary>
+    /// </summary>
     [EnumMember(Value = "OBS_WEBSOCKET_VIDEO_MIX_TYPE_MULTIVIEW")]
     Multiview,
   }
 
+    /// <summary>
+    /// Type of streaming options
+    /// </summary>
   [MessagePackFormatter(typeof(EnumAsStringFormatter<StreamServiceType>))]
   public enum StreamServiceType {
+    /// <summary>
+    /// </summary>
     [EnumMember(Value = "rtmp_common")]
     RtmpCommon,
+    /// <summary>
+    /// </summary>
     [EnumMember(Value = "rtmp_custom")]
     RtmpCustom,
   }
