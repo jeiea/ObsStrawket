@@ -1,10 +1,10 @@
-namespace ObsStrawket.Serialization {
-  using MessagePack;
-  using MessagePack.Formatters;
-  using ObsStrawket.DataTypes;
-  using System;
+using MessagePack;
+using MessagePack.Formatters;
+using ObsStrawket.DataTypes;
+using System;
 
-  class RequestResponseFormatter : IMessagePackFormatter<IRequestResponse> {
+namespace ObsStrawket.Serialization {
+  internal class RequestResponseFormatter : IMessagePackFormatter<IRequestResponse> {
     public static readonly RequestResponseFormatter Instance = new();
 
     public IRequestResponse Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {

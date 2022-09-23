@@ -1,7 +1,6 @@
-namespace ObsStrawket.DataTypes {
-  using MessagePack;
-  using System;
+using MessagePack;
 
+namespace ObsStrawket.DataTypes {
   internal static class FormatterUtil {
     public static MessagePackReader SeekByKey(MessagePackReader reader, string key) {
       if (!SeekByKey(ref reader, key)) {

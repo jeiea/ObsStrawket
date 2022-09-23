@@ -1,8 +1,5 @@
 using MessagePack;
 using ObsStrawket.DataTypes.Predefineds;
-using System.ComponentModel;
-using System.Net.WebSockets;
-using System.Runtime.CompilerServices;
 
 namespace ObsStrawket.DataTypes {
   /// <summary>

@@ -1,10 +1,10 @@
+using MessagePack;
+using MessagePack.Formatters;
+using ObsStrawket.Serialization;
+using System;
+using System.Runtime.Serialization;
+
 namespace ObsStrawket.DataTypes {
-  using MessagePack;
-  using MessagePack.Formatters;
-  using ObsStrawket.Serialization;
-  using System;
-  using System.Runtime.Serialization;
-  using System.Text;
 
   // https://github.com/obsproject/obs-websocket/blob/5f8a0122bdd0146fdb33968f6bdf6ab624851e7a/src/utils/Obs_ArrayHelper.cpp#L335
   // https://github.com/obsproject/obs-studio/blob/master/docs/sphinx/reference-outputs.rst
@@ -71,7 +71,7 @@ namespace ObsStrawket.DataTypes {
     /// </summary>
     [EnumMember(Value = "OBS_OUTPUT_AUDIO")]
     Audio = 1 << 1,
-    
+
     /// <summary>
     /// Output is encoded.
     /// </summary>

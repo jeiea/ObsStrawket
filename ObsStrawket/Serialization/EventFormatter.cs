@@ -1,10 +1,10 @@
-namespace ObsStrawket.Serialization {
-  using MessagePack;
-  using MessagePack.Formatters;
-  using ObsStrawket.DataTypes;
-  using System;
+using MessagePack;
+using MessagePack.Formatters;
+using ObsStrawket.DataTypes;
+using System;
 
-  class EventFormatter : IMessagePackFormatter<IObsEvent> {
+namespace ObsStrawket.Serialization {
+  internal class EventFormatter : IMessagePackFormatter<IObsEvent> {
     public static readonly EventFormatter Instance = new();
 
     public IObsEvent Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {

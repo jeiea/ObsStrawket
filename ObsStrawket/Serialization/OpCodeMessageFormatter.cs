@@ -1,11 +1,10 @@
+using MessagePack;
+using MessagePack.Formatters;
+using MessagePack.Resolvers;
 using ObsStrawket.DataTypes;
 
 namespace ObsStrawket.Serialization {
-  using MessagePack;
-  using MessagePack.Formatters;
-  using MessagePack.Resolvers;
-
-  class OpCodeMessageFormatter : IMessagePackFormatter<IOpCodeMessage> {
+  internal class OpCodeMessageFormatter : IMessagePackFormatter<IOpCodeMessage> {
     private static readonly DynamicObjectResolver _resolver = DynamicObjectResolver.Instance;
 
     private readonly IMessagePackFormatter<Hello> _helloFormatter = _resolver.GetFormatter<Hello>();

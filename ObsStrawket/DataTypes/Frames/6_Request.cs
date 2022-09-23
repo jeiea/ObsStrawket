@@ -1,6 +1,5 @@
 using MessagePack;
 using System.Collections.Generic;
-using System.Net.WebSockets;
 
 namespace ObsStrawket.DataTypes {
   /// <summary>

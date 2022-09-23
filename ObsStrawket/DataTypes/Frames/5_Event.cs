@@ -1,7 +1,6 @@
 using MessagePack;
 using ObsStrawket.DataTypes.Predefineds;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace ObsStrawket.DataTypes {
   /// <summary>

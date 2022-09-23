@@ -1,12 +1,4 @@
 using MessagePack;
-using System.Collections.Generic;
-using System.Net.WebSockets;
-using System;
-using System.Buffers.Text;
-using System.Net.Sockets;
-using System.Net;
-using System.Security.Cryptography;
-using System.Text.RegularExpressions;
 
 namespace ObsStrawket.DataTypes {
   /// <summary>

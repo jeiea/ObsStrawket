@@ -1,5 +1,5 @@
-using MessagePack.Formatters;
 using MessagePack;
+using MessagePack.Formatters;
 using System;
 using System.Runtime.Serialization;
 

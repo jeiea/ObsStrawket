@@ -1,7 +1,6 @@
-namespace ObsStrawket.DataTypes {
-  using MessagePack;
-  using System.Net.WebSockets;
+using MessagePack;
 
+namespace ObsStrawket.DataTypes {
   /// <summary>
   /// Sent from: Identified client<br />
   /// Sent to: obs-websocket<br />

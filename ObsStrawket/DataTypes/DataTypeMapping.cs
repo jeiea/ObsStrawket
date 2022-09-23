@@ -1,9 +1,9 @@
-namespace ObsStrawket.DataTypes {
-  using ObsStrawket.DataTypes.Predefineds;
-  using System;
-  using System.Collections.Generic;
-  using System.Linq;
+using ObsStrawket.DataTypes.Predefineds;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
+namespace ObsStrawket.DataTypes {
   internal static class DataTypeMapping {
     internal static readonly Dictionary<string, Type> EventToTypes = new Type[] {
       // General Events,
