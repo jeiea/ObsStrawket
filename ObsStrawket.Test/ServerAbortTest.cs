@@ -7,7 +7,7 @@ using Xunit;
 
 namespace ObsStrawket.Test {
   public class ServerAbortTest {
-    [Fact]
+    [Fact(Timeout = 3 * 60 * 1000)]
     public async Task TestAsync() {
       var cancellation = new CancellationTokenSource();
       var abort = Task.CompletedTask;

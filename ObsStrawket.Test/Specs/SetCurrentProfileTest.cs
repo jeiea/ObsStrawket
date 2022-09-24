@@ -26,7 +26,7 @@ namespace ObsStrawket.Test.Specs {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestData"": {
-      ""profileName"": ""test profile name""
+      ""profileName"": ""default""
     },
     ""requestId"": ""{guid}"",
     ""requestType"": ""SetCurrentProfile""

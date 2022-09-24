@@ -13,7 +13,7 @@ using Xunit;
 namespace ObsStrawket.Test {
   public class ServerTimeoutTest {
 
-    [Fact]
+    [Fact(Timeout = 3 * 60 * 1000)]
     public async Task TestAsync() {
       var cancellation = new CancellationTokenSource();
       using var server = new MockServer().Run(cancellation.Token, ServeTrollAsync);
@@ -99,7 +99,7 @@ namespace ObsStrawket.Test {
 
       byte[] buffer = new byte[] { 0x01, 0x02, 0x03, 0x04 };
       await webSocketContext.WebSocket.SendAsync(
-        new ArraySegment<byte>(buffer), WebSocketMessageType.Binary, false, token
+        new ArraySegment<byte>(buffer), WebSocketMessageType.Binary, true, token
       ).ConfigureAwait(false);
     }
   }

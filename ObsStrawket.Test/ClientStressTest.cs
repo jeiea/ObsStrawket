@@ -10,21 +10,21 @@ using Xunit;
 
 namespace ObsStrawket.Test {
   public class ClientStressTest {
-    [Fact]
+    [Fact(Timeout = 3 * 60 * 1000)]
     public async Task TestAsync() {
       await StressTestHelper.RunParameterizedAsync(200, 4).ConfigureAwait(false);
     }
   }
 
   public class ClientStressTest2 {
-    [Fact]
+    [Fact(Timeout = 3 * 60 * 1000)]
     public async Task TestAsync() {
       await StressTestHelper.RunParameterizedAsync(80, 4).ConfigureAwait(false);
     }
   }
 
   public class ClientStressTest3 {
-    [Fact]
+    [Fact(Timeout = 3 * 60 * 1000)]
     public async Task TestAsync() {
       await StressTestHelper.RunParameterizedAsync(5, 5).ConfigureAwait(false);
     }
