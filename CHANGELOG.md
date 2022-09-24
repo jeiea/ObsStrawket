@@ -1,3 +1,8 @@
+## 0.8.0
+
+- (**BREAKING**) Fix typo in `GetRecordStatus` response.
+- Try integrating SourceLink.
+
 ## 0.7.0
 
 - (**BREAKING**) Strongly typed some requests and events.
