@@ -3178,8 +3178,8 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Whether the output is paused
     /// </summary>
-    [Key("ouputPaused")]
-    public bool OuputPaused { get; set; }
+    [Key("outputPaused")]
+    public bool OutputPaused { get; set; }
 
     /// <summary>
     /// Current formatted timecode string for the output

@@ -14,18 +14,15 @@ namespace ObsStrawket.Test.Specs {
   }
 
   class StartRecordFlow : ITestFlow {
-    static public string EscapedFileName { get; private set; } =
-      Assembly.GetExecutingAssembly().Location.Replace(@"\", @"\\");
+    static public string EscapedFileName => MockServer.EscapedFilePath;
 
     public async Task RequestAsync(ObsClientSocket client) {
-      var response = await client.StartRecordAsync().ConfigureAwait(false);
-      Assert.Equal(RequestStatusCode.Success, response.RequestStatus.Code);
+      await client.StartRecordAsync().ConfigureAwait(false);
 
-      RecordStateChanged changed;
-      changed = (RecordStateChanged)await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(OutputState.Starting, changed.OutputState);
-      changed = (RecordStateChanged)await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(OutputState.Started, changed.OutputState);
+      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      Assert.Equal(OutputState.Starting, (changed as RecordStateChanged)!.OutputState);
+      changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      Assert.Equal(OutputState.Started, (changed as RecordStateChanged)!.OutputState);
     }
 
     public async Task RespondAsync(MockServerSession session) {

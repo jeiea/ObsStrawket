@@ -1,3 +1,4 @@
+using ObsStrawket.DataTypes;
 using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
 using System.Threading.Tasks;
@@ -15,7 +16,21 @@ namespace ObsStrawket.Test.Specs {
     public static string NewProfileName { get => "test profile name"; }
 
     public async Task RequestAsync(ObsClientSocket client) {
+      try {
+        await CreateProfileAsync(client).ConfigureAwait(false);
+      }
+      catch (FailureResponseException failure)
+      when (failure.Response.RequestStatus.Code == RequestStatusCode.ResourceAlreadyExists) {
+        await client.RemoveProfileAsync(NewProfileName).ConfigureAwait(false);
+        await ClientFlow.TakeEventsAsync(client, 3).ConfigureAwait(false);
+
+        await CreateProfileAsync(client).ConfigureAwait(false);
+      }
+    }
+
+    private static async Task CreateProfileAsync(ObsClientSocket client) {
       await client.CreateProfileAsync(profileName: NewProfileName).ConfigureAwait(false);
+
       var currentProfileChanging = await client.Events.ReadAsync().ConfigureAwait(false);
       Assert.NotEqual("", (currentProfileChanging as CurrentProfileChanging)!.ProfileName);
       var profileListChanged = await client.Events.ReadAsync().ConfigureAwait(false);

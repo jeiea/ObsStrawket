@@ -1,3 +1,4 @@
+using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
 using System.Threading.Tasks;
 using Xunit;
@@ -11,10 +12,15 @@ namespace ObsStrawket.Test.Specs {
   }
 
   class GetProfileListFlow : ITestFlow {
-    public async Task RequestAsync(ObsClientSocket client) {
+    public static async Task<GetProfileListResponse> GetProfileList(ObsClientSocket client) {
       var response = await client.GetProfileListAsync().ConfigureAwait(false);
       Assert.Equal(CreateProfileFlow.NewProfileName, response.CurrentProfileName);
       Assert.Contains(CreateProfileFlow.NewProfileName, response.Profiles);
+      return response;
+    }
+
+    public async Task RequestAsync(ObsClientSocket client) {
+      await GetProfileList(client).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {

@@ -3,32 +3,27 @@ using System.Threading.Tasks;
 using Xunit;
 
 namespace ObsStrawket.Test.Specs {
-  public class GetRecordStatusTest {
+  public class GetVirtualCamStatusTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new StartRecordFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetVirtualCamStatusFlow()).ConfigureAwait(false);
     }
   }
 
-  class GetRecordStatusFlow : ITestFlow {
+  class GetVirtualCamStatusFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      var response = await client.GetRecordStatusAsync().ConfigureAwait(false);
+      var response = await client.GetVirtualCamStatusAsync().ConfigureAwait(false);
       Assert.True(response.OutputActive);
-      Assert.NotInRange(response.OutputBytes, int.MinValue, 0);
-      Assert.NotInRange(response.OutputDuration, int.MinValue, 0);
-      Assert.StartsWith("00:00:0", response.OutputTimecode);
-      Assert.True(response.OutputPaused);
     }
 
     public async Task RespondAsync(MockServerSession session) {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestId"": ""{guid}"",
-    ""requestType"": ""GetRecordStatus""
+    ""requestType"": ""GetVirtualCamStatus""
   },
   ""op"": 6
 }").ConfigureAwait(false);
-
       await session.SendAsync(@"{
   ""d"": {
     ""requestId"": ""{guid}"",
@@ -36,13 +31,9 @@ namespace ObsStrawket.Test.Specs {
       ""code"": 100,
       ""result"": true
     },
-    ""requestType"": ""GetRecordStatus"",
+    ""requestType"": ""GetVirtualCamStatus"",
     ""responseData"": {
-      ""outputActive"": true,
-      ""outputBytes"": 1469,
-      ""outputDuration"": 49,
-      ""outputPaused"": true,
-      ""outputTimecode"": ""00:00:00.049""
+      ""outputActive"": true
     }
   },
   ""op"": 7

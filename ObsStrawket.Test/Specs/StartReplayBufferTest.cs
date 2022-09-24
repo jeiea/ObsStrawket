@@ -1,36 +1,38 @@
-using ObsStrawket.DataTypes;
 using ObsStrawket.DataTypes.Predefineds;
+using ObsStrawket.DataTypes;
 using ObsStrawket.Test.Utilities;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace ObsStrawket.Test.Specs {
-  public class StopRecordTest {
+  public class StartReplayBufferTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new StopRecordFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new StartReplayBufferFlow()).ConfigureAwait(false);
     }
   }
 
-  class StopRecordFlow : ITestFlow {
+  /// <summary>
+  /// Precondition: SetProfileParameterFlow, SetCurrentProfileFlow
+  /// </summary>
+  class StartReplayBufferFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.StopRecordAsync().ConfigureAwait(false);
+      await client.StartReplayBufferAsync().ConfigureAwait(false);
 
       var changed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(OutputState.Stopping, (changed as RecordStateChanged)!.OutputState);
+      Assert.Equal(OutputState.Starting, (changed as ReplayBufferStateChanged)!.OutputState);
       changed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(OutputState.Stopped, (changed as RecordStateChanged)!.OutputState);
+      Assert.Equal(OutputState.Started, (changed as ReplayBufferStateChanged)!.OutputState);
     }
 
     public async Task RespondAsync(MockServerSession session) {
       string? guid = await session.ReceiveAsync(@"{
-  ""op"": 6,
   ""d"": {
     ""requestId"": ""{guid}"",
-    ""requestType"": ""StopRecord""
-  }
+    ""requestType"": ""StartReplayBuffer""
+  },
+  ""op"": 6
 }").ConfigureAwait(false);
-
       await session.SendAsync(@"{
   ""d"": {
     ""requestId"": ""{guid}"",
@@ -38,37 +40,32 @@ namespace ObsStrawket.Test.Specs {
       ""code"": 100,
       ""result"": true
     },
-    ""requestType"": ""StopRecord"",
-    ""responseData"": {
-      ""outputPath"": ""{file}""
-    }
+    ""requestType"": ""StartReplayBuffer""
   },
   ""op"": 7
-}".Replace("{guid}", guid).Replace("{file}", StartRecordFlow.EscapedFileName)).ConfigureAwait(false);
+}".Replace("{guid}", guid)).ConfigureAwait(false);
       await session.SendAsync(@"{
   ""d"": {
     ""eventData"": {
       ""outputActive"": false,
-      ""outputPath"": null,
-      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STOPPING""
+      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STARTING""
     },
     ""eventIntent"": 64,
-    ""eventType"": ""RecordStateChanged""
+    ""eventType"": ""ReplayBufferStateChanged""
   },
   ""op"": 5
 }").ConfigureAwait(false);
       await session.SendAsync(@"{
   ""d"": {
     ""eventData"": {
-      ""outputActive"": false,
-      ""outputPath"": ""{file}"",
-      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STOPPED""
+      ""outputActive"": true,
+      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STARTED""
     },
     ""eventIntent"": 64,
-    ""eventType"": ""RecordStateChanged""
+    ""eventType"": ""ReplayBufferStateChanged""
   },
   ""op"": 5
-}".Replace("{file}", StartRecordFlow.EscapedFileName)).ConfigureAwait(false);
+}").ConfigureAwait(false);
     }
   }
 }

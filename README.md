@@ -87,10 +87,10 @@ Checkmark means it has test.
 - [ ] MediaInputActionTriggered
 - [ ] MediaInputPlaybackEnded
 - [ ] MediaInputPlaybackStarted
-- [ ] ProfileListChanged
+- [x] ProfileListChanged
 - [x] RecordStateChanged
-- [ ] ReplayBufferSaved
-- [ ] ReplayBufferStateChanged
+- [x] ReplayBufferSaved
+- [x] ReplayBufferStateChanged
 - [x] SceneCollectionListChanged
 - [x] SceneCreated
 - [x] SceneItemCreated
@@ -114,7 +114,7 @@ Checkmark means it has test.
 - [x] StreamStateChanged
 - [x] StudioModeStateChanged
 - [ ] VendorEvent
-- [ ] VirtualcamStateChanged
+- [x] VirtualcamStateChanged
 
 ## Requests
 
@@ -145,18 +145,18 @@ Checkmark means it has test.
 - [x] GetInputPropertiesListPropertyItems
 - [x] GetInputSettings
 - [x] GetInputVolume
-- [ ] GetLastReplayBufferReplay
+- [x] GetLastReplayBufferReplay
 - [ ] GetMediaInputStatus
 - [x] GetMonitorList
 - [x] GetOutputList
-- [ ] GetOutputSettings
-- [ ] GetOutputStatus
+- [x] GetOutputSettings
+- [x] GetOutputStatus
 - [x] GetPersistentData
 - [x] GetProfileList
 - [x] GetProfileParameter
 - [x] GetRecordDirectory
 - [x] GetRecordStatus
-- [ ] GetReplayBufferStatus
+- [x] GetReplayBufferStatus
 - [x] GetSceneCollectionList
 - [x] GetSceneItemBlendMode
 - [x] GetSceneItemEnabled
@@ -181,7 +181,7 @@ Checkmark means it has test.
 - [ ] GetTransitionKindList
 - [x] GetVersion
 - [x] GetVideoSettings
-- [ ] GetVirtualCamStatus
+- [x] GetVirtualCamStatus
 - [ ] OffsetMediaInputCursor
 - [x] OpenInputFiltersDialog
 - [x] OpenInputInteractDialog
@@ -196,7 +196,7 @@ Checkmark means it has test.
 - [x] RemoveSceneItem
 - [ ] RemoveSourceFilter
 - [x] ResumeRecord
-- [ ] SaveReplayBuffer
+- [x] SaveReplayBuffer
 - [x] SaveSourceScreenshot
 - [x] SendStreamCaption
 - [x] SetCurrentPreviewScene
@@ -215,7 +215,7 @@ Checkmark means it has test.
 - [x] SetInputSettings
 - [x] SetInputVolume
 - [ ] SetMediaInputCursor
-- [ ] SetOutputSettings
+- [x] SetOutputSettings
 - [x] SetPersistentData
 - [x] SetProfileParameter
 - [x] SetSceneItemBlendMode
@@ -234,23 +234,23 @@ Checkmark means it has test.
 - [ ] SetTBarPosition
 - [x] SetVideoSettings
 - [ ] Sleep
-- [ ] StartOutput
+- [x] StartOutput
 - [x] StartRecord
-- [ ] StartReplayBuffer
+- [x] StartReplayBuffer
 - [x] StartStream
-- [ ] StartVirtualCam
-- [ ] StopOutput
+- [x] StartVirtualCam
+- [x] StopOutput
 - [x] StopRecord
-- [ ] StopReplayBuffer
+- [x] StopReplayBuffer
 - [x] StopStream
-- [ ] StopVirtualCam
+- [x] StopVirtualCam
 - [x] ToggleInputMute
-- [ ] ToggleOutput
+- [x] ToggleOutput
 - [x] ToggleRecord
 - [x] ToggleRecordPause
-- [ ] ToggleReplayBuffer
+- [x] ToggleReplayBuffer
 - [x] ToggleStream
-- [ ] ToggleVirtualCam
+- [x] ToggleVirtualCam
 - [x] TriggerHotkeyByKeySequence
 - [x] TriggerHotkeyByName
 - [ ] TriggerMediaInputAction

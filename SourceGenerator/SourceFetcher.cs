@@ -74,6 +74,12 @@ namespace SourceGenerator {
 
     private static void PatchOthers(ObsRequest request) {
       switch (request.RequestType) {
+      case "GetRecordStatus":
+        var typoField = request.ResponseFields![1];
+        if (typoField.ValueName == "ouputPaused") {
+          typoField.ValueName = "outputPaused";
+        }
+        break;
       case "GetOutputList":
         request.ResponseFields!.Add(new ObsDataField { ValueName = "outputs", ValueDescription = "List of outputs", ValueType = "Array<Output>" });
         break;

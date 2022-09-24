@@ -1,4 +1,5 @@
 using ObsStrawket.Test.Utilities;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -11,19 +12,52 @@ namespace ObsStrawket.Test.Specs {
   }
 
   class SetProfileParameterFlow : ITestFlow {
-    public static string ParameterValue => "test parameter value";
+    public static List<(string Category, string Name, string Value, string Default)> AppliedParameters = new() {
+      ("Output", "Mode", "Advanced", "Simple"),
+      ("AdvOut", "RecRB", "true", "false"),
+    };
 
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetProfileParameterAsync(parameterCategory: "test parameter category", parameterName: "test parameter name", parameterValue: ParameterValue).ConfigureAwait(false);
+      foreach (var (category, name, value, _) in AppliedParameters) {
+        await client.SetProfileParameterAsync(
+          parameterCategory: category,
+          parameterName: name,
+          parameterValue: value
+        ).ConfigureAwait(false);
+      }
     }
 
     public async Task RespondAsync(MockServerSession session) {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestData"": {
-      ""parameterCategory"": ""test parameter category"",
-      ""parameterName"": ""test parameter name"",
-      ""parameterValue"": ""test parameter value""
+      ""parameterCategory"": ""Output"",
+      ""parameterName"": ""Mode"",
+      ""parameterValue"": ""Advanced""
+    },
+    ""requestId"": ""{guid}"",
+    ""requestType"": ""SetProfileParameter""
+  },
+  ""op"": 6
+}").ConfigureAwait(false);
+      await session.SendAsync(@"{
+  ""d"": {
+    ""requestId"": ""{guid}"",
+    ""requestStatus"": {
+      ""code"": 100,
+      ""result"": true
+    },
+    ""requestType"": ""SetProfileParameter""
+  },
+  ""op"": 7
+}".Replace("{guid}", guid)).ConfigureAwait(false);
+
+      guid = await session.ReceiveAsync(@"{
+  ""d"": {
+    ""requestData"": {
+      ""parameterCategory"": ""AdvOut"",
+      ""parameterName"": ""RecRB"",
+      ""parameterValue"": ""true""
     },
     ""requestId"": ""{guid}"",
     ""requestType"": ""SetProfileParameter""

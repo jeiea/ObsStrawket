@@ -15,6 +15,7 @@ namespace ObsStrawket.Test.Utilities {
 
   class MockServer : IDisposable {
     public static readonly string Password = "ahrEYXzXKytCIlpI";
+    public static string EscapedFilePath => Assembly.GetExecutingAssembly().Location.Replace(@"\", @"\\");
 
     public int Port { get; private set; }
     public Uri Uri { get => new($"ws://127.0.0.1:{Port}/"); }
