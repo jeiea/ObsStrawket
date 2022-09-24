@@ -1959,7 +1959,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Array of filters
     /// </summary>
     [Key("filters")]
-    public List<Dictionary<string, object?>> Filters { get; set; } = new();
+    public List<SourceFilter> Filters { get; set; } = new();
   }
 
   /// <summary>
@@ -2231,7 +2231,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// <summary>
   /// Basically GetSceneItemList, but for groups.<br />
   /// <br />
-  /// Using groups at all in OBS is discouraged, as they are very broken under the hood.<br />
+  /// Using groups at all in OBS is discouraged, as they are very broken under the hood. Please use nested scenes instead.<br />
   /// <br />
   /// Groups only<br />
   /// Latest supported RPC version: 1<br />
@@ -2696,7 +2696,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Current blend mode
     /// </summary>
     [Key("sceneItemBlendMode")]
-    public BlendingType SceneItemBlendMode { get; set; }
+    public BlendingType SceneItemBlendMode { get; set; } = new();
   }
 
   /// <summary>
@@ -2725,7 +2725,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// New blend mode
     /// </summary>
     [Key("sceneItemBlendMode")]
-    public BlendingType SceneItemBlendMode { get; set; }
+    public BlendingType SceneItemBlendMode { get; set; } = new();
   }
 
   /// <summary>

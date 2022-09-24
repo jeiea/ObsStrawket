@@ -187,5 +187,27 @@ namespace ObsStrawket.DataTypes {
     [Key("isGroup")]
     public bool? IsGroup { get; set; }
   }
+
+  // https://github.com/obsproject/obs-websocket/blob/265899f76f88a5be74747308fff3d35347ce43c5/src/utils/Obs_ArrayHelper.cpp#L306-L307
+  /// <summary>
+  /// Represents source filter.
+  /// </summary>
+  [MessagePackObject]
+  public class SourceFilter {
+    [Key("filterName")]
+    public string Name { get; set; } = "";
+
+    [Key("filterIndex")]
+    public int Index { get; set; }
+
+    [Key("filterKind")]
+    public string Kind { get; set; } = "";
+
+    [Key("filterEnabled")]
+    public bool Enabled { get; set; }
+
+    [Key("filterSettings")]
+    public Dictionary<string, object?> Settings { get; set; } = new();
+  }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-}
+  }

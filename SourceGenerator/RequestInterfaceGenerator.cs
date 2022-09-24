@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SourceGenerator {
@@ -13,31 +14,49 @@ namespace SourceGenerator {
       var json = await _fetcher.GetModifiedProtocolJsonAsync().ConfigureAwait(false);
       PatchTriggerHotkeyByKeySequence(json.Requests.Find(x => x.RequestType == "TriggerHotkeyByKeySequence")!.RequestFields!);
 
-      using var file = File.CreateText("RequestApi.cs");
+      using var part = new StringWriter();
+      part.WriteLine("    #region Requests");
+      part.WriteLine();
+
       foreach (var request in json.Requests) {
-        file.WriteLine("/// <summary>");
-        file.WriteLine("/// {0}<br />", TransformHelper.EscapeForXml(request.Description!).Replace(Environment.NewLine, $"<br />{Environment.NewLine}/// "));
-        file.WriteLine("/// Latest supported RPC version: {0}<br />", request.RpcVersion);
-        file.WriteLine("/// Added in: {0}", request.InitialVersion);
-        file.WriteLine("/// </summary>");
+        part.WriteLine("    /// <summary>");
+        part.WriteLine("    /// {0}<br />", TransformHelper.EscapeForXml(request.Description!).Replace(Environment.NewLine, $"<br />{Environment.NewLine}    /// "));
+        part.WriteLine("    /// Latest supported RPC version: {0}<br />", request.RpcVersion);
+        part.WriteLine("    /// Added in: {0}", request.InitialVersion);
+        part.WriteLine("    /// </summary>");
 
         foreach (var parameter in request.RequestFields!) {
-          file.Write("/// <param name=\"{0}\">{1}", parameter.ValueName, TransformHelper.EscapeForXml(parameter.ValueDescription!));
+          part.Write("    /// <param name=\"{0}\">{1}", parameter.ValueName, TransformHelper.EscapeForXml(parameter.ValueDescription!));
           if (parameter.ValueOptionalBehavior != null) {
-            file.Write("<br />If null, {0}", TransformHelper.EscapeForXml(parameter.ValueOptionalBehavior));
+            part.Write("<br />If null, {0}", TransformHelper.EscapeForXml(parameter.ValueOptionalBehavior));
           }
-          file.WriteLine("</param>");
+          part.WriteLine("</param>");
         }
-        file.WriteLine("/// <param name=\"cancellation\">Token for cancellation</param>");
+        part.WriteLine("    /// <param name=\"cancellation\">Token for cancellation</param>");
 
         string returnType = request.ResponseFields!.Count > 0 ? $"{request.RequestType}Response" : "RequestResponse";
         string parameters = GetParameters(request.RequestFields);
-        file.WriteLine("public async Task<{0}> {1}Async({2}) {{", returnType, request.RequestType, parameters);
+        part.WriteLine("    public async Task<{0}> {1}Async({2}) {{", returnType, request.RequestType, parameters);
         string assignments = GetAssignments(request.RequestFields);
-        file.WriteLine("  return (await _clientSocket.RequestAsync(new {0}() {{ {1}}}, cancellation).ConfigureAwait(false) as {2})!;", request.RequestType, assignments, returnType);
-        file.WriteLine("}");
-        file.WriteLine();
+        part.WriteLine("      return (await _clientSocket.RequestAsync(new {0}() {1}, cancellation).ConfigureAwait(false) as {2})!;", request.RequestType, assignments, returnType);
+        part.WriteLine("    }");
+        part.WriteLine();
       }
+
+      part.Write("    #endregion");
+
+      string previous = await File.ReadAllTextAsync(EventInterfaceGenerator.ObsClientPath).ConfigureAwait(false);
+
+      bool isReplaced = false;
+      string result = Regex.Replace(previous, @"    #region Requests\r\n.*?#endregion", (match) => {
+        isReplaced = true;
+        return part.ToString();
+      }, RegexOptions.Singleline);
+      if (!isReplaced) {
+        throw new Exception("Unexpected file");
+      }
+
+      await File.WriteAllTextAsync(EventInterfaceGenerator.ObsClientPath, result).ConfigureAwait(false);
     }
 
     private static void PatchTriggerHotkeyByKeySequence(List<ObsRequestField> requestFields) {
@@ -52,7 +71,7 @@ namespace SourceGenerator {
 
     private static string GetAssignments(IEnumerable<ObsRequestField> parameters) {
       if (parameters.Any(x => x.ValueName == "shift")) {
-        return "KeyId = keyId, KeyModifiers = new KeyModifiers() { Shift = shift, Control = control, Alt = alt, Command = command }";
+        return "{ KeyId = keyId, KeyModifiers = new KeyModifiers() { Shift = shift, Control = control, Alt = alt, Command = command } }";
       }
 
       var stringifieds = new List<string>();
@@ -72,7 +91,7 @@ namespace SourceGenerator {
         stringifieds.Add(builder.ToString());
       }
 
-      return string.Join(", ", stringifieds);
+      return stringifieds.Count > 0 ? $"{{ {string.Join(", ", stringifieds)} }}" : "{ }";
     }
 
     private static string GetParameters(IEnumerable<ObsRequestField> parameters) {
@@ -84,7 +103,7 @@ namespace SourceGenerator {
 
         string type = TransformHelper.ToCSharpType(parameter.ValueType!, parameter.ValueDescription!);
         builder.Append(type);
-        if (parameter.ValueOptional) {
+        if (parameter.ValueOptional && !type.EndsWith('?')) {
           builder.Append('?');
         }
         builder.Append(' ');

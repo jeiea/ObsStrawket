@@ -10,9 +10,9 @@ namespace SourceGenerator {
     public async Task GenerateAsync() {
       var json = await _fetcher.GetModifiedProtocolJsonAsync().ConfigureAwait(false);
 
-      using var file = File.CreateText("RequestsAndResponses.cs");
+      using var file = File.CreateText("../../../../ObsStrawket/DataTypes/Predefineds/RequestsAndResponses.cs");
+
       file.WriteLine(@"using MessagePack;
-using ObsStrawket.DataTypes;
 using System.Collections.Generic;
 
 namespace ObsStrawket.DataTypes.Predefineds {");

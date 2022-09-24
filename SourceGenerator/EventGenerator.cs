@@ -11,9 +11,8 @@ namespace SourceGenerator {
     public async Task GenerateAsync() {
       var json = await _fetcher.GetModifiedProtocolJsonAsync().ConfigureAwait(false);
 
-      using var file = File.CreateText("Events.cs");
+      using var file = File.CreateText("../../../../ObsStrawket/DataTypes/Predefineds/Events.cs");
       file.Write(@"using MessagePack;
-using ObsStrawket.DataTypes;
 using System.Collections.Generic;
 
 namespace ObsStrawket.DataTypes.Predefineds {");
@@ -25,7 +24,7 @@ namespace ObsStrawket.DataTypes.Predefineds {");
         file.WriteLine("  /// </summary>");
         file.WriteLine("  [MessagePackObject]");
         string pascalCategory = TransformHelper.ToPascalCase(category);
-        file.WriteLine("  public class {0}Event : Event {{ }}", pascalCategory);
+        file.WriteLine("  public class {0}Event : ObsEvent {{ }}", pascalCategory);
       }
 
       foreach (var ev in json.Events) {

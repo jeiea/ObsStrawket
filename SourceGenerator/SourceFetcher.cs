@@ -108,17 +108,20 @@ namespace SourceGenerator {
 
     private static bool GetCustomType(string name, out string? type) {
       switch (name) {
-      case "outputState":
-        type = "OutputState";
+      case "filters":
+        type = "Array<SourceFilter>";
+        return true;
+      case "inputs":
+        type = "Array<Input>";
+        return true;
+      case "keyModifiers":
+        type = "KeyModifiers";
         return true;
       case "monitorType":
         type = "MonitoringType";
         return true;
-      case "videoMixType":
-        type = "VideoMixType";
-        return true;
-      case "keyModifiers":
-        type = "KeyModifiers";
+      case "outputState":
+        type = "OutputState";
         return true;
       case "scenes":
         type = "Array<Scene>";
@@ -129,14 +132,14 @@ namespace SourceGenerator {
       case "sceneItemBlendMode":
         type = "BlendingType";
         return true;
-      case "inputs":
-        type = "Array<Input>";
-        return true;
       case "streamServiceType":
         type = "StreamServiceType";
         return true;
       case "realm":
         type = "DataRealm";
+        return true;
+      case "videoMixType":
+        type = "VideoMixType";
         return true;
       default:
         type = null;

@@ -12,8 +12,10 @@ namespace SourceGenerator {
     public async Task GenerateAsync() {
       var json = await _fetcher.GetModifiedProtocolJsonAsync().ConfigureAwait(false);
 
-      using var file = File.CreateText("Enums.cs");
-      file.Write(@"using System;
+      using var file = File.CreateText("../../../../ObsStrawket/DataTypes/Predefineds/Enums.cs");
+      file.Write(@"using MessagePack;
+using MessagePack.Formatters;
+using System;
 using System.Runtime.Serialization;
 
 namespace ObsStrawket.DataTypes.Predefineds {");

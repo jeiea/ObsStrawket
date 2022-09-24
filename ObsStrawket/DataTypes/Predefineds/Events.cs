@@ -648,7 +648,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Array of filter objects
     /// </summary>
     [Key("filters")]
-    public List<Dictionary<string, object?>> Filters { get; set; } = new();
+    public List<SourceFilter> Filters { get; set; } = new();
   }
 
   /// <summary>
