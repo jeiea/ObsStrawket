@@ -3,6 +3,7 @@
 - ! Strongly typed some requests and events.
   - `SourceFilterListReindexed`
   - `GetSourceFilterList`
+- Make `SetProfileParameterAsync` accept null value.
 
 ## 0.8.0
 

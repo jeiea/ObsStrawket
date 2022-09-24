@@ -766,7 +766,7 @@ namespace ObsStrawket {
     /// <param name="parameterName">Name of the parameter to set</param>
     /// <param name="parameterValue">Value of the parameter to set. Use <c>null</c> to delete</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetProfileParameterAsync(string parameterCategory, string parameterName, string parameterValue, CancellationToken cancellation = default) {
+    public async Task<RequestResponse> SetProfileParameterAsync(string parameterCategory, string parameterName, string? parameterValue, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetProfileParameter() { ParameterCategory = parameterCategory, ParameterName = parameterName, ParameterValue = parameterValue }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
@@ -1546,7 +1546,7 @@ namespace ObsStrawket {
     /// <summary>
     /// Basically GetSceneItemList, but for groups.<br />
     /// <br />
-    /// Using groups at all in OBS is discouraged, as they are very broken under the hood.<br />
+    /// Using groups at all in OBS is discouraged, as they are very broken under the hood. Please use nested scenes instead.<br />
     /// <br />
     /// Groups only<br />
     /// Latest supported RPC version: 1<br />
