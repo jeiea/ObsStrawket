@@ -106,11 +106,11 @@ Checkmark means it has test.
 - [x] SceneTransitionEnded
 - [x] SceneTransitionStarted
 - [x] SceneTransitionVideoEnded
-- [ ] SourceFilterCreated
-- [ ] SourceFilterEnableStateChanged
-- [ ] SourceFilterListReindexed
-- [ ] SourceFilterNameChanged
-- [ ] SourceFilterRemoved
+- [x] SourceFilterCreated
+- [x] SourceFilterEnableStateChanged
+- [x] SourceFilterListReindexed
+- [x] SourceFilterNameChanged
+- [x] SourceFilterRemoved
 - [x] StreamStateChanged
 - [x] StudioModeStateChanged
 - [ ] VendorEvent
@@ -125,7 +125,7 @@ Checkmark means it has test.
 - [x] CreateScene
 - [x] CreateSceneCollection
 - [x] CreateSceneItem
-- [ ] CreateSourceFilter
+- [x] CreateSourceFilter
 - [x] DuplicateSceneItem
 - [x] GetCurrentPreviewScene
 - [x] GetCurrentProgramScene
@@ -169,9 +169,9 @@ Checkmark means it has test.
 - [x] GetSceneSceneTransitionOverride
 - [ ] GetSceneTransitionList
 - [x] GetSourceActive
-- [ ] GetSourceFilter
-- [ ] GetSourceFilterDefaultSettings
-- [ ] GetSourceFilterList
+- [x] GetSourceFilter
+- [x] GetSourceFilterDefaultSettings
+- [x] GetSourceFilterList
 - [x] GetSourceScreenshot
 - [x] GetSpecialInputs
 - [x] GetStats
@@ -225,10 +225,10 @@ Checkmark means it has test.
 - [x] SetSceneItemTransform
 - [x] SetSceneName
 - [x] SetSceneSceneTransitionOverride
-- [ ] SetSourceFilterEnabled
-- [ ] SetSourceFilterIndex
-- [ ] SetSourceFilterName
-- [ ] SetSourceFilterSettings
+- [x] SetSourceFilterEnabled
+- [x] SetSourceFilterIndex
+- [x] SetSourceFilterName
+- [x] SetSourceFilterSettings
 - [x] SetStreamServiceSettings
 - [x] SetStudioModeEnabled
 - [ ] SetTBarPosition
