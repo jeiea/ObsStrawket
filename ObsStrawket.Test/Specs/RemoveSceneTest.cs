@@ -14,22 +14,64 @@ namespace ObsStrawket.Test.Specs {
 
   class RemoveSceneFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.RemoveSceneAsync(sceneName: CreateSceneFlow.NewScene).ConfigureAwait(false);
-      var removed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(CreateSceneFlow.NewScene, (removed as SceneRemoved)!.SceneName);
-
-      while (true) {
-        var ev = await client.Events.ReadAsync().ConfigureAwait(false);
-        if (ev is SceneListChanged changed) {
-          Assert.NotEmpty(changed.Scenes);
-          Assert.DoesNotContain(changed.Scenes, (x) => x.Name == CreateSceneFlow.NewScene);
-          break;
-        }
-      }
+      await RemoveSceneAsync(client, CreateSceneFlow.NewScene2).ConfigureAwait(false);
+      await RemoveSceneAsync(client, CreateSceneFlow.NewScene).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
       string? guid = await session.ReceiveAsync(@"{
+  ""d"": {
+    ""requestData"": {
+      ""sceneName"": ""test scene 2""
+    },
+    ""requestId"": ""{guid}"",
+    ""requestType"": ""RemoveScene""
+  },
+  ""op"": 6
+}").ConfigureAwait(false);
+      await session.SendAsync(@"{
+  ""d"": {
+    ""eventData"": {
+      ""isGroup"": false,
+      ""sceneName"": ""test scene 2""
+    },
+    ""eventIntent"": 4,
+    ""eventType"": ""SceneRemoved""
+  },
+  ""op"": 5
+}").ConfigureAwait(false);
+      await session.SendAsync(@"{
+  ""d"": {
+    ""requestId"": ""{guid}"",
+    ""requestStatus"": {
+      ""code"": 100,
+      ""result"": true
+    },
+    ""requestType"": ""RemoveScene""
+  },
+  ""op"": 7
+}".Replace("{guid}", guid)).ConfigureAwait(false);
+      await session.SendAsync(@"{
+  ""d"": {
+    ""eventData"": {
+      ""scenes"": [
+        {
+          ""sceneIndex"": 0,
+          ""sceneName"": ""Scene""
+        },
+        {
+          ""sceneIndex"": 1,
+          ""sceneName"": ""test scene""
+        }
+      ]
+    },
+    ""eventIntent"": 4,
+    ""eventType"": ""SceneListChanged""
+  },
+  ""op"": 5
+}").ConfigureAwait(false);
+
+      guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestData"": {
       ""sceneName"": ""test scene""
@@ -117,6 +159,18 @@ namespace ObsStrawket.Test.Specs {
   },
   ""op"": 5
 }").ConfigureAwait(false);
+    }
+
+    private static async Task RemoveSceneAsync(ObsClientSocket client, string name) {
+      await client.RemoveSceneAsync(sceneName: name).ConfigureAwait(false);
+      var removed = await client.Events.ReadAsync().ConfigureAwait(false);
+      Assert.Equal(name, (removed as SceneRemoved)!.SceneName);
+
+      var changed = await client.Events
+        .ReadAllAsync().OfType<SceneListChanged>()
+        .FirstAsync().ConfigureAwait(false);
+      Assert.NotEmpty(changed.Scenes);
+      Assert.DoesNotContain(changed.Scenes, (x) => x.Name == name);
     }
   }
 }

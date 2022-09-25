@@ -1780,7 +1780,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Array of transitions
     /// </summary>
     [Key("transitions")]
-    public List<Dictionary<string, object?>> Transitions { get; set; } = new();
+    public List<AvailableTransition> Transitions { get; set; } = new();
   }
 
   /// <summary>

@@ -4,34 +4,34 @@ using System.Threading.Tasks;
 using Xunit;
 
 namespace ObsStrawket.Test.Specs {
-  public class SetCurrentProgramSceneTest {
+  public class TriggerStudioModeTransitionTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new SetCurrentProgramSceneFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new TriggerStudioModeTransitionFlow()).ConfigureAwait(false);
     }
   }
 
-  class SetCurrentProgramSceneFlow : ITestFlow {
+  class TriggerStudioModeTransitionFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetCurrentProgramSceneAsync(sceneName: CreateSceneFlow.NewScene2).ConfigureAwait(false);
+      await client.TriggerStudioModeTransitionAsync().ConfigureAwait(false);
+
       var started = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.NotEqual("", (started as SceneTransitionStarted)!.TransitionName);
+      Assert.Equal("Fade", (started as SceneTransitionStarted)!.TransitionName);
       var ended = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.NotEqual("", (ended as SceneTransitionVideoEnded)!.TransitionName);
+      Assert.Equal("Fade", (ended as SceneTransitionVideoEnded)!.TransitionName);
       var changed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(CreateSceneFlow.NewScene2, (changed as CurrentProgramSceneChanged)!.SceneName);
+      Assert.Equal(CreateSceneFlow.NewScene2, (changed as CurrentPreviewSceneChanged)!.SceneName);
+      changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      Assert.Equal(CreateSceneFlow.NewScene, (changed as CurrentProgramSceneChanged)!.SceneName);
       ended = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.NotEqual("", (ended as SceneTransitionEnded)!.TransitionName);
+      Assert.Equal("Fade", (ended as SceneTransitionEnded)!.TransitionName);
     }
 
     public async Task RespondAsync(MockServerSession session) {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
-    ""requestData"": {
-      ""sceneName"": ""test scene 2""
-    },
     ""requestId"": ""{guid}"",
-    ""requestType"": ""SetCurrentProgramScene""
+    ""requestType"": ""TriggerStudioModeTransition""
   },
   ""op"": 6
 }").ConfigureAwait(false);
@@ -45,7 +45,6 @@ namespace ObsStrawket.Test.Specs {
   },
   ""op"": 5
 }").ConfigureAwait(false);
-
       await session.SendAsync(@"{
   ""d"": {
     ""requestId"": ""{guid}"",
@@ -53,7 +52,7 @@ namespace ObsStrawket.Test.Specs {
       ""code"": 100,
       ""result"": true
     },
-    ""requestType"": ""SetCurrentProgramScene""
+    ""requestType"": ""TriggerStudioModeTransition""
   },
   ""op"": 7
 }".Replace("{guid}", guid)).ConfigureAwait(false);
@@ -71,6 +70,16 @@ namespace ObsStrawket.Test.Specs {
   ""d"": {
     ""eventData"": {
       ""sceneName"": ""test scene 2""
+    },
+    ""eventIntent"": 4,
+    ""eventType"": ""CurrentPreviewSceneChanged""
+  },
+  ""op"": 5
+}").ConfigureAwait(false);
+      await session.SendAsync(@"{
+  ""d"": {
+    ""eventData"": {
+      ""sceneName"": ""test scene""
     },
     ""eventIntent"": 4,
     ""eventType"": ""CurrentProgramSceneChanged""

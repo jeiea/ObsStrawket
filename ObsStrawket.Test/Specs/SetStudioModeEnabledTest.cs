@@ -63,16 +63,6 @@ namespace ObsStrawket.Test.Specs {
       await session.SendAsync(@"{
   ""d"": {
     ""eventData"": {
-      ""sceneName"": ""Main""
-    },
-    ""eventIntent"": 4,
-    ""eventType"": ""CurrentProgramSceneChanged""
-  },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
       ""studioModeEnabled"": true
     },
     ""eventIntent"": 1024,

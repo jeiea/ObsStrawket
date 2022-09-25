@@ -3,24 +3,27 @@ using System.Threading.Tasks;
 using Xunit;
 
 namespace ObsStrawket.Test.Specs {
-  public class GetCurrentProgramSceneTest {
+  public class SetTBarPositionTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetCurrentProgramSceneFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new SetTBarPositionFlow()).ConfigureAwait(false);
     }
   }
 
-  class GetCurrentProgramSceneFlow : ITestFlow {
+  class SetTBarPositionFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      var response = await client.GetCurrentProgramSceneAsync().ConfigureAwait(false);
-      Assert.Equal(CreateSceneFlow.NewScene2, response.CurrentProgramSceneName);
+      await client.SetTBarPositionAsync(position: 0.5, release: true).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
+    ""requestData"": {
+      ""position"": 0.5,
+      ""release"": true
+    },
     ""requestId"": ""{guid}"",
-    ""requestType"": ""GetCurrentProgramScene""
+    ""requestType"": ""SetTBarPosition""
   },
   ""op"": 6
 }").ConfigureAwait(false);
@@ -31,10 +34,7 @@ namespace ObsStrawket.Test.Specs {
       ""code"": 100,
       ""result"": true
     },
-    ""requestType"": ""GetCurrentProgramScene"",
-    ""responseData"": {
-      ""currentProgramSceneName"": ""test scene 2""
-    }
+    ""requestType"": ""SetTBarPosition""
   },
   ""op"": 7
 }".Replace("{guid}", guid)).ConfigureAwait(false);

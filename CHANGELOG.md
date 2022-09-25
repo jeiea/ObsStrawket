@@ -3,7 +3,9 @@
 - ! Strongly typed some requests and events.
   - `SourceFilterListReindexed`
   - `GetSourceFilterList`
+  - `GetSceneTransitionList`
 - Make `SetProfileParameterAsync` accept null value.
+- Change DebugType to embedded
 
 ## 0.8.0
 

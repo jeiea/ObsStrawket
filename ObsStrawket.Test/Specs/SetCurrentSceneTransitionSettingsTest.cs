@@ -1,26 +1,34 @@
 using ObsStrawket.Test.Utilities;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace ObsStrawket.Test.Specs {
-  public class GetCurrentProgramSceneTest {
+  public class SetCurrentSceneTransitionSettingsTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetCurrentProgramSceneFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new SetCurrentSceneTransitionSettingsFlow()).ConfigureAwait(false);
     }
   }
 
-  class GetCurrentProgramSceneFlow : ITestFlow {
+  class SetCurrentSceneTransitionSettingsFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      var response = await client.GetCurrentProgramSceneAsync().ConfigureAwait(false);
-      Assert.Equal(CreateSceneFlow.NewScene2, response.CurrentProgramSceneName);
+      await client.SetCurrentSceneTransitionSettingsAsync(transitionSettings: new Dictionary<string, object?>() {
+        { "direction", "up" },
+      }).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
+    ""requestData"": {
+      ""overlay"": null,
+      ""transitionSettings"": {
+        ""direction"": ""up""
+      }
+    },
     ""requestId"": ""{guid}"",
-    ""requestType"": ""GetCurrentProgramScene""
+    ""requestType"": ""SetCurrentSceneTransitionSettings""
   },
   ""op"": 6
 }").ConfigureAwait(false);
@@ -31,10 +39,7 @@ namespace ObsStrawket.Test.Specs {
       ""code"": 100,
       ""result"": true
     },
-    ""requestType"": ""GetCurrentProgramScene"",
-    ""responseData"": {
-      ""currentProgramSceneName"": ""test scene 2""
-    }
+    ""requestType"": ""SetCurrentSceneTransitionSettings""
   },
   ""op"": 7
 }".Replace("{guid}", guid)).ConfigureAwait(false);

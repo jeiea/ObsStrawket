@@ -69,8 +69,8 @@ Checkmark means it has test.
 - [x] CurrentProgramSceneChanged
 - [x] CurrentSceneCollectionChanged
 - [x] CurrentSceneCollectionChanging
-- [ ] CurrentSceneTransitionChanged
-- [ ] CurrentSceneTransitionDurationChanged
+- [x] CurrentSceneTransitionChanged
+- [x] CurrentSceneTransitionDurationChanged
 - [x] ExitStarted
 - [ ] InputActiveStateChanged
 - [x] InputAudioBalanceChanged
@@ -129,8 +129,8 @@ Checkmark means it has test.
 - [x] DuplicateSceneItem
 - [x] GetCurrentPreviewScene
 - [x] GetCurrentProgramScene
-- [ ] GetCurrentSceneTransition
-- [ ] GetCurrentSceneTransitionCursor
+- [x] GetCurrentSceneTransition
+- [x] GetCurrentSceneTransitionCursor
 - [x] GetGroupList
 - [x] GetGroupSceneItemList
 - [x] GetHotkeyList
@@ -167,7 +167,7 @@ Checkmark means it has test.
 - [x] GetSceneItemTransform
 - [x] GetSceneList
 - [x] GetSceneSceneTransitionOverride
-- [ ] GetSceneTransitionList
+- [x] GetSceneTransitionList
 - [x] GetSourceActive
 - [x] GetSourceFilter
 - [x] GetSourceFilterDefaultSettings
@@ -178,7 +178,7 @@ Checkmark means it has test.
 - [x] GetStreamServiceSettings
 - [x] GetStreamStatus
 - [x] GetStudioModeEnabled
-- [ ] GetTransitionKindList
+- [x] GetTransitionKindList
 - [x] GetVersion
 - [x] GetVideoSettings
 - [x] GetVirtualCamStatus
@@ -194,7 +194,7 @@ Checkmark means it has test.
 - [x] RemoveProfile
 - [x] RemoveScene
 - [x] RemoveSceneItem
-- [ ] RemoveSourceFilter
+- [x] RemoveSourceFilter
 - [x] ResumeRecord
 - [x] SaveReplayBuffer
 - [x] SaveSourceScreenshot
@@ -203,9 +203,9 @@ Checkmark means it has test.
 - [x] SetCurrentProfile
 - [x] SetCurrentProgramScene
 - [x] SetCurrentSceneCollection
-- [ ] SetCurrentSceneTransition
-- [ ] SetCurrentSceneTransitionDuration
-- [ ] SetCurrentSceneTransitionSettings
+- [x] SetCurrentSceneTransition
+- [x] SetCurrentSceneTransitionDuration
+- [x] SetCurrentSceneTransitionSettings
 - [x] SetInputAudioBalance
 - [x] SetInputAudioMonitorType
 - [x] SetInputAudioSyncOffset
@@ -231,7 +231,7 @@ Checkmark means it has test.
 - [x] SetSourceFilterSettings
 - [x] SetStreamServiceSettings
 - [x] SetStudioModeEnabled
-- [ ] SetTBarPosition
+- [x] SetTBarPosition
 - [x] SetVideoSettings
 - [ ] Sleep
 - [x] StartOutput
@@ -254,4 +254,4 @@ Checkmark means it has test.
 - [x] TriggerHotkeyByKeySequence
 - [x] TriggerHotkeyByName
 - [ ] TriggerMediaInputAction
-- [ ] TriggerStudioModeTransition
+- [x] TriggerStudioModeTransition

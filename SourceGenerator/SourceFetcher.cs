@@ -135,6 +135,9 @@ namespace SourceGenerator {
       case "streamServiceType":
         type = "StreamServiceType";
         return true;
+      case "transitions":
+        type = "Array<AvailableTransition>";
+        return true;
       case "realm":
         type = "DataRealm";
         return true;

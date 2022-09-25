@@ -209,5 +209,37 @@ namespace ObsStrawket.DataTypes {
     [Key("filterSettings")]
     public Dictionary<string, object?> Settings { get; set; } = new();
   }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+
+  // https://github.com/obsproject/obs-websocket/blob/265899f76f88a5be74747308fff3d35347ce43c5/src/utils/Obs_ArrayHelper.cpp#L273
+  /// <summary>
+  /// Listed scene transition.
+  /// </summary>
+  [MessagePackObject]
+  public class AvailableTransition {
+    /// <summary>
+    /// Name of the transition.
+    /// </summary>
+    [Key("transitionName")]
+    public string Name { get; set; } = "";
+
+    /// <summary>
+    /// Kind of the transition.
+    /// </summary>
+    [Key("transitionKind")]
+    public string Kind { get; set; } = "";
+
+    /// <summary>
+    /// Whether the transition uses a fixed (unconfigurable) duration.
+    /// </summary>
+    [Key("transitionFixed")]
+    public bool Fixed { get; set; }
+
+    /// <summary>
+    /// Whether the transition supports being configured.
+    /// </summary>
+    [Key("transitionConfigurable")]
+    public bool Configurable { get; set; }
   }
+
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+}
