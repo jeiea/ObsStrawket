@@ -12,103 +12,103 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Subcription value used to disable all events.
     /// </summary>
-    [EnumMember(Value = "None")]
+    [EnumMember]
     None = 0,
 
     /// <summary>
     /// Subscription value to receive events in the <c>General</c> category.
     /// </summary>
-    [EnumMember(Value = "General")]
+    [EnumMember]
     General = 1 << 0,
 
     /// <summary>
     /// Subscription value to receive events in the <c>Config</c> category.
     /// </summary>
-    [EnumMember(Value = "Config")]
+    [EnumMember]
     Config = 1 << 1,
 
     /// <summary>
     /// Subscription value to receive events in the <c>Scenes</c> category.
     /// </summary>
-    [EnumMember(Value = "Scenes")]
+    [EnumMember]
     Scenes = 1 << 2,
 
     /// <summary>
     /// Subscription value to receive events in the <c>Inputs</c> category.
     /// </summary>
-    [EnumMember(Value = "Inputs")]
+    [EnumMember]
     Inputs = 1 << 3,
 
     /// <summary>
     /// Subscription value to receive events in the <c>Transitions</c> category.
     /// </summary>
-    [EnumMember(Value = "Transitions")]
+    [EnumMember]
     Transitions = 1 << 4,
 
     /// <summary>
     /// Subscription value to receive events in the <c>Filters</c> category.
     /// </summary>
-    [EnumMember(Value = "Filters")]
+    [EnumMember]
     Filters = 1 << 5,
 
     /// <summary>
     /// Subscription value to receive events in the <c>Outputs</c> category.
     /// </summary>
-    [EnumMember(Value = "Outputs")]
+    [EnumMember]
     Outputs = 1 << 6,
 
     /// <summary>
     /// Subscription value to receive events in the <c>SceneItems</c> category.
     /// </summary>
-    [EnumMember(Value = "SceneItems")]
+    [EnumMember]
     SceneItems = 1 << 7,
 
     /// <summary>
     /// Subscription value to receive events in the <c>MediaInputs</c> category.
     /// </summary>
-    [EnumMember(Value = "MediaInputs")]
+    [EnumMember]
     MediaInputs = 1 << 8,
 
     /// <summary>
     /// Subscription value to receive the <c>VendorEvent</c> event.
     /// </summary>
-    [EnumMember(Value = "Vendors")]
+    [EnumMember]
     Vendors = 1 << 9,
 
     /// <summary>
     /// Subscription value to receive events in the <c>Ui</c> category.
     /// </summary>
-    [EnumMember(Value = "Ui")]
+    [EnumMember]
     Ui = 1 << 10,
 
     /// <summary>
     /// Helper to receive all non-high-volume events.
     /// </summary>
-    [EnumMember(Value = "All")]
+    [EnumMember]
     All = General | Config | Scenes | Inputs | Transitions | Filters | Outputs | SceneItems | MediaInputs | Vendors | Ui,
 
     /// <summary>
     /// Subscription value to receive the <c>InputVolumeMeters</c> high-volume event.
     /// </summary>
-    [EnumMember(Value = "InputVolumeMeters")]
+    [EnumMember]
     InputVolumeMeters = 1 << 16,
 
     /// <summary>
     /// Subscription value to receive the <c>InputActiveStateChanged</c> high-volume event.
     /// </summary>
-    [EnumMember(Value = "InputActiveStateChanged")]
+    [EnumMember]
     InputActiveStateChanged = 1 << 17,
 
     /// <summary>
     /// Subscription value to receive the <c>InputShowStateChanged</c> high-volume event.
     /// </summary>
-    [EnumMember(Value = "InputShowStateChanged")]
+    [EnumMember]
     InputShowStateChanged = 1 << 18,
 
     /// <summary>
     /// Subscription value to receive the <c>SceneItemTransformChanged</c> high-volume event.
     /// </summary>
-    [EnumMember(Value = "SceneItemTransformChanged")]
+    [EnumMember]
     SceneItemTransformChanged = 1 << 19,
   }
 
@@ -119,7 +119,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Not a request batch.
     /// </summary>
-    [EnumMember(Value = "None")]
+    [EnumMember]
     None = -1,
 
     /// <summary>
@@ -127,7 +127,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <br />
     /// Note: To introduce artificial delay, use the <c>Sleep</c> request and the <c>sleepMillis</c> request field.
     /// </summary>
-    [EnumMember(Value = "SerialRealtime")]
+    [EnumMember]
     SerialRealtime = 0,
 
     /// <summary>
@@ -135,7 +135,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <br />
     /// Note: To introduce artificial delay, use the <c>Sleep</c> request and the <c>sleepFrames</c> request field.
     /// </summary>
-    [EnumMember(Value = "SerialFrame")]
+    [EnumMember]
     SerialFrame = 1,
 
     /// <summary>
@@ -144,7 +144,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Note: This is mainly experimental, and only really shows its colors during requests which require lots of<br />
     /// active processing, like <c>GetSourceScreenshot</c>.
     /// </summary>
-    [EnumMember(Value = "Parallel")]
+    [EnumMember]
     Parallel = 2,
   }
 
@@ -155,31 +155,31 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Unknown status, should never be used.
     /// </summary>
-    [EnumMember(Value = "Unknown")]
+    [EnumMember]
     Unknown = 0,
 
     /// <summary>
     /// For internal use to signify a successful field check.
     /// </summary>
-    [EnumMember(Value = "NoError")]
+    [EnumMember]
     NoError = 10,
 
     /// <summary>
     /// The request has succeeded.
     /// </summary>
-    [EnumMember(Value = "Success")]
+    [EnumMember]
     Success = 100,
 
     /// <summary>
     /// The <c>requestType</c> field is missing from the request data.
     /// </summary>
-    [EnumMember(Value = "MissingRequestType")]
+    [EnumMember]
     MissingRequestType = 203,
 
     /// <summary>
     /// The request type is invalid or does not exist.
     /// </summary>
-    [EnumMember(Value = "UnknownRequestType")]
+    [EnumMember]
     UnknownRequestType = 204,
 
     /// <summary>
@@ -187,25 +187,25 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <br />
     /// Note: A comment is required to be provided by obs-websocket.
     /// </summary>
-    [EnumMember(Value = "GenericError")]
+    [EnumMember]
     GenericError = 205,
 
     /// <summary>
     /// The request batch execution type is not supported.
     /// </summary>
-    [EnumMember(Value = "UnsupportedRequestBatchExecutionType")]
+    [EnumMember]
     UnsupportedRequestBatchExecutionType = 206,
 
     /// <summary>
     /// A required request field is missing.
     /// </summary>
-    [EnumMember(Value = "MissingRequestField")]
+    [EnumMember]
     MissingRequestField = 300,
 
     /// <summary>
     /// The request does not have a valid requestData object.
     /// </summary>
-    [EnumMember(Value = "MissingRequestData")]
+    [EnumMember]
     MissingRequestData = 301,
 
     /// <summary>
@@ -213,73 +213,73 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <br />
     /// Note: A comment is required to be provided by obs-websocket.
     /// </summary>
-    [EnumMember(Value = "InvalidRequestField")]
+    [EnumMember]
     InvalidRequestField = 400,
 
     /// <summary>
     /// A request field has the wrong data type.
     /// </summary>
-    [EnumMember(Value = "InvalidRequestFieldType")]
+    [EnumMember]
     InvalidRequestFieldType = 401,
 
     /// <summary>
     /// A request field (number) is outside of the allowed range.
     /// </summary>
-    [EnumMember(Value = "RequestFieldOutOfRange")]
+    [EnumMember]
     RequestFieldOutOfRange = 402,
 
     /// <summary>
     /// A request field (string or array) is empty and cannot be.
     /// </summary>
-    [EnumMember(Value = "RequestFieldEmpty")]
+    [EnumMember]
     RequestFieldEmpty = 403,
 
     /// <summary>
     /// There are too many request fields (eg. a request takes two optionals, where only one is allowed at a time).
     /// </summary>
-    [EnumMember(Value = "TooManyRequestFields")]
+    [EnumMember]
     TooManyRequestFields = 404,
 
     /// <summary>
     /// An output is running and cannot be in order to perform the request.
     /// </summary>
-    [EnumMember(Value = "OutputRunning")]
+    [EnumMember]
     OutputRunning = 500,
 
     /// <summary>
     /// An output is not running and should be.
     /// </summary>
-    [EnumMember(Value = "OutputNotRunning")]
+    [EnumMember]
     OutputNotRunning = 501,
 
     /// <summary>
     /// An output is paused and should not be.
     /// </summary>
-    [EnumMember(Value = "OutputPaused")]
+    [EnumMember]
     OutputPaused = 502,
 
     /// <summary>
     /// An output is not paused and should be.
     /// </summary>
-    [EnumMember(Value = "OutputNotPaused")]
+    [EnumMember]
     OutputNotPaused = 503,
 
     /// <summary>
     /// An output is disabled and should not be.
     /// </summary>
-    [EnumMember(Value = "OutputDisabled")]
+    [EnumMember]
     OutputDisabled = 504,
 
     /// <summary>
     /// Studio mode is active and cannot be.
     /// </summary>
-    [EnumMember(Value = "StudioModeActive")]
+    [EnumMember]
     StudioModeActive = 505,
 
     /// <summary>
     /// Studio mode is not active and should be.
     /// </summary>
-    [EnumMember(Value = "StudioModeNotActive")]
+    [EnumMember]
     StudioModeNotActive = 506,
 
     /// <summary>
@@ -287,37 +287,37 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <br />
     /// Note: Resources are any kind of object in obs-websocket, like inputs, profiles, outputs, etc.
     /// </summary>
-    [EnumMember(Value = "ResourceNotFound")]
+    [EnumMember]
     ResourceNotFound = 600,
 
     /// <summary>
     /// The resource already exists.
     /// </summary>
-    [EnumMember(Value = "ResourceAlreadyExists")]
+    [EnumMember]
     ResourceAlreadyExists = 601,
 
     /// <summary>
     /// The type of resource found is invalid.
     /// </summary>
-    [EnumMember(Value = "InvalidResourceType")]
+    [EnumMember]
     InvalidResourceType = 602,
 
     /// <summary>
     /// There are not enough instances of the resource in order to perform the request.
     /// </summary>
-    [EnumMember(Value = "NotEnoughResources")]
+    [EnumMember]
     NotEnoughResources = 603,
 
     /// <summary>
     /// The state of the resource is invalid. For example, if the resource is blocked from being accessed.
     /// </summary>
-    [EnumMember(Value = "InvalidResourceState")]
+    [EnumMember]
     InvalidResourceState = 604,
 
     /// <summary>
     /// The specified input (obs_source_t-OBS_SOURCE_TYPE_INPUT) had the wrong kind.
     /// </summary>
-    [EnumMember(Value = "InvalidInputKind")]
+    [EnumMember]
     InvalidInputKind = 605,
 
     /// <summary>
@@ -325,25 +325,25 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <br />
     /// This is particularly relevant to transitions, where they do not always have changeable settings.
     /// </summary>
-    [EnumMember(Value = "ResourceNotConfigurable")]
+    [EnumMember]
     ResourceNotConfigurable = 606,
 
     /// <summary>
     /// The specified filter (obs_source_t-OBS_SOURCE_TYPE_FILTER) had the wrong kind.
     /// </summary>
-    [EnumMember(Value = "InvalidFilterKind")]
+    [EnumMember]
     InvalidFilterKind = 607,
 
     /// <summary>
     /// Creating the resource failed.
     /// </summary>
-    [EnumMember(Value = "ResourceCreationFailed")]
+    [EnumMember]
     ResourceCreationFailed = 700,
 
     /// <summary>
     /// Performing an action on the resource failed.
     /// </summary>
-    [EnumMember(Value = "ResourceActionFailed")]
+    [EnumMember]
     ResourceActionFailed = 701,
 
     /// <summary>
@@ -351,69 +351,69 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <br />
     /// Note: A comment is required to be provided by obs-websocket.
     /// </summary>
-    [EnumMember(Value = "RequestProcessingFailed")]
+    [EnumMember]
     RequestProcessingFailed = 702,
 
     /// <summary>
     /// The combination of request fields cannot be used to perform an action.
     /// </summary>
-    [EnumMember(Value = "CannotAct")]
+    [EnumMember]
     CannotAct = 703,
   }
 
   /// <summary>
-  /// 
+  /// Actions used with media source and <c>TriggerMediaInputAction</c>.
   /// </summary>
-  [MessagePackFormatter(typeof(EnumAsStringFormatter<ObsMediaInputAction>))]
-  public enum ObsMediaInputAction {
+  [MessagePackFormatter(typeof(EnumAsStringFormatter<MediaInputAction>))]
+  public enum MediaInputAction {
     /// <summary>
     /// No action.
     /// </summary>
     [Obsolete]
     [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_NONE")]
-    OBS_WEBSOCKET_MEDIA_INPUT_ACTION_NONE,
+    None,
 
     /// <summary>
     /// Play the media input.
     /// </summary>
     [Obsolete]
     [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PLAY")]
-    OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PLAY,
+    Play,
 
     /// <summary>
     /// Pause the media input.
     /// </summary>
     [Obsolete]
     [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PAUSE")]
-    OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PAUSE,
+    Pause,
 
     /// <summary>
     /// Stop the media input.
     /// </summary>
     [Obsolete]
     [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP")]
-    OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP,
+    Stop,
 
     /// <summary>
     /// Restart the media input.
     /// </summary>
     [Obsolete]
     [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART")]
-    OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART,
+    Restart,
 
     /// <summary>
     /// Go to the next playlist item.
     /// </summary>
     [Obsolete]
     [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_NEXT")]
-    OBS_WEBSOCKET_MEDIA_INPUT_ACTION_NEXT,
+    Next,
 
     /// <summary>
     /// Go to the previous playlist item.
     /// </summary>
     [Obsolete]
     [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PREVIOUS")]
-    OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PREVIOUS,
+    Previous,
   }
 
   /// <summary>
@@ -423,49 +423,49 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// For internal use only to tell the request handler not to perform any close action.
     /// </summary>
-    [EnumMember(Value = "DontClose")]
+    [EnumMember]
     DontClose = 0,
 
     /// <summary>
     /// Unknown reason, should never be used.
     /// </summary>
-    [EnumMember(Value = "UnknownReason")]
+    [EnumMember]
     UnknownReason = 4000,
 
     /// <summary>
     /// The server was unable to decode the incoming websocket message.
     /// </summary>
-    [EnumMember(Value = "MessageDecodeError")]
+    [EnumMember]
     MessageDecodeError = 4002,
 
     /// <summary>
     /// A data field is required but missing from the payload.
     /// </summary>
-    [EnumMember(Value = "MissingDataField")]
+    [EnumMember]
     MissingDataField = 4003,
 
     /// <summary>
     /// A data field's value type is invalid.
     /// </summary>
-    [EnumMember(Value = "InvalidDataFieldType")]
+    [EnumMember]
     InvalidDataFieldType = 4004,
 
     /// <summary>
     /// A data field's value is invalid.
     /// </summary>
-    [EnumMember(Value = "InvalidDataFieldValue")]
+    [EnumMember]
     InvalidDataFieldValue = 4005,
 
     /// <summary>
     /// The specified <c>op</c> was invalid or missing.
     /// </summary>
-    [EnumMember(Value = "UnknownOpCode")]
+    [EnumMember]
     UnknownOpCode = 4006,
 
     /// <summary>
     /// The client sent a websocket message without first sending <c>Identify</c> message.
     /// </summary>
-    [EnumMember(Value = "NotIdentified")]
+    [EnumMember]
     NotIdentified = 4007,
 
     /// <summary>
@@ -473,19 +473,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <br />
     /// Note: Once a client has identified, only <c>Reidentify</c> may be used to change session parameters.
     /// </summary>
-    [EnumMember(Value = "AlreadyIdentified")]
+    [EnumMember]
     AlreadyIdentified = 4008,
 
     /// <summary>
     /// The authentication attempt (via <c>Identify</c>) failed.
     /// </summary>
-    [EnumMember(Value = "AuthenticationFailed")]
+    [EnumMember]
     AuthenticationFailed = 4009,
 
     /// <summary>
     /// The server detected the usage of an old version of the obs-websocket RPC protocol.
     /// </summary>
-    [EnumMember(Value = "UnsupportedRpcVersion")]
+    [EnumMember]
     UnsupportedRpcVersion = 4010,
 
     /// <summary>
@@ -493,13 +493,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <br />
     /// Note: This is the code used by the <c>Kick</c> button in the UI Session List. If you receive this code, you must not automatically reconnect.
     /// </summary>
-    [EnumMember(Value = "SessionInvalidated")]
+    [EnumMember]
     SessionInvalidated = 4011,
 
     /// <summary>
     /// A requested feature is not supported due to hardware/software limitations.
     /// </summary>
-    [EnumMember(Value = "UnsupportedFeature")]
+    [EnumMember]
     UnsupportedFeature = 4012,
   }
 
@@ -510,55 +510,55 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// The initial message sent by obs-websocket to newly connected clients.
     /// </summary>
-    [EnumMember(Value = "Hello")]
+    [EnumMember]
     Hello = 0,
 
     /// <summary>
     /// The message sent by a newly connected client to obs-websocket in response to a <c>Hello</c>.
     /// </summary>
-    [EnumMember(Value = "Identify")]
+    [EnumMember]
     Identify = 1,
 
     /// <summary>
     /// The response sent by obs-websocket to a client after it has successfully identified with obs-websocket.
     /// </summary>
-    [EnumMember(Value = "Identified")]
+    [EnumMember]
     Identified = 2,
 
     /// <summary>
     /// The message sent by an already-identified client to update identification parameters.
     /// </summary>
-    [EnumMember(Value = "Reidentify")]
+    [EnumMember]
     Reidentify = 3,
 
     /// <summary>
     /// The message sent by obs-websocket containing an event payload.
     /// </summary>
-    [EnumMember(Value = "Event")]
+    [EnumMember]
     Event = 5,
 
     /// <summary>
     /// The message sent by a client to obs-websocket to perform a request.
     /// </summary>
-    [EnumMember(Value = "Request")]
+    [EnumMember]
     Request = 6,
 
     /// <summary>
     /// The message sent by obs-websocket in response to a particular request from a client.
     /// </summary>
-    [EnumMember(Value = "RequestResponse")]
+    [EnumMember]
     RequestResponse = 7,
 
     /// <summary>
     /// The message sent by a client to obs-websocket to perform a batch of requests.
     /// </summary>
-    [EnumMember(Value = "RequestBatch")]
+    [EnumMember]
     RequestBatch = 8,
 
     /// <summary>
     /// The message sent by obs-websocket in response to a particular batch of requests from a client.
     /// </summary>
-    [EnumMember(Value = "RequestBatchResponse")]
+    [EnumMember]
     RequestBatchResponse = 9,
   }
 }

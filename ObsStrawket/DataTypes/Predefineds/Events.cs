@@ -1090,7 +1090,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Action performed on the input. See <c>ObsMediaInputAction</c> enum
     /// </summary>
     [Key("mediaAction")]
-    public string MediaAction { get; set; } = "";
+    public MediaInputAction MediaAction { get; set; } = new();
   }
 
   /// <summary>

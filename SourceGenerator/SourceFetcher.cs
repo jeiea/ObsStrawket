@@ -30,24 +30,20 @@ namespace SourceGenerator {
         "General", "Config", "Sources", "Scenes", "Inputs", "Transitions", "Filters",
         "Scene Items", "Outputs", "Stream", "Record", "Media Inputs", "Ui", "High-Volume",
       }.Select(x => x.ToLower()).ToList();
-      protocol.Requests = protocol.Requests.OrderBy(x => categoryOrder.IndexOf(x.Category!)).ToList();
+
+      //var obsMediaInputAction = protocol.Enums.First((en) => en.EnumType == "ObsMediaInputAction").EnumIdentifiers;
+      //foreach (var identifier in obsMediaInputAction) {
+      //  identifier.Deprecated = false;
+      //}
+
       protocol.Events = protocol.Events.OrderBy(x => categoryOrder.IndexOf(x.Category!)).ToList();
-
-      foreach (var request in protocol.Requests) {
-        var requestFields = request.RequestFields;
-        if (requestFields == null) {
+      foreach (var ev in protocol.Events) {
+        var dataFields = ev.DataFields;
+        if (dataFields == null) {
           continue;
         }
 
-        PatchOthers(request);
-      }
-      foreach (var request in protocol.Events) {
-        var requestFields = request.DataFields;
-        if (requestFields == null) {
-          continue;
-        }
-
-        foreach (var field in request.DataFields!) {
+        foreach (var field in ev.DataFields!) {
           if (field.ValueName == "sceneItems") {
             field.ValueType = "Array<BasicSceneItem>";
           }
@@ -57,12 +53,21 @@ namespace SourceGenerator {
         }
       }
 
+      protocol.Requests = protocol.Requests.OrderBy(x => categoryOrder.IndexOf(x.Category!)).ToList();
+      foreach (var request in protocol.Requests) {
+        var requestFields = request.RequestFields;
+        if (requestFields == null) {
+          continue;
+        }
+
+        PatchOthers(request);
+      }
 
       return protocol;
     }
 
     public async Task<ProtocolJson> GetProtocolJsonAsync() {
-      var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase,  };
+      var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, };
       if (File.Exists(ProtocolJsonPath)) {
         return (await JsonSerializer.DeserializeAsync<ProtocolJson>(File.OpenRead(ProtocolJsonPath), options).ConfigureAwait(false))!;
       }
@@ -116,6 +121,12 @@ namespace SourceGenerator {
         return true;
       case "keyModifiers":
         type = "KeyModifiers";
+        return true;
+      case "mediaAction":
+        type = "MediaInputAction";
+        return true;
+      case "mediaState":
+        type = "MediaState";
         return true;
       case "monitorType":
         type = "MonitoringType";

@@ -2128,7 +2128,7 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the media input</param>
     /// <param name="mediaAction">Identifier of the <c>ObsMediaInputAction</c> enum</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> TriggerMediaInputActionAsync(string inputName, string mediaAction, CancellationToken cancellation = default) {
+    public async Task<RequestResponse> TriggerMediaInputActionAsync(string inputName, MediaInputAction mediaAction, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new TriggerMediaInputAction() { InputName = inputName, MediaAction = mediaAction }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 

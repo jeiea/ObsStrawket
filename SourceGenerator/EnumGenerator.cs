@@ -12,6 +12,21 @@ namespace SourceGenerator {
     public async Task GenerateAsync() {
       var json = await _fetcher.GetModifiedProtocolJsonAsync().ConfigureAwait(false);
 
+      var obsMediaInputAction = json.Enums.First((en) => en.EnumType == "ObsMediaInputAction");
+      obsMediaInputAction.EnumType = "MediaInputAction";
+      foreach (var identifier in obsMediaInputAction.EnumIdentifiers) {
+        identifier.EnumIdentifier = $"{identifier.EnumIdentifier[33]}{identifier.EnumIdentifier[34..].ToLower()}";
+      }
+
+      var descriptions = new Dictionary<string, string> {
+        { "EventSubscription", "Flag specifying which events to subscribe to." },
+        { "RequestBatchExecutionType", "Type of method to process request" },
+        { "RequestStatus", "Request result code" },
+        { "MediaInputAction", "Actions used with media source and `TriggerMediaInputAction`." },
+        { "WebSocketCloseCode", "Reason that OBS closed the connection." },
+        { "WebSocketOpCode", "Type of OBS websocket protocol message." },
+      };
+
       using var file = File.CreateText("../../../../ObsStrawket/DataTypes/Predefineds/Enums.cs");
       file.Write(@"using MessagePack;
 using MessagePack.Formatters;
@@ -19,14 +34,6 @@ using System;
 using System.Runtime.Serialization;
 
 namespace ObsStrawket.DataTypes.Predefineds {");
-      var descriptions = new Dictionary<string, string> {
-        { "EventSubscription", "Flag specifying which events to subscribe to." },
-        { "RequestBatchExecutionType", "Type of method to process request" },
-        { "RequestStatus", "Request result code" },
-        { "ObsMediaInputAction", "" },
-        { "WebSocketCloseCode", "Reason that OBS closed the connection." },
-        { "WebSocketOpCode", "Type of OBS websocket protocol message." },
-      };
 
       foreach (var en in json.Enums) {
         file.WriteLine();
@@ -50,7 +57,13 @@ namespace ObsStrawket.DataTypes.Predefineds {");
           if (identifier.Deprecated) {
             file.WriteLine("    [Obsolete]");
           }
-          file.WriteLine("    [EnumMember(Value = \"{0}\")]", identifier.EnumIdentifier);
+
+          if (isStringEnum) {
+            file.WriteLine("    [EnumMember(Value = \"{0}\")]", identifier.EnumValue);
+          }
+          else {
+            file.WriteLine("    [EnumMember]");
+          }
           file.Write("    {0}", identifier.EnumIdentifier);
           if (isStringEnum) {
             file.WriteLine(',');

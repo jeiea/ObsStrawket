@@ -3314,7 +3314,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// State of the media input
     /// </summary>
     [Key("mediaState")]
-    public string MediaState { get; set; } = "";
+    public MediaState MediaState { get; set; } = new();
 
     /// <summary>
     /// Total duration of the playing media in milliseconds. <c>null</c> if not playing
@@ -3391,7 +3391,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Identifier of the <c>ObsMediaInputAction</c> enum
     /// </summary>
     [Key("mediaAction")]
-    public string MediaAction { get; set; } = "";
+    public MediaInputAction MediaAction { get; set; } = new();
   }
 
   /// <summary>
