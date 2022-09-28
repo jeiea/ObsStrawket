@@ -1,3 +1,11 @@
+## 0.10.0
+
+- ! Stronly typed some requests and events.
+  - `GetMediaInputStatus`
+  - `MediaInputActionTriggered`
+  - `TriggerMediaInputAction`
+- Fix some incorrect enum value annotations.
+
 ## 0.9.0
 
 - ! Strongly typed some requests and events.
