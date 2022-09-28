@@ -33,7 +33,7 @@ namespace ObsStrawket.Test.Specs {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestData"": {
-      ""sceneItemId"": 2,
+      ""sceneItemId"": 3,
       ""sceneItemIndex"": 2,
       ""sceneName"": ""test scene""
     },
@@ -62,12 +62,16 @@ namespace ObsStrawket.Test.Specs {
           ""sceneItemIndex"": 0
         },
         {
-          ""sceneItemId"": 3,
+          ""sceneItemId"": 2,
           ""sceneItemIndex"": 1
         },
         {
-          ""sceneItemId"": 2,
+          ""sceneItemId"": 3,
           ""sceneItemIndex"": 2
+        },
+        {
+          ""sceneItemId"": 4,
+          ""sceneItemIndex"": 3
         }
       ],
       ""sceneName"": ""test scene""

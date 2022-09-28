@@ -12,7 +12,7 @@ namespace ObsStrawket.Test.Specs {
   }
 
   class CreateSceneItemFlow : ITestFlow {
-    public static int CreatedItemId => 2;
+    public static int CreatedItemId => 3;
 
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.CreateSceneItemAsync(
@@ -48,8 +48,8 @@ namespace ObsStrawket.Test.Specs {
       await session.SendAsync(@"{
   ""d"": {
     ""eventData"": {
-      ""sceneItemId"": 2,
-      ""sceneItemIndex"": 1,
+      ""sceneItemId"": 3,
+      ""sceneItemIndex"": 2,
       ""sceneName"": ""test scene"",
       ""sourceName"": ""Browser source""
     },
@@ -67,7 +67,7 @@ namespace ObsStrawket.Test.Specs {
     },
     ""requestType"": ""CreateSceneItem"",
     ""responseData"": {
-      ""sceneItemId"": 2
+      ""sceneItemId"": 3
     }
   },
   ""op"": 7
@@ -75,7 +75,7 @@ namespace ObsStrawket.Test.Specs {
       await session.SendAsync(@"{
   ""d"": {
     ""eventData"": {
-      ""sceneItemId"": 2,
+      ""sceneItemId"": 3,
       ""sceneName"": ""test scene""
     },
     ""eventIntent"": 128,

@@ -26,7 +26,7 @@ namespace ObsStrawket.Test.Specs {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestData"": {
-      ""sceneItemId"": 2,
+      ""sceneItemId"": 3,
       ""sceneItemTransform"": {
         ""boundsType"": ""OBS_BOUNDS_SCALE_TO_WIDTH""
       },

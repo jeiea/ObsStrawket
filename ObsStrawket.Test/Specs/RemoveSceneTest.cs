@@ -163,12 +163,14 @@ namespace ObsStrawket.Test.Specs {
 
     private static async Task RemoveSceneAsync(ObsClientSocket client, string name) {
       await client.RemoveSceneAsync(sceneName: name).ConfigureAwait(false);
-      var removed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(name, (removed as SceneRemoved)!.SceneName);
+      var events = await client.Events.ReadAllAsync()
+        .Where(x => x is SceneRemoved || x is SceneListChanged)
+        .Take(2)
+        .ToListAsync().ConfigureAwait(false);
 
-      var changed = await client.Events
-        .ReadAllAsync().OfType<SceneListChanged>()
-        .FirstAsync().ConfigureAwait(false);
+      Assert.Equal(name, events.OfType<SceneRemoved>().First().SceneName);
+
+      var changed = events.OfType<SceneListChanged>().First();
       Assert.NotEmpty(changed.Scenes);
       Assert.DoesNotContain(changed.Scenes, (x) => x.Name == name);
     }

@@ -32,7 +32,7 @@ namespace ObsStrawket.Test.Specs {
   ""d"": {
     ""requestData"": {
       ""sceneItemEnabled"": false,
-      ""sceneItemId"": 2,
+      ""sceneItemId"": 3,
       ""sceneName"": ""test scene""
     },
     ""requestId"": ""{guid}"",
@@ -55,7 +55,7 @@ namespace ObsStrawket.Test.Specs {
   ""d"": {
     ""eventData"": {
       ""sceneItemEnabled"": false,
-      ""sceneItemId"": 2,
+      ""sceneItemId"": 3,
       ""sceneName"": ""test scene""
     },
     ""eventIntent"": 128,

@@ -27,7 +27,7 @@ namespace ObsStrawket.Test.Specs {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestData"": {
-      ""sceneItemId"": 2,
+      ""sceneItemId"": 3,
       ""sceneName"": ""test scene""
     },
     ""requestId"": ""{guid}"",
@@ -49,7 +49,7 @@ namespace ObsStrawket.Test.Specs {
       await session.SendAsync(@"{
   ""d"": {
     ""eventData"": {
-      ""sceneItemId"": 2,
+      ""sceneItemId"": 3,
       ""sceneName"": ""test scene"",
       ""sourceName"": ""Browser source""
     },

@@ -29,7 +29,7 @@ namespace ObsStrawket.Test.Specs {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestData"": {
-      ""outputName"": ""virtualcam_output"",
+      ""outputName"": ""Replay Buffer"",
       ""outputSettings"": {
         ""test_prop"": ""unused""
       }

@@ -76,6 +76,33 @@ namespace ObsStrawket.Test.Specs {
   },
   ""op"": 7
 }".Replace("{guid}", guid)).ConfigureAwait(false);
+
+      guid = await session.ReceiveAsync(@"{
+  ""d"": {
+    ""requestData"": {
+      ""parameterCategory"": ""AdvOut"",
+      ""parameterName"": ""RecEncoder""
+    },
+    ""requestId"": ""{guid}"",
+    ""requestType"": ""GetProfileParameter""
+  },
+  ""op"": 6
+}").ConfigureAwait(false);
+      await session.SendAsync(@"{
+  ""d"": {
+    ""requestId"": ""{guid}"",
+    ""requestStatus"": {
+      ""code"": 100,
+      ""result"": true
+    },
+    ""requestType"": ""GetProfileParameter"",
+    ""responseData"": {
+      ""defaultParameterValue"": ""none"",
+      ""parameterValue"": ""obs_x264""
+    }
+  },
+  ""op"": 7
+}".Replace("{guid}", guid)).ConfigureAwait(false);
     }
   }
 }

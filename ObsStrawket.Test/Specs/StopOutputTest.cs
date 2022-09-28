@@ -18,14 +18,16 @@ namespace ObsStrawket.Test.Specs {
       await client.StopOutputAsync(outputName: GetOutputListFlow.OutputName).ConfigureAwait(false);
 
       var changed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(OutputState.Stopped, (changed as VirtualcamStateChanged)!.OutputState);
+      Assert.Equal(OutputState.Stopping, (changed as ReplayBufferStateChanged)!.OutputState);
+      changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      Assert.Equal(OutputState.Stopped, (changed as ReplayBufferStateChanged)!.OutputState);
     }
 
     public async Task RespondAsync(MockServerSession session) {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestData"": {
-      ""outputName"": ""virtualcam_output""
+      ""outputName"": ""Replay Buffer""
     },
     ""requestId"": ""{guid}"",
     ""requestType"": ""StopOutput""
@@ -47,10 +49,21 @@ namespace ObsStrawket.Test.Specs {
   ""d"": {
     ""eventData"": {
       ""outputActive"": false,
+      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STOPPING""
+    },
+    ""eventIntent"": 64,
+    ""eventType"": ""ReplayBufferStateChanged""
+  },
+  ""op"": 5
+}").ConfigureAwait(false);
+      await session.SendAsync(@"{
+  ""d"": {
+    ""eventData"": {
+      ""outputActive"": false,
       ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STOPPED""
     },
     ""eventIntent"": 64,
-    ""eventType"": ""VirtualcamStateChanged""
+    ""eventType"": ""ReplayBufferStateChanged""
   },
   ""op"": 5
 }").ConfigureAwait(false);

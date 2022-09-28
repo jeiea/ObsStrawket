@@ -88,7 +88,6 @@ namespace ObsStrawket.Test.Real {
       var client = ClientFlow.GetDebugClient(useChannel: true);
       await client.ConnectAsync(_uri, MockServer.Password).ConfigureAwait(false);
       var flows = new List<ITestFlow>() {
-        //new TriggerHotkeyByKeySequenceFlow(), // Manual setup is required
         //new CallVendorRequestFlow(), // test how?
         //new SleepFlow(), // Not implemented
 
@@ -98,11 +97,13 @@ namespace ObsStrawket.Test.Real {
         //new GetHotkeyListFlow(),
         //new TriggerHotkeyByNameFlow(),
 
-        //new GetRecordDirectoryFlow(),
+        //new TriggerHotkeyByKeySequenceFlow(), // Requires manual setup.
+        //new GetSpecialInputsFlow(), // Requires manual setup.
+        //new GetGroupSceneItemListFlow(), // Requires manual setup.
 
         //new CreateProfileFlow(), // setup sandbox profile
 
-        //new SetProfileParameterFlow(),
+        //new SetProfileParameterFlow(), // Config
         //new GetProfileParameterFlow(),
         //new GetProfileListFlow(),
         //new SetCurrentProfileFlow(),
@@ -110,14 +111,15 @@ namespace ObsStrawket.Test.Real {
         //new GetVideoSettingsFlow(),
         //new SetPersistentDataFlow(),
         //new GetPersistentDataFlow(),
+        //new GetRecordDirectoryFlow(),
 
-        new GetTransitionKindListFlow(),
-        new GetSceneTransitionListFlow(),
-        new SetCurrentSceneTransitionFlow(), // Requires manual scene collection setup
-        new SetCurrentSceneTransitionDurationFlow(), // Requires manual scene collection setup
-        new SetCurrentSceneTransitionSettingsFlow(), // Requires manual scene collection setup
-        new GetCurrentSceneTransitionFlow(),
-        new GetCurrentSceneTransitionCursorFlow(),
+        //new GetTransitionKindListFlow(),
+        //new SetCurrentSceneTransitionFlow(), // Requires manual scene collection setup
+        //new SetCurrentSceneTransitionDurationFlow(), // Requires manual scene collection setup
+        //new SetCurrentSceneTransitionSettingsFlow(), // Requires manual scene collection setup
+        //new GetSceneTransitionListFlow(),
+        //new GetCurrentSceneTransitionFlow(),
+        //new GetCurrentSceneTransitionCursorFlow(),
 
         //new CreateSceneCollectionFlow(), // setup sandbox scene collection
         //new GetSceneCollectionListFlow(),
@@ -126,31 +128,9 @@ namespace ObsStrawket.Test.Real {
         //new CreateSceneFlow(), // setup sandbox scene
         //new GetSceneListFlow(),
 
-        //new GetGroupListFlow(),
-        //new SetSceneNameFlow(),
-        //new SetSceneSceneTransitionOverrideFlow(),
-        //new GetSceneSceneTransitionOverrideFlow(),
-
-        //new SetStudioModeEnabledFlow(), // setup studio mode
-        //new SetCurrentProgramSceneFlow(),
-        //new GetCurrentProgramSceneFlow(),
-        //new SetCurrentPreviewSceneFlow(),
-        //new GetCurrentPreviewSceneFlow(),
-        //new TriggerStudioModeTransitionFlow(),
-        //new SetTBarPositionFlow(),
-        //new GetStudioModeEnabledFlow(), // reset studio mode to false
-
-        //new GetMonitorListFlow(), // UI
-        //new OpenInputPropertiesDialogFlow(),
-        //new OpenInputFiltersDialogFlow(),
-        //new OpenInputInteractDialogFlow(),
-        //new OpenSourceProjectorFlow(),
-        //new OpenVideoMixProjectorFlow(),
-
         //new CreateInputFlow(), // Setup inputs
         //new GetInputListFlow(),
         //new GetInputKindListFlow(),
-        //new GetSpecialInputsFlow(),
         //new SetInputNameFlow(),
         //new GetInputDefaultSettingsFlow(),
         //new SetInputSettingsFlow(),
@@ -171,6 +151,36 @@ namespace ObsStrawket.Test.Real {
         //new GetInputPropertiesListPropertyItemsFlow(),
         //new PressInputPropertiesButtonFlow(),
 
+        //new StartRecordFlow(), // Record
+        //new GetRecordStatusFlow(),
+        //new PauseRecordFlow(),
+        //new ResumeRecordFlow(),
+        //new ToggleRecordPauseFlow(),
+        //new StopRecordFlow(),
+        //new ToggleRecordFlow(),
+
+        //new SetStreamServiceSettingsFlow(), // Stream
+        //new GetStreamServiceSettingsFlow(),
+        //new StartStreamFlow(),
+        //new SendStreamCaptionFlow(),
+        //new GetStreamStatusFlow(),
+        //new StopStreamFlow(),
+        //new ToggleStreamFlow(),
+
+        //new SetStudioModeEnabledFlow(), // setup studio mode
+        //new SetCurrentProgramSceneFlow(),
+        //new GetCurrentProgramSceneFlow(),
+        //new SetCurrentPreviewSceneFlow(),
+        //new GetCurrentPreviewSceneFlow(),
+        //new TriggerStudioModeTransitionFlow(),
+        //new SetTBarPositionFlow(),
+        //new GetStudioModeEnabledFlow(), // reset studio mode to false
+
+        //new SetMediaInputCursorFlow(), // setup
+        //new OffsetMediaInputCursorFlow(),
+        //new GetMediaInputStatusFlow(),
+        //new TriggerMediaInputActionFlow(), // cleanup
+
         //new CreateSourceFilterFlow(), // Filters
         //new GetSourceFilterDefaultSettingsFlow(),
         //new SetSourceFilterIndexFlow(),
@@ -185,7 +195,6 @@ namespace ObsStrawket.Test.Real {
         //new DuplicateSceneItemFlow(),
         //new GetSceneItemIdFlow(),
         //new GetSceneItemListFlow(),
-        //new GetGroupSceneItemListFlow(),
         //new SetSceneItemEnabledFlow(),
         //new GetSceneItemEnabledFlow(),
         //new SetSceneItemLockedFlow(),
@@ -205,50 +214,44 @@ namespace ObsStrawket.Test.Real {
         //new GetVirtualCamStatusFlow(),
         //new StopVirtualCamFlow(),
         //new ToggleVirtualCamFlow(),
-        //new StartReplayBufferFlow(),
-        //new GetReplayBufferStatusFlow(),
-        //new SaveReplayBufferFlow(),
-        //new GetLastReplayBufferReplayFlow(),
-        //new StopReplayBufferFlow(),
-        //new ToggleReplayBufferFlow(),
+        new StartReplayBufferFlow(),
+        new GetReplayBufferStatusFlow(),
+        new SaveReplayBufferFlow(),
+        new GetLastReplayBufferReplayFlow(),
+        new StopReplayBufferFlow(),
+        new ToggleReplayBufferFlow(),
         //new StartOutputFlow(),
         //new GetOutputStatusFlow(),
         //new StopOutputFlow(),
         //new ToggleOutputFlow(),
 
-        //new StartRecordFlow(), // Record
-        //new PauseRecordFlow(),
-        //new ResumeRecordFlow(),
-        //new ToggleRecordPauseFlow(),
-        //new GetRecordStatusFlow(),
-        //new StopRecordFlow(),
-        //new ToggleRecordFlow(),
-
-        //new SetStreamServiceSettingsFlow(), // Stream
-        //new GetStreamServiceSettingsFlow(),
-        //new StartStreamFlow(),
-        //new SendStreamCaptionFlow(),
-        //new GetStreamStatusFlow(),
-        //new StopStreamFlow(),
-        //new ToggleStreamFlow(),
 
         //new GetSourceActiveFlow(), // Sources
         //new GetSourceScreenshotFlow(),
         //new SaveSourceScreenshotFlow(),
 
+        //new GetGroupListFlow(),
+        //new SetSceneNameFlow(),
+        //new SetSceneSceneTransitionOverrideFlow(),
+        //new GetSceneSceneTransitionOverrideFlow(),
+
+        //new GetMonitorListFlow(), // UI
+        //new OpenInputPropertiesDialogFlow(),
+        //new OpenInputFiltersDialogFlow(),
+        //new OpenInputInteractDialogFlow(),
+        //new OpenSourceProjectorFlow(),
+        //new OpenVideoMixProjectorFlow(),
+
         //new RemoveInputFlow(), // cleanup input
         //new RemoveSceneFlow(),
         //new RemoveProfileFlow(),
-
-
-//new GetMediaInputStatusFlow(),
-//new OffsetMediaInputCursorFlow(),
-//new SetMediaInputCursorFlow(),
-//new TriggerMediaInputActionFlow(),
       };
       foreach (var flow in flows) {
         Debug.WriteLine($"Test {flow.GetType().Name}");
-        ClientFlow.DrainEvents(client);
+        while (client.Events.TryPeek(out var ev)) {
+          ClientFlow.DrainEvents(client);
+          await Task.Delay(100).ConfigureAwait(false);
+        }
         await flow.RequestAsync(client).ConfigureAwait(false);
       }
       return;

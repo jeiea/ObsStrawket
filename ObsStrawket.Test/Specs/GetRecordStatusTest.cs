@@ -12,12 +12,14 @@ namespace ObsStrawket.Test.Specs {
 
   class GetRecordStatusFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
+      await Task.Delay(1000).ConfigureAwait(false);
       var response = await client.GetRecordStatusAsync().ConfigureAwait(false);
+
       Assert.True(response.OutputActive);
       Assert.NotInRange(response.OutputBytes, int.MinValue, 0);
       Assert.NotInRange(response.OutputDuration, int.MinValue, 0);
       Assert.StartsWith("00:00:0", response.OutputTimecode);
-      Assert.True(response.OutputPaused);
+      Assert.False(response.OutputPaused);
     }
 
     public async Task RespondAsync(MockServerSession session) {

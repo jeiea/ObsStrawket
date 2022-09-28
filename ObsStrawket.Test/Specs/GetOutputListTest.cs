@@ -11,7 +11,7 @@ namespace ObsStrawket.Test.Specs {
   }
 
   class GetOutputListFlow : ITestFlow {
-    public static string OutputName => "virtualcam_output";
+    public static string OutputName => "Replay Buffer";
 
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetOutputListAsync().ConfigureAwait(false);

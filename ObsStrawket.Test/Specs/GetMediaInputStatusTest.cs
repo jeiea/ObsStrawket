@@ -1,29 +1,33 @@
+using ObsStrawket.DataTypes;
 using ObsStrawket.Test.Utilities;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace ObsStrawket.Test.Specs {
-  public class GetOutputSettingsTest {
+  public class GetMediaInputStatusTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetOutputSettingsFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetMediaInputStatusFlow()).ConfigureAwait(false);
     }
   }
 
-  class GetOutputSettingsFlow : ITestFlow {
+  class GetMediaInputStatusFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      var response = await client.GetOutputSettingsAsync(outputName: GetOutputListFlow.OutputName).ConfigureAwait(false);
-      Assert.Equal(SetOutputSettingsFlow.PropValue, response.OutputSettings[SetOutputSettingsFlow.PropName]);
+      var response = await client.GetMediaInputStatusAsync(inputName: CreateInputFlow.MediaInputName).ConfigureAwait(false);
+
+      Assert.Equal(MediaState.Playing, response.MediaState);
+      Assert.Equal(20000, response.MediaDuration);
+      Assert.InRange((int)response.MediaCursor!, 15000, 20000);
     }
 
     public async Task RespondAsync(MockServerSession session) {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestData"": {
-      ""outputName"": ""Replay Buffer""
+      ""inputName"": ""Media source""
     },
     ""requestId"": ""{guid}"",
-    ""requestType"": ""GetOutputSettings""
+    ""requestType"": ""GetMediaInputStatus""
   },
   ""op"": 6
 }").ConfigureAwait(false);
@@ -34,13 +38,11 @@ namespace ObsStrawket.Test.Specs {
       ""code"": 100,
       ""result"": true
     },
-    ""requestType"": ""GetOutputSettings"",
+    ""requestType"": ""GetMediaInputStatus"",
     ""responseData"": {
-      ""outputSettings"": {
-        ""muxer_settings"": """",
-        ""path"": ""/some/path"",
-        ""test_prop"": ""unused""
-      }
+      ""mediaCursor"": 15100,
+      ""mediaDuration"": 20000,
+      ""mediaState"": ""OBS_MEDIA_STATE_PLAYING""
     }
   },
   ""op"": 7

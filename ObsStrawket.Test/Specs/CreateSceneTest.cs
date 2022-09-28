@@ -1,7 +1,9 @@
 using ObsStrawket.DataTypes;
 using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
+using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -139,10 +141,15 @@ namespace ObsStrawket.Test.Specs {
       }
       catch (FailureResponseException failure)
       when (failure.Response.RequestStatus.Code == RequestStatusCode.ResourceAlreadyExists) {
+        // Studio program scene can holds removed input, so reset.
+        await client.SetStudioModeEnabledAsync(false).ConfigureAwait(false);
         await client.RemoveSceneAsync(sceneName: name).ConfigureAwait(false);
-        await client.Events.ReadAllAsync()
-          .Where((x) => x is SceneRemoved || x is SceneListChanged)
-          .Take(2).ToListAsync().ConfigureAwait(false);
+        try {
+          using var cts = new CancellationTokenSource(100);
+          await client.Events.ReadAllAsync(cts.Token).FirstAsync(x => x is SceneTransitionStarted).ConfigureAwait(false);
+          await client.Events.ReadAllAsync().FirstAsync(x => x is SceneTransitionEnded).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) { }
         await client.CreateSceneAsync(sceneName: name).ConfigureAwait(false);
       }
 

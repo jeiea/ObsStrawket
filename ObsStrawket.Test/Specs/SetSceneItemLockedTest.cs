@@ -31,7 +31,7 @@ namespace ObsStrawket.Test.Specs {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestData"": {
-      ""sceneItemId"": 2,
+      ""sceneItemId"": 3,
       ""sceneItemLocked"": true,
       ""sceneName"": ""test scene""
     },
@@ -54,7 +54,7 @@ namespace ObsStrawket.Test.Specs {
       await session.SendAsync(@"{
   ""d"": {
     ""eventData"": {
-      ""sceneItemId"": 2,
+      ""sceneItemId"": 3,
       ""sceneItemLocked"": true,
       ""sceneName"": ""test scene""
     },

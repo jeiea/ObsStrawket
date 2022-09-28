@@ -3,27 +3,31 @@ using System.Threading.Tasks;
 using Xunit;
 
 namespace ObsStrawket.Test.Specs {
-  public class GetOutputSettingsTest {
+  public class OffsetMediaInputCursorTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetOutputSettingsFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new OffsetMediaInputCursorFlow()).ConfigureAwait(false);
     }
   }
 
-  class GetOutputSettingsFlow : ITestFlow {
+  class OffsetMediaInputCursorFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      var response = await client.GetOutputSettingsAsync(outputName: GetOutputListFlow.OutputName).ConfigureAwait(false);
-      Assert.Equal(SetOutputSettingsFlow.PropValue, response.OutputSettings[SetOutputSettingsFlow.PropName]);
+      await client.OffsetMediaInputCursorAsync(
+        inputName: CreateInputFlow.MediaInputName,
+        mediaCursorOffset: 10 * 1000
+      ).ConfigureAwait(false);
+      await Task.Delay(100).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestData"": {
-      ""outputName"": ""Replay Buffer""
+      ""inputName"": ""Media source"",
+      ""mediaCursorOffset"": 10000
     },
     ""requestId"": ""{guid}"",
-    ""requestType"": ""GetOutputSettings""
+    ""requestType"": ""OffsetMediaInputCursor""
   },
   ""op"": 6
 }").ConfigureAwait(false);
@@ -34,14 +38,7 @@ namespace ObsStrawket.Test.Specs {
       ""code"": 100,
       ""result"": true
     },
-    ""requestType"": ""GetOutputSettings"",
-    ""responseData"": {
-      ""outputSettings"": {
-        ""muxer_settings"": """",
-        ""path"": ""/some/path"",
-        ""test_prop"": ""unused""
-      }
-    }
+    ""requestType"": ""OffsetMediaInputCursor""
   },
   ""op"": 7
 }".Replace("{guid}", guid)).ConfigureAwait(false);

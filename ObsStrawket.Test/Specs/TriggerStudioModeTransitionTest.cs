@@ -1,5 +1,6 @@
 using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -19,12 +20,10 @@ namespace ObsStrawket.Test.Specs {
       Assert.Equal("Fade", (started as SceneTransitionStarted)!.TransitionName);
       var ended = await client.Events.ReadAsync().ConfigureAwait(false);
       Assert.Equal("Fade", (ended as SceneTransitionVideoEnded)!.TransitionName);
-      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(CreateSceneFlow.NewScene2, (changed as CurrentPreviewSceneChanged)!.SceneName);
-      changed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(CreateSceneFlow.NewScene, (changed as CurrentProgramSceneChanged)!.SceneName);
-      ended = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal("Fade", (ended as SceneTransitionEnded)!.TransitionName);
+      var events = await client.Events.ReadAllAsync().Take(3).ToListAsync().ConfigureAwait(false);
+      Assert.Contains(events, (x) => x is CurrentPreviewSceneChanged changed && changed.SceneName == CreateSceneFlow.NewScene2);
+      Assert.Contains(events, (x) => x is CurrentProgramSceneChanged changed && changed.SceneName == CreateSceneFlow.NewScene);
+      Assert.Contains(events, (x) => x is SceneTransitionEnded ended && ended.TransitionName == "Fade");
     }
 
     public async Task RespondAsync(MockServerSession session) {

@@ -12,19 +12,23 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
+  /// <summary>
+  /// Precondition: ToggleReplayBufferFlow
+  /// </summary>
   class StartOutputFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
+      await Task.Delay(100).ConfigureAwait(false);
       await client.StartOutputAsync(outputName: GetOutputListFlow.OutputName).ConfigureAwait(false);
 
       var changed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(OutputState.Started, (changed as VirtualcamStateChanged)!.OutputState);
+      Assert.Equal(OutputState.Started, (changed as ReplayBufferStateChanged)!.OutputState);
     }
 
     public async Task RespondAsync(MockServerSession session) {
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestData"": {
-      ""outputName"": ""virtualcam_output""
+      ""outputName"": ""Replay Buffer""
     },
     ""requestId"": ""{guid}"",
     ""requestType"": ""StartOutput""
@@ -49,7 +53,7 @@ namespace ObsStrawket.Test.Specs {
       ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STARTED""
     },
     ""eventIntent"": 64,
-    ""eventType"": ""VirtualcamStateChanged""
+    ""eventType"": ""ReplayBufferStateChanged""
   },
   ""op"": 5
 }").ConfigureAwait(false);

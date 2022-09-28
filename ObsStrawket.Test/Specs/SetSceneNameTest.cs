@@ -12,29 +12,41 @@ namespace ObsStrawket.Test.Specs {
   }
 
   class SetSceneNameFlow : ITestFlow {
-    private static string ChangedName => "test scene 2";
+    private static string ChangedName => "test scene 3";
     public async Task RequestAsync(ObsClientSocket client) {
-      var scenes = await GetSceneListFlow.GetSceneListAsync(client).ConfigureAwait(false);
-      string name = scenes.Scenes.Find(x => x.Name != CreateSceneFlow.NewScene)!.Name;
-      await client.SetSceneNameAsync(sceneName: name, newSceneName: ChangedName).ConfigureAwait(false);
+      await client.SetSceneNameAsync(sceneName: CreateSceneFlow.NewScene2, newSceneName: ChangedName).ConfigureAwait(false);
 
       var changed = await client.Events.ReadAsync().ConfigureAwait(false);
       Assert.Equal(ChangedName, (changed as SceneNameChanged)!.SceneName);
+
+      await client.SetSceneNameAsync(sceneName: ChangedName, newSceneName: CreateSceneFlow.NewScene2).ConfigureAwait(false);
+
+      changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      Assert.Equal(CreateSceneFlow.NewScene2, (changed as SceneNameChanged)!.SceneName);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      await new GetSceneListFlow().RespondAsync(session).ConfigureAwait(false);
-
       string? guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestData"": {
-      ""newSceneName"": ""test scene 2"",
-      ""sceneName"": ""Scene""
+      ""newSceneName"": ""test scene 3"",
+      ""sceneName"": ""test scene 2""
     },
     ""requestId"": ""{guid}"",
     ""requestType"": ""SetSceneName""
   },
   ""op"": 6
+}").ConfigureAwait(false);
+      await session.SendAsync(@"{
+  ""d"": {
+    ""eventData"": {
+      ""oldSceneName"": ""test scene 2"",
+      ""sceneName"": ""test scene 3""
+    },
+    ""eventIntent"": 4,
+    ""eventType"": ""SceneNameChanged""
+  },
+  ""op"": 5
 }").ConfigureAwait(false);
       await session.SendAsync(@"{
   ""d"": {
@@ -47,10 +59,22 @@ namespace ObsStrawket.Test.Specs {
   },
   ""op"": 7
 }".Replace("{guid}", guid)).ConfigureAwait(false);
+
+      guid = await session.ReceiveAsync(@"{
+  ""d"": {
+    ""requestData"": {
+      ""newSceneName"": ""test scene 2"",
+      ""sceneName"": ""test scene 3""
+    },
+    ""requestId"": ""{guid}"",
+    ""requestType"": ""SetSceneName""
+  },
+  ""op"": 6
+}").ConfigureAwait(false);
       await session.SendAsync(@"{
   ""d"": {
     ""eventData"": {
-      ""oldSceneName"": ""Scene"",
+      ""oldSceneName"": ""test scene 3"",
       ""sceneName"": ""test scene 2""
     },
     ""eventIntent"": 4,
@@ -58,6 +82,17 @@ namespace ObsStrawket.Test.Specs {
   },
   ""op"": 5
 }").ConfigureAwait(false);
+      await session.SendAsync(@"{
+  ""d"": {
+    ""requestId"": ""{guid}"",
+    ""requestStatus"": {
+      ""code"": 100,
+      ""result"": true
+    },
+    ""requestType"": ""SetSceneName""
+  },
+  ""op"": 7
+}".Replace("{guid}", guid)).ConfigureAwait(false);
     }
   }
 }

@@ -53,18 +53,18 @@ namespace ObsStrawket.Test.Specs {
   },
   ""op"": 7
 }".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""sceneItemId"": 1,
-      ""sceneName"": ""test scene"",
-      ""sourceName"": ""Browser source""
-    },
-    ""eventIntent"": 128,
-    ""eventType"": ""SceneItemRemoved""
-  },
-  ""op"": 5
-}").ConfigureAwait(false);
+      //      await session.SendAsync(@"{
+      //  ""d"": {
+      //    ""eventData"": {
+      //      ""sceneItemId"": 1,
+      //      ""sceneName"": ""test scene"",
+      //      ""sourceName"": ""Browser source""
+      //    },
+      //    ""eventIntent"": 128,
+      //    ""eventType"": ""SceneItemRemoved""
+      //  },
+      //  ""op"": 5
+      //}").ConfigureAwait(false);
     }
   }
 }

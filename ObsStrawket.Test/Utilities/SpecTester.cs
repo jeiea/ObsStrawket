@@ -15,7 +15,7 @@ namespace ObsStrawket.Test.Utilities {
         try {
           var (webSocketContext, session) = await MockServer.HandshakeAsync(context, cancellation).ConfigureAwait(false);
           await flow.RespondAsync(session).ConfigureAwait(false);
-          await webSocketContext.WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, default).ConfigureAwait(false); ;
+          await webSocketContext.WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, default).ConfigureAwait(false);
           taskSource.SetResult();
         }
         catch (Exception ex) {

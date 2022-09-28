@@ -27,7 +27,7 @@ namespace ObsStrawket.Test.Specs {
   ""d"": {
     ""requestData"": {
       ""sceneItemBlendMode"": ""OBS_BLEND_SCREEN"",
-      ""sceneItemId"": 2,
+      ""sceneItemId"": 3,
       ""sceneName"": ""test scene""
     },
     ""requestId"": ""{guid}"",
