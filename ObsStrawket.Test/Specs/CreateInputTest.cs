@@ -36,15 +36,13 @@ namespace ObsStrawket.Test.Specs {
       Assert.Equal(response.SceneItemId, sceneItemSelected.SceneItemId);
       Assert.Equal(CreateSceneFlow.NewScene, sceneItemSelected.SceneName);
 
-      string relativePath = "../../../../Asset/w256h144f25t20keyint25.mp4";
-      string mp4Path = Path.GetFullPath(Path.Combine(Assembly.GetExecutingAssembly().Location, relativePath));
       response = await client.CreateInputAsync(
         sceneName: CreateSceneFlow.NewScene,
         inputName: MediaInputName,
         inputKind: MediaInputKind,
         inputSettings: new Dictionary<string, object?> {
           { "hw_decode", true },
-          { "local_file", mp4Path },
+          { "local_file", GetMp4Path() },
           { "looping", true },
           { "restart_on_activate", false },
         },
@@ -142,6 +140,7 @@ namespace ObsStrawket.Test.Specs {
   ""op"": 7
 }".Replace("{guid}", guid)).ConfigureAwait(false);
 
+      string mp4 = GetMp4Path().Replace("\\", "\\\\");
       guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestData"": {
@@ -149,7 +148,7 @@ namespace ObsStrawket.Test.Specs {
       ""inputName"": ""Media source"",
       ""inputSettings"": {
         ""hw_decode"": true,
-        ""local_file"": ""D:\\Repos\\jeiea\\2022\\08\\ObsStrawket\\ObsStrawket.Test\\Asset\\w256h144f25t20keyint25.mp4"",
+        ""local_file"": ""{mp4}"",
         ""looping"": true,
         ""restart_on_activate"": false
       },
@@ -160,7 +159,7 @@ namespace ObsStrawket.Test.Specs {
     ""requestType"": ""CreateInput""
   },
   ""op"": 6
-}").ConfigureAwait(false);
+}".Replace("{mp4}", mp4)).ConfigureAwait(false);
 
       await session.SendAsync(@"{
   ""d"": {
@@ -179,7 +178,7 @@ namespace ObsStrawket.Test.Specs {
       ""inputName"": ""Media source"",
       ""inputSettings"": {
         ""hw_decode"": true,
-        ""local_file"": ""ObsStrawket.Test/Asset/w256h144f25t20keyint25.mp4"",
+        ""local_file"": ""{mp4}"",
         ""looping"": true,
         ""restart_on_activate"": false
       },
@@ -189,7 +188,7 @@ namespace ObsStrawket.Test.Specs {
     ""eventType"": ""InputCreated""
   },
   ""op"": 5
-}").ConfigureAwait(false);
+}".Replace("{mp4}", mp4)).ConfigureAwait(false);
       await session.SendAsync(@"{
   ""d"": {
     ""eventData"": {
@@ -228,6 +227,12 @@ namespace ObsStrawket.Test.Specs {
   },
   ""op"": 7
 }".Replace("{guid}", guid)).ConfigureAwait(false);
+    }
+
+    private static string GetMp4Path() {
+      string relativePath = "../../../../Asset/w256h144f25t20keyint25.mp4";
+      string mp4Path = Path.GetFullPath(Path.Combine(Assembly.GetExecutingAssembly().Location, relativePath));
+      return mp4Path;
     }
   }
 }
