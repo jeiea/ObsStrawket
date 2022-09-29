@@ -244,7 +244,7 @@ namespace ObsStrawket {
       case IObsEvent ev:
         await events.WriteAsync(ev, token).ConfigureAwait(false);
         break;
-      case RequestResponse response:
+      case IRequestResponse response:
         if (_requests.TryRemove(response.RequestId, out var request)) {
           if (response.RequestStatus.Result) {
             request.SetResult(response);

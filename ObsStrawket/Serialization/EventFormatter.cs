@@ -14,17 +14,21 @@ namespace ObsStrawket.Serialization {
       }
 
       string eventType = peeker.ReadString();
-      if (!DataTypeMapping.EventToTypes.TryGetValue(eventType, out var type)) {
-        peeker = reader.CreatePeekReader();
-        reader.Skip();
-        return MessagePackSerializer.Deserialize<RawEvent>(ref peeker, options);
+      if (DataTypeMapping.EventToTypes.TryGetValue(eventType, out var type)) {
+        try {
+          peeker = reader.CreatePeekReader();
+          var ev = FormatterUtil.SeekByKey(ref peeker, "eventData")
+            ? (MessagePackSerializer.Deserialize(type, ref peeker, options) as IObsEvent)!
+            : (Activator.CreateInstance(type) as IObsEvent)!;
+          reader.Skip();
+          return ev;
+        }
+        catch (MessagePackSerializationException) { }
       }
 
       peeker = reader.CreatePeekReader();
       reader.Skip();
-      return FormatterUtil.SeekByKey(ref peeker, "eventData")
-        ? (MessagePackSerializer.Deserialize(type, ref peeker, options) as IObsEvent)!
-        : (Activator.CreateInstance(type) as IObsEvent)!;
+      return MessagePackSerializer.Deserialize<RawEvent>(ref peeker, options);
     }
 
     public void Serialize(ref MessagePackWriter writer, IObsEvent value, MessagePackSerializerOptions options) {

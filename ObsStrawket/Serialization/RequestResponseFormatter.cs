@@ -9,10 +9,16 @@ namespace ObsStrawket.Serialization {
 
     public IRequestResponse Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
       string requestType = FormatterUtil.SeekByKey(reader, "requestType").ReadString();
-      if (!DataTypeMapping.RequestToTypes.TryGetValue(requestType, out var type)) {
-        return MessagePackSerializer.Deserialize<RawRequestResponse>(ref reader, options);
+      if (DataTypeMapping.RequestToTypes.TryGetValue(requestType, out var type)) {
+        try {
+          return DeserializeTyped(ref reader, options, type);
+        }
+        catch (MessagePackSerializationException) { }
       }
+      return MessagePackSerializer.Deserialize<RawRequestResponse>(ref reader, options);
+    }
 
+    private static IRequestResponse DeserializeTyped(ref MessagePackReader reader, MessagePackSerializerOptions options, DataTypeMapping.RequestMapping type) {
       var peeker = reader.CreatePeekReader();
       var response = FormatterUtil.SeekByKey(ref peeker, "responseData")
         ? (MessagePackSerializer.Deserialize(type.Response, ref peeker, options) as RequestResponse)!
@@ -22,7 +28,6 @@ namespace ObsStrawket.Serialization {
       response.RequestStatus = MessagePackSerializer.Deserialize<RequestStatus>(ref peeker, options);
 
       reader.Skip();
-
       return response;
     }
 
