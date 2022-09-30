@@ -1,3 +1,4 @@
+using MessagePack;
 using Microsoft.Extensions.Logging;
 using ObsStrawket.DataTypes;
 using ObsStrawket.DataTypes.Predefineds;
@@ -242,9 +243,17 @@ namespace ObsStrawket {
     ) {
       switch (message) {
       case IObsEvent ev:
+        if (ev is RawEvent rawEvent) {
+          string json = MessagePackSerializer.SerializeToJson(rawEvent, cancellationToken: default);
+          _logger?.LogWarning("Received raw event: {}", json);
+        }
         await events.WriteAsync(ev, token).ConfigureAwait(false);
         break;
       case IRequestResponse response:
+        if (response is RawRequestResponse rawResponse) {
+          string json = MessagePackSerializer.SerializeToJson(rawResponse, cancellationToken: default);
+          _logger?.LogWarning("Received raw response: {}", json);
+        }
         if (_requests.TryRemove(response.RequestId, out var request)) {
           if (response.RequestStatus.Result) {
             request.SetResult(response);
