@@ -1,3 +1,10 @@
+## 0.11.0
+- Support RequestBatch.
+
+  You can use it by passing `RequestBatch` to `RequestAsync`.
+
+- Don't abort if received message is malformed.
+
 ## 0.10.0
 
 - ! Stronly typed some requests and events.

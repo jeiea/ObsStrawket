@@ -501,6 +501,16 @@ namespace ObsStrawket {
       => _clientSocket.RequestAsync(request, cancellation);
 
     /// <summary>
+    /// Batch request method. It can send <see cref="RequestBatch"/>.
+    /// </summary>
+    /// <param name="batchRequest">Requests to batch.</param>
+    /// <param name="cancellation">Token for cancellation.</param>
+    /// <returns>Response from websocket server.</returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    public Task<IRequestBatchResponse> RequestAsync(IRequestBatch batchRequest, CancellationToken cancellation = default)
+      => _clientSocket.RequestAsync(batchRequest, cancellation);
+
+    /// <summary>
     /// Dispose this forever.
     /// </summary>
     public void Dispose() {
@@ -627,18 +637,6 @@ namespace ObsStrawket {
     /// <param name="cancellation">Token for cancellation</param>
     public async Task<RequestResponse> TriggerHotkeyByKeySequenceAsync(string? keyId = default, bool? shift = default, bool? control = default, bool? alt = default, bool? command = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new TriggerHotkeyByKeySequence() { KeyId = keyId, KeyModifiers = new KeyModifiers() { Shift = shift, Control = control, Alt = alt, Command = command } }, cancellation).ConfigureAwait(false) as RequestResponse)!;
-    }
-
-    /// <summary>
-    /// Sleeps for a time duration or number of frames. Only available in request batches with types <c>SERIAL_REALTIME</c> or <c>SERIAL_FRAME</c>.<br />
-    /// Latest supported RPC version: 1<br />
-    /// Added in: 5.0.0
-    /// </summary>
-    /// <param name="sleepMillis">Number of milliseconds to sleep for (if <c>SERIAL_REALTIME</c> mode)</param>
-    /// <param name="sleepFrames">Number of frames to sleep for (if <c>SERIAL_FRAME</c> mode)</param>
-    /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SleepAsync(int sleepMillis, int sleepFrames, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new Sleep() { SleepMillis = sleepMillis, SleepFrames = sleepFrames }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>

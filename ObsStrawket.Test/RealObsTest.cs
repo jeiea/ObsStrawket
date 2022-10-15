@@ -1,10 +1,11 @@
+using ObsStrawket.DataTypes;
+using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Specs;
 using ObsStrawket.Test.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Net.Sockets;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
@@ -65,6 +66,25 @@ namespace ObsStrawket.Test.Real {
       object result = await source.Task.ConfigureAwait(false);
       Debug.WriteLine(result);
       return;
+    }
+
+    [Fact]
+    public async Task TestbedAsync() {
+      if (_shouldSkip) {
+        return;
+      }
+
+      var client = ClientFlow.GetDebugClient(useChannel: true);
+      await client.ConnectAsync(_uri, MockServer.Password).ConfigureAwait(false);
+
+      var response = await client.RequestAsync(new RequestBatch() {
+        Requests = {
+          new Sleep() { SleepMillis = 100 },
+          new GetStudioModeEnabled(),
+        }
+      }).ConfigureAwait(false);
+
+      Debug.WriteLine(response.Results);
     }
 
     [Fact]

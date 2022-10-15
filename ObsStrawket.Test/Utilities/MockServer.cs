@@ -23,7 +23,7 @@ namespace ObsStrawket.Test.Utilities {
     private HttpListener? _httpListener;
     private bool _isDisposed;
 
-    public MockServer Run(CancellationToken token, ContextHandler? handler = null) {
+    public MockServer Run(CancellationToken token = default, ContextHandler? handler = null) {
       token.ThrowIfCancellationRequested();
 
       var random = new Random();

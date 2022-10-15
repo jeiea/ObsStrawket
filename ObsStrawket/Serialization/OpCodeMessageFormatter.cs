@@ -2,6 +2,7 @@ using MessagePack;
 using MessagePack.Formatters;
 using MessagePack.Resolvers;
 using ObsStrawket.DataTypes;
+using System;
 
 namespace ObsStrawket.Serialization {
   internal class OpCodeMessageFormatter : IMessagePackFormatter<IOpCodeMessage> {
@@ -11,6 +12,8 @@ namespace ObsStrawket.Serialization {
     private readonly IMessagePackFormatter<Identify> _identifyFormatter = _resolver.GetFormatter<Identify>();
     private readonly IMessagePackFormatter<Identified> _identifiedFormatter = _resolver.GetFormatter<Identified>();
     private readonly IMessagePackFormatter<Reidentify> _reidentifyFormatter = _resolver.GetFormatter<Reidentify>();
+    private readonly IMessagePackFormatter<RequestBatch> _requestBatchFormatter = _resolver.GetFormatter<RequestBatch>();
+    private readonly IMessagePackFormatter<RequestBatchResponse> _requestBatchResponseFormatter = _resolver.GetFormatter<RequestBatchResponse>();
 
     public IOpCodeMessage Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
       var peeker = reader.CreatePeekReader();
@@ -32,7 +35,8 @@ namespace ObsStrawket.Serialization {
         (int)OpCode.Event => EventFormatter.Instance.Deserialize(ref peeker, options) as IOpCodeMessage,
         (int)OpCode.Request => RequestFormatter.Instance.Deserialize(ref peeker, options),
         (int)OpCode.RequestResponse => RequestResponseFormatter.Instance.Deserialize(ref peeker, options),
-        // TODO: not implemented
+        (int)OpCode.RequestBatch => _requestBatchFormatter.Deserialize(ref peeker, options),
+        (int)OpCode.RequestBatchResponse => _requestBatchResponseFormatter.Deserialize(ref peeker, options),
         _ => new OpCodeMessage<object>((OpCode)opcode, StandardResolver.Instance.GetFormatter<object>().Deserialize(ref peeker, options)),
       };
 

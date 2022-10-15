@@ -29,6 +29,12 @@ namespace ObsStrawket.Serialization {
         if (typeof(T) == typeof(IOpCodeMessage)) {
           Formatter = (IMessagePackFormatter<T>)new OpCodeMessageFormatter();
         }
+        else if (typeof(T) == typeof(IRequest)) {
+          Formatter = (IMessagePackFormatter<T>)new RequestFormatter();
+        }
+        else if (typeof(T) == typeof(IRequestResponse)) {
+          Formatter = (IMessagePackFormatter<T>)new RequestResponseFormatter();
+        }
       }
     }
   }

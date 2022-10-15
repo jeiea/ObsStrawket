@@ -13,6 +13,7 @@ namespace SourceGenerator {
     public async Task GenerateAsync() {
       var json = await _fetcher.GetModifiedProtocolJsonAsync().ConfigureAwait(false);
       PatchTriggerHotkeyByKeySequence(json.Requests.Find(x => x.RequestType == "TriggerHotkeyByKeySequence")!.RequestFields!);
+      json.Requests.RemoveAt(json.Requests.FindIndex(x => x.RequestType == "Sleep"));
 
       using var part = new StringWriter();
       part.WriteLine("    #region Requests");

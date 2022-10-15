@@ -21,6 +21,7 @@ namespace ObsStrawket {
     private const int _supportedRpcVersion = 1;
 
     private readonly ConcurrentDictionary<string, TaskCompletionSource<IRequestResponse>> _requests = new();
+    private readonly ConcurrentDictionary<string, TaskCompletionSource<IRequestBatchResponse>> _batchRequests = new();
     private readonly SemaphoreSlim _connectSemaphore = new(1);
     private readonly ILogger? _logger;
 
@@ -158,6 +159,36 @@ namespace ObsStrawket {
     }
 
     /// <summary>
+    /// Batch request method. It can send <see cref="RequestBatch"/>.
+    /// </summary>
+    /// <param name="batchRequest">Requests to batch.</param>
+    /// <param name="cancellation">Token for cancellation.</param>
+    /// <returns>Response from websocket server.</returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    public async Task<IRequestBatchResponse> RequestAsync(IRequestBatch batchRequest, CancellationToken cancellation = default) {
+      if (!IsConnected) {
+        throw new InvalidOperationException("WebSocket is not connected");
+      }
+
+      using var source = CancellationTokenSource.CreateLinkedTokenSource(cancellation, _cancellation.Token);
+      var token = source.Token;
+      token.ThrowIfCancellationRequested();
+
+      string guid = $"{Guid.NewGuid()}";
+      batchRequest.RequestId = guid;
+      _logger?.LogInformation("RequestAsync batch start.");
+
+      var waiter = new TaskCompletionSource<IRequestBatchResponse>();
+      _batchRequests[guid] = waiter;
+
+      await _sender.SendAsync(batchRequest, token).ConfigureAwait(false);
+      var response = await waiter.Task.ConfigureAwait(false);
+
+      _logger?.LogInformation("RequestAsync batch finished.");
+      return response;
+    }
+
+    /// <summary>
     /// Close this connection. Pending requests will be cancelled.
     /// </summary>
     public async Task CloseAsync(WebSocketCloseStatus status = WebSocketCloseStatus.NormalClosure, string? description = "Client closed websocket", Exception? exception = null) {
@@ -263,7 +294,15 @@ namespace ObsStrawket {
           }
         }
         else {
-          _logger?.LogWarning("Dispatch: Failed to remove completed task");
+          _logger?.LogWarning("Dispatch: Failed to remove completed request: {}", response.RequestId);
+        }
+        break;
+      case IRequestBatchResponse batchResponse:
+        if (_batchRequests.TryRemove(batchResponse.RequestId, out var batchRequest)) {
+          batchRequest.SetResult(batchResponse);
+        }
+        else {
+          _logger?.LogWarning("Dispatch: Failed to remove completed batch: {}", batchResponse.RequestId);
         }
         break;
       default:
@@ -282,13 +321,20 @@ namespace ObsStrawket {
         foreach (var request in _requests.Values) {
           request.TrySetException(exception);
         }
+        foreach (var request in _batchRequests.Values) {
+          request.TrySetException(exception);
+        }
       }
       else {
         foreach (var request in _requests.Values) {
           request.TrySetCanceled();
         }
+        foreach (var request in _batchRequests.Values) {
+          request.TrySetCanceled();
+        }
       }
       _requests.Clear();
+      _batchRequests.Clear();
       _events.Writer.TryComplete(exception);
 
       _clientWebSocket.Dispose();

@@ -55,7 +55,6 @@ await client.CloseAsync();
 # To do
 
 - Complete the support list
-- Batch request
 
 # Not yet supported list
 
@@ -70,4 +69,3 @@ await client.CloseAsync();
 ## Requests
 
 - [ ] CallVendorRequest
-- [ ] Sleep
