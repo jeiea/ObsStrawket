@@ -7,9 +7,9 @@ Personal .NET implementation of
 
 ## Can I use this in production?
 
-No. I verified few events and requests. And I can change interfaces later.
+It's not battle tested, but has many tests.
 
-But I won't stop you from using this if this works for you.
+I won't change the current API more maybe.
 
 ## Difference to [obs-websocket-dotnet](https://github.com/BarRaider/obs-websocket-dotnet)
 
@@ -51,10 +51,6 @@ await client.StartRecordAsync();
 
 await client.CloseAsync();
 ```
-
-# To do
-
-- Complete the support list
 
 # Not yet supported list
 
