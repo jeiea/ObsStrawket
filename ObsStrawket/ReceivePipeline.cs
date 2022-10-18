@@ -34,7 +34,6 @@ namespace ObsStrawket {
     private async Task LoopWebSocketReceiveAsync(int sizeHint = 0, CancellationToken token = default) {
       using var _1 = _logger?.BeginScope(nameof(LoopWebSocketReceiveAsync));
       var options = new PipeOptions(useSynchronizationContext: false);
-      var deserialization = Task.CompletedTask;
 
       try {
         _logger?.LogDebug("Start.");
@@ -58,19 +57,17 @@ namespace ObsStrawket {
           writer.Advance(readResult.Count);
           if (readResult.EndOfMessage) {
             var completedPipe = pipe;
-            await _messages.Writer.WriteAsync(Task.Run(() => DeserializeAsync(completedPipe, token), token), token);
+            await _messages.Writer.WriteAsync(Task.Run(() => DeserializeAsync(completedPipe, token), token), token).ConfigureAwait(false);
 
             pipe = new Pipe(options);
             writer = pipe.Writer;
           }
         }
-        await deserialization.ConfigureAwait(false);
         _messages.Writer.TryComplete();
         _logger?.LogDebug("Complete. IsCancellationRequested: {}", token.IsCancellationRequested);
       }
       catch (Exception exception) {
         _logger?.LogDebug(exception, "Complete with exception");
-        await deserialization.ConfigureAwait(false);
         _messages.Writer.TryComplete(exception);
       }
     }
