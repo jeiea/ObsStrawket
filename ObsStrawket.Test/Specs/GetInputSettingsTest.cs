@@ -14,7 +14,7 @@ namespace ObsStrawket.Test.Specs {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetInputSettingsAsync(inputName: CreateInputFlow.InputName).ConfigureAwait(false);
       Assert.Equal("about:blank", response.InputSettings["url"]);
-      Assert.Equal((ushort)1000, response.InputSettings["width"]);
+      Assert.Equal(1000, response.InputSettings["width"]);
     }
 
     public async Task RespondAsync(MockServerSession session) {

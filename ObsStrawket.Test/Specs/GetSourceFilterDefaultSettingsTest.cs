@@ -15,9 +15,8 @@ namespace ObsStrawket.Test.Specs {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetSourceFilterDefaultSettingsAsync(filterKind: "color_key_filter_v2").ConfigureAwait(false);
 
-      var brightness = response.DefaultFilterSettings["brightness"];
-      Assert.Equal(0f, brightness is float ? brightness : (float)(double)brightness!);
-      Assert.Equal((ushort)65280, response.DefaultFilterSettings["key_color"]);
+      Assert.Equal(0.0, response.DefaultFilterSettings["brightness"]);
+      Assert.Equal(65280, response.DefaultFilterSettings["key_color"]);
       Assert.Equal("green", response.DefaultFilterSettings["key_color_type"]);
     }
 

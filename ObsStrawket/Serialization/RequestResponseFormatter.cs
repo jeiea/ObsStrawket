@@ -7,6 +7,8 @@ namespace ObsStrawket.Serialization {
   internal class RequestResponseFormatter : IMessagePackFormatter<IRequestResponse> {
     public static readonly RequestResponseFormatter Instance = new();
 
+    protected RequestResponseFormatter() { }
+
     public IRequestResponse Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
       string requestType = FormatterUtil.SeekByKey(reader, "requestType").ReadString();
       if (DataTypeMapping.RequestToTypes.TryGetValue(requestType, out var type)) {

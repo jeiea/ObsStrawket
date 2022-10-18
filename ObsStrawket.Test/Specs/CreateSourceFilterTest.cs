@@ -28,7 +28,7 @@ namespace ObsStrawket.Test.Specs {
 
       var created = await client.Events.ReadAsync().ConfigureAwait(false);
       Assert.Equal(FilterName, (created as SourceFilterCreated)!.FilterName);
-      Assert.Equal(1.0, TestUtil.ToDoubleOrInt((created as SourceFilterCreated)!.FilterSettings["brightness"]!));
+      Assert.Equal(1.0, (created as SourceFilterCreated)!.FilterSettings["brightness"]);
 
       await client.CreateSourceFilterAsync(
         sourceName: CreateInputFlow.InputName,

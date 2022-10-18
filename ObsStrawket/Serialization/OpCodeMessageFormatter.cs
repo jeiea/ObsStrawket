@@ -6,14 +6,18 @@ using System;
 
 namespace ObsStrawket.Serialization {
   internal class OpCodeMessageFormatter : IMessagePackFormatter<IOpCodeMessage> {
+    public static readonly OpCodeMessageFormatter Instance = new();
+
     private static readonly DynamicObjectResolver _resolver = DynamicObjectResolver.Instance;
 
-    private readonly IMessagePackFormatter<Hello> _helloFormatter = _resolver.GetFormatter<Hello>();
-    private readonly IMessagePackFormatter<Identify> _identifyFormatter = _resolver.GetFormatter<Identify>();
-    private readonly IMessagePackFormatter<Identified> _identifiedFormatter = _resolver.GetFormatter<Identified>();
-    private readonly IMessagePackFormatter<Reidentify> _reidentifyFormatter = _resolver.GetFormatter<Reidentify>();
-    private readonly IMessagePackFormatter<RequestBatch> _requestBatchFormatter = _resolver.GetFormatter<RequestBatch>();
-    private readonly IMessagePackFormatter<RequestBatchResponse> _requestBatchResponseFormatter = _resolver.GetFormatter<RequestBatchResponse>();
+    private static readonly IMessagePackFormatter<Hello> _helloFormatter = _resolver.GetFormatter<Hello>();
+    private static readonly IMessagePackFormatter<Identify> _identifyFormatter = _resolver.GetFormatter<Identify>();
+    private static readonly IMessagePackFormatter<Identified> _identifiedFormatter = _resolver.GetFormatter<Identified>();
+    private static readonly IMessagePackFormatter<Reidentify> _reidentifyFormatter = _resolver.GetFormatter<Reidentify>();
+    private static readonly IMessagePackFormatter<RequestBatch> _requestBatchFormatter = _resolver.GetFormatter<RequestBatch>();
+    private static readonly IMessagePackFormatter<RequestBatchResponse> _requestBatchResponseFormatter = _resolver.GetFormatter<RequestBatchResponse>();
+
+    protected OpCodeMessageFormatter() { }
 
     public IOpCodeMessage Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
       var peeker = reader.CreatePeekReader();

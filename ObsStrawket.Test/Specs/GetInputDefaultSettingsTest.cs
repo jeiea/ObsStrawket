@@ -14,7 +14,7 @@ namespace ObsStrawket.Test.Specs {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetInputDefaultSettingsAsync(inputKind: CreateInputFlow.InputKind).ConfigureAwait(false);
       Assert.Equal("https://obsproject.com/browser-source", response.DefaultInputSettings["url"]);
-      Assert.Equal((byte)30, response.DefaultInputSettings["fps"]);
+      Assert.Equal(30, response.DefaultInputSettings["fps"]);
     }
 
     public async Task RespondAsync(MockServerSession session) {

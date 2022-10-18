@@ -21,7 +21,7 @@ namespace ObsStrawket.Test.Specs {
 
       var ev = await client.Events.ReadAsync().ConfigureAwait(false) as RawEvent;
       Assert.IsType<RawEvent>(ev);
-      Assert.Equal((byte)3, ev.EventData!["sample"]);
+      Assert.Equal(3, ev.EventData!["sample"]);
     }
 
     public async Task RespondAsync(MockServerSession session) {

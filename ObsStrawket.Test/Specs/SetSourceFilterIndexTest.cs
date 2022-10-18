@@ -24,7 +24,7 @@ namespace ObsStrawket.Test.Specs {
       Assert.Equal(1, (reindexed as SourceFilterListReindexed)!.Filters[1].Index);
       Assert.Equal("color_key_filter_v2", (reindexed as SourceFilterListReindexed)!.Filters[1].Kind);
       Assert.True((reindexed as SourceFilterListReindexed)!.Filters[1].Enabled);
-      Assert.Equal(1.0, TestUtil.ToDoubleOrInt((reindexed as SourceFilterListReindexed)!.Filters[1].Settings["brightness"]!));
+      Assert.Equal(1.0, (reindexed as SourceFilterListReindexed)!.Filters[1].Settings["brightness"]);
     }
 
     public async Task RespondAsync(MockServerSession session) {

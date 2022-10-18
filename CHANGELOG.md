@@ -1,8 +1,8 @@
 ## 0.11.0
+- ! Promote boxed numeric type in `object` to int, long, ulong or double.
 - Support RequestBatch.
 
   You can use it by passing `RequestBatch` to `RequestAsync`.
-
 - Don't abort if received message is malformed.
 
 ## 0.10.0

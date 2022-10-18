@@ -6,6 +6,8 @@ namespace ObsStrawket.Serialization {
   internal class RequestFormatter : IMessagePackFormatter<IRequest> {
     public static readonly RequestFormatter Instance = new();
 
+    //protected RequestFormatter() { }
+
     public IRequest Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
       string requestType = FormatterUtil.SeekByKey(reader, "requestType").ReadString();
       string requestId = FormatterUtil.SeekByKey(reader, "requestId").ReadString();

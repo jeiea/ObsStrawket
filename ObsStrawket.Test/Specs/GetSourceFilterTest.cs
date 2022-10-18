@@ -19,11 +19,10 @@ namespace ObsStrawket.Test.Specs {
       ).ConfigureAwait(false);
 
       Assert.False(response.FilterEnabled);
-      object brightness = response.FilterSettings["brightness"]!;
-      Assert.Equal(1f, brightness is float ? brightness : (float)(double)brightness);
+      Assert.Equal(1.0, response.FilterSettings["brightness"]);
       object gamma = response.FilterSettings["gamma"]!;
-      Assert.Equal(1f, brightness is float ? gamma : (float)(double)gamma);
-      Assert.Equal((ushort)23000, response.FilterSettings["key_color"]);
+      Assert.Equal(1.0, gamma);
+      Assert.Equal(23000, response.FilterSettings["key_color"]);
       Assert.Equal("red", response.FilterSettings["key_color_type"]);
     }
 

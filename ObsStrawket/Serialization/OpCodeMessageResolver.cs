@@ -27,13 +27,16 @@ namespace ObsStrawket.Serialization {
 
       static Cache() {
         if (typeof(T) == typeof(IOpCodeMessage)) {
-          Formatter = (IMessagePackFormatter<T>)new OpCodeMessageFormatter();
+          Formatter = (IMessagePackFormatter<T>)OpCodeMessageFormatter.Instance;
         }
         else if (typeof(T) == typeof(IRequest)) {
-          Formatter = (IMessagePackFormatter<T>)new RequestFormatter();
+          Formatter = (IMessagePackFormatter<T>)RequestFormatter.Instance;
         }
         else if (typeof(T) == typeof(IRequestResponse)) {
-          Formatter = (IMessagePackFormatter<T>)new RequestResponseFormatter();
+          Formatter = (IMessagePackFormatter<T>)RequestResponseFormatter.Instance;
+        }
+        else if (typeof(T) == typeof(object)) {
+          Formatter = (IMessagePackFormatter<T>)PromotionFormatter.Instance;
         }
       }
     }
