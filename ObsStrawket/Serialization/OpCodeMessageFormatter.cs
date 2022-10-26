@@ -22,13 +22,13 @@ namespace ObsStrawket.Serialization {
     public IOpCodeMessage Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
       var peeker = reader.CreatePeekReader();
       if (!FormatterUtil.SeekByKey(ref peeker, "op")) {
-        throw new UnexpectedProtocolException();
+        throw new UnexpectedResponseException();
       }
       int opcode = peeker.ReadInt32();
 
       peeker = reader.CreatePeekReader();
       if (!FormatterUtil.SeekByKey(ref peeker, "d")) {
-        throw new UnexpectedProtocolException();
+        throw new UnexpectedResponseException();
       }
 
       var data = opcode switch {

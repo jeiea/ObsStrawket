@@ -10,7 +10,7 @@ namespace ObsStrawket.Serialization {
     public IObsEvent Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
       var peeker = reader.CreatePeekReader();
       if (!FormatterUtil.SeekByKey(ref peeker, "eventType")) {
-        throw new UnexpectedProtocolException();
+        throw new UnexpectedResponseException();
       }
 
       string eventType = peeker.ReadString();

@@ -156,7 +156,9 @@ namespace ObsStrawket.Serialization {
 
       case MessagePackType.Nil:
         reader.ReadNil();
+#pragma warning disable CS8603 // Possible null reference return.
         return null;
+#pragma warning restore CS8603 // Possible null reference return.
       default:
         throw new MessagePackSerializationException("Invalid primitive bytes.");
       }

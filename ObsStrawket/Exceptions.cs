@@ -15,8 +15,8 @@ namespace ObsStrawket {
   /// <summary>
   /// Found unexpected byte during deserialization.
   /// </summary>
-  public class UnexpectedProtocolException : ObsWebSocketException {
-    internal UnexpectedProtocolException(string? message = null) : base(message ?? "It's not seem to be obs websocket message") { }
+  public class UnexpectedResponseException : ObsWebSocketException {
+    internal UnexpectedResponseException(string? message = null) : base(message ?? "It's not seem to be obs websocket message") { }
   }
 
   /// <summary>

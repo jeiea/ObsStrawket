@@ -4,7 +4,7 @@ namespace ObsStrawket.DataTypes {
   internal static class FormatterUtil {
     public static MessagePackReader SeekByKey(MessagePackReader reader, string key) {
       if (!SeekByKey(ref reader, key)) {
-        throw new UnexpectedProtocolException();
+        throw new UnexpectedResponseException();
       }
       return reader;
     }
