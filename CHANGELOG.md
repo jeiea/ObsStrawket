@@ -1,6 +1,8 @@
 ## 0.12.0
 
 - ! Rename `UnexpectedProtocolException` to `UnexpectedResponseException`.
+- Fix throwing other exception instead of `AuthenticationFailureException`
+  when failed to authenticate.
 
 ## 0.11.0
 

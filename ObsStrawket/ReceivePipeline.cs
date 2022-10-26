@@ -1,6 +1,7 @@
 using MessagePack;
 using Microsoft.Extensions.Logging;
 using ObsStrawket.DataTypes;
+using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Serialization;
 using System;
 using System.IO.Pipelines;
@@ -50,6 +51,14 @@ namespace ObsStrawket {
 
           if (_socket.State == WebSocketState.CloseReceived && readResult.MessageType == WebSocketMessageType.Close) {
             _logger?.LogDebug("Exit by websocket close");
+            switch ((int?)_socket.CloseStatus) {
+            case (int?)WebSocketCloseCode.AuthenticationFailed:
+              _messages.Writer.TryComplete(new AuthenticationFailureException());
+              break;
+            default:
+              _messages.Writer.TryComplete(new WebsocketCloseReceivedException(code: (int?)_socket.CloseStatus));
+              break;
+            }
             break;
           }
 

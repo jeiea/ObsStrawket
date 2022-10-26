@@ -75,16 +75,9 @@ namespace ObsStrawket.Test.Real {
       }
 
       var client = ClientFlow.GetDebugClient(useChannel: true);
-      await client.ConnectAsync(_uri, MockServer.Password).ConfigureAwait(false);
-
-      var response = await client.RequestAsync(new RequestBatch() {
-        Requests = {
-          new Sleep() { SleepMillis = 100 },
-          new GetStudioModeEnabled(),
-        }
-      }).ConfigureAwait(false);
-
-      Debug.WriteLine(response.Results);
+      await Assert.ThrowsAsync<AuthenticationFailureException>(
+        () => client.ConnectAsync(_uri, "a")
+      ).ConfigureAwait(false);
     }
 
     [Fact]

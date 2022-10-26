@@ -115,13 +115,17 @@ namespace ObsStrawket {
         };
         await _sender.SendAsync(identify, cancellation).ConfigureAwait(false);
 
-        if (await ReceiveMessageAsync(messages, cancellation).ConfigureAwait(false) is not Identified identified) {
-          throw new AuthenticationFailureException(GetCloseMessage());
+        var identified = await ReceiveMessageAsync(messages, cancellation).ConfigureAwait(false);
+        if (identified is not Identified) {
+          throw new UnexpectedResponseException($"Identified message expected, but received {identified}");
         }
 
         _receiveLoop = LoopReceiveAsync(messages, _cancellation.Token);
         _isOpen = true;
         _logger?.LogInformation("ConnectAsync to {} complete.", url);
+      }
+      catch (ChannelClosedException closed) when (closed.InnerException is AuthenticationFailureException) {
+        throw new AuthenticationFailureException(innerException: closed);
       }
       finally {
         _connectSemaphore.Release();
@@ -352,7 +356,7 @@ namespace ObsStrawket {
         return null;
       }
       if (password == null) {
-        throw new ObsWebSocketException("Password requested.");
+        throw new AuthenticationFailureException("Password requested.");
       }
       string base64Secret = ApplySha256Base64($"{password}{auth.Salt}");
       return ApplySha256Base64($"{base64Secret}{auth.Challenge}");

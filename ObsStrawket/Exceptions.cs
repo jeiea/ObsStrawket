@@ -1,4 +1,5 @@
 using ObsStrawket.DataTypes;
+using ObsStrawket.DataTypes.Predefineds;
 using System;
 
 namespace ObsStrawket {
@@ -41,9 +42,25 @@ namespace ObsStrawket {
   }
 
   /// <summary>
+  /// OBS closed the connection.
+  /// </summary>
+  public class WebsocketCloseReceivedException : ObsWebSocketException {
+    /// <summary>
+    /// Websocket close code. See <see cref="WebSocketCloseCode"/>
+    /// </summary>
+    public readonly int? Code = null;
+
+    internal WebsocketCloseReceivedException(string? message = null, int? code = null, Exception? innerException = null)
+      : base(message ?? $"OBS closed connection: {code}", innerException) {
+      Code = code;
+    }
+  }
+
+  /// <summary>
   /// Failed to authenticate.
   /// </summary>
-  public class AuthenticationFailureException : ObsWebSocketException {
-    internal AuthenticationFailureException(string? message = null) : base(message ?? "OBS Authentication failure") { }
+  public class AuthenticationFailureException : WebsocketCloseReceivedException {
+    internal AuthenticationFailureException(string? message = null, Exception? innerException = null)
+      : base(message ?? "OBS Authentication failure", (int)WebSocketCloseCode.AuthenticationFailed, innerException: innerException) { }
   }
 }
