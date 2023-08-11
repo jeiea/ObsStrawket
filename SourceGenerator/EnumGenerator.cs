@@ -25,6 +25,7 @@ namespace SourceGenerator {
         { "MediaInputAction", "Actions used with media source and `TriggerMediaInputAction`." },
         { "WebSocketCloseCode", "Reason that OBS closed the connection." },
         { "WebSocketOpCode", "Type of OBS websocket protocol message." },
+        { "ObsOutputState", "Represents output sending state." },
       };
 
       using var file = File.CreateText("../../../../ObsStrawket/DataTypes/Predefineds/Enums.cs");
@@ -43,7 +44,7 @@ namespace ObsStrawket.DataTypes.Predefineds {");
         if (en.EnumType == "EventSubscription") {
           file.WriteLine("  [Flags]");
         }
-        var sample = $"{en.EnumIdentifiers.Last().EnumValue}";
+        string sample = $"{en.EnumIdentifiers.Last().EnumValue}";
         bool isStringEnum = Regex.IsMatch(sample, @"[A-Z]");
         if (isStringEnum) {
           file.WriteLine("  [MessagePackFormatter(typeof(EnumAsStringFormatter<{0}>))]", en.EnumType);

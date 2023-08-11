@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 
@@ -7,8 +8,8 @@ namespace SourceGenerator {
   internal static class TransformHelper {
     private static readonly Regex nullPattern = new(@"\bnull\b");
 
-    public static string ToPascalCase(string category) {
-      return string.Concat(ToPascalCaseEnumerable(category));
+    public static string ToPascalCase(string name) {
+      return string.Concat(ToPascalCaseEnumerable(name));
     }
 
     public static string ToCSharpType(string type, string description) {
@@ -38,18 +39,19 @@ namespace SourceGenerator {
       return xml;
     }
 
-    private static IEnumerable<char> ToPascalCaseEnumerable(string category) {
+    private static IEnumerable<char> ToPascalCaseEnumerable(string name) {
       bool isStart = true;
-      foreach (char c in category) {
+
+      foreach (char c in name) {
         if (isStart) {
-          yield return char.ToUpper(c);
+          yield return char.ToUpperInvariant(c);
           isStart = false;
         }
-        else if (c == ' ') {
+        else if (c == ' ' || c == '_') {
           isStart = true;
         }
         else {
-          yield return c;
+          yield return char.ToLowerInvariant(c);
         }
       }
     }

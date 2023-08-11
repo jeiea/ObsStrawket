@@ -25,16 +25,38 @@ namespace SourceGenerator {
 
     public async Task<ProtocolJson> GetModifiedProtocolJsonAsync() {
       var protocol = await GetProtocolJsonAsync().ConfigureAwait(false);
+      PatchProtocolJson(protocol);
+      return protocol;
+    }
+
+    public async Task<ProtocolJson> GetProtocolJsonAsync() {
+      var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, };
+      if (File.Exists(ProtocolJsonPath)) {
+        return (await JsonSerializer.DeserializeAsync<ProtocolJson>(File.OpenRead(ProtocolJsonPath), options).ConfigureAwait(false))!;
+      }
+
+      string protocolJson = await _http.GetStringAsync($"{_rawRoot}/docs/generated/protocol.json").ConfigureAwait(false);
+      await File.WriteAllTextAsync(ProtocolJsonPath, protocolJson).ConfigureAwait(false);
+      return JsonSerializer.Deserialize<ProtocolJson>(protocolJson, options)!;
+    }
+
+    /// <summary>
+    /// Fix various issues while preserving protocol json structure.
+    /// </summary>
+    private static void PatchProtocolJson(ProtocolJson protocol) {
+      FixDeprecateEnums(protocol);
+
+      var outputState = protocol.Enums.First(x => x.EnumType == "ObsOutputState");
+      foreach (var identifier in outputState.EnumIdentifiers) {
+        string essence = identifier.EnumIdentifier.Replace("OBS_WEBSOCKET_OUTPUT_", "");
+        identifier.EnumIdentifier = TransformHelper.ToPascalCase(essence);
+      }
+
 
       var categoryOrder = new List<string>() {
         "General", "Config", "Sources", "Scenes", "Inputs", "Transitions", "Filters",
         "Scene Items", "Outputs", "Stream", "Record", "Media Inputs", "Ui", "High-Volume",
       }.Select(x => x.ToLower()).ToList();
-
-      //var obsMediaInputAction = protocol.Enums.First((en) => en.EnumType == "ObsMediaInputAction").EnumIdentifiers;
-      //foreach (var identifier in obsMediaInputAction) {
-      //  identifier.Deprecated = false;
-      //}
 
       protocol.Events = protocol.Events.OrderBy(x => categoryOrder.IndexOf(x.Category!)).ToList();
       foreach (var ev in protocol.Events) {
@@ -62,32 +84,19 @@ namespace SourceGenerator {
 
         PatchOthers(request);
       }
-
-      return protocol;
     }
 
-    public async Task<ProtocolJson> GetProtocolJsonAsync() {
-      var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, };
-      if (File.Exists(ProtocolJsonPath)) {
-        return (await JsonSerializer.DeserializeAsync<ProtocolJson>(File.OpenRead(ProtocolJsonPath), options).ConfigureAwait(false))!;
+    private static void FixDeprecateEnums(ProtocolJson protocol) {
+      // There is no alternative, it seems to be a mistake.
+      var obsMediaInputAction = protocol.Enums.First((en) => en.EnumType == "ObsMediaInputAction").EnumIdentifiers;
+      var obsOutputState = protocol.Enums.First((en) => en.EnumType == "ObsOutputState").EnumIdentifiers;
+      foreach (var identifier in obsMediaInputAction.Concat(obsOutputState)) {
+        identifier.Deprecated = false;
       }
-
-      string protocolJson = await _http.GetStringAsync($"{_rawRoot}/docs/generated/protocol.json").ConfigureAwait(false);
-      await File.WriteAllTextAsync(ProtocolJsonPath, protocolJson).ConfigureAwait(false);
-      return JsonSerializer.Deserialize<ProtocolJson>(protocolJson, options)!;
     }
 
     private static void PatchOthers(ObsRequest request) {
       switch (request.RequestType) {
-      case "GetRecordStatus":
-        var typoField = request.ResponseFields![1];
-        if (typoField.ValueName == "ouputPaused") {
-          typoField.ValueName = "outputPaused";
-        }
-        break;
-      case "GetOutputList":
-        request.ResponseFields!.Add(new ObsDataField { ValueName = "outputs", ValueDescription = "List of outputs", ValueType = "Array<Output>" });
-        break;
       case "ToggleRecord":
         request.ResponseFields!.Add(new ObsDataField { ValueName = "outputActive", ValueDescription = "Whether the output is active", ValueType = "Boolean" });
         break;
@@ -113,6 +122,9 @@ namespace SourceGenerator {
 
     private static bool GetCustomType(string name, out string? type) {
       switch (name) {
+      case "outputs":
+        type = "Array<Output>";
+        return true;
       case "filters":
         type = "Array<SourceFilter>";
         return true;

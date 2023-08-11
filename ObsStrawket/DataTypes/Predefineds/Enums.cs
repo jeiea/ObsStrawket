@@ -197,6 +197,14 @@ namespace ObsStrawket.DataTypes.Predefineds {
     UnsupportedRequestBatchExecutionType = 206,
 
     /// <summary>
+    /// The server is not ready to handle the request.<br />
+    /// <br />
+    /// Note: This usually occurs during OBS scene collection change or exit. Requests may be tried again after a delay if this code is given.
+    /// </summary>
+    [EnumMember]
+    NotReady = 207,
+
+    /// <summary>
     /// A required request field is missing.
     /// </summary>
     [EnumMember]
@@ -362,6 +370,66 @@ namespace ObsStrawket.DataTypes.Predefineds {
   }
 
   /// <summary>
+  /// Represents output sending state.
+  /// </summary>
+  [MessagePackFormatter(typeof(EnumAsStringFormatter<ObsOutputState>))]
+  public enum ObsOutputState {
+    /// <summary>
+    /// Unknown state.
+    /// </summary>
+    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_UNKNOWN")]
+    Unknown,
+
+    /// <summary>
+    /// The output is starting.
+    /// </summary>
+    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_STARTING")]
+    Starting,
+
+    /// <summary>
+    /// The input has started.
+    /// </summary>
+    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_STARTED")]
+    Started,
+
+    /// <summary>
+    /// The output is stopping.
+    /// </summary>
+    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_STOPPING")]
+    Stopping,
+
+    /// <summary>
+    /// The output has stopped.
+    /// </summary>
+    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_STOPPED")]
+    Stopped,
+
+    /// <summary>
+    /// The output has disconnected and is reconnecting.
+    /// </summary>
+    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_RECONNECTING")]
+    Reconnecting,
+
+    /// <summary>
+    /// The output has reconnected successfully.
+    /// </summary>
+    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_RECONNECTED")]
+    Reconnected,
+
+    /// <summary>
+    /// The output is now paused.
+    /// </summary>
+    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_PAUSED")]
+    Paused,
+
+    /// <summary>
+    /// The output has been resumed (unpaused).
+    /// </summary>
+    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_RESUMED")]
+    Resumed,
+  }
+
+  /// <summary>
   /// Actions used with media source and <c>TriggerMediaInputAction</c>.
   /// </summary>
   [MessagePackFormatter(typeof(EnumAsStringFormatter<MediaInputAction>))]
@@ -369,49 +437,42 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// No action.
     /// </summary>
-    [Obsolete]
     [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_NONE")]
     None,
 
     /// <summary>
     /// Play the media input.
     /// </summary>
-    [Obsolete]
     [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PLAY")]
     Play,
 
     /// <summary>
     /// Pause the media input.
     /// </summary>
-    [Obsolete]
     [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PAUSE")]
     Pause,
 
     /// <summary>
     /// Stop the media input.
     /// </summary>
-    [Obsolete]
     [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP")]
     Stop,
 
     /// <summary>
     /// Restart the media input.
     /// </summary>
-    [Obsolete]
     [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART")]
     Restart,
 
     /// <summary>
     /// Go to the next playlist item.
     /// </summary>
-    [Obsolete]
     [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_NEXT")]
     Next,
 
     /// <summary>
     /// Go to the previous playlist item.
     /// </summary>
-    [Obsolete]
     [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PREVIOUS")]
     Previous,
   }

@@ -100,6 +100,20 @@ namespace ObsStrawket.DataTypes.Predefineds {
   }
 
   /// <summary>
+  /// Custom event emitted by <c>BroadcastCustomEvent</c>.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
+  /// </summary>
+  [MessagePackObject]
+  public class CustomEvent : GeneralEvent {
+    /// <summary>
+    /// Custom event data
+    /// </summary>
+    [Key("eventData")]
+    public Dictionary<string, object?> EventData { get; set; } = new();
+  }
+
+  /// <summary>
   /// The current scene collection has begun changing.<br />
   /// <br />
   /// Note: We recommend using this event to trigger a pause of all polling requests, as performing any requests during a<br />
@@ -442,7 +456,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     public string InputName { get; set; } = "";
 
     /// <summary>
-    /// New volume level in multimap
+    /// New volume level multiplier
     /// </summary>
     [Key("inputVolumeMul")]
     public double InputVolumeMul { get; set; }
@@ -1105,5 +1119,23 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [Key("studioModeEnabled")]
     public bool StudioModeEnabled { get; set; }
+  }
+
+  /// <summary>
+  /// A screenshot has been saved.<br />
+  /// <br />
+  /// Note: Triggered for the screenshot feature available in <c>Settings -&gt; Hotkeys -&gt; Screenshot Output</c> ONLY.<br />
+  /// Applications using <c>Get/SaveSourceScreenshot</c> should implement a <c>CustomEvent</c> if this kind of inter-client<br />
+  /// communication is desired.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.1.0
+  /// </summary>
+  [MessagePackObject]
+  public class ScreenshotSaved : UiEvent {
+    /// <summary>
+    /// Path of the saved image file
+    /// </summary>
+    [Key("savedScreenshotPath")]
+    public string SavedScreenshotPath { get; set; } = "";
   }
 }

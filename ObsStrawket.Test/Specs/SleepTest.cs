@@ -34,7 +34,7 @@ namespace ObsStrawket.Test.Specs {
     ""requests"": [
       {
         ""requestData"": {
-          ""sleepFrames"": 0,
+          ""sleepFrames"": null,
           ""sleepMillis"": 100
         },
         ""requestId"": """",

@@ -268,17 +268,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
   public class Sleep : Request {
     /// <summary>
     /// Number of milliseconds to sleep for (if <c>SERIAL_REALTIME</c> mode)<br />
-    /// It should be &gt;= 0, &lt;= 50000
+    /// It should be &gt;= 0, &lt;= 50000<br />
+    /// If null, Unknown
     /// </summary>
     [Key("sleepMillis")]
-    public int SleepMillis { get; set; }
+    public int? SleepMillis { get; set; }
 
     /// <summary>
     /// Number of frames to sleep for (if <c>SERIAL_FRAME</c> mode)<br />
-    /// It should be &gt;= 0, &lt;= 10000
+    /// It should be &gt;= 0, &lt;= 10000<br />
+    /// If null, Unknown
     /// </summary>
     [Key("sleepFrames")]
-    public int SleepFrames { get; set; }
+    public int? SleepFrames { get; set; }
   }
 
   /// <summary>
@@ -701,6 +703,20 @@ namespace ObsStrawket.DataTypes.Predefineds {
   }
 
   /// <summary>
+  /// Sets the current directory that the record output writes files to.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.3.0
+  /// </summary>
+  [MessagePackObject]
+  public class SetRecordDirectory : Request {
+    /// <summary>
+    /// Output directory
+    /// </summary>
+    [Key("recordDirectory")]
+    public string RecordDirectory { get; set; } = "";
+  }
+
+  /// <summary>
   /// Gets the active and show state of a source.<br />
   /// <br />
   /// **Compatible with inputs and scenes.**<br />
@@ -1050,7 +1066,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   }
 
   /// <summary>
-  /// Gets the scene transition overridden for a scene.<br />
+  /// Sets the scene transition overridden for a scene.<br />
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
@@ -2876,7 +2892,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class GetOutputListResponse : RequestResponse {
     /// <summary>
-    /// List of outputs
+    /// Array of outputs
     /// </summary>
     [Key("outputs")]
     public List<Output> Outputs { get; set; } = new();

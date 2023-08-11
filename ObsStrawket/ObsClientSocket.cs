@@ -39,6 +39,12 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     public event Action<VendorEvent> VendorEvent = delegate { };
+    /// <summary>
+    /// Custom event emitted by <c>BroadcastCustomEvent</c>.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    public event Action<CustomEvent> CustomEvent = delegate { };
 
     /// <summary>
     /// Config event group.
@@ -410,6 +416,16 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     public event Action<StudioModeStateChanged> StudioModeStateChanged = delegate { };
+    /// <summary>
+    /// A screenshot has been saved.<br />
+    /// <br />
+    /// Note: Triggered for the screenshot feature available in <c>Settings -&gt; Hotkeys -&gt; Screenshot Output</c> ONLY.<br />
+    /// Applications using <c>Get/SaveSourceScreenshot</c> should implement a <c>CustomEvent</c> if this kind of inter-client<br />
+    /// communication is desired.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.1.0
+    /// </summary>
+    public event Action<ScreenshotSaved> ScreenshotSaved = delegate { };
 
     #endregion
 
@@ -833,6 +849,17 @@ namespace ObsStrawket {
     }
 
     /// <summary>
+    /// Sets the current directory that the record output writes files to.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.3.0
+    /// </summary>
+    /// <param name="recordDirectory">Output directory</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    public async Task<RequestResponse> SetRecordDirectoryAsync(string recordDirectory, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new SetRecordDirectory() { RecordDirectory = recordDirectory }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    }
+
+    /// <summary>
     /// Gets the active and show state of a source.<br />
     /// <br />
     /// **Compatible with inputs and scenes.**<br />
@@ -1000,7 +1027,7 @@ namespace ObsStrawket {
     }
 
     /// <summary>
-    /// Gets the scene transition overridden for a scene.<br />
+    /// Sets the scene transition overridden for a scene.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
