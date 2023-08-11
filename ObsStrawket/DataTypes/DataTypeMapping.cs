@@ -8,6 +8,7 @@ namespace ObsStrawket.DataTypes {
     internal static readonly Dictionary<string, Type> EventToTypes = new Type[] {
       // General Events,
       typeof(ExitStarted),
+      typeof(CustomEvent),
       typeof(VendorEvent),
 
       // Config Events,
@@ -77,6 +78,7 @@ namespace ObsStrawket.DataTypes {
 
       // Ui Events,
       typeof(StudioModeStateChanged),
+      typeof(ScreenshotSaved),
     }.ToDictionary(t => t.Name, t => t);
 
     internal record class RequestMapping(Type Request, Type Response, bool IsRequestEmpty = false);

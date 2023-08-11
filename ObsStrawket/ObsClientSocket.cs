@@ -2319,6 +2319,9 @@ namespace ObsStrawket {
       case ExitStarted exit:
         ExitStarted(exit);
         break;
+      case CustomEvent custom:
+        CustomEvent(custom);
+        break;
       case VendorEvent vendor:
         VendorEvent(vendor);
         break;
@@ -2525,6 +2528,9 @@ namespace ObsStrawket {
       switch (ui) {
       case StudioModeStateChanged ev:
         StudioModeStateChanged(ev);
+        break;
+      case ScreenshotSaved ev:
+        ScreenshotSaved(ev);
         break;
       }
     }

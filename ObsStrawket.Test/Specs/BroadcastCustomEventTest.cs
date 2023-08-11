@@ -1,6 +1,5 @@
-using ObsStrawket.DataTypes;
+using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -19,8 +18,8 @@ namespace ObsStrawket.Test.Specs {
         { "sample", 3 }
       }).ConfigureAwait(false);
 
-      var ev = await client.Events.ReadAsync().ConfigureAwait(false) as RawEvent;
-      Assert.IsType<RawEvent>(ev);
+      var ev = await client.Events.ReadAsync().ConfigureAwait(false) as CustomEvent;
+      Assert.IsType<CustomEvent>(ev);
       Assert.Equal(3, ev.EventData!["sample"]);
     }
 

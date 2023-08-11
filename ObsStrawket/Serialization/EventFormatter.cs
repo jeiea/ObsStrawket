@@ -17,7 +17,9 @@ namespace ObsStrawket.Serialization {
       if (DataTypeMapping.EventToTypes.TryGetValue(eventType, out var type)) {
         try {
           peeker = reader.CreatePeekReader();
-          var ev = FormatterUtil.SeekByKey(ref peeker, "eventData")
+          bool isGeneralEvent = eventType == "CustomEvent" || eventType == "VendorEvent";
+          bool hasEventData = isGeneralEvent || FormatterUtil.SeekByKey(ref peeker, "eventData");
+          var ev = isGeneralEvent || hasEventData
             ? (MessagePackSerializer.Deserialize(type, ref peeker, options) as IObsEvent)!
             : (Activator.CreateInstance(type) as IObsEvent)!;
           reader.Skip();

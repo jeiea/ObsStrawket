@@ -1,3 +1,10 @@
+## 0.13.0
+
+- ! Change `ObsStrawket.DataTypes.OutputState` enum to
+  `ObsStrawket.DataTypes.Predefineds.ObsOutputState`.
+- Reflect upstream changes.
+  -
+
 ## 0.12.0
 
 - ! Rename `UnexpectedProtocolException` to `UnexpectedResponseException`.
