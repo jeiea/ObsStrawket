@@ -1,34 +1,32 @@
-using MessagePack.Formatters;
 using MessagePack;
+using MessagePack.Formatters;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
-using System.Buffers;
 
 namespace ObsStrawket.Serialization {
-  internal class PromotionFormatter : IMessagePackFormatter<object> {
-    public static readonly IMessagePackFormatter<object> Instance = new PromotionFormatter();
+  internal class PromotionFormatter : IMessagePackFormatter<object?> {
+    public static readonly IMessagePackFormatter<object?> Instance = new PromotionFormatter();
 
-    private static readonly Dictionary<Type, int> TypeToJumpCode = new()
-    {
-            // When adding types whose size exceeds 32-bits, add support in MessagePackSecurity.GetHashCollisionResistantEqualityComparer<T>()
-            { typeof(bool), 0 },
-            { typeof(char), 1 },
-            { typeof(sbyte), 2 },
-            { typeof(byte), 3 },
-            { typeof(short), 4 },
-            { typeof(ushort), 5 },
-            { typeof(int), 6 },
-            { typeof(uint), 7 },
-            { typeof(long), 8 },
-            { typeof(ulong), 9 },
-            { typeof(float), 10 },
-            { typeof(double), 11 },
-            { typeof(DateTime), 12 },
-            { typeof(string), 13 },
-            { typeof(byte[]), 14 },
-        };
+    private static readonly Dictionary<Type, int> TypeToJumpCode = new() {
+      // When adding types whose size exceeds 32-bits, add support in MessagePackSecurity.GetHashCollisionResistantEqualityComparer<T>()
+      { typeof(bool), 0 },
+      { typeof(char), 1 },
+      { typeof(sbyte), 2 },
+      { typeof(byte), 3 },
+      { typeof(short), 4 },
+      { typeof(ushort), 5 },
+      { typeof(int), 6 },
+      { typeof(uint), 7 },
+      { typeof(long), 8 },
+      { typeof(ulong), 9 },
+      { typeof(float), 10 },
+      { typeof(double), 11 },
+      { typeof(DateTime), 12 },
+      { typeof(string), 13 },
+      { typeof(byte[]), 14 },
+    };
 
     protected PromotionFormatter() {
     }
@@ -57,11 +55,11 @@ namespace ObsStrawket.Serialization {
       return false;
     }
 
-    public void Serialize(ref MessagePackWriter writer, object value, MessagePackSerializerOptions options) {
+    public void Serialize(ref MessagePackWriter writer, object? value, MessagePackSerializerOptions options) {
       DynamicObjectTypeFallbackFormatter.Instance.Serialize(ref writer, value, options);
     }
 
-    public object Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
+    public object? Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
       var type = reader.NextMessagePackType;
       var resolver = options.Resolver;
       switch (type) {
@@ -127,7 +125,7 @@ namespace ObsStrawket.Serialization {
             return Array.Empty<object>();
           }
 
-          var objectFormatter = resolver.GetFormatter<object>();
+          var objectFormatter = resolver.GetFormatter<object>()!;
           object[] array = new object[length];
           options.Security.DepthStep(ref reader);
           try {
@@ -156,17 +154,15 @@ namespace ObsStrawket.Serialization {
 
       case MessagePackType.Nil:
         reader.ReadNil();
-#pragma warning disable CS8603 // Possible null reference return.
         return null;
-#pragma warning restore CS8603 // Possible null reference return.
       default:
         throw new MessagePackSerializationException("Invalid primitive bytes.");
       }
     }
 
-    protected virtual object DeserializeMap(ref MessagePackReader reader, int length, MessagePackSerializerOptions options) {
-      var objectFormatter = options.Resolver.GetFormatter<object>();
-      var dictionary = new Dictionary<object, object>(length, options.Security.GetEqualityComparer<object>());
+    protected virtual object? DeserializeMap(ref MessagePackReader reader, int length, MessagePackSerializerOptions options) {
+      var objectFormatter = options.Resolver.GetFormatter<object>()!;
+      var dictionary = new Dictionary<object, object?>(length, options.Security.GetEqualityComparer<object>());
       for (int i = 0; i < length; i++) {
         object key = objectFormatter.Deserialize(ref reader, options);
         object value = objectFormatter.Deserialize(ref reader, options);

@@ -10,22 +10,23 @@ namespace ObsStrawket.Serialization {
     protected RequestResponseFormatter() { }
 
     public IRequestResponse Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
-      string requestType = FormatterUtil.SeekByKey(reader, "requestType").ReadString();
-      if (DataTypeMapping.RequestToTypes.TryGetValue(requestType, out var type)) {
-        try {
-          return DeserializeTyped(ref reader, options, type);
+      if (FormatterUtil.SeekByKey(reader, "requestType").ReadString() is string requestType) {
+        if (DataTypeMapping.RequestToTypes.TryGetValue(requestType, out var type)) {
+          try {
+            return DeserializeTyped(ref reader, options, type);
+          }
+          catch (MessagePackSerializationException) { }
         }
-        catch (MessagePackSerializationException) { }
       }
       return MessagePackSerializer.Deserialize<RawRequestResponse>(ref reader, options);
     }
 
-    private static IRequestResponse DeserializeTyped(ref MessagePackReader reader, MessagePackSerializerOptions options, DataTypeMapping.RequestMapping type) {
+    private static RequestResponse DeserializeTyped(ref MessagePackReader reader, MessagePackSerializerOptions options, DataTypeMapping.RequestMapping type) {
       var peeker = reader.CreatePeekReader();
       var response = FormatterUtil.SeekByKey(ref peeker, "responseData")
         ? (MessagePackSerializer.Deserialize(type.Response, ref peeker, options) as RequestResponse)!
         : (Activator.CreateInstance(type.Response) as RequestResponse)!;
-      response.RequestId = FormatterUtil.SeekByKey(reader, "requestId").ReadString();
+      response.RequestId = FormatterUtil.SeekByKey(reader, "requestId").ReadString() ?? "null";
       peeker = FormatterUtil.SeekByKey(reader, "requestStatus");
       response.RequestStatus = MessagePackSerializer.Deserialize<RequestStatus>(ref peeker, options);
 

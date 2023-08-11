@@ -10,11 +10,11 @@ namespace ObsStrawket.Serialization {
     public IObsEvent Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
       var peeker = reader.CreatePeekReader();
       if (!FormatterUtil.SeekByKey(ref peeker, "eventType")) {
-        throw new UnexpectedResponseException();
+        throw new UnexpectedResponseException("Cannot find eventType");
       }
 
-      string eventType = peeker.ReadString();
-      if (DataTypeMapping.EventToTypes.TryGetValue(eventType, out var type)) {
+      if (peeker.ReadString() is string eventType &&
+          DataTypeMapping.EventToTypes.TryGetValue(eventType, out var type)) {
         try {
           peeker = reader.CreatePeekReader();
           bool isGeneralEvent = eventType == "CustomEvent" || eventType == "VendorEvent";

@@ -12,7 +12,7 @@ namespace ObsStrawket.DataTypes {
     public static bool SeekByKey(ref MessagePackReader reader, string key) {
       int count = reader.ReadMapHeader();
       for (int i = 0; i < count; i++) {
-        string cursor = reader.ReadString();
+        string? cursor = reader.ReadString();
         if (cursor == key) {
           return true;
         }

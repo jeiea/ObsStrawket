@@ -2,7 +2,6 @@ using MessagePack;
 using MessagePack.Formatters;
 using MessagePack.Resolvers;
 using ObsStrawket.DataTypes;
-using System;
 
 namespace ObsStrawket.Serialization {
   internal class OpCodeMessageFormatter : IMessagePackFormatter<IOpCodeMessage> {
@@ -10,12 +9,12 @@ namespace ObsStrawket.Serialization {
 
     private static readonly DynamicObjectResolver _resolver = DynamicObjectResolver.Instance;
 
-    private static readonly IMessagePackFormatter<Hello> _helloFormatter = _resolver.GetFormatter<Hello>();
-    private static readonly IMessagePackFormatter<Identify> _identifyFormatter = _resolver.GetFormatter<Identify>();
-    private static readonly IMessagePackFormatter<Identified> _identifiedFormatter = _resolver.GetFormatter<Identified>();
-    private static readonly IMessagePackFormatter<Reidentify> _reidentifyFormatter = _resolver.GetFormatter<Reidentify>();
-    private static readonly IMessagePackFormatter<RequestBatch> _requestBatchFormatter = _resolver.GetFormatter<RequestBatch>();
-    private static readonly IMessagePackFormatter<RequestBatchResponse> _requestBatchResponseFormatter = _resolver.GetFormatter<RequestBatchResponse>();
+    private static readonly IMessagePackFormatter<Hello> _helloFormatter = _resolver.GetFormatter<Hello>()!;
+    private static readonly IMessagePackFormatter<Identify> _identifyFormatter = _resolver.GetFormatter<Identify>()!;
+    private static readonly IMessagePackFormatter<Identified> _identifiedFormatter = _resolver.GetFormatter<Identified>()!;
+    private static readonly IMessagePackFormatter<Reidentify> _reidentifyFormatter = _resolver.GetFormatter<Reidentify>()!;
+    private static readonly IMessagePackFormatter<RequestBatch> _requestBatchFormatter = _resolver.GetFormatter<RequestBatch>()!;
+    private static readonly IMessagePackFormatter<RequestBatchResponse> _requestBatchResponseFormatter = _resolver.GetFormatter<RequestBatchResponse>()!;
 
     protected OpCodeMessageFormatter() { }
 
@@ -41,7 +40,7 @@ namespace ObsStrawket.Serialization {
         (int)OpCode.RequestResponse => RequestResponseFormatter.Instance.Deserialize(ref peeker, options),
         (int)OpCode.RequestBatch => _requestBatchFormatter.Deserialize(ref peeker, options),
         (int)OpCode.RequestBatchResponse => _requestBatchResponseFormatter.Deserialize(ref peeker, options),
-        _ => new OpCodeMessage<object>((OpCode)opcode, StandardResolver.Instance.GetFormatter<object>().Deserialize(ref peeker, options)),
+        _ => new OpCodeMessage<object>((OpCode)opcode, StandardResolver.Instance.GetFormatter<object>()!.Deserialize(ref peeker, options)),
       };
 
       reader.Skip();
