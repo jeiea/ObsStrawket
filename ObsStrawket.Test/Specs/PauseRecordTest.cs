@@ -17,7 +17,7 @@ namespace ObsStrawket.Test.Specs {
       await Task.Delay(100).ConfigureAwait(false);
       await client.PauseRecordAsync().ConfigureAwait(false);
       var ev = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(OutputState.Paused, (ev as RecordStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Paused, (ev as RecordStateChanged)!.OutputState);
     }
 
     public async Task RespondAsync(MockServerSession session) {

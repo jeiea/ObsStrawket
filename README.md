@@ -30,13 +30,13 @@ Assert.Contains("bmp", version.SupportedImageFormats);
 // Listen specific event.
 client.RecordStateChanged += (changed) => {
   switch (changed.OutputState) {
-  case OutputState.Unknown:
-  case OutputState.Starting:
-  case OutputState.Started:
-  case OutputState.Stopping:
-  case OutputState.Stopped:
-  case OutputState.Paused:
-  case OutputState.Resumed:
+  case ObsOutputState.Unknown:
+  case ObsOutputState.Starting:
+  case ObsOutputState.Started:
+  case ObsOutputState.Stopping:
+  case ObsOutputState.Stopped:
+  case ObsOutputState.Paused:
+  case ObsOutputState.Resumed:
     break;
   }
 };

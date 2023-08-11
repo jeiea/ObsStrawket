@@ -17,9 +17,9 @@ namespace ObsStrawket.Test.Specs {
       await client.StopRecordAsync().ConfigureAwait(false);
 
       var changed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(OutputState.Stopping, (changed as RecordStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Stopping, (changed as RecordStateChanged)!.OutputState);
       changed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(OutputState.Stopped, (changed as RecordStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Stopped, (changed as RecordStateChanged)!.OutputState);
     }
 
     public async Task RespondAsync(MockServerSession session) {

@@ -85,7 +85,7 @@ namespace ObsStrawket.Test.Utilities {
 
       var taskSource = new TaskCompletionSource<object?>();
       client.RecordStateChanged += (ev) => {
-        if (ev.OutputState == OutputState.Stopped) {
+        if (ev.OutputState == ObsOutputState.Stopped) {
           taskSource.SetResult(null);
         }
       };

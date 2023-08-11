@@ -976,7 +976,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// The specific state of the output
     /// </summary>
     [Key("outputState")]
-    public OutputState OutputState { get; set; } = new();
+    public ObsOutputState OutputState { get; set; } = new();
   }
 
   /// <summary>
@@ -996,7 +996,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// The specific state of the output
     /// </summary>
     [Key("outputState")]
-    public OutputState OutputState { get; set; } = new();
+    public ObsOutputState OutputState { get; set; } = new();
 
     /// <summary>
     /// File name for the saved recording, if record stopped. <c>null</c> otherwise
@@ -1022,7 +1022,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// The specific state of the output
     /// </summary>
     [Key("outputState")]
-    public OutputState OutputState { get; set; } = new();
+    public ObsOutputState OutputState { get; set; } = new();
   }
 
   /// <summary>
@@ -1042,7 +1042,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// The specific state of the output
     /// </summary>
     [Key("outputState")]
-    public OutputState OutputState { get; set; } = new();
+    public ObsOutputState OutputState { get; set; } = new();
   }
 
   /// <summary>

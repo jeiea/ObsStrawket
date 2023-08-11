@@ -16,9 +16,9 @@ namespace ObsStrawket.Test.Specs {
     public async Task RequestAsync(ObsClientSocket client) {
       await client.StartStreamAsync().ConfigureAwait(false);
       var starting = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(OutputState.Starting, (starting as StreamStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Starting, (starting as StreamStateChanged)!.OutputState);
       var started = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(OutputState.Started, (started as StreamStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Started, (started as StreamStateChanged)!.OutputState);
     }
 
     public async Task RespondAsync(MockServerSession session) {

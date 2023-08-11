@@ -17,7 +17,7 @@ namespace ObsStrawket.Test.Specs {
       await client.StopVirtualCamAsync().ConfigureAwait(false);
 
       var changed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(OutputState.Stopped, (changed as VirtualcamStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Stopped, (changed as VirtualcamStateChanged)!.OutputState);
     }
 
     public async Task RespondAsync(MockServerSession session) {

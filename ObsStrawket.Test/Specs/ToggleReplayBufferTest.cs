@@ -19,22 +19,22 @@ namespace ObsStrawket.Test.Specs {
       Assert.True(response.OutputActive);
 
       var changed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(OutputState.Starting, (changed as ReplayBufferStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Starting, (changed as ReplayBufferStateChanged)!.OutputState);
       changed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(OutputState.Started, (changed as ReplayBufferStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Started, (changed as ReplayBufferStateChanged)!.OutputState);
 
       await Task.Delay(100).ConfigureAwait(false);
       response = await client.ToggleReplayBufferAsync().ConfigureAwait(false);
       Assert.False(response.OutputActive);
 
       changed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(OutputState.Stopping, (changed as ReplayBufferStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Stopping, (changed as ReplayBufferStateChanged)!.OutputState);
       changed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(OutputState.Stopped, (changed as ReplayBufferStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Stopped, (changed as ReplayBufferStateChanged)!.OutputState);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-     string? guid = await session.ReceiveAsync(@"{
+      string? guid = await session.ReceiveAsync(@"{
   ""d"": {
     ""requestId"": ""{guid}"",
     ""requestType"": ""ToggleReplayBuffer""

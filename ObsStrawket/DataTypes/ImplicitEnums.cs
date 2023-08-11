@@ -32,48 +32,6 @@ namespace ObsStrawket.DataTypes {
   }
 
   /// <summary>
-  /// Represents output sending state.
-  /// </summary>
-  [MessagePackFormatter(typeof(EnumAsStringFormatter<OutputState>))]
-  public enum OutputState {
-    /// <summary>
-    /// Unknown
-    /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_UNKNOWN")]
-    Unknown,
-    /// <summary>
-    /// Triggered when output is starting.
-    /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_STARTING")]
-    Starting,
-    /// <summary>
-    /// Triggered when output is successfully started.
-    /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_STARTED")]
-    Started,
-    /// <summary>
-    /// Triggered when output is stopping.
-    /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_STOPPING")]
-    Stopping,
-    /// <summary>
-    /// Triggered when streaming has fully stopped.
-    /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_STOPPED")]
-    Stopped,
-    /// <summary>
-    /// Triggered when output has been paused.
-    /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_PAUSED")]
-    Paused,
-    /// <summary>
-    /// Triggered when output has been unpaused.
-    /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_RESUMED")]
-    Resumed,
-  }
-
-  /// <summary>
   /// The desktop audio monitoring type.
   /// </summary>
   [MessagePackFormatter(typeof(EnumAsStringFormatter<MonitoringType>))]

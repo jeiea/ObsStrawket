@@ -144,7 +144,7 @@ namespace SourceGenerator {
         type = "MonitoringType";
         return true;
       case "outputState":
-        type = "OutputState";
+        type = "ObsOutputState";
         return true;
       case "scenes":
         type = "Array<Scene>";

@@ -18,15 +18,15 @@ namespace ObsStrawket.Test.Specs {
       await client.ToggleOutputAsync(outputName: GetOutputListFlow.OutputName).ConfigureAwait(false);
 
       var changed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(OutputState.Started, (changed as ReplayBufferStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Started, (changed as ReplayBufferStateChanged)!.OutputState);
 
       await Task.Delay(100).ConfigureAwait(false);
       await client.ToggleOutputAsync(outputName: GetOutputListFlow.OutputName).ConfigureAwait(false);
 
       changed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(OutputState.Stopping, (changed as ReplayBufferStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Stopping, (changed as ReplayBufferStateChanged)!.OutputState);
       changed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(OutputState.Stopped, (changed as ReplayBufferStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Stopped, (changed as ReplayBufferStateChanged)!.OutputState);
     }
 
     public async Task RespondAsync(MockServerSession session) {
