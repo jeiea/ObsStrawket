@@ -5,12 +5,6 @@
 Personal .NET implementation of
 [obs-websocket](https://github.com/obsproject/obs-websocket) protocol v5.
 
-## Can I use this in production?
-
-It's not battle tested, but has many tests.
-
-I won't change the current API more maybe.
-
 ## Difference to [obs-websocket-dotnet](https://github.com/BarRaider/obs-websocket-dotnet)
 
 |              |             ObsStrawket              |        obs-websocket-dotnet         |

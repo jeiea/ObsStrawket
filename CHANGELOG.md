@@ -2,8 +2,12 @@
 
 - ! Change `ObsStrawket.DataTypes.OutputState` enum to
   `ObsStrawket.DataTypes.Predefineds.ObsOutputState`.
+- Update dependencies.
 - Reflect upstream changes.
-  -
+  - Add `ScreenshotSaved`, `CustomEvent` event.
+  - Add `SetRecordDirectory`.
+    - **CAUTION: This is not usable in stable OBS yet!**
+  - Fix `Sleep` request parameter nullability.
 
 ## 0.12.0
 

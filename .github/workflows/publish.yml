@@ -17,7 +17,7 @@ jobs:
       - name: Setup
         uses: actions/setup-dotnet@main
         with:
-          dotnet-version: "6.0"
+          dotnet-version: "7.0"
       - name: Test
         run: dotnet test
       - id: versioning
