@@ -1,3 +1,7 @@
+## 0.14.0
+
+- Fix integer overflow with some response field.
+
 ## 0.13.0
 
 - ! Change `ObsStrawket.DataTypes.OutputState` enum to
