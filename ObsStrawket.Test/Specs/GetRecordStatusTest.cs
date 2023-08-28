@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class GetRecordStatusTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new StartRecordFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetRecordStatusFlow()).ConfigureAwait(false);
     }
   }
 
@@ -18,37 +18,41 @@ namespace ObsStrawket.Test.Specs {
       Assert.True(response.OutputActive);
       Assert.NotInRange(response.OutputBytes, int.MinValue, 0);
       Assert.NotInRange(response.OutputDuration, int.MinValue, 0);
-      Assert.StartsWith("00:00:0", response.OutputTimecode);
+      Assert.Equal("00:28:04.583", response.OutputTimecode);
       Assert.False(response.OutputPaused);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""GetRecordStatus""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestId": "{guid}",
+    "requestType": "GetRecordStatus"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
+  "op": 6
+}
+""").ConfigureAwait(false);
 
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetRecordStatus"",
-    ""responseData"": {
-      ""outputActive"": true,
-      ""outputBytes"": 1469,
-      ""outputDuration"": 49,
-      ""outputPaused"": true,
-      ""outputTimecode"": ""00:00:00.049""
+    "requestType": "GetRecordStatus",
+    "responseData": {
+      "outputActive": true,
+      "outputBytes": 4989218756,
+      "outputDuration": 1684583,
+      "outputPaused": false,
+      "outputTimecode": "00:28:04.583"
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

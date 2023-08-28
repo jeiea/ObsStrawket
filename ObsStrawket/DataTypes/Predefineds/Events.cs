@@ -593,7 +593,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Transition duration in milliseconds
     /// </summary>
     [Key("transitionDuration")]
-    public int TransitionDuration { get; set; }
+    public long TransitionDuration { get; set; }
   }
 
   /// <summary>

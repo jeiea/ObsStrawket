@@ -104,37 +104,37 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Number of frames skipped by OBS in the render thread
     /// </summary>
     [Key("renderSkippedFrames")]
-    public int RenderSkippedFrames { get; set; }
+    public long RenderSkippedFrames { get; set; }
 
     /// <summary>
     /// Total number of frames outputted by the render thread
     /// </summary>
     [Key("renderTotalFrames")]
-    public int RenderTotalFrames { get; set; }
+    public long RenderTotalFrames { get; set; }
 
     /// <summary>
     /// Number of frames skipped by OBS in the output thread
     /// </summary>
     [Key("outputSkippedFrames")]
-    public int OutputSkippedFrames { get; set; }
+    public long OutputSkippedFrames { get; set; }
 
     /// <summary>
     /// Total number of frames outputted by the output thread
     /// </summary>
     [Key("outputTotalFrames")]
-    public int OutputTotalFrames { get; set; }
+    public long OutputTotalFrames { get; set; }
 
     /// <summary>
     /// Total number of messages received by obs-websocket from the client
     /// </summary>
     [Key("webSocketSessionIncomingMessages")]
-    public int WebSocketSessionIncomingMessages { get; set; }
+    public long WebSocketSessionIncomingMessages { get; set; }
 
     /// <summary>
     /// Total number of messages sent by obs-websocket to the client
     /// </summary>
     [Key("webSocketSessionOutgoingMessages")]
-    public int WebSocketSessionOutgoingMessages { get; set; }
+    public long WebSocketSessionOutgoingMessages { get; set; }
   }
 
   /// <summary>
@@ -280,7 +280,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// If null, Unknown
     /// </summary>
     [Key("sleepFrames")]
-    public int? SleepFrames { get; set; }
+    public long? SleepFrames { get; set; }
   }
 
   /// <summary>
@@ -1062,7 +1062,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Duration of the overridden scene transition, else <c>null</c>
     /// </summary>
     [Key("transitionDuration")]
-    public int? TransitionDuration { get; set; }
+    public long? TransitionDuration { get; set; }
   }
 
   /// <summary>
@@ -1091,7 +1091,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// If null, Unchanged
     /// </summary>
     [Key("transitionDuration")]
-    public int? TransitionDuration { get; set; }
+    public long? TransitionDuration { get; set; }
   }
 
   /// <summary>
@@ -1833,7 +1833,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Configured transition duration in milliseconds. <c>null</c> if transition is fixed
     /// </summary>
     [Key("transitionDuration")]
-    public int? TransitionDuration { get; set; }
+    public long? TransitionDuration { get; set; }
 
     /// <summary>
     /// Whether the transition supports being configured
@@ -1876,7 +1876,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// It should be &gt;= 50, &lt;= 20000
     /// </summary>
     [Key("transitionDuration")]
-    public int TransitionDuration { get; set; }
+    public long TransitionDuration { get; set; }
   }
 
   /// <summary>
@@ -2938,7 +2938,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Current duration in milliseconds for the output
     /// </summary>
     [Key("outputDuration")]
-    public int OutputDuration { get; set; }
+    public long OutputDuration { get; set; }
 
     /// <summary>
     /// Congestion of the output
@@ -2950,19 +2950,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Number of bytes sent by the output
     /// </summary>
     [Key("outputBytes")]
-    public int OutputBytes { get; set; }
+    public long OutputBytes { get; set; }
 
     /// <summary>
     /// Number of frames skipped by the output's process
     /// </summary>
     [Key("outputSkippedFrames")]
-    public int OutputSkippedFrames { get; set; }
+    public long OutputSkippedFrames { get; set; }
 
     /// <summary>
     /// Total number of frames delivered by the output's process
     /// </summary>
     [Key("outputTotalFrames")]
-    public int OutputTotalFrames { get; set; }
+    public long OutputTotalFrames { get; set; }
   }
 
   /// <summary>
@@ -3097,7 +3097,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Current duration in milliseconds for the output
     /// </summary>
     [Key("outputDuration")]
-    public int OutputDuration { get; set; }
+    public long OutputDuration { get; set; }
 
     /// <summary>
     /// Congestion of the output
@@ -3109,19 +3109,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Number of bytes sent by the output
     /// </summary>
     [Key("outputBytes")]
-    public int OutputBytes { get; set; }
+    public long OutputBytes { get; set; }
 
     /// <summary>
     /// Number of frames skipped by the output's process
     /// </summary>
     [Key("outputSkippedFrames")]
-    public int OutputSkippedFrames { get; set; }
+    public long OutputSkippedFrames { get; set; }
 
     /// <summary>
     /// Total number of frames delivered by the output's process
     /// </summary>
     [Key("outputTotalFrames")]
-    public int OutputTotalFrames { get; set; }
+    public long OutputTotalFrames { get; set; }
   }
 
   /// <summary>
@@ -3207,13 +3207,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Current duration in milliseconds for the output
     /// </summary>
     [Key("outputDuration")]
-    public int OutputDuration { get; set; }
+    public long OutputDuration { get; set; }
 
     /// <summary>
     /// Number of bytes sent by the output
     /// </summary>
     [Key("outputBytes")]
-    public int OutputBytes { get; set; }
+    public long OutputBytes { get; set; }
   }
 
   /// <summary>
@@ -3336,7 +3336,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Total duration of the playing media in milliseconds. <c>null</c> if not playing
     /// </summary>
     [Key("mediaDuration")]
-    public int? MediaDuration { get; set; }
+    public long? MediaDuration { get; set; }
 
     /// <summary>
     /// Position of the cursor in milliseconds. <c>null</c> if not playing

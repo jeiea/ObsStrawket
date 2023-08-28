@@ -11,7 +11,10 @@ namespace ObsStrawket.Test.Utilities {
   using System.Threading.Tasks;
   using Xunit;
 
-  class MockServerSession : IDisposable {
+  partial class MockServerSession : IDisposable {
+    [GeneratedRegex("[0-9a-f]{8}-[0-9a-f]{4}[^\"]*")]
+    private static partial Regex _guidPattern();
+
     private readonly ArraySegment<byte> _buffer = new(new byte[1024]);
     private readonly WebSocket _webSocket;
     private readonly CancellationToken _cancellation;
@@ -39,7 +42,7 @@ namespace ObsStrawket.Test.Utilities {
     public async Task<string?> ReceiveAsync(string expectedJson) {
       string json = await ReceiveAsync().ConfigureAwait(false);
       _ = Task.Run(() => Debug.WriteLine($"Mock receive {Regex.Replace(json, @"\s+", "")}"));
-      string? guid = Regex.Match(json, @"[0-9a-f]{8}-[0-9a-f]{4}[^""]*")?.Value;
+      string? guid = _guidPattern().Match(json)?.Value;
       AssertJsonEqual(expectedJson.Replace("{guid}", guid ?? ""), json);
       return guid;
     }

@@ -1035,7 +1035,7 @@ namespace ObsStrawket {
     /// <param name="transitionName">Name of the scene transition to use as override. Specify <c>null</c> to remove<br />If null, Unchanged</param>
     /// <param name="transitionDuration">Duration to use for any overridden transition. Specify <c>null</c> to remove<br />If null, Unchanged</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetSceneSceneTransitionOverrideAsync(string sceneName, string? transitionName = default, int? transitionDuration = default, CancellationToken cancellation = default) {
+    public async Task<RequestResponse> SetSceneSceneTransitionOverrideAsync(string sceneName, string? transitionName = default, long? transitionDuration = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetSceneSceneTransitionOverride() { SceneName = sceneName, TransitionName = transitionName, TransitionDuration = transitionDuration }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
@@ -1390,7 +1390,7 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="transitionDuration">Duration in milliseconds</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetCurrentSceneTransitionDurationAsync(int transitionDuration, CancellationToken cancellation = default) {
+    public async Task<RequestResponse> SetCurrentSceneTransitionDurationAsync(long transitionDuration, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetCurrentSceneTransitionDuration() { TransitionDuration = transitionDuration }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
