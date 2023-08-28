@@ -23,11 +23,11 @@ jobs:
       - name: Publish & Create tag
         run: |
           version="$(nbgv get-version -v SimpleVersion)$(nbgv get-version -v PrereleaseVersion)"
-          [ $(git tag -l v$version) ] || (
-            dotnet pack --include-source --configuration Release -p:Version=$version
-            && dotnet nuget push ObsStrawket/bin/Release/*.symbols.nupkg
-              --api-key ${{ secrets.NUGET_API_KEY }}
-              --source https://api.nuget.org/v3/index.json
-            && nbgv tag
-            && git push origin v$version
+          [ $(git tag -l v$version) ] || ( \
+            dotnet pack --include-source --configuration Release -p:Version=$version \
+            && dotnet nuget push ObsStrawket/bin/Release/*.symbols.nupkg \
+              --api-key ${{ secrets.NUGET_API_KEY }} \
+              --source https://api.nuget.org/v3/index.json \
+            && nbgv tag \
+            && git push origin v$version \
           )
