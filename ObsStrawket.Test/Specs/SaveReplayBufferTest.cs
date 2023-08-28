@@ -1,9 +1,8 @@
 using ObsStrawket.DataTypes.Predefineds;
-using ObsStrawket.DataTypes;
 using ObsStrawket.Test.Utilities;
+using System.IO;
 using System.Threading.Tasks;
 using Xunit;
-using System.IO;
 
 namespace ObsStrawket.Test.Specs {
   public class SaveReplayBufferTest {

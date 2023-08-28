@@ -1,7 +1,6 @@
-using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.DataTypes;
+using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 

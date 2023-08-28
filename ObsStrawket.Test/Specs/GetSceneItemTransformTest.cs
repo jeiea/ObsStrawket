@@ -1,4 +1,3 @@
-using ObsStrawket.DataTypes;
 using ObsStrawket.Test.Utilities;
 using System.Threading.Tasks;
 using Xunit;
