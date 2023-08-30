@@ -12,6 +12,8 @@ namespace ObsStrawket.Test {
       var client = ClientFlow.GetDebugClient();
       await new ClientFlow().RunClientAsync(server.Uri, client, cancellation: cancellation.Token);
       await new ClientFlow().RunClientAsync(server.Uri, client, cancellation: cancellation.Token);
+      client.Dispose();
+      client.Dispose();
     }
   }
 }

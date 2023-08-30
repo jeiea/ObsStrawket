@@ -1,6 +1,7 @@
 ## 0.14.0
 
 - Fix integer overflow with some response field.
+- Fix throwing at second `Dispose()`.
 
 ## 0.13.0
 

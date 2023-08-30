@@ -26,7 +26,7 @@ namespace ObsStrawket {
     private readonly ILogger? _logger;
 
     private ClientWebSocket _clientWebSocket = new();
-    private CancellationTokenSource _cancellation = new();
+    private CancellationTokenSource? _cancellation;
     private bool _isOpen = false;
     private SendPipeline _sender;
     private ReceivePipeline _receiver;
@@ -100,10 +100,7 @@ namespace ObsStrawket {
 
         _receiver.Run(_cancellation.Token);
         _sender.Start();
-        var hello = (Hello)await ReceiveMessageAsync(messages, cancellation).ConfigureAwait(false);
-        if (hello == null) {
-          throw new ObsWebSocketException(GetCloseMessage() ?? "Handshake failure");
-        }
+        var hello = (Hello)await ReceiveMessageAsync(messages, cancellation).ConfigureAwait(false)?? throw new ObsWebSocketException(GetCloseMessage() ?? "Handshake failure");
         if (hello.RpcVersion > _supportedRpcVersion) {
           _logger?.LogWarning("OBS RPC version({hello}) is newer than supported version({supported}).", hello.RpcVersion, _supportedRpcVersion);
         }
@@ -144,7 +141,7 @@ namespace ObsStrawket {
         throw new InvalidOperationException("WebSocket is not connected");
       }
 
-      using var source = CancellationTokenSource.CreateLinkedTokenSource(cancellation, _cancellation.Token);
+      using var source = LinkInstanceCancellation(cancellation);
       var token = source.Token;
       token.ThrowIfCancellationRequested();
 
@@ -174,7 +171,7 @@ namespace ObsStrawket {
         throw new InvalidOperationException("WebSocket is not connected");
       }
 
-      using var source = CancellationTokenSource.CreateLinkedTokenSource(cancellation, _cancellation.Token);
+      using var source = LinkInstanceCancellation(cancellation);
       var token = source.Token;
       token.ThrowIfCancellationRequested();
 
@@ -214,6 +211,11 @@ namespace ObsStrawket {
       Reset(new ObsWebSocketException("Socket disposed"));
       _connectSemaphore.Dispose();
       GC.SuppressFinalize(this);
+    }
+
+    private CancellationTokenSource LinkInstanceCancellation(CancellationToken cancellation) {
+      var instanceCancellation = _cancellation?.Token ?? CancellationToken.None;
+      return CancellationTokenSource.CreateLinkedTokenSource(cancellation, instanceCancellation);
     }
 
     private async Task CloseInternalAsync(WebSocketCloseStatus status = WebSocketCloseStatus.NormalClosure, string? description = null, Exception? exception = null) {
@@ -318,8 +320,9 @@ namespace ObsStrawket {
     private void Reset(Exception? exception = null) {
       _sender.Stop();
 
-      _cancellation.Cancel();
-      _cancellation.Dispose();
+      _cancellation?.Cancel();
+      _cancellation?.Dispose();
+      _cancellation = null;
 
       if (exception != null) {
         foreach (var request in _requests.Values) {
