@@ -113,8 +113,8 @@ namespace ObsStrawket.Test.Utilities {
       await client.CloseAsync().ConfigureAwait(false);
     }
 
-    private void TryComplete(object o) {
-      _events.Writer.TryComplete(new Exception($"{o}"));
+    private void TryComplete(Exception? exception) {
+      _events.Writer.TryComplete(exception);
     }
 
     private async void QueueEvent(IObsEvent @event) {
@@ -127,11 +127,14 @@ namespace ObsStrawket.Test.Utilities {
     }
 
     private async Task<T> ReadEventAsync<T>(CancellationToken cancellation = default) where T : class {
-      var ev = await _events.Reader.ReadAsync(cancellation).ConfigureAwait(false);
-      if (ev is T cast) {
-        return cast;
+      if (await _events.Reader.WaitToReadAsync(cancellation).ConfigureAwait(false)) {
+        var ev = await _events.Reader.ReadAsync(cancellation).ConfigureAwait(false);
+        if (ev is T cast) {
+          return cast;
+        }
+        throw new Exception($"type mismatch: expected: {typeof(T).Name}, actual: {ev.GetType().Name}");
       }
-      throw new InvalidCastException();
+      throw new Exception($"It seems the channel is closed.");
     }
   }
 }

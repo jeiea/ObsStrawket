@@ -436,7 +436,7 @@ namespace ObsStrawket {
     /// <summary>
     /// Fired when it is disconnected to OBS
     /// </summary>
-    public event Action<object> Disconnected = delegate { };
+    public event Action<Exception?> Disconnected = delegate { };
 
     private readonly ClientSocket _clientSocket;
     private readonly ILogger? _logger;
@@ -553,7 +553,7 @@ namespace ObsStrawket {
           DispatchEvent(await events.ReadAsync().ConfigureAwait(false));
         }
         _logger?.LogDebug("Terminated");
-        InvokeCloseSafe("Normal closure");
+        InvokeCloseSafe(null);
       }
       catch (Exception exception) {
         _logger?.LogDebug(exception, "Terminated with exception: {message}", exception.Message);
@@ -561,7 +561,7 @@ namespace ObsStrawket {
       }
     }
 
-    private void InvokeCloseSafe(object info) {
+    private void InvokeCloseSafe(Exception? info) {
       try {
         Disconnected(info);
       }

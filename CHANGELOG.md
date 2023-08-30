@@ -1,5 +1,9 @@
 ## 0.14.0
 
+- ! Change `ObsClientSocket.Disconnected` parameter type from `object` to `Exception?`.
+- ! Calling `ConnectAsync` or `CloseAsync` during a request or event subscription
+  now throws an `OperationCancelledException`, whereas previously
+  it might have thrown an `ObsWebSocketException`.
 - Fix integer overflow with some response field.
 - Fix throwing at second `Dispose()`.
 
@@ -90,7 +94,7 @@
 
 ## 0.1.2
 
-- Add `(ChannelReader<IEvent>)ObsClientSocket.Events`. It can be used when `new ObsClientSocket(useChannel: true)`.
+- Add `(ChannelReader<IEvent>)ObsClientSocket.Events`.It can be used when `new ObsClientSocket(useChannel: true)`.
 
 # 0.1.0
 

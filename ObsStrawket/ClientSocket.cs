@@ -80,7 +80,7 @@ namespace ObsStrawket {
       try {
         if (_isOpen) {
           try {
-            await CloseInternalAsync(exception: new ObsWebSocketException($"ConnectAsync to {url}")).ConfigureAwait(false);
+            await CloseInternalAsync().ConfigureAwait(false);
           }
           catch (Exception ex) {
             _logger?.LogWarning("Ignore close exception: {}", ex);
@@ -100,7 +100,7 @@ namespace ObsStrawket {
 
         _receiver.Run(_cancellation.Token);
         _sender.Start();
-        var hello = (Hello)await ReceiveMessageAsync(messages, cancellation).ConfigureAwait(false)?? throw new ObsWebSocketException(GetCloseMessage() ?? "Handshake failure");
+        var hello = (Hello)await ReceiveMessageAsync(messages, cancellation).ConfigureAwait(false) ?? throw new ObsWebSocketException(GetCloseMessage() ?? "Handshake failure");
         if (hello.RpcVersion > _supportedRpcVersion) {
           _logger?.LogWarning("OBS RPC version({hello}) is newer than supported version({supported}).", hello.RpcVersion, _supportedRpcVersion);
         }
@@ -228,7 +228,7 @@ namespace ObsStrawket {
         if (socket.State == WebSocketState.Open || socket.State == WebSocketState.CloseReceived) {
           await socket.CloseOutputAsync(status, description, default).ConfigureAwait(false);
         }
-        Reset(exception ?? new QueueCancelledException("User closed socket"));
+        Reset(exception);
       }
       catch (OperationCanceledException) { }
       finally {

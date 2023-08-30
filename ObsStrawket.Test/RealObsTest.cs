@@ -52,7 +52,7 @@ namespace ObsStrawket.Test.Real {
       if (_shouldSkip) {
         return;
       }
-      var source = new TaskCompletionSource<object>();
+      var source = new TaskCompletionSource<object?>();
       var client = ClientFlow.GetDebugClient();
       client.Disconnected += (e) => {
         source.TrySetResult(e);
@@ -63,7 +63,7 @@ namespace ObsStrawket.Test.Real {
       //  var ev = await client.Events.ReadAsync().ConfigureAwait(false);
       //  Debug.WriteLine(ev);
       //}
-      object result = await source.Task.ConfigureAwait(false);
+      object? result = await source.Task.ConfigureAwait(false);
       Debug.WriteLine(result);
       return;
     }
