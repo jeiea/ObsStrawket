@@ -76,7 +76,7 @@ namespace ObsStrawket {
         _logger?.LogDebug("Complete. IsCancellationRequested: {}", token.IsCancellationRequested);
       }
       catch (Exception exception) {
-        _logger?.LogDebug(exception, "Complete with exception");
+        _logger?.LogDebug(exception, "Complete with exception: {message}", exception.Message);
         _messages.Writer.TryComplete(exception);
       }
     }

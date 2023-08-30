@@ -556,7 +556,7 @@ namespace ObsStrawket {
         InvokeCloseSafe("Normal closure");
       }
       catch (Exception exception) {
-        _logger?.LogDebug(exception, "Terminated with exception");
+        _logger?.LogDebug(exception, "Terminated with exception: {message}", exception.Message);
         InvokeCloseSafe(exception);
       }
     }
@@ -566,7 +566,7 @@ namespace ObsStrawket {
         Disconnected(info);
       }
       catch (Exception ex) {
-        _logger?.LogWarning(ex, "Disconnected event handler throws");
+        _logger?.LogWarning(ex, "Disconnected event handler throws: {message}", ex.Message);
       }
     }
 

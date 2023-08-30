@@ -39,19 +39,17 @@ namespace ObsStrawket.Test {
       var failures = Channel.CreateUnbounded<string>();
 
       client.Connected += (uri) => {
-        Interlocked.Increment(ref openCloseDifference);
-        int difference = openCloseDifference;
+        int difference = Interlocked.Increment(ref openCloseDifference);
         logger.LogDebug("Connected: {}", difference);
-        if (Math.Abs(difference) > 1) {
-          _ = failures.Writer.WriteAsync($"open close difference {difference}");
+        if (difference < 0 || 1 < difference) {
+          Assert.True(failures.Writer.TryWrite($"open close difference {difference}"));
         }
       };
       client.Disconnected += (o) => {
-        Interlocked.Decrement(ref openCloseDifference);
-        int difference = openCloseDifference;
+        int difference = Interlocked.Decrement(ref openCloseDifference);
         logger.LogDebug("Disconnected: {}", difference);
-        if (Math.Abs(difference) > 1) {
-          _ = failures.Writer.WriteAsync($"open close difference {difference}");
+        if (difference < 0 || 1 < difference) {
+          Assert.True(failures.Writer.TryWrite($"open close difference {difference}"));
         }
       };
 

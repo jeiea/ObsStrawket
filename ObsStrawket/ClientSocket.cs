@@ -263,7 +263,7 @@ namespace ObsStrawket {
       }
       catch (Exception exception) {
         await CloseAsync(exception: new QueueCancelledException(innerException: exception)).ConfigureAwait(false);
-        _logger?.LogDebug(exception, "Queue cancelled");
+        _logger?.LogDebug(exception, "Queue cancelled: {}", exception.Message);
       }
       _logger?.LogDebug("Exit. IsCancellationRequested: {}", token.IsCancellationRequested);
     }

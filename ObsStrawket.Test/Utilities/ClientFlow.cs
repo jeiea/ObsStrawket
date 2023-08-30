@@ -22,53 +22,14 @@ namespace ObsStrawket.Test.Utilities {
 
     public async Task RunClientAsync(Uri uri, ObsClientSocket? socket = null, CancellationToken cancellation = default) {
       var client = socket ?? GetDebugClient();
-      await client.ConnectAsync(uri, MockServer.Password, cancellation: cancellation).ConfigureAwait(false);
-
-      await new GetVersionFlow().RequestAsync(client).ConfigureAwait(false);
-
-      var response = await client.RequestAsync(new RawRequest() {
-        RequestId = "2521a51c-7040-4830-8181-492ab5477545",
-        RequestType = "GetStudioModeEnabled"
-      }, cancellation: cancellation).ConfigureAwait(false);
-      if (response is not GetStudioModeEnabledResponse studioMode
-          || studioMode.RequestStatus.Code != RequestStatusCode.Success) {
-        Assert.Fail("Cannot read the response");
-        throw new Exception();
+      try {
+        await RunClientInternalAsync(uri, client, cancellation).ConfigureAwait(false);
       }
-
-      client.Event += QueueEvent;
-      client.StudioModeStateChanged += QueueEvent;
-      client.Disconnected += (o) => {
-        _events.Writer.TryComplete(new Exception($"{o}"));
-      };
-      await client.SetStudioModeEnabledAsync(!studioMode.StudioModeEnabled, cancellation).ConfigureAwait(false);
-
-      var studio = await ReadEventAsync<StudioModeStateChanged>(cancellation).ConfigureAwait(false);
-      Assert.Equal(!studioMode.StudioModeEnabled, studio.StudioModeEnabled);
-      studio = await ReadEventAsync<StudioModeStateChanged>(cancellation).ConfigureAwait(false);
-      Assert.Equal(!studioMode.StudioModeEnabled, studio.StudioModeEnabled);
-      Assert.Equal(0, _events.Reader.Count);
-
-      var specials = await client.GetSpecialInputsAsync(cancellation).ConfigureAwait(false);
-      var inputSettings = await client.GetInputSettingsAsync(specials.Desktop1!, cancellation).ConfigureAwait(false);
-      Assert.True(inputSettings.InputSettings.ContainsKey("device_id"), "device_id not found");
-
-      var directory = await client.GetRecordDirectoryAsync(cancellation).ConfigureAwait(false);
-      Assert.True(Directory.Exists(directory.RecordDirectory), $"{directory.RecordDirectory} is not exists.");
-
-      var stats = await client.GetStatsAsync(cancellation).ConfigureAwait(false);
-      Assert.InRange(stats.CpuUsage, 0, 100);
-
-      var startRecord = await client.StartRecordAsync(cancellation).ConfigureAwait(false);
-      Assert.NotNull(startRecord);
-      await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
-      await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
-      var recording = await client.StopRecordAsync(cancellation).ConfigureAwait(false);
-      await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
-      await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
-      Assert.True(File.Exists(recording.OutputPath), $"{recording.OutputPath} is not exists.");
-
-      await client.CloseAsync().ConfigureAwait(false);
+      finally {
+        client.Disconnected -= TryComplete;
+        client.StudioModeStateChanged -= QueueEvent;
+        client.Event -= QueueEvent;
+      }
     }
 
     public static List<IObsEvent> DrainEvents(ObsClientSocket client) {
@@ -103,27 +64,74 @@ namespace ObsStrawket.Test.Utilities {
       }
     }
 
-#pragma warning disable VSTHRD100 // Avoid async void methods
+    private async Task RunClientInternalAsync(Uri uri, ObsClientSocket client, CancellationToken cancellation) {
+      client.Event += QueueEvent;
+      client.StudioModeStateChanged += QueueEvent;
+      client.Disconnected += TryComplete;
+
+      await client.ConnectAsync(uri, MockServer.Password, cancellation: cancellation).ConfigureAwait(false);
+
+      await new GetVersionFlow().RequestAsync(client).ConfigureAwait(false);
+
+      var response = await client.RequestAsync(new RawRequest() {
+        RequestId = "2521a51c-7040-4830-8181-492ab5477545",
+        RequestType = "GetStudioModeEnabled"
+      }, cancellation: cancellation).ConfigureAwait(false);
+      if (response is not GetStudioModeEnabledResponse studioMode
+          || studioMode.RequestStatus.Code != RequestStatusCode.Success) {
+        Assert.Fail("Cannot read the response");
+        throw new Exception();
+      }
+
+      await client.SetStudioModeEnabledAsync(!studioMode.StudioModeEnabled, cancellation).ConfigureAwait(false);
+
+      var studio = await ReadEventAsync<StudioModeStateChanged>(cancellation).ConfigureAwait(false);
+      Assert.Equal(!studioMode.StudioModeEnabled, studio.StudioModeEnabled);
+      studio = await ReadEventAsync<StudioModeStateChanged>(cancellation).ConfigureAwait(false);
+      Assert.Equal(!studioMode.StudioModeEnabled, studio.StudioModeEnabled);
+      Assert.Equal(0, _events.Reader.Count);
+
+      var specials = await client.GetSpecialInputsAsync(cancellation).ConfigureAwait(false);
+      var inputSettings = await client.GetInputSettingsAsync(specials.Desktop1!, cancellation).ConfigureAwait(false);
+      Assert.True(inputSettings.InputSettings.ContainsKey("device_id"), "device_id not found");
+
+      var directory = await client.GetRecordDirectoryAsync(cancellation).ConfigureAwait(false);
+      Assert.True(Directory.Exists(directory.RecordDirectory), $"{directory.RecordDirectory} is not exists.");
+
+      var stats = await client.GetStatsAsync(cancellation).ConfigureAwait(false);
+      Assert.InRange(stats.CpuUsage, 0, 100);
+
+      var startRecord = await client.StartRecordAsync(cancellation).ConfigureAwait(false);
+      Assert.NotNull(startRecord);
+      await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
+      await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
+      var recording = await client.StopRecordAsync(cancellation).ConfigureAwait(false);
+      await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
+      await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
+      Assert.True(File.Exists(recording.OutputPath), $"{recording.OutputPath} is not exists.");
+
+      await client.CloseAsync().ConfigureAwait(false);
+    }
+
+    private void TryComplete(object o) {
+      _events.Writer.TryComplete(new Exception($"{o}"));
+    }
+
     private async void QueueEvent(IObsEvent @event) {
       try {
-        await _events.Writer.WriteAsync(@event);
+        await _events.Writer.WriteAsync(@event).ConfigureAwait(false);
       }
       catch (ChannelClosedException) {
         // occurs in ServerAbortTest.
       }
     }
-#pragma warning restore VSTHRD100 // Avoid async void methods
 
     private async Task<T> ReadEventAsync<T>(CancellationToken cancellation = default) where T : class {
-      T? cast;
-      while (await _events.Reader.WaitToReadAsync(cancellation).ConfigureAwait(false)) {
-        var ev = await _events.Reader.ReadAsync(cancellation).ConfigureAwait(false);
-        cast = ev as T;
-        if (cast != null) {
-          return cast;
-        }
+      var ev = await _events.Reader.ReadAsync(cancellation).ConfigureAwait(false);
+      if (ev is T cast) {
+        return cast;
       }
-      throw new Exception("Unreachable code");
+      throw new InvalidCastException();
     }
   }
 }
