@@ -81,7 +81,7 @@ namespace ObsStrawket.Test.Utilities {
     ""authentication"": ""J8rNSuYuYOLlFbHzDw8IHA8lTjMgL29Mq/3lFvl1sJI="",
     ""eventSubscriptions"": 2047
   }
-}");
+}").ConfigureAwait(false);
 
       await session.SendAsync(@"{
   ""op"": 2,
@@ -195,7 +195,7 @@ namespace ObsStrawket.Test.Utilities {
 }".Replace("{guid}", guid)).ConfigureAwait(false);
 
       await new GetRecordDirectoryFlow().RespondAsync(session).ConfigureAwait(false);
-      
+
       guid = await session.ReceiveAsync(@"{
   ""op"": 6,
   ""d"": {
