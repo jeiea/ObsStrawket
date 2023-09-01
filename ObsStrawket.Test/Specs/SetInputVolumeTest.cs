@@ -21,41 +21,47 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""inputName"": ""Browser source"",
-      ""inputVolumeDb"": null,
-      ""inputVolumeMul"": 10
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "inputName": "Browser source",
+      "inputVolumeDb": null,
+      "inputVolumeMul": 10
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetInputVolume""
+    "requestId": "{guid}",
+    "requestType": "SetInputVolume"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetInputVolume""
+    "requestType": "SetInputVolume"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""inputName"": ""Browser source"",
-      ""inputVolumeDb"": 20.0,
-      ""inputVolumeMul"": 10.0
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "eventData": {
+      "inputName": "Browser source",
+      "inputVolumeDb": 20.0,
+      "inputVolumeMul": 10.0
     },
-    ""eventIntent"": 8,
-    ""eventType"": ""InputVolumeChanged""
+    "eventIntent": 8,
+    "eventType": "InputVolumeChanged"
   },
-  ""op"": 5
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
     }
   }
 }

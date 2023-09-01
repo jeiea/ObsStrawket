@@ -20,62 +20,66 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""inputName"": ""Browser source"",
-      ""propertyName"": ""webpage_control_level""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "inputName": "Browser source",
+      "propertyName": "webpage_control_level"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""GetInputPropertiesListPropertyItems""
+    "requestId": "{guid}",
+    "requestType": "GetInputPropertiesListPropertyItems"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetInputPropertiesListPropertyItems"",
-    ""responseData"": {
-      ""propertyItems"": [
+    "requestType": "GetInputPropertiesListPropertyItems",
+    "responseData": {
+      "propertyItems": [
         {
-          ""itemEnabled"": true,
-          ""itemName"": ""No access to OBS"",
-          ""itemValue"": 0
+          "itemEnabled": true,
+          "itemName": "No access to OBS",
+          "itemValue": 0
         },
         {
-          ""itemEnabled"": true,
-          ""itemName"": ""Read access to OBS status information"",
-          ""itemValue"": 1
+          "itemEnabled": true,
+          "itemName": "Read access to OBS status information",
+          "itemValue": 1
         },
         {
-          ""itemEnabled"": true,
-          ""itemName"": ""Read access to user information (current Scene Collection, Transitions)"",
-          ""itemValue"": 2
+          "itemEnabled": true,
+          "itemName": "Read access to user information (current Scene Collection, Transitions)",
+          "itemValue": 2
         },
         {
-          ""itemEnabled"": true,
-          ""itemName"": ""Basic access to OBS (Save replay buffer, etc.)"",
-          ""itemValue"": 3
+          "itemEnabled": true,
+          "itemName": "Basic access to OBS (Save replay buffer, etc.)",
+          "itemValue": 3
         },
         {
-          ""itemEnabled"": true,
-          ""itemName"": ""Advanced access to OBS (Change scenes, Start/Stop replay buffer, etc.)"",
-          ""itemValue"": 4
+          "itemEnabled": true,
+          "itemName": "Advanced access to OBS (Change scenes, Start/Stop replay buffer, etc.)",
+          "itemValue": 4
         },
         {
-          ""itemEnabled"": true,
-          ""itemName"": ""Full access to OBS (Start/Stop streaming without warning, etc.)"",
-          ""itemValue"": 5
+          "itemEnabled": true,
+          "itemName": "Full access to OBS (Start/Stop streaming without warning, etc.)",
+          "itemValue": 5
         }
       ]
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

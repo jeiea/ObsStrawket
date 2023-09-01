@@ -27,73 +27,85 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""ToggleRecordPause""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestId": "{guid}",
+    "requestType": "ToggleRecordPause"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""ToggleRecordPause"",
-    ""responseData"": {
-      ""outputPaused"": true
+    "requestType": "ToggleRecordPause",
+    "responseData": {
+      "outputPaused": true
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""outputActive"": false,
-      ""outputPath"": null,
-      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_PAUSED""
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "outputActive": false,
+      "outputPath": null,
+      "outputState": "OBS_WEBSOCKET_OUTPUT_PAUSED"
     },
-    ""eventIntent"": 64,
-    ""eventType"": ""RecordStateChanged""
+    "eventIntent": 64,
+    "eventType": "RecordStateChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""ToggleRecordPause""
+      guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestId": "{guid}",
+    "requestType": "ToggleRecordPause"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""ToggleRecordPause"",
-    ""responseData"": {
-      ""outputPaused"": false
+    "requestType": "ToggleRecordPause",
+    "responseData": {
+      "outputPaused": false
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""outputActive"": true,
-      ""outputPath"": null,
-      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_RESUMED""
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "outputActive": true,
+      "outputPath": null,
+      "outputState": "OBS_WEBSOCKET_OUTPUT_RESUMED"
     },
-    ""eventIntent"": 64,
-    ""eventType"": ""RecordStateChanged""
+    "eventIntent": 64,
+    "eventType": "RecordStateChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
 
     }
   }

@@ -24,38 +24,44 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""outputName"": ""Replay Buffer""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "outputName": "Replay Buffer"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""StartOutput""
+    "requestId": "{guid}",
+    "requestType": "StartOutput"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""StartOutput""
+    "requestType": "StartOutput"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""outputActive"": true,
-      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STARTED""
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "outputActive": true,
+      "outputState": "OBS_WEBSOCKET_OUTPUT_STARTED"
     },
-    ""eventIntent"": 64,
-    ""eventType"": ""ReplayBufferStateChanged""
+    "eventIntent": 64,
+    "eventType": "ReplayBufferStateChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
     }
   }
 }

@@ -26,39 +26,45 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""inputName"": ""Browser source"",
-      ""monitorType"": ""OBS_MONITORING_TYPE_MONITOR_ONLY""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "inputName": "Browser source",
+      "monitorType": "OBS_MONITORING_TYPE_MONITOR_ONLY"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetInputAudioMonitorType""
+    "requestId": "{guid}",
+    "requestType": "SetInputAudioMonitorType"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""inputName"": ""Browser source"",
-      ""monitorType"": ""OBS_MONITORING_TYPE_MONITOR_ONLY""
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "inputName": "Browser source",
+      "monitorType": "OBS_MONITORING_TYPE_MONITOR_ONLY"
     },
-    ""eventIntent"": 8,
-    ""eventType"": ""InputAudioMonitorTypeChanged""
+    "eventIntent": 8,
+    "eventType": "InputAudioMonitorTypeChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetInputAudioMonitorType""
+    "requestType": "SetInputAudioMonitorType"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

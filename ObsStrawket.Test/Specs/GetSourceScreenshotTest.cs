@@ -23,34 +23,38 @@ namespace ObsStrawket.Test.Specs {
     public async Task RespondAsync(MockServerSession session) {
       await new GetSceneListFlow().RespondAsync(session).ConfigureAwait(false);
 
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""imageCompressionQuality"": null,
-      ""imageFormat"": ""png"",
-      ""imageHeight"": 1080,
-      ""imageWidth"": 1920,
-      ""sourceName"": ""Scene""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "imageCompressionQuality": null,
+      "imageFormat": "png",
+      "imageHeight": 1080,
+      "imageWidth": 1920,
+      "sourceName": "Scene"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""GetSourceScreenshot""
+    "requestId": "{guid}",
+    "requestType": "GetSourceScreenshot"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetSourceScreenshot"",
-    ""responseData"": {
-      ""imageData"": ""data:image/png;base64,{png}""
+    "requestType": "GetSourceScreenshot",
+    "responseData": {
+      "imageData": "data:image/png;base64,{{Base64SmallestPng}}"
     }
   },
-  ""op"": 7
-}".Replace("{png}", Base64SmallestPng).Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

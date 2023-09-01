@@ -17,36 +17,40 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""inputKind"": ""browser_source""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "inputKind": "browser_source"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""GetInputList""
+    "requestId": "{guid}",
+    "requestType": "GetInputList"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetInputList"",
-    ""responseData"": {
-      ""inputs"": [
+    "requestType": "GetInputList",
+    "responseData": {
+      "inputs": [
         {
-          ""inputKind"": ""browser_source"",
-          ""inputName"": ""Browser source"",
-          ""unversionedInputKind"": ""browser_source""
+          "inputKind": "browser_source",
+          "inputName": "Browser source",
+          "unversionedInputKind": "browser_source"
         }
       ]
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

@@ -20,28 +20,32 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""inputName"": ""Media source"",
-      ""mediaCursorOffset"": 10000
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "inputName": "Media source",
+      "mediaCursorOffset": 10000
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""OffsetMediaInputCursor""
+    "requestId": "{guid}",
+    "requestType": "OffsetMediaInputCursor"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""OffsetMediaInputCursor""
+    "requestType": "OffsetMediaInputCursor"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

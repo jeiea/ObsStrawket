@@ -35,59 +35,69 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""transitionName"": ""Fade""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "transitionName": "Fade"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetCurrentSceneTransition""
+    "requestId": "{guid}",
+    "requestType": "SetCurrentSceneTransition"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetCurrentSceneTransition""
+    "requestType": "SetCurrentSceneTransition"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""transitionName"": ""Swipe""
+      guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "transitionName": "Swipe"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetCurrentSceneTransition""
+    "requestId": "{guid}",
+    "requestType": "SetCurrentSceneTransition"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetCurrentSceneTransition""
+    "requestType": "SetCurrentSceneTransition"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""transitionName"": ""Swipe""
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "transitionName": "Swipe"
     },
-    ""eventIntent"": 16,
-    ""eventType"": ""CurrentSceneTransitionChanged""
+    "eventIntent": 16,
+    "eventType": "CurrentSceneTransitionChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
     }
   }
 }

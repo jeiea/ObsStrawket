@@ -27,34 +27,38 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""filterName"": ""test filter name"",
-      ""filterSettings"": {
-        ""gamma"": 1,
-        ""key_color"": 23000,
-        ""key_color_type"": ""red""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "filterName": "test filter name",
+      "filterSettings": {
+        "gamma": 1,
+        "key_color": 23000,
+        "key_color_type": "red"
       },
-      ""overlay"": null,
-      ""sourceName"": ""Browser source""
+      "overlay": null,
+      "sourceName": "Browser source"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetSourceFilterSettings""
+    "requestId": "{guid}",
+    "requestType": "SetSourceFilterSettings"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetSourceFilterSettings""
+    "requestType": "SetSourceFilterSettings"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

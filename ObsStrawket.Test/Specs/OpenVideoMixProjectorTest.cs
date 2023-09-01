@@ -17,29 +17,33 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""monitorIndex"": null,
-      ""projectorGeometry"": null,
-      ""videoMixType"": ""OBS_WEBSOCKET_VIDEO_MIX_TYPE_PROGRAM""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "monitorIndex": null,
+      "projectorGeometry": null,
+      "videoMixType": "OBS_WEBSOCKET_VIDEO_MIX_TYPE_PROGRAM"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""OpenVideoMixProjector""
+    "requestId": "{guid}",
+    "requestType": "OpenVideoMixProjector"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""OpenVideoMixProjector""
+    "requestType": "OpenVideoMixProjector"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

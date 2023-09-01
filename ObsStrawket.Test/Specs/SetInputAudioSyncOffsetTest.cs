@@ -26,39 +26,45 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""inputAudioSyncOffset"": 100,
-      ""inputName"": ""Browser source""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "inputAudioSyncOffset": 100,
+      "inputName": "Browser source"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetInputAudioSyncOffset""
+    "requestId": "{guid}",
+    "requestType": "SetInputAudioSyncOffset"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetInputAudioSyncOffset""
+    "requestType": "SetInputAudioSyncOffset"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""inputAudioSyncOffset"": 100,
-      ""inputName"": ""Browser source""
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "inputAudioSyncOffset": 100,
+      "inputName": "Browser source"
     },
-    ""eventIntent"": 8,
-    ""eventType"": ""InputAudioSyncOffsetChanged""
+    "eventIntent": 8,
+    "eventType": "InputAudioSyncOffsetChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
     }
   }
 }

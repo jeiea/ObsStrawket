@@ -42,107 +42,119 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""filterKind"": ""color_key_filter_v2"",
-      ""filterName"": ""test filter name"",
-      ""filterSettings"": {
-        ""brightness"": 1
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "filterKind": "color_key_filter_v2",
+      "filterName": "test filter name",
+      "filterSettings": {
+        "brightness": 1
       },
-      ""sourceName"": ""Browser source""
+      "sourceName": "Browser source"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""CreateSourceFilter""
+    "requestId": "{guid}",
+    "requestType": "CreateSourceFilter"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""defaultFilterSettings"": {
-        ""brightness"": 0.0,
-        ""contrast"": 0.0,
-        ""gamma"": 0.0,
-        ""key_color"": 65280,
-        ""key_color_type"": ""green"",
-        ""opacity"": 1.0,
-        ""similarity"": 80,
-        ""smoothness"": 50
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "defaultFilterSettings": {
+        "brightness": 0.0,
+        "contrast": 0.0,
+        "gamma": 0.0,
+        "key_color": 65280,
+        "key_color_type": "green",
+        "opacity": 1.0,
+        "similarity": 80,
+        "smoothness": 50
       },
-      ""filterIndex"": 0,
-      ""filterKind"": ""color_key_filter_v2"",
-      ""filterName"": ""test filter name"",
-      ""filterSettings"": {
-        ""brightness"": 1.0
+      "filterIndex": 0,
+      "filterKind": "color_key_filter_v2",
+      "filterName": "test filter name",
+      "filterSettings": {
+        "brightness": 1.0
       },
-      ""sourceName"": ""Browser source""
+      "sourceName": "Browser source"
     },
-    ""eventIntent"": 32,
-    ""eventType"": ""SourceFilterCreated""
+    "eventIntent": 32,
+    "eventType": "SourceFilterCreated"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""CreateSourceFilter""
+    "requestType": "CreateSourceFilter"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""filterKind"": ""color_key_filter_v2"",
-      ""filterName"": ""test filter name 2"",
-      ""filterSettings"": null,
-      ""sourceName"": ""Browser source""
+      guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "filterKind": "color_key_filter_v2",
+      "filterName": "test filter name 2",
+      "filterSettings": null,
+      "sourceName": "Browser source"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""CreateSourceFilter""
+    "requestId": "{guid}",
+    "requestType": "CreateSourceFilter"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""defaultFilterSettings"": {
-        ""brightness"": 0.0,
-        ""contrast"": 0.0,
-        ""gamma"": 0.0,
-        ""key_color"": 65280,
-        ""key_color_type"": ""green"",
-        ""opacity"": 1.0,
-        ""similarity"": 80,
-        ""smoothness"": 50
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "defaultFilterSettings": {
+        "brightness": 0.0,
+        "contrast": 0.0,
+        "gamma": 0.0,
+        "key_color": 65280,
+        "key_color_type": "green",
+        "opacity": 1.0,
+        "similarity": 80,
+        "smoothness": 50
       },
-      ""filterIndex"": 0,
-      ""filterKind"": ""color_key_filter_v2"",
-      ""filterName"": ""test filter name 2"",
-      ""filterSettings"": {},
-      ""sourceName"": ""Browser source""
+      "filterIndex": 0,
+      "filterKind": "color_key_filter_v2",
+      "filterName": "test filter name 2",
+      "filterSettings": {},
+      "sourceName": "Browser source"
     },
-    ""eventIntent"": 32,
-    ""eventType"": ""SourceFilterCreated""
+    "eventIntent": 32,
+    "eventType": "SourceFilterCreated"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""CreateSourceFilter""
+    "requestType": "CreateSourceFilter"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

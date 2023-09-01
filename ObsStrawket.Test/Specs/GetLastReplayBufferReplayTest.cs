@@ -18,29 +18,31 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""GetLastReplayBufferReplay""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestId": "{guid}",
+    "requestType": "GetLastReplayBufferReplay"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetLastReplayBufferReplay"",
-    ""responseData"": {
-      ""savedReplayPath"": ""{file}""
+    "requestType": "GetLastReplayBufferReplay",
+    "responseData": {
+      "savedReplayPath": "{{MockServer.EscapedFilePath}}"
     }
   },
-  ""op"": 7
-}"
-.Replace("{guid}", guid)
-.Replace("{file}", MockServer.EscapedFilePath)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

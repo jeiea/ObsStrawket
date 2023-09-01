@@ -24,40 +24,46 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""sceneItemId"": 3,
-      ""sceneName"": ""test scene""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "sceneItemId": 3,
+      "sceneName": "test scene"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""RemoveSceneItem""
+    "requestId": "{guid}",
+    "requestType": "RemoveSceneItem"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""RemoveSceneItem""
+    "requestType": "RemoveSceneItem"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""sceneItemId"": 3,
-      ""sceneName"": ""test scene"",
-      ""sourceName"": ""Browser source""
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "sceneItemId": 3,
+      "sceneName": "test scene",
+      "sourceName": "Browser source"
     },
-    ""eventIntent"": 128,
-    ""eventType"": ""SceneItemRemoved""
+    "eventIntent": 128,
+    "eventType": "SceneItemRemoved"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
     }
   }
 }

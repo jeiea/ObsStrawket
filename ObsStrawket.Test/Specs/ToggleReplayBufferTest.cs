@@ -33,93 +33,109 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""ToggleReplayBuffer""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestId": "{guid}",
+    "requestType": "ToggleReplayBuffer"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""ToggleReplayBuffer"",
-    ""responseData"": {
-      ""outputActive"": true
+    "requestType": "ToggleReplayBuffer",
+    "responseData": {
+      "outputActive": true
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""outputActive"": false,
-      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STARTING""
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "outputActive": false,
+      "outputState": "OBS_WEBSOCKET_OUTPUT_STARTING"
     },
-    ""eventIntent"": 64,
-    ""eventType"": ""ReplayBufferStateChanged""
+    "eventIntent": 64,
+    "eventType": "ReplayBufferStateChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""outputActive"": true,
-      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STARTED""
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "outputActive": true,
+      "outputState": "OBS_WEBSOCKET_OUTPUT_STARTED"
     },
-    ""eventIntent"": 64,
-    ""eventType"": ""ReplayBufferStateChanged""
+    "eventIntent": 64,
+    "eventType": "ReplayBufferStateChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""ToggleReplayBuffer""
+      guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestId": "{guid}",
+    "requestType": "ToggleReplayBuffer"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""ToggleReplayBuffer"",
-    ""responseData"": {
-      ""outputActive"": false
+    "requestType": "ToggleReplayBuffer",
+    "responseData": {
+      "outputActive": false
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""outputActive"": false,
-      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STOPPING""
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "outputActive": false,
+      "outputState": "OBS_WEBSOCKET_OUTPUT_STOPPING"
     },
-    ""eventIntent"": 64,
-    ""eventType"": ""ReplayBufferStateChanged""
+    "eventIntent": 64,
+    "eventType": "ReplayBufferStateChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""outputActive"": false,
-      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STOPPED""
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "outputActive": false,
+      "outputState": "OBS_WEBSOCKET_OUTPUT_STOPPED"
     },
-    ""eventIntent"": 64,
-    ""eventType"": ""ReplayBufferStateChanged""
+    "eventIntent": 64,
+    "eventType": "ReplayBufferStateChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
     }
   }
 }

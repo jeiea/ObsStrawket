@@ -20,38 +20,38 @@ namespace ObsStrawket.Test.Specs {
     public async Task RespondAsync(MockServerSession session) {
       var settings = SetStreamServiceSettingsFlow.GetTestSettings();
 
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""GetStreamServiceSettings""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestId": "{guid}",
+    "requestType": "GetStreamServiceSettings"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
+  "op": 6
+}
+""").ConfigureAwait(false);
 
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetStreamServiceSettings"",
-    ""responseData"": {
-      ""streamServiceSettings"": {
-        ""bwtest"": false,
-        ""key"": ""{key}"",
-        ""server"": ""{server}"",
-        ""service"": ""{service}""
+    "requestType": "GetStreamServiceSettings",
+    "responseData": {
+      "streamServiceSettings": {
+        "bwtest": false,
+        "key": "{{settings.Key}}",
+        "server": "{{settings.Server}}",
+        "service": "{{settings.Service}}"
       },
-      ""streamServiceType"": ""rtmp_common""
+      "streamServiceType": "rtmp_common"
     }
   },
-  ""op"": 7
-}"
-.Replace("{guid}", guid)
-.Replace("{key}", settings.Key)
-.Replace("{server}", settings.Server)
-.Replace("{service}", settings.Service)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

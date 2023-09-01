@@ -24,39 +24,45 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""eventData"": {
-        ""sample"": 3
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "eventData": {
+        "sample": 3
       }
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""BroadcastCustomEvent""
+    "requestId": "{guid}",
+    "requestType": "BroadcastCustomEvent"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""BroadcastCustomEvent""
+    "requestType": "BroadcastCustomEvent"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""sample"": 3
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "sample": 3
     },
-    ""eventIntent"": 1,
-    ""eventType"": ""CustomEvent""
+    "eventIntent": 1,
+    "eventType": "CustomEvent"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
     }
   }
 }

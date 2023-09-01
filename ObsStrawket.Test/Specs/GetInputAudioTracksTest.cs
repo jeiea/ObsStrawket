@@ -18,37 +18,41 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""inputName"": ""Browser source""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "inputName": "Browser source"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""GetInputAudioTracks""
+    "requestId": "{guid}",
+    "requestType": "GetInputAudioTracks"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetInputAudioTracks"",
-    ""responseData"": {
-      ""inputAudioTracks"": {
-        ""1"": true,
-        ""2"": false,
-        ""3"": true,
-        ""4"": true,
-        ""5"": true,
-        ""6"": true
+    "requestType": "GetInputAudioTracks",
+    "responseData": {
+      "inputAudioTracks": {
+        "1": true,
+        "2": false,
+        "3": true,
+        "4": true,
+        "5": true,
+        "6": true
       }
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

@@ -28,57 +28,63 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""filterIndex"": 1,
-      ""filterName"": ""test filter name"",
-      ""sourceName"": ""Browser source""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "filterIndex": 1,
+      "filterName": "test filter name",
+      "sourceName": "Browser source"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetSourceFilterIndex""
+    "requestId": "{guid}",
+    "requestType": "SetSourceFilterIndex"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""filters"": [
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "filters": [
         {
-          ""filterEnabled"": true,
-          ""filterIndex"": 0,
-          ""filterKind"": ""color_key_filter_v2"",
-          ""filterName"": ""test filter name 2"",
-          ""filterSettings"": {}
+          "filterEnabled": true,
+          "filterIndex": 0,
+          "filterKind": "color_key_filter_v2",
+          "filterName": "test filter name 2",
+          "filterSettings": {}
         },
         {
-          ""filterEnabled"": true,
-          ""filterIndex"": 1,
-          ""filterKind"": ""color_key_filter_v2"",
-          ""filterName"": ""test filter name"",
-          ""filterSettings"": {
-            ""brightness"": 1.0
+          "filterEnabled": true,
+          "filterIndex": 1,
+          "filterKind": "color_key_filter_v2",
+          "filterName": "test filter name",
+          "filterSettings": {
+            "brightness": 1.0
           }
         }
       ],
-      ""sourceName"": ""Browser source""
+      "sourceName": "Browser source"
     },
-    ""eventIntent"": 32,
-    ""eventType"": ""SourceFilterListReindexed""
+    "eventIntent": 32,
+    "eventType": "SourceFilterListReindexed"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetSourceFilterIndex""
+    "requestType": "SetSourceFilterIndex"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

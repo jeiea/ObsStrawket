@@ -23,48 +23,52 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""GetSceneTransitionList""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestId": "{guid}",
+    "requestType": "GetSceneTransitionList"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetSceneTransitionList"",
-    ""responseData"": {
-      ""currentSceneTransitionKind"": ""swipe_transition"",
-      ""currentSceneTransitionName"": ""Swipe"",
-      ""transitions"": [
+    "requestType": "GetSceneTransitionList",
+    "responseData": {
+      "currentSceneTransitionKind": "swipe_transition",
+      "currentSceneTransitionName": "Swipe",
+      "transitions": [
         {
-          ""transitionConfigurable"": false,
-          ""transitionFixed"": true,
-          ""transitionKind"": ""cut_transition"",
-          ""transitionName"": ""Cut""
+          "transitionConfigurable": false,
+          "transitionFixed": true,
+          "transitionKind": "cut_transition",
+          "transitionName": "Cut"
         },
         {
-          ""transitionConfigurable"": false,
-          ""transitionFixed"": false,
-          ""transitionKind"": ""fade_transition"",
-          ""transitionName"": ""Fade""
+          "transitionConfigurable": false,
+          "transitionFixed": false,
+          "transitionKind": "fade_transition",
+          "transitionName": "Fade"
         },
         {
-          ""transitionConfigurable"": true,
-          ""transitionFixed"": false,
-          ""transitionKind"": ""swipe_transition"",
-          ""transitionName"": ""Swipe""
+          "transitionConfigurable": true,
+          "transitionFixed": false,
+          "transitionKind": "swipe_transition",
+          "transitionName": "Swipe"
         }
       ]
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

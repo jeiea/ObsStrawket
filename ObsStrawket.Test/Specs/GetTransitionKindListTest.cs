@@ -21,35 +21,39 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""GetTransitionKindList""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestId": "{guid}",
+    "requestType": "GetTransitionKindList"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetTransitionKindList"",
-    ""responseData"": {
-      ""transitionKinds"": [
-        ""cut_transition"",
-        ""fade_transition"",
-        ""swipe_transition"",
-        ""slide_transition"",
-        ""obs_stinger_transition"",
-        ""fade_to_color_transition"",
-        ""wipe_transition""
+    "requestType": "GetTransitionKindList",
+    "responseData": {
+      "transitionKinds": [
+        "cut_transition",
+        "fade_transition",
+        "swipe_transition",
+        "slide_transition",
+        "obs_stinger_transition",
+        "fade_to_color_transition",
+        "wipe_transition"
       ]
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

@@ -18,31 +18,35 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""realm"": ""OBS_WEBSOCKET_DATA_REALM_PROFILE"",
-      ""slotName"": ""test slot""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "realm": "OBS_WEBSOCKET_DATA_REALM_PROFILE",
+      "slotName": "test slot"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""GetPersistentData""
+    "requestId": "{guid}",
+    "requestType": "GetPersistentData"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetPersistentData"",
-    ""responseData"": {
-      ""slotValue"": ""test slot value""
+    "requestType": "GetPersistentData",
+    "responseData": {
+      "slotValue": "test slot value"
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

@@ -17,37 +17,41 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""GetMonitorList""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestId": "{guid}",
+    "requestType": "GetMonitorList"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
+  "op": 6
+}
+""").ConfigureAwait(false);
 
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetMonitorList"",
-    ""responseData"": {
-      ""monitors"": [
+    "requestType": "GetMonitorList",
+    "responseData": {
+      "monitors": [
         {
-          ""monitorHeight"": 1440,
-          ""monitorIndex"": 0,
-          ""monitorName"": ""\\\\.\\DISPLAY1(0)"",
-          ""monitorPositionX"": 0,
-          ""monitorPositionY"": 0,
-          ""monitorWidth"": 2560
+          "monitorHeight": 1440,
+          "monitorIndex": 0,
+          "monitorName": "\\\\.\\DISPLAY1(0)",
+          "monitorPositionX": 0,
+          "monitorPositionY": 0,
+          "monitorWidth": 2560
         }
       ]
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

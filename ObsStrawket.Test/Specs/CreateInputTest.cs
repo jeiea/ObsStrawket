@@ -62,171 +62,191 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""inputKind"": ""browser_source"",
-      ""inputName"": ""Browser source"",
-      ""inputSettings"": {},
-      ""sceneItemEnabled"": true,
-      ""sceneName"": ""test scene""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "inputKind": "browser_source",
+      "inputName": "Browser source",
+      "inputSettings": {},
+      "sceneItemEnabled": true,
+      "sceneName": "test scene"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""CreateInput""
+    "requestId": "{guid}",
+    "requestType": "CreateInput"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
+  "op": 6
+}
+""").ConfigureAwait(false);
 
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""defaultInputSettings"": {
-        ""fps"": 30,
-        ""fps_custom"": false,
-        ""height"": 600,
-        ""reroute_audio"": false,
-        ""restart_when_active"": false,
-        ""shutdown"": false,
-        ""url"": ""https://obsproject.com/browser-source"",
-        ""webpage_control_level"": 1,
-        ""width"": 800
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "defaultInputSettings": {
+        "fps": 30,
+        "fps_custom": false,
+        "height": 600,
+        "reroute_audio": false,
+        "restart_when_active": false,
+        "shutdown": false,
+        "url": "https://obsproject.com/browser-source",
+        "webpage_control_level": 1,
+        "width": 800
       },
-      ""inputKind"": ""browser_source"",
-      ""inputName"": ""Browser source"",
-      ""inputSettings"": {},
-      ""unversionedInputKind"": ""browser_source""
+      "inputKind": "browser_source",
+      "inputName": "Browser source",
+      "inputSettings": {},
+      "unversionedInputKind": "browser_source"
     },
-    ""eventIntent"": 8,
-    ""eventType"": ""InputCreated""
+    "eventIntent": 8,
+    "eventType": "InputCreated"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""sceneItemId"": 1,
-      ""sceneItemIndex"": 0,
-      ""sceneName"": ""test scene"",
-      ""sourceName"": ""Browser source""
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "sceneItemId": 1,
+      "sceneItemIndex": 0,
+      "sceneName": "test scene",
+      "sourceName": "Browser source"
     },
-    ""eventIntent"": 128,
-    ""eventType"": ""SceneItemCreated""
+    "eventIntent": 128,
+    "eventType": "SceneItemCreated"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""sceneItemId"": 1,
-      ""sceneName"": ""test scene""
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "sceneItemId": 1,
+      "sceneName": "test scene"
     },
-    ""eventIntent"": 128,
-    ""eventType"": ""SceneItemSelected""
+    "eventIntent": 128,
+    "eventType": "SceneItemSelected"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""CreateInput"",
-    ""responseData"": {
-      ""sceneItemId"": 1
+    "requestType": "CreateInput",
+    "responseData": {
+      "sceneItemId": 1
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
 
       string mp4 = GetMp4Path().Replace("\\", "\\\\");
-      guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""inputKind"": ""ffmpeg_source"",
-      ""inputName"": ""Media source"",
-      ""inputSettings"": {
-        ""hw_decode"": true,
-        ""local_file"": ""{mp4}"",
-        ""looping"": true,
-        ""restart_on_activate"": false
+      guid = await session.ReceiveAsync($$"""
+{
+  "d": {
+    "requestData": {
+      "inputKind": "ffmpeg_source",
+      "inputName": "Media source",
+      "inputSettings": {
+        "hw_decode": true,
+        "local_file": "{{mp4}}",
+        "looping": true,
+        "restart_on_activate": false
       },
-      ""sceneItemEnabled"": true,
-      ""sceneName"": ""test scene""
+      "sceneItemEnabled": true,
+      "sceneName": "test scene"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""CreateInput""
+    "requestId": "{guid}",
+    "requestType": "CreateInput"
   },
-  ""op"": 6
-}".Replace("{mp4}", mp4)).ConfigureAwait(false);
+  "op": 6
+}
+""").ConfigureAwait(false);
 
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""defaultInputSettings"": {
-        ""buffering_mb"": 2,
-        ""clear_on_media_end"": true,
-        ""is_local_file"": true,
-        ""linear_alpha"": false,
-        ""looping"": false,
-        ""reconnect_delay_sec"": 10,
-        ""restart_on_activate"": true,
-        ""speed_percent"": 100
+      await session.SendAsync($$"""
+{
+  "d": {
+    "eventData": {
+      "defaultInputSettings": {
+        "buffering_mb": 2,
+        "clear_on_media_end": true,
+        "is_local_file": true,
+        "linear_alpha": false,
+        "looping": false,
+        "reconnect_delay_sec": 10,
+        "restart_on_activate": true,
+        "speed_percent": 100
       },
-      ""inputKind"": ""ffmpeg_source"",
-      ""inputName"": ""Media source"",
-      ""inputSettings"": {
-        ""hw_decode"": true,
-        ""local_file"": ""{mp4}"",
-        ""looping"": true,
-        ""restart_on_activate"": false
+      "inputKind": "ffmpeg_source",
+      "inputName": "Media source",
+      "inputSettings": {
+        "hw_decode": true,
+        "local_file": "{{mp4}}",
+        "looping": true,
+        "restart_on_activate": false
       },
-      ""unversionedInputKind"": ""ffmpeg_source""
+      "unversionedInputKind": "ffmpeg_source"
     },
-    ""eventIntent"": 8,
-    ""eventType"": ""InputCreated""
+    "eventIntent": 8,
+    "eventType": "InputCreated"
   },
-  ""op"": 5
-}".Replace("{mp4}", mp4)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""sceneItemId"": 2,
-      ""sceneItemIndex"": 1,
-      ""sceneName"": ""test scene"",
-      ""sourceName"": ""Media source""
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "sceneItemId": 2,
+      "sceneItemIndex": 1,
+      "sceneName": "test scene",
+      "sourceName": "Media source"
     },
-    ""eventIntent"": 128,
-    ""eventType"": ""SceneItemCreated""
+    "eventIntent": 128,
+    "eventType": "SceneItemCreated"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""sceneItemId"": 2,
-      ""sceneName"": ""test scene""
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "sceneItemId": 2,
+      "sceneName": "test scene"
     },
-    ""eventIntent"": 128,
-    ""eventType"": ""SceneItemSelected""
+    "eventIntent": 128,
+    "eventType": "SceneItemSelected"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""CreateInput"",
-    ""responseData"": {
-      ""sceneItemId"": 2
+    "requestType": "CreateInput",
+    "responseData": {
+      "sceneItemId": 2
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
 
     private static string GetMp4Path() {

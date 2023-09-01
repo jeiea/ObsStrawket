@@ -18,13 +18,15 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventIntent"": 1,
-    ""eventType"": ""ExitStarted""
+      await session.SendAsync("""
+{
+  "d": {
+    "eventIntent": 1,
+    "eventType": "ExitStarted"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
     }
   }
 }

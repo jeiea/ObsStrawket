@@ -30,57 +30,63 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""sceneItemId"": 3,
-      ""sceneItemIndex"": 2,
-      ""sceneName"": ""test scene""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "sceneItemId": 3,
+      "sceneItemIndex": 2,
+      "sceneName": "test scene"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetSceneItemIndex""
+    "requestId": "{guid}",
+    "requestType": "SetSceneItemIndex"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetSceneItemIndex""
+    "requestType": "SetSceneItemIndex"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""sceneItems"": [
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "sceneItems": [
         {
-          ""sceneItemId"": 1,
-          ""sceneItemIndex"": 0
+          "sceneItemId": 1,
+          "sceneItemIndex": 0
         },
         {
-          ""sceneItemId"": 2,
-          ""sceneItemIndex"": 1
+          "sceneItemId": 2,
+          "sceneItemIndex": 1
         },
         {
-          ""sceneItemId"": 3,
-          ""sceneItemIndex"": 2
+          "sceneItemId": 3,
+          "sceneItemIndex": 2
         },
         {
-          ""sceneItemId"": 4,
-          ""sceneItemIndex"": 3
+          "sceneItemId": 4,
+          "sceneItemIndex": 3
         }
       ],
-      ""sceneName"": ""test scene""
+      "sceneName": "test scene"
     },
-    ""eventIntent"": 128,
-    ""eventType"": ""SceneItemListReindexed""
+    "eventIntent": 128,
+    "eventType": "SceneItemListReindexed"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
     }
   }
 }

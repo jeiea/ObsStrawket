@@ -33,73 +33,85 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""filterName"": ""test filter name"",
-      ""sourceName"": ""Browser source""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "filterName": "test filter name",
+      "sourceName": "Browser source"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""RemoveSourceFilter""
+    "requestId": "{guid}",
+    "requestType": "RemoveSourceFilter"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""filterName"": ""test filter name"",
-      ""sourceName"": ""Browser source""
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "filterName": "test filter name",
+      "sourceName": "Browser source"
     },
-    ""eventIntent"": 32,
-    ""eventType"": ""SourceFilterRemoved""
+    "eventIntent": 32,
+    "eventType": "SourceFilterRemoved"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""RemoveSourceFilter""
+    "requestType": "RemoveSourceFilter"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""filterName"": ""test filter name 3"",
-      ""sourceName"": ""Browser source""
+      guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "filterName": "test filter name 3",
+      "sourceName": "Browser source"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""RemoveSourceFilter""
+    "requestId": "{guid}",
+    "requestType": "RemoveSourceFilter"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""filterName"": ""test filter name 3"",
-      ""sourceName"": ""Browser source""
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "filterName": "test filter name 3",
+      "sourceName": "Browser source"
     },
-    ""eventIntent"": 32,
-    ""eventType"": ""SourceFilterRemoved""
+    "eventIntent": 32,
+    "eventType": "SourceFilterRemoved"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""RemoveSourceFilter""
+    "requestType": "RemoveSourceFilter"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

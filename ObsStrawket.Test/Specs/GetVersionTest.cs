@@ -23,13 +23,15 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""GetVersion""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestId": "{guid}",
+    "requestType": "GetVersion"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
+  "op": 6
+}
+""").ConfigureAwait(false);
 
       await session.SendGetVersionResponseAsync(guid!).ConfigureAwait(false);
     }

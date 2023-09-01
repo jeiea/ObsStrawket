@@ -28,41 +28,47 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""filterName"": ""test filter name 2"",
-      ""newFilterName"": ""test filter name 3"",
-      ""sourceName"": ""Browser source""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "filterName": "test filter name 2",
+      "newFilterName": "test filter name 3",
+      "sourceName": "Browser source"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetSourceFilterName""
+    "requestId": "{guid}",
+    "requestType": "SetSourceFilterName"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""filterName"": ""test filter name 3"",
-      ""oldFilterName"": ""test filter name 2"",
-      ""sourceName"": ""Browser source""
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "filterName": "test filter name 3",
+      "oldFilterName": "test filter name 2",
+      "sourceName": "Browser source"
     },
-    ""eventIntent"": 32,
-    ""eventType"": ""SourceFilterNameChanged""
+    "eventIntent": 32,
+    "eventType": "SourceFilterNameChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetSourceFilterName""
+    "requestType": "SetSourceFilterName"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

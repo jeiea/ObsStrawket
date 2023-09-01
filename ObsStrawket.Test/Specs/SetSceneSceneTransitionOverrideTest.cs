@@ -16,29 +16,33 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""sceneName"": ""test scene"",
-      ""transitionDuration"": 200,
-      ""transitionName"": ""Fade""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "sceneName": "test scene",
+      "transitionDuration": 200,
+      "transitionName": "Fade"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetSceneSceneTransitionOverride""
+    "requestId": "{guid}",
+    "requestType": "SetSceneSceneTransitionOverride"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetSceneSceneTransitionOverride""
+    "requestType": "SetSceneSceneTransitionOverride"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

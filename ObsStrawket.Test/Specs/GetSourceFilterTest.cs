@@ -26,39 +26,43 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""filterName"": ""test filter name"",
-      ""sourceName"": ""Browser source""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "filterName": "test filter name",
+      "sourceName": "Browser source"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""GetSourceFilter""
+    "requestId": "{guid}",
+    "requestType": "GetSourceFilter"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetSourceFilter"",
-    ""responseData"": {
-      ""filterEnabled"": false,
-      ""filterIndex"": 1,
-      ""filterKind"": ""color_key_filter_v2"",
-      ""filterSettings"": {
-        ""brightness"": 1.0,
-        ""gamma"": 1.0,
-        ""key_color"": 23000,
-        ""key_color_type"": ""red""
+    "requestType": "GetSourceFilter",
+    "responseData": {
+      "filterEnabled": false,
+      "filterIndex": 1,
+      "filterKind": "color_key_filter_v2",
+      "filterSettings": {
+        "brightness": 1.0,
+        "gamma": 1.0,
+        "key_color": 23000,
+        "key_color_type": "red"
       }
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

@@ -62,33 +62,39 @@ namespace ObsStrawket.Test.Utilities {
       token.ThrowIfCancellationRequested();
 
       var session = new MockServerSession(webSocketContext.WebSocket, token);
-      await session.SendAsync(@"{
-  ""op"": 0,
-  ""d"": {
-    ""obsWebSocketVersion"": ""5.0.1"",
-    ""rpcVersion"": 1,
-    ""authentication"": {
-      ""challenge"": ""+IxH4CnCiqpX1rM9scsNynZzbOe4KhDeYcTNS3PDaeY="",
-      ""salt"": ""lM1GncleQOaCu9lT1yeUZhFYnqhsLLP1G5lAGo3ixaI=""
+      await session.SendAsync("""
+{
+  "op": 0,
+  "d": {
+    "obsWebSocketVersion": "5.0.1",
+    "rpcVersion": 1,
+    "authentication": {
+      "challenge": "+IxH4CnCiqpX1rM9scsNynZzbOe4KhDeYcTNS3PDaeY=",
+      "salt": "lM1GncleQOaCu9lT1yeUZhFYnqhsLLP1G5lAGo3ixaI="
     }
   }
-}").ConfigureAwait(false);
+}
+""").ConfigureAwait(false);
 
-      await session.ReceiveAsync(@"{
-  ""op"": 1,
-  ""d"": {
-    ""rpcVersion"": 1,
-    ""authentication"": ""J8rNSuYuYOLlFbHzDw8IHA8lTjMgL29Mq/3lFvl1sJI="",
-    ""eventSubscriptions"": 2047
+      await session.ReceiveAsync("""
+{
+  "op": 1,
+  "d": {
+    "rpcVersion": 1,
+    "authentication": "J8rNSuYuYOLlFbHzDw8IHA8lTjMgL29Mq/3lFvl1sJI=",
+    "eventSubscriptions": 2047
   }
-}").ConfigureAwait(false);
+}
+""").ConfigureAwait(false);
 
-      await session.SendAsync(@"{
-  ""op"": 2,
-  ""d"": {
-    ""negotiatedRpcVersion"": 1
+      await session.SendAsync("""
+{
+  "op": 2,
+  "d": {
+    "negotiatedRpcVersion": 1
   }
-}").ConfigureAwait(false);
+}
+""").ConfigureAwait(false);
 
       return (webSocketContext, session);
     }
@@ -100,134 +106,152 @@ namespace ObsStrawket.Test.Utilities {
 
       await new GetVersionFlow().RespondAsync(session).ConfigureAwait(false);
 
-      string? guid = await session.ReceiveAsync(@"{
-  ""op"": 6,
-  ""d"": {
-    ""requestType"": ""GetStudioModeEnabled"",
-    ""requestId"": ""{guid}"",
-    ""requestData"":null
+      string? guid = await session.ReceiveAsync("""
+{
+  "op": 6,
+  "d": {
+    "requestType": "GetStudioModeEnabled",
+    "requestId": "{guid}",
+    "requestData":null
   }
-}").ConfigureAwait(false);
+}
+""").ConfigureAwait(false);
 
       await session.SendGetStudioModeEnabledResponseAsync(guid!).ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync(@"{
-  ""op"": 6,
-  ""d"": {
-    ""requestType"": ""SetStudioModeEnabled"",
-    ""requestId"": ""{guid}"",
-    ""requestData"": {
-      ""studioModeEnabled"": true
+      guid = await session.ReceiveAsync("""
+{
+  "op": 6,
+  "d": {
+    "requestType": "SetStudioModeEnabled",
+    "requestId": "{guid}",
+    "requestData": {
+      "studioModeEnabled": true
     }
   }
-}").ConfigureAwait(false);
+}
+""").ConfigureAwait(false);
 
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetStudioModeEnabled""
+    "requestType": "SetStudioModeEnabled"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
 
       await session.SendStudioModeStateChangedAsync(true).ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync(@"{
-  ""op"": 6,
-  ""d"": {
-    ""requestType"": ""GetSpecialInputs"",
-    ""requestId"": ""{guid}""
+      guid = await session.ReceiveAsync("""
+{
+  "op": 6,
+  "d": {
+    "requestType": "GetSpecialInputs",
+    "requestId": "{guid}"
   }
-}").ConfigureAwait(false);
+}
+""").ConfigureAwait(false);
 
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestType"": ""GetSpecialInputs"",
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestType": "GetSpecialInputs",
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""responseData"": {
-       ""desktop1"": ""Desktop Audio"",
-       ""desktop2"": null,
-       ""mic1"": ""Microphone/Aux"",
-       ""mic2"": null,
-       ""mic3"": null,
-       ""mic4"": null
+    "responseData": {
+       "desktop1": "Desktop Audio",
+       "desktop2": null,
+       "mic1": "Microphone/Aux",
+       "mic2": null,
+       "mic3": null,
+       "mic4": null
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync(@"{
-  ""op"": 6,
-  ""d"": {
-    ""requestType"": ""GetInputSettings"",
-    ""requestId"": ""{guid}"",
-    ""requestData"": {
-      ""inputName"": ""Desktop Audio""
+      guid = await session.ReceiveAsync("""
+{
+  "op": 6,
+  "d": {
+    "requestType": "GetInputSettings",
+    "requestId": "{guid}",
+    "requestData": {
+      "inputName": "Desktop Audio"
     }
   }
-}").ConfigureAwait(false);
+}
+""").ConfigureAwait(false);
 
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestType"": ""GetInputSettings"",
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestType": "GetInputSettings",
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""responseData"": {
-      ""inputKind"": ""wasapi_output_capture"",
-      ""inputSettings"": {
-        ""device_id"": ""default"",
-        ""use_device_timing"": true
+    "responseData": {
+      "inputKind": "wasapi_output_capture",
+      "inputSettings": {
+        "device_id": "default",
+        "use_device_timing": true
       }
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
 
       await new GetRecordDirectoryFlow().RespondAsync(session).ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync(@"{
-  ""op"": 6,
-  ""d"": {
-    ""requestType"": ""GetStats"",
-    ""requestId"": ""{guid}""
+      guid = await session.ReceiveAsync("""
+{
+  "op": 6,
+  "d": {
+    "requestType": "GetStats",
+    "requestId": "{guid}"
   }
-}").ConfigureAwait(false);
+}
+""").ConfigureAwait(false);
 
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetStats"",
-    ""responseData"": {
-      ""activeFps"": 60.0000024000001,
-      ""availableDiskSpace"": 198612.01953125,
-      ""averageFrameRenderTime"": 0.534547,
-      ""cpuUsage"": 11.508459378338541,
-      ""memoryUsage"": 948.94140625,
-      ""outputSkippedFrames"": 0,
-      ""outputTotalFrames"": 268,
-      ""renderSkippedFrames"": 46,
-      ""renderTotalFrames"": 558618,
-      ""webSocketSessionIncomingMessages"": 13,
-      ""webSocketSessionOutgoingMessages"": 13
+    "requestType": "GetStats",
+    "responseData": {
+      "activeFps": 60.0000024000001,
+      "availableDiskSpace": 198612.01953125,
+      "averageFrameRenderTime": 0.534547,
+      "cpuUsage": 11.508459378338541,
+      "memoryUsage": 948.94140625,
+      "outputSkippedFrames": 0,
+      "outputTotalFrames": 268,
+      "renderSkippedFrames": 46,
+      "renderTotalFrames": 558618,
+      "webSocketSessionIncomingMessages": 13,
+      "webSocketSessionOutgoingMessages": 13
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
 
       await new StartRecordFlow().RespondAsync(session).ConfigureAwait(false);
       await new StopRecordFlow().RespondAsync(session).ConfigureAwait(false);

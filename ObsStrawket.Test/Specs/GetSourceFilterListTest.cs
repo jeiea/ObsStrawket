@@ -25,47 +25,51 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""sourceName"": ""Browser source""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "sourceName": "Browser source"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""GetSourceFilterList""
+    "requestId": "{guid}",
+    "requestType": "GetSourceFilterList"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetSourceFilterList"",
-    ""responseData"": {
-      ""filters"": [
+    "requestType": "GetSourceFilterList",
+    "responseData": {
+      "filters": [
         {
-          ""filterEnabled"": true,
-          ""filterIndex"": 0,
-          ""filterKind"": ""color_key_filter_v2"",
-          ""filterName"": ""test filter name 2"",
-          ""filterSettings"": {}
+          "filterEnabled": true,
+          "filterIndex": 0,
+          "filterKind": "color_key_filter_v2",
+          "filterName": "test filter name 2",
+          "filterSettings": {}
         },
         {
-          ""filterEnabled"": true,
-          ""filterIndex"": 1,
-          ""filterKind"": ""color_key_filter_v2"",
-          ""filterName"": ""test filter name"",
-          ""filterSettings"": {
-            ""brightness"": 1.0
+          "filterEnabled": true,
+          "filterIndex": 1,
+          "filterKind": "color_key_filter_v2",
+          "filterName": "test filter name",
+          "filterSettings": {
+            "brightness": 1.0
           }
         }
       ]
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

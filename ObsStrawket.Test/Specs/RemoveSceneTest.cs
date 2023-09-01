@@ -19,146 +19,170 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""sceneName"": ""test scene 2""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "sceneName": "test scene 2"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""RemoveScene""
+    "requestId": "{guid}",
+    "requestType": "RemoveScene"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""isGroup"": false,
-      ""sceneName"": ""test scene 2""
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "isGroup": false,
+      "sceneName": "test scene 2"
     },
-    ""eventIntent"": 4,
-    ""eventType"": ""SceneRemoved""
+    "eventIntent": 4,
+    "eventType": "SceneRemoved"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""RemoveScene""
+    "requestType": "RemoveScene"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""scenes"": [
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "scenes": [
         {
-          ""sceneIndex"": 0,
-          ""sceneName"": ""Scene""
+          "sceneIndex": 0,
+          "sceneName": "Scene"
         },
         {
-          ""sceneIndex"": 1,
-          ""sceneName"": ""test scene""
+          "sceneIndex": 1,
+          "sceneName": "test scene"
         }
       ]
     },
-    ""eventIntent"": 4,
-    ""eventType"": ""SceneListChanged""
+    "eventIntent": 4,
+    "eventType": "SceneListChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""sceneName"": ""test scene""
+      guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "sceneName": "test scene"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""RemoveScene""
+    "requestId": "{guid}",
+    "requestType": "RemoveScene"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""isGroup"": false,
-      ""sceneName"": ""test scene""
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "isGroup": false,
+      "sceneName": "test scene"
     },
-    ""eventIntent"": 4,
-    ""eventType"": ""SceneRemoved""
+    "eventIntent": 4,
+    "eventType": "SceneRemoved"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""RemoveScene""
+    "requestType": "RemoveScene"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
 
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""transitionName"": ""Fade""
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "transitionName": "Fade"
     },
-    ""eventIntent"": 16,
-    ""eventType"": ""SceneTransitionStarted""
+    "eventIntent": 16,
+    "eventType": "SceneTransitionStarted"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""scenes"": [
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "scenes": [
         {
-          ""sceneIndex"": 0,
-          ""sceneName"": ""Scene""
+          "sceneIndex": 0,
+          "sceneName": "Scene"
         }
       ]
     },
-    ""eventIntent"": 4,
-    ""eventType"": ""SceneListChanged""
+    "eventIntent": 4,
+    "eventType": "SceneListChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""transitionName"": ""Fade""
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "transitionName": "Fade"
     },
-    ""eventIntent"": 16,
-    ""eventType"": ""SceneTransitionVideoEnded""
+    "eventIntent": 16,
+    "eventType": "SceneTransitionVideoEnded"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""sceneName"": ""Scene""
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "sceneName": "Scene"
     },
-    ""eventIntent"": 4,
-    ""eventType"": ""CurrentProgramSceneChanged""
+    "eventIntent": 4,
+    "eventType": "CurrentProgramSceneChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""transitionName"": ""Fade""
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "transitionName": "Fade"
     },
-    ""eventIntent"": 16,
-    ""eventType"": ""SceneTransitionEnded""
+    "eventIntent": 16,
+    "eventType": "SceneTransitionEnded"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
     }
 
     private static async Task RemoveSceneAsync(ObsClientSocket client, string name) {

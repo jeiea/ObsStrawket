@@ -22,41 +22,47 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""inputName"": ""Browser source""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "inputName": "Browser source"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""ToggleInputMute""
+    "requestId": "{guid}",
+    "requestType": "ToggleInputMute"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""ToggleInputMute"",
-    ""responseData"": {
-      ""inputMuted"": false
+    "requestType": "ToggleInputMute",
+    "responseData": {
+      "inputMuted": false
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""inputMuted"": false,
-      ""inputName"": ""Browser source""
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "inputMuted": false,
+      "inputName": "Browser source"
     },
-    ""eventIntent"": 8,
-    ""eventType"": ""InputMuteStateChanged""
+    "eventIntent": 8,
+    "eventType": "InputMuteStateChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
     }
   }
 }

@@ -41,125 +41,147 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""inputName"": ""Media source"",
-      ""mediaAction"": ""OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "inputName": "Media source",
+      "mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""TriggerMediaInputAction""
+    "requestId": "{guid}",
+    "requestType": "TriggerMediaInputAction"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""inputName"": ""Media source"",
-      ""mediaAction"": ""OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP""
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "inputName": "Media source",
+      "mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP"
     },
-    ""eventIntent"": 256,
-    ""eventType"": ""MediaInputActionTriggered""
+    "eventIntent": 256,
+    "eventType": "MediaInputActionTriggered"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""TriggerMediaInputAction""
+    "requestType": "TriggerMediaInputAction"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""inputName"": ""Media source""
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "inputName": "Media source"
     },
-    ""eventIntent"": 256,
-    ""eventType"": ""MediaInputPlaybackEnded""
+    "eventIntent": 256,
+    "eventType": "MediaInputPlaybackEnded"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""inputName"": ""Media source"",
-      ""mediaAction"": ""OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PLAY""
+      guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "inputName": "Media source",
+      "mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PLAY"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""TriggerMediaInputAction""
+    "requestId": "{guid}",
+    "requestType": "TriggerMediaInputAction"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""inputName"": ""Media source"",
-      ""mediaAction"": ""OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PLAY""
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "inputName": "Media source",
+      "mediaAction": "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PLAY"
     },
-    ""eventIntent"": 256,
-    ""eventType"": ""MediaInputActionTriggered""
+    "eventIntent": 256,
+    "eventType": "MediaInputActionTriggered"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""inputName"": ""Media source""
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "inputName": "Media source"
     },
-    ""eventIntent"": 256,
-    ""eventType"": ""MediaInputPlaybackStarted""
+    "eventIntent": 256,
+    "eventType": "MediaInputPlaybackStarted"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""TriggerMediaInputAction""
+    "requestType": "TriggerMediaInputAction"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""inputName"": ""Media source""
+      guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "inputName": "Media source"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""RemoveInput""
+    "requestId": "{guid}",
+    "requestType": "RemoveInput"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""inputName"": ""Media source""
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "inputName": "Media source"
     },
-    ""eventIntent"": 8,
-    ""eventType"": ""InputRemoved""
+    "eventIntent": 8,
+    "eventType": "InputRemoved"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""RemoveInput""
+    "requestType": "RemoveInput"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

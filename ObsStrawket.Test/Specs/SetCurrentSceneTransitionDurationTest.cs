@@ -33,69 +33,81 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""transitionDuration"": 200
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "transitionDuration": 200
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetCurrentSceneTransitionDuration""
+    "requestId": "{guid}",
+    "requestType": "SetCurrentSceneTransitionDuration"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""transitionDuration"": 200
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "transitionDuration": 200
     },
-    ""eventIntent"": 16,
-    ""eventType"": ""CurrentSceneTransitionDurationChanged""
+    "eventIntent": 16,
+    "eventType": "CurrentSceneTransitionDurationChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetCurrentSceneTransitionDuration""
+    "requestType": "SetCurrentSceneTransitionDuration"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""transitionDuration"": 300
+      guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "transitionDuration": 300
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetCurrentSceneTransitionDuration""
+    "requestId": "{guid}",
+    "requestType": "SetCurrentSceneTransitionDuration"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetCurrentSceneTransitionDuration""
+    "requestType": "SetCurrentSceneTransitionDuration"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""transitionDuration"": 300
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "transitionDuration": 300
     },
-    ""eventIntent"": 16,
-    ""eventType"": ""CurrentSceneTransitionDurationChanged""
+    "eventIntent": 16,
+    "eventType": "CurrentSceneTransitionDurationChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
     }
   }
 }

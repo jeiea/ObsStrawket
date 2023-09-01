@@ -18,32 +18,36 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""GetSpecialInputs""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestId": "{guid}",
+    "requestType": "GetSpecialInputs"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetSpecialInputs"",
-    ""responseData"": {
-      ""desktop1"": ""Desktop Audio"",
-      ""desktop2"": null,
-      ""mic1"": ""Mic/Aux"",
-      ""mic2"": null,
-      ""mic3"": null,
-      ""mic4"": null
+    "requestType": "GetSpecialInputs",
+    "responseData": {
+      "desktop1": "Desktop Audio",
+      "desktop2": null,
+      "mic1": "Mic/Aux",
+      "mic2": null,
+      "mic3": null,
+      "mic4": null
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

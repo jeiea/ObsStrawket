@@ -17,46 +17,50 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""unversioned"": true
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "unversioned": true
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""GetInputKindList""
+    "requestId": "{guid}",
+    "requestType": "GetInputKindList"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetInputKindList"",
-    ""responseData"": {
-      ""inputKinds"": [
-        ""image_source"",
-        ""color_source"",
-        ""slideshow"",
-        ""browser_source"",
-        ""ffmpeg_source"",
-        ""text_gdiplus"",
-        ""text_ft2_source"",
-        ""vlc_source"",
-        ""monitor_capture"",
-        ""window_capture"",
-        ""game_capture"",
-        ""dshow_input"",
-        ""wasapi_input_capture"",
-        ""wasapi_output_capture"",
-        ""wasapi_process_output_capture""
+    "requestType": "GetInputKindList",
+    "responseData": {
+      "inputKinds": [
+        "image_source",
+        "color_source",
+        "slideshow",
+        "browser_source",
+        "ffmpeg_source",
+        "text_gdiplus",
+        "text_ft2_source",
+        "vlc_source",
+        "monitor_capture",
+        "window_capture",
+        "game_capture",
+        "dshow_input",
+        "wasapi_input_capture",
+        "wasapi_output_capture",
+        "wasapi_process_output_capture"
       ]
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

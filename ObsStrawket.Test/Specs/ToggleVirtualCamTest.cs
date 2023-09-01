@@ -27,71 +27,83 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""ToggleVirtualCam""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestId": "{guid}",
+    "requestType": "ToggleVirtualCam"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""ToggleVirtualCam"",
-    ""responseData"": {
-      ""outputActive"": true
+    "requestType": "ToggleVirtualCam",
+    "responseData": {
+      "outputActive": true
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""outputActive"": true,
-      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STARTED""
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "outputActive": true,
+      "outputState": "OBS_WEBSOCKET_OUTPUT_STARTED"
     },
-    ""eventIntent"": 64,
-    ""eventType"": ""VirtualcamStateChanged""
+    "eventIntent": 64,
+    "eventType": "VirtualcamStateChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""ToggleVirtualCam""
+      guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestId": "{guid}",
+    "requestType": "ToggleVirtualCam"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""ToggleVirtualCam"",
-    ""responseData"": {
-      ""outputActive"": false
+    "requestType": "ToggleVirtualCam",
+    "responseData": {
+      "outputActive": false
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""outputActive"": true,
-      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STOPPED""
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "outputActive": true,
+      "outputState": "OBS_WEBSOCKET_OUTPUT_STOPPED"
     },
-    ""eventIntent"": 64,
-    ""eventType"": ""VirtualcamStateChanged""
+    "eventIntent": 64,
+    "eventType": "VirtualcamStateChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
     }
   }
 }

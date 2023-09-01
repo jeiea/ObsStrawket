@@ -26,61 +26,71 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""studioModeEnabled"": false
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "studioModeEnabled": false
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetStudioModeEnabled""
+    "requestId": "{guid}",
+    "requestType": "SetStudioModeEnabled"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
+  "op": 6
+}
+""").ConfigureAwait(false);
 
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetStudioModeEnabled""
+    "requestType": "SetStudioModeEnabled"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""studioModeEnabled"": true
+      guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "studioModeEnabled": true
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetStudioModeEnabled""
+    "requestId": "{guid}",
+    "requestType": "SetStudioModeEnabled"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
+  "op": 6
+}
+""").ConfigureAwait(false);
 
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""studioModeEnabled"": true
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "studioModeEnabled": true
     },
-    ""eventIntent"": 1024,
-    ""eventType"": ""StudioModeStateChanged""
+    "eventIntent": 1024,
+    "eventType": "StudioModeStateChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetStudioModeEnabled""
+    "requestType": "SetStudioModeEnabled"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

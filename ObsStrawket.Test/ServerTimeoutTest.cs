@@ -70,31 +70,35 @@ namespace ObsStrawket.Test {
 
       var guids = new List<string>();
       for (int i = 0; i < 20; i++) {
-        string? guid = await session.ReceiveAsync(@"{
-  ""op"": 6,
-  ""d"": {
-    ""requestType"": ""GetRecordDirectory"",
-    ""requestId"": ""{guid}""
+        string? guid = await session.ReceiveAsync("""
+{
+  "op": 6,
+  "d": {
+    "requestType": "GetRecordDirectory",
+    "requestId": "{guid}"
   }
-}").ConfigureAwait(false);
+}
+""").ConfigureAwait(false);
         guids.Add(guid!);
       }
 
       foreach (string guid in guids.Take(10)) {
-        await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+        await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetRecordDirectory"",
-    ""responseData"": {
-      ""recordDirectory"": ""C:\\Users""
+    "requestType": "GetRecordDirectory",
+    "responseData": {
+      "recordDirectory": "C:\\Users"
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
       }
 
       byte[] buffer = new byte[] { 0x01, 0x02, 0x03, 0x04 };

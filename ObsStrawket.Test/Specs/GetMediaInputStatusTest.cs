@@ -21,32 +21,36 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""inputName"": ""Media source""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "inputName": "Media source"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""GetMediaInputStatus""
+    "requestId": "{guid}",
+    "requestType": "GetMediaInputStatus"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetMediaInputStatus"",
-    ""responseData"": {
-      ""mediaCursor"": 15100,
-      ""mediaDuration"": 20000,
-      ""mediaState"": ""OBS_MEDIA_STATE_PLAYING""
+    "requestType": "GetMediaInputStatus",
+    "responseData": {
+      "mediaCursor": 15100,
+      "mediaDuration": 20000,
+      "mediaState": "OBS_MEDIA_STATE_PLAYING"
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

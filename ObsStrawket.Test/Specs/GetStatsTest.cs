@@ -25,37 +25,41 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""GetStats""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestId": "{guid}",
+    "requestType": "GetStats"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetStats"",
-    ""responseData"": {
-      ""activeFps"": 60.0000024000001,
-      ""availableDiskSpace"": 193241.00390625,
-      ""averageFrameRenderTime"": 0.183004,
-      ""cpuUsage"": 0.5014061142054602,
-      ""memoryUsage"": 214.12109375,
-      ""outputSkippedFrames"": 0,
-      ""outputTotalFrames"": 8,
-      ""renderSkippedFrames"": 135,
-      ""renderTotalFrames"": 282039,
-      ""webSocketSessionIncomingMessages"": 3,
-      ""webSocketSessionOutgoingMessages"": 3
+    "requestType": "GetStats",
+    "responseData": {
+      "activeFps": 60.0000024000001,
+      "availableDiskSpace": 193241.00390625,
+      "averageFrameRenderTime": 0.183004,
+      "cpuUsage": 0.5014061142054602,
+      "memoryUsage": 214.12109375,
+      "outputSkippedFrames": 0,
+      "outputTotalFrames": 8,
+      "renderSkippedFrames": 135,
+      "renderTotalFrames": 282039,
+      "webSocketSessionIncomingMessages": 3,
+      "webSocketSessionOutgoingMessages": 3
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

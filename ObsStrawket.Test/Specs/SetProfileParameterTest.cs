@@ -29,77 +29,89 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""parameterCategory"": ""Output"",
-      ""parameterName"": ""Mode"",
-      ""parameterValue"": ""Advanced""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "parameterCategory": "Output",
+      "parameterName": "Mode",
+      "parameterValue": "Advanced"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetProfileParameter""
+    "requestId": "{guid}",
+    "requestType": "SetProfileParameter"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetProfileParameter""
+    "requestType": "SetProfileParameter"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""parameterCategory"": ""AdvOut"",
-      ""parameterName"": ""RecRB"",
-      ""parameterValue"": ""true""
+      guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "parameterCategory": "AdvOut",
+      "parameterName": "RecRB",
+      "parameterValue": "true"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetProfileParameter""
+    "requestId": "{guid}",
+    "requestType": "SetProfileParameter"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetProfileParameter""
+    "requestType": "SetProfileParameter"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""parameterCategory"": ""AdvOut"",
-      ""parameterName"": ""RecEncoder"",
-      ""parameterValue"": ""obs_x264""
+      guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "parameterCategory": "AdvOut",
+      "parameterName": "RecEncoder",
+      "parameterValue": "obs_x264"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetProfileParameter""
+    "requestId": "{guid}",
+    "requestType": "SetProfileParameter"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetProfileParameter""
+    "requestType": "SetProfileParameter"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

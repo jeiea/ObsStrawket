@@ -21,47 +21,55 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""StartStream""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestId": "{guid}",
+    "requestType": "StartStream"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
+  "op": 6
+}
+""").ConfigureAwait(false);
 
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""StartStream""
+    "requestType": "StartStream"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""outputActive"": false,
-      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STARTING""
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "outputActive": false,
+      "outputState": "OBS_WEBSOCKET_OUTPUT_STARTING"
     },
-    ""eventIntent"": 64,
-    ""eventType"": ""StreamStateChanged""
+    "eventIntent": 64,
+    "eventType": "StreamStateChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""outputActive"": true,
-      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STARTED""
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "outputActive": true,
+      "outputState": "OBS_WEBSOCKET_OUTPUT_STARTED"
     },
-    ""eventIntent"": 64,
-    ""eventType"": ""StreamStateChanged""
+    "eventIntent": 64,
+    "eventType": "StreamStateChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
     }
   }
 }

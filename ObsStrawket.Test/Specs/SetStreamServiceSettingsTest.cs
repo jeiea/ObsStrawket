@@ -2,11 +2,8 @@ using ObsStrawket.DataTypes;
 using ObsStrawket.Test.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace ObsStrawket.Test.Specs {
   public class SetStreamServiceSettingsTest {
@@ -51,37 +48,38 @@ namespace ObsStrawket.Test.Specs {
         return;
       }
 
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""streamServiceSettings"": {
-        ""bwtest"": true,
-        ""key"": ""{key}"",
-        ""server"": ""{server}"",
-        ""service"": ""{service}""
+      string? guid = await session.ReceiveAsync($$"""
+{
+  "d": {
+    "requestData": {
+      "streamServiceSettings": {
+        "bwtest": true,
+        "key": "{{settings.Key}}",
+        "server": "{{settings.Server}}",
+        "service": "{{settings.Service}}"
       },
-      ""streamServiceType"": ""rtmp_common""
+      "streamServiceType": "rtmp_common"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetStreamServiceSettings""
+    "requestId": "{guid}",
+    "requestType": "SetStreamServiceSettings"
   },
-  ""op"": 6
-}"
-.Replace("{key}", settings.Key)
-.Replace("{server}", settings.Server)
-.Replace("{service}", settings.Service)).ConfigureAwait(false);
+  "op": 6
+}
+""").ConfigureAwait(false);
 
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetStreamServiceSettings""
+    "requestType": "SetStreamServiceSettings"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

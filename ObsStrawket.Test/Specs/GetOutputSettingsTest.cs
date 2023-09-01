@@ -17,34 +17,38 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""outputName"": ""Replay Buffer""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "outputName": "Replay Buffer"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""GetOutputSettings""
+    "requestId": "{guid}",
+    "requestType": "GetOutputSettings"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetOutputSettings"",
-    ""responseData"": {
-      ""outputSettings"": {
-        ""muxer_settings"": """",
-        ""path"": ""/some/path"",
-        ""test_prop"": ""unused""
+    "requestType": "GetOutputSettings",
+    "responseData": {
+      "outputSettings": {
+        "muxer_settings": "",
+        "path": "/some/path",
+        "test_prop": "unused"
       }
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

@@ -28,17 +28,19 @@ namespace ObsStrawket.Test {
       token.ThrowIfCancellationRequested();
 
       var session = new MockServerSession(webSocketContext.WebSocket, token);
-      await session.SendAsync(@"{
-  ""op"": 0,
-  ""d"": {
-    ""obsWebSocketVersion"": ""5.0.1"",
-    ""rpcVersion"": 1,
-    ""authentication"": {
-      ""challenge"": ""+IxH4CnCiqpX1rM9scsNynZzbOe4KhDeYcTNS3PDaeY="",
-      ""salt"": ""lM1GncleQOaCu9lT1yeUZhFYnqhsLLP1G5lAGo3ixaI=""
+      await session.SendAsync("""
+{
+  "op": 0,
+  "d": {
+    "obsWebSocketVersion": "5.0.1",
+    "rpcVersion": 1,
+    "authentication": {
+      "challenge": "+IxH4CnCiqpX1rM9scsNynZzbOe4KhDeYcTNS3PDaeY=",
+      "salt": "lM1GncleQOaCu9lT1yeUZhFYnqhsLLP1G5lAGo3ixaI="
     }
   }
-}").ConfigureAwait(false);
+}
+""").ConfigureAwait(false);
 
       var message = await session.ReceiveAsync();
 

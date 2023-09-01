@@ -26,73 +26,85 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""newSceneName"": ""test scene 3"",
-      ""sceneName"": ""test scene 2""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "newSceneName": "test scene 3",
+      "sceneName": "test scene 2"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetSceneName""
+    "requestId": "{guid}",
+    "requestType": "SetSceneName"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""oldSceneName"": ""test scene 2"",
-      ""sceneName"": ""test scene 3""
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "oldSceneName": "test scene 2",
+      "sceneName": "test scene 3"
     },
-    ""eventIntent"": 4,
-    ""eventType"": ""SceneNameChanged""
+    "eventIntent": 4,
+    "eventType": "SceneNameChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetSceneName""
+    "requestType": "SetSceneName"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""newSceneName"": ""test scene 2"",
-      ""sceneName"": ""test scene 3""
+      guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "newSceneName": "test scene 2",
+      "sceneName": "test scene 3"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetSceneName""
+    "requestId": "{guid}",
+    "requestType": "SetSceneName"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""oldSceneName"": ""test scene 3"",
-      ""sceneName"": ""test scene 2""
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "oldSceneName": "test scene 3",
+      "sceneName": "test scene 2"
     },
-    ""eventIntent"": 4,
-    ""eventType"": ""SceneNameChanged""
+    "eventIntent": 4,
+    "eventType": "SceneNameChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetSceneName""
+    "requestType": "SetSceneName"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

@@ -41,7 +41,7 @@ namespace ObsStrawket.Test {
 }
 """).ConfigureAwait(false);
 
-      string? guid = await session.ReceiveAsync($$"""
+      string? guid = await session.ReceiveAsync("""
 {
   "d": {
     "requestId": "{guid}",

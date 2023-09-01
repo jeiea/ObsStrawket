@@ -26,113 +26,129 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""sceneName"": ""test scene 2""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "sceneName": "test scene 2"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""CreateScene""
+    "requestId": "{guid}",
+    "requestType": "CreateScene"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""CreateScene""
+    "requestType": "CreateScene"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""scenes"": [
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "scenes": [
         {
-          ""sceneIndex"": 0,
-          ""sceneName"": ""test scene 2""
+          "sceneIndex": 0,
+          "sceneName": "test scene 2"
         },
         {
-          ""sceneIndex"": 1,
-          ""sceneName"": ""Scene""
+          "sceneIndex": 1,
+          "sceneName": "Scene"
         }
       ]
     },
-    ""eventIntent"": 4,
-    ""eventType"": ""SceneListChanged""
+    "eventIntent": 4,
+    "eventType": "SceneListChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""isGroup"": false,
-      ""sceneName"": ""test scene 2""
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "isGroup": false,
+      "sceneName": "test scene 2"
     },
-    ""eventIntent"": 4,
-    ""eventType"": ""SceneCreated""
+    "eventIntent": 4,
+    "eventType": "SceneCreated"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""sceneName"": ""test scene""
+      guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "sceneName": "test scene"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""CreateScene""
+    "requestId": "{guid}",
+    "requestType": "CreateScene"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""scenes"": [
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "scenes": [
         {
-          ""sceneIndex"": 0,
-          ""sceneName"": ""test scene""
+          "sceneIndex": 0,
+          "sceneName": "test scene"
         },
         {
-          ""sceneIndex"": 1,
-          ""sceneName"": ""test scene 2""
+          "sceneIndex": 1,
+          "sceneName": "test scene 2"
         },
         {
-          ""sceneIndex"": 2,
-          ""sceneName"": ""Scene""
+          "sceneIndex": 2,
+          "sceneName": "Scene"
         }
       ]
     },
-    ""eventIntent"": 4,
-    ""eventType"": ""SceneListChanged""
+    "eventIntent": 4,
+    "eventType": "SceneListChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""isGroup"": false,
-      ""sceneName"": ""test scene""
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "isGroup": false,
+      "sceneName": "test scene"
     },
-    ""eventIntent"": 4,
-    ""eventType"": ""SceneCreated""
+    "eventIntent": 4,
+    "eventType": "SceneCreated"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""CreateScene""
+    "requestType": "CreateScene"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
 
     private static async Task CreateScene(ObsClientSocket client, string name) {

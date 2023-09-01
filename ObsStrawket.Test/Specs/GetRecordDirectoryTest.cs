@@ -18,28 +18,32 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""op"": 6,
-  ""d"": {
-    ""requestType"": ""GetRecordDirectory"",
-    ""requestId"": ""{guid}""
+      string? guid = await session.ReceiveAsync("""
+{
+  "op": 6,
+  "d": {
+    "requestType": "GetRecordDirectory",
+    "requestId": "{guid}"
   }
-}").ConfigureAwait(false);
+}
+""").ConfigureAwait(false);
 
-    await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+    await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetRecordDirectory"",
-    ""responseData"": {
-      ""recordDirectory"": ""{cd}""
+    "requestType": "GetRecordDirectory",
+    "responseData": {
+      "recordDirectory": "{{Directory.GetCurrentDirectory().Replace(@"\", @"\\")}}"
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid).Replace("{cd}", Directory.GetCurrentDirectory().Replace(@"\", @"\\")));
+  "op": 7
+}
+""");
     }
   }
 }

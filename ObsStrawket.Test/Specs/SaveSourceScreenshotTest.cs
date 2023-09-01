@@ -27,36 +27,40 @@ namespace ObsStrawket.Test.Specs {
       await new GetSceneListFlow().RespondAsync(session).ConfigureAwait(false);
 
       string path = Path.Combine(Directory.GetCurrentDirectory(), _fileName);
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""imageCompressionQuality"": null,
-      ""imageFilePath"": ""{path}"",
-      ""imageFormat"": ""png"",
-      ""imageHeight"": 1080,
-      ""imageWidth"": 1920,
-      ""sourceName"": ""Scene""
+      string? guid = await session.ReceiveAsync($$"""
+{
+  "d": {
+    "requestData": {
+      "imageCompressionQuality": null,
+      "imageFilePath": "{{path.Replace("\\", "\\\\")}}",
+      "imageFormat": "png",
+      "imageHeight": 1080,
+      "imageWidth": 1920,
+      "sourceName": "Scene"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SaveSourceScreenshot""
+    "requestId": "{guid}",
+    "requestType": "SaveSourceScreenshot"
   },
-  ""op"": 6
-}".Replace("{path}", path.Replace("\\", "\\\\"))).ConfigureAwait(false);
+  "op": 6
+}
+""").ConfigureAwait(false);
 
       byte[] png = Convert.FromBase64String(GetSourceScreenshotFlow.Base64SmallestPng);
       await File.WriteAllBytesAsync(path, png).ConfigureAwait(false);
 
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SaveSourceScreenshot""
+    "requestType": "SaveSourceScreenshot"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

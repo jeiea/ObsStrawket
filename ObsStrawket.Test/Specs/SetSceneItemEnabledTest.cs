@@ -28,41 +28,47 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""sceneItemEnabled"": false,
-      ""sceneItemId"": 3,
-      ""sceneName"": ""test scene""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "sceneItemEnabled": false,
+      "sceneItemId": 3,
+      "sceneName": "test scene"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetSceneItemEnabled""
+    "requestId": "{guid}",
+    "requestType": "SetSceneItemEnabled"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetSceneItemEnabled""
+    "requestType": "SetSceneItemEnabled"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""sceneItemEnabled"": false,
-      ""sceneItemId"": 3,
-      ""sceneName"": ""test scene""
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "sceneItemEnabled": false,
+      "sceneItemId": 3,
+      "sceneName": "test scene"
     },
-    ""eventIntent"": 128,
-    ""eventType"": ""SceneItemEnableStateChanged""
+    "eventIntent": 128,
+    "eventType": "SceneItemEnableStateChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
     }
   }
 }

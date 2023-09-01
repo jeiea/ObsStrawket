@@ -33,56 +33,64 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""sceneItemEnabled"": true,
-      ""sceneName"": ""test scene"",
-      ""sourceName"": ""Browser source""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "sceneItemEnabled": true,
+      "sceneName": "test scene",
+      "sourceName": "Browser source"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""CreateSceneItem""
+    "requestId": "{guid}",
+    "requestType": "CreateSceneItem"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""sceneItemId"": 3,
-      ""sceneItemIndex"": 2,
-      ""sceneName"": ""test scene"",
-      ""sourceName"": ""Browser source""
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "sceneItemId": 3,
+      "sceneItemIndex": 2,
+      "sceneName": "test scene",
+      "sourceName": "Browser source"
     },
-    ""eventIntent"": 128,
-    ""eventType"": ""SceneItemCreated""
+    "eventIntent": 128,
+    "eventType": "SceneItemCreated"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""CreateSceneItem"",
-    ""responseData"": {
-      ""sceneItemId"": 3
+    "requestType": "CreateSceneItem",
+    "responseData": {
+      "sceneItemId": 3
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""sceneItemId"": 3,
-      ""sceneName"": ""test scene""
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "sceneItemId": 3,
+      "sceneName": "test scene"
     },
-    ""eventIntent"": 128,
-    ""eventType"": ""SceneItemSelected""
+    "eventIntent": 128,
+    "eventType": "SceneItemSelected"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
     }
   }
 }

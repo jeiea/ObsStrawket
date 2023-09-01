@@ -22,52 +22,60 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""op"": 6,
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""StopRecord""
+      string? guid = await session.ReceiveAsync("""
+{
+  "op": 6,
+  "d": {
+    "requestId": "{guid}",
+    "requestType": "StopRecord"
   }
-}").ConfigureAwait(false);
+}
+""").ConfigureAwait(false);
 
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""StopRecord"",
-    ""responseData"": {
-      ""outputPath"": ""{file}""
+    "requestType": "StopRecord",
+    "responseData": {
+      "outputPath": "{{StartRecordFlow.EscapedFileName}}"
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid).Replace("{file}", StartRecordFlow.EscapedFileName)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""outputActive"": false,
-      ""outputPath"": null,
-      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STOPPING""
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "outputActive": false,
+      "outputPath": null,
+      "outputState": "OBS_WEBSOCKET_OUTPUT_STOPPING"
     },
-    ""eventIntent"": 64,
-    ""eventType"": ""RecordStateChanged""
+    "eventIntent": 64,
+    "eventType": "RecordStateChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""outputActive"": false,
-      ""outputPath"": ""{file}"",
-      ""outputState"": ""OBS_WEBSOCKET_OUTPUT_STOPPED""
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "eventData": {
+      "outputActive": false,
+      "outputPath": "{{StartRecordFlow.EscapedFileName}}",
+      "outputState": "OBS_WEBSOCKET_OUTPUT_STOPPED"
     },
-    ""eventIntent"": 64,
-    ""eventType"": ""RecordStateChanged""
+    "eventIntent": 64,
+    "eventType": "RecordStateChanged"
   },
-  ""op"": 5
-}".Replace("{file}", StartRecordFlow.EscapedFileName)).ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
     }
   }
 }

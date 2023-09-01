@@ -25,55 +25,59 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""executionType"": 0,
-    ""haltOnFailure"": null,
-    ""requestId"": ""{guid}"",
-    ""requests"": [
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "executionType": 0,
+    "haltOnFailure": null,
+    "requestId": "{guid}",
+    "requests": [
       {
-        ""requestData"": {
-          ""sleepFrames"": null,
-          ""sleepMillis"": 100
+        "requestData": {
+          "sleepFrames": null,
+          "sleepMillis": 100
         },
-        ""requestId"": """",
-        ""requestType"": ""Sleep""
+        "requestId": "",
+        "requestType": "Sleep"
       },
       {
-        ""requestId"": """",
-        ""requestType"": ""GetStudioModeEnabled""
+        "requestId": "",
+        "requestType": "GetStudioModeEnabled"
       }
     ]
   },
-  ""op"": 8
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""results"": [
+  "op": 8
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "results": [
       {
-        ""requestId"": """",
-        ""requestStatus"": {
-          ""code"": 100,
-          ""result"": true
+        "requestId": "",
+        "requestStatus": {
+          "code": 100,
+          "result": true
         },
-        ""requestType"": ""Sleep""
+        "requestType": "Sleep"
       },
       {
-        ""requestId"": """",
-        ""requestStatus"": {
-          ""code"": 100,
-          ""result"": true
+        "requestId": "",
+        "requestStatus": {
+          "code": 100,
+          "result": true
         },
-        ""requestType"": ""GetStudioModeEnabled"",
-        ""responseData"": {
-          ""studioModeEnabled"": true
+        "requestType": "GetStudioModeEnabled",
+        "responseData": {
+          "studioModeEnabled": true
         }
       }
     ]
   },
-  ""op"": 9
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 9
+}
+""").ConfigureAwait(false);
     }
   }
 }

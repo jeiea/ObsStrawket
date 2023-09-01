@@ -16,33 +16,37 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""keyId"": ""OBS_KEY_P"",
-      ""keyModifiers"": {
-        ""alt"": null,
-        ""command"": null,
-        ""control"": null,
-        ""shift"": true
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "keyId": "OBS_KEY_P",
+      "keyModifiers": {
+        "alt": null,
+        "command": null,
+        "control": null,
+        "shift": true
       }
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""TriggerHotkeyByKeySequence""
+    "requestId": "{guid}",
+    "requestType": "TriggerHotkeyByKeySequence"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""TriggerHotkeyByKeySequence""
+    "requestType": "TriggerHotkeyByKeySequence"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

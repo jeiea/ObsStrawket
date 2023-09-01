@@ -25,68 +25,80 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""sceneName"": ""test scene 2""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "sceneName": "test scene 2"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetCurrentProgramScene""
+    "requestId": "{guid}",
+    "requestType": "SetCurrentProgramScene"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""transitionName"": ""Fade""
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "transitionName": "Fade"
     },
-    ""eventIntent"": 16,
-    ""eventType"": ""SceneTransitionStarted""
+    "eventIntent": 16,
+    "eventType": "SceneTransitionStarted"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
 
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetCurrentProgramScene""
+    "requestType": "SetCurrentProgramScene"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""transitionName"": ""Fade""
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "transitionName": "Fade"
     },
-    ""eventIntent"": 16,
-    ""eventType"": ""SceneTransitionVideoEnded""
+    "eventIntent": 16,
+    "eventType": "SceneTransitionVideoEnded"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""sceneName"": ""test scene 2""
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "sceneName": "test scene 2"
     },
-    ""eventIntent"": 4,
-    ""eventType"": ""CurrentProgramSceneChanged""
+    "eventIntent": 4,
+    "eventType": "CurrentProgramSceneChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""transitionName"": ""Fade""
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "transitionName": "Fade"
     },
-    ""eventIntent"": 16,
-    ""eventType"": ""SceneTransitionEnded""
+    "eventIntent": 16,
+    "eventType": "SceneTransitionEnded"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
     }
   }
 }

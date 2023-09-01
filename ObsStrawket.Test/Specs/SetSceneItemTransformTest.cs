@@ -23,31 +23,35 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""sceneItemId"": 3,
-      ""sceneItemTransform"": {
-        ""boundsType"": ""OBS_BOUNDS_SCALE_TO_WIDTH""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "sceneItemId": 3,
+      "sceneItemTransform": {
+        "boundsType": "OBS_BOUNDS_SCALE_TO_WIDTH"
       },
-      ""sceneName"": ""test scene""
+      "sceneName": "test scene"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetSceneItemTransform""
+    "requestId": "{guid}",
+    "requestType": "SetSceneItemTransform"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetSceneItemTransform""
+    "requestType": "SetSceneItemTransform"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

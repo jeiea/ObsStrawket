@@ -42,60 +42,70 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""profileName"": ""test profile name""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "profileName": "test profile name"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""CreateProfile""
+    "requestId": "{guid}",
+    "requestType": "CreateProfile"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""profileName"": ""default""
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "profileName": "default"
     },
-    ""eventIntent"": 2,
-    ""eventType"": ""CurrentProfileChanging""
+    "eventIntent": 2,
+    "eventType": "CurrentProfileChanging"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""profiles"": [
-        ""default"",
-        ""test profile name""
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "profiles": [
+        "default",
+        "test profile name"
       ]
     },
-    ""eventIntent"": 2,
-    ""eventType"": ""ProfileListChanged""
+    "eventIntent": 2,
+    "eventType": "ProfileListChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""CreateProfile""
+    "requestType": "CreateProfile"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""profileName"": ""test profile name""
+  "op": 7
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "profileName": "test profile name"
     },
-    ""eventIntent"": 2,
-    ""eventType"": ""CurrentProfileChanged""
+    "eventIntent": 2,
+    "eventType": "CurrentProfileChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
+  "op": 5
+}
+""").ConfigureAwait(false);
     }
   }
 }

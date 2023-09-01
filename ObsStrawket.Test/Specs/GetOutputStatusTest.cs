@@ -26,37 +26,41 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""outputName"": ""Replay Buffer""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "outputName": "Replay Buffer"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""GetOutputStatus""
+    "requestId": "{guid}",
+    "requestType": "GetOutputStatus"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetOutputStatus"",
-    ""responseData"": {
-      ""outputActive"": true,
-      ""outputBytes"": 0,
-      ""outputCongestion"": 0.0,
-      ""outputDuration"": 483,
-      ""outputReconnecting"": false,
-      ""outputSkippedFrames"": 0,
-      ""outputTimecode"": ""00:00:00.483"",
-      ""outputTotalFrames"": 29
+    "requestType": "GetOutputStatus",
+    "responseData": {
+      "outputActive": true,
+      "outputBytes": 0,
+      "outputCongestion": 0.0,
+      "outputDuration": 483,
+      "outputReconnecting": false,
+      "outputSkippedFrames": 0,
+      "outputTimecode": "00:00:00.483",
+      "outputTotalFrames": 29
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

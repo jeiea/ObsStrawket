@@ -22,48 +22,54 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""inputName"": ""Browser source""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "inputName": "Browser source"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""RemoveInput""
+    "requestId": "{guid}",
+    "requestType": "RemoveInput"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""inputName"": ""Browser source""
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "inputName": "Browser source"
     },
-    ""eventIntent"": 8,
-    ""eventType"": ""InputRemoved""
+    "eventIntent": 8,
+    "eventType": "InputRemoved"
   },
-  ""op"": 5
-} ").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+} 
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""RemoveInput""
+    "requestType": "RemoveInput"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
       //      await session.SendAsync(@"{
-      //  ""d"": {
-      //    ""eventData"": {
-      //      ""sceneItemId"": 1,
-      //      ""sceneName"": ""test scene"",
-      //      ""sourceName"": ""Browser source""
+      //  "d": {
+      //    "eventData": {
+      //      "sceneItemId": 1,
+      //      "sceneName": "test scene",
+      //      "sourceName": "Browser source"
       //    },
-      //    ""eventIntent"": 128,
-      //    ""eventType"": ""SceneItemRemoved""
+      //    "eventIntent": 128,
+      //    "eventType": "SceneItemRemoved"
       //  },
-      //  ""op"": 5
+      //  "op": 5
       //}").ConfigureAwait(false);
     }
   }

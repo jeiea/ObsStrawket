@@ -26,30 +26,34 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""outputName"": ""Replay Buffer"",
-      ""outputSettings"": {
-        ""test_prop"": ""unused""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "outputName": "Replay Buffer",
+      "outputSettings": {
+        "test_prop": "unused"
       }
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetOutputSettings""
+    "requestId": "{guid}",
+    "requestType": "SetOutputSettings"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetOutputSettings""
+    "requestType": "SetOutputSettings"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }

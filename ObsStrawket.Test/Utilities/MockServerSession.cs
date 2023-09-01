@@ -49,71 +49,79 @@ namespace ObsStrawket.Test.Utilities {
 
     public Task SendGetStudioModeEnabledResponseAsync(string guid, bool modeEnabled = false) {
       // In real, op follows d.
-      return SendAsync(@"{
-  ""d"": {
-    ""requestType"": ""GetStudioModeEnabled"",
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""comment"": null,
-      ""result"": true
+      return SendAsync($$"""
+{
+  "d": {
+    "requestType": "GetStudioModeEnabled",
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "comment": null,
+      "result": true
     },
-    ""responseData"": {
-      ""studioModeEnabled"": {modeEnabled}
+    "responseData": {
+      "studioModeEnabled": {{(modeEnabled ? "true" : "false")}}
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid).Replace("{modeEnabled}", modeEnabled ? "true" : "false"));
+  "op": 7
+}
+""");
     }
 
     public Task SendGetVersionResponseAsync(string guid, string platformDescription = "Windows 11 Version 2009") {
-      return SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": { ""code"": 100, ""result"": true },
-    ""requestType"": ""GetVersion"",
-    ""responseData"": {
-      ""availableRequests"": [""PressInputPropertiesButton"", ""GetHotkeyList"", ""OpenInputInteractDialog"", ""SaveSourceScreenshot"", ""GetVersion"", ""SetInputName"", ""SetSceneName"", ""GetStats"", ""TriggerStudioModeTransition"", ""SetInputAudioSyncOffset"", ""GetSceneCollectionList"", ""BroadcastCustomEvent"", ""Sleep"", ""SetSceneSceneTransitionOverride"", ""CallVendorRequest"", ""CreateSceneCollection"", ""SetStudioModeEnabled"", ""TriggerHotkeyByName"", ""OpenVideoMixProjector"", ""TriggerHotkeyByKeySequence"", ""GetPersistentData"", ""SetSceneItemIndex"", ""SetPersistentData"", ""SetCurrentSceneCollection"", ""SetInputMute"", ""SetCurrentPreviewScene"", ""SetCurrentProgramScene"", ""OpenSourceProjector"", ""GetProfileList"", ""SetCurrentProfile"", ""RemoveProfile"", ""CreateProfile"", ""GetProfileParameter"", ""SetProfileParameter"", ""GetInputPropertiesListPropertyItems"", ""GetInputAudioBalance"", ""GetStreamServiceSettings"", ""GetVideoSettings"", ""SetVideoSettings"", ""SetInputAudioBalance"", ""SetInputVolume"", ""SetStreamServiceSettings"", ""GetInputDefaultSettings"", ""GetSpecialInputs"", ""GetInputKindList"", ""GetRecordDirectory"", ""GetInputMute"", ""GetCurrentPreviewScene"", ""GetReplayBufferStatus"", ""GetSourceActive"", ""GetSourceScreenshot"", ""GetSourcePrivateSettings"", ""SetSourcePrivateSettings"", ""SetSourceFilterEnabled"", ""GetInputList"", ""GetSceneList"", ""GetGroupList"", ""SetInputSettings"", ""GetCurrentProgramScene"", ""GetSceneItemId"", ""RemoveScene"", ""CreateScene"", ""GetSceneSceneTransitionOverride"", ""RemoveInput"", ""CreateInput"", ""GetSceneItemLocked"", ""GetInputSettings"", ""ToggleInputMute"", ""SetCurrentSceneTransition"", ""GetInputVolume"", ""GetInputAudioSyncOffset"", ""GetInputAudioMonitorType"", ""SetInputAudioMonitorType"", ""StartVirtualCam"", ""GetInputAudioTracks"", ""SetInputAudioTracks"", ""GetTransitionKindList"", ""GetSceneItemTransform"", ""GetSceneTransitionList"", ""GetVirtualCamStatus"", ""GetCurrentSceneTransition"", ""SetCurrentSceneTransitionDuration"", ""SetCurrentSceneTransitionSettings"", ""GetCurrentSceneTransitionCursor"", ""SetTBarPosition"", ""StopOutput"", ""ToggleOutput"", ""GetSourceFilterList"", ""GetSourceFilterDefaultSettings"", ""CreateSourceFilter"", ""RemoveSourceFilter"", ""SetSourceFilterName"", ""GetSourceFilter"", ""StopRecord"", ""ToggleRecord"", ""SetSourceFilterIndex"", ""SetSourceFilterSettings"", ""SetSceneItemTransform"", ""GetSceneItemList"", ""GetGroupSceneItemList"", ""CreateSceneItem"", ""RemoveSceneItem"", ""DuplicateSceneItem"", ""GetSceneItemEnabled"", ""SetSceneItemEnabled"", ""SetSceneItemLocked"", ""GetSceneItemIndex"", ""StartReplayBuffer"", ""GetSceneItemBlendMode"", ""SetSceneItemBlendMode"", ""GetSceneItemPrivateSettings"", ""SetSceneItemPrivateSettings"", ""StopVirtualCam"", ""ToggleVirtualCam"", ""StopReplayBuffer"", ""ToggleReplayBuffer"", ""SaveReplayBuffer"", ""GetLastReplayBufferReplay"", ""GetOutputList"", ""GetOutputStatus"", ""StartOutput"", ""GetOutputSettings"", ""SetOutputSettings"", ""GetStreamStatus"", ""StopStream"", ""ToggleStream"", ""StartStream"", ""SendStreamCaption"", ""GetRecordStatus"", ""StartRecord"", ""ToggleRecordPause"", ""PauseRecord"", ""ResumeRecord"", ""SetMediaInputCursor"", ""GetMediaInputStatus"", ""OffsetMediaInputCursor"", ""TriggerMediaInputAction"", ""GetStudioModeEnabled"", ""OpenInputPropertiesDialog"", ""OpenInputFiltersDialog"", ""GetMonitorList""],
-      ""obsVersion"": ""27.2.4"",
-      ""obsWebSocketVersion"": ""5.0.1"",
-      ""platform"": ""windows"",
-      ""platformDescription"": ""{platformDescription}"",
-      ""rpcVersion"": 1,
-      ""supportedImageFormats"": [""bmp"", ""jpeg"", ""jpg"", ""pbm"", ""pgm"", ""png"", ""ppm"", ""xbm"", ""xpm""]
+      return SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": { "code": 100, "result": true },
+    "requestType": "GetVersion",
+    "responseData": {
+      "availableRequests": ["PressInputPropertiesButton", "GetHotkeyList", "OpenInputInteractDialog", "SaveSourceScreenshot", "GetVersion", "SetInputName", "SetSceneName", "GetStats", "TriggerStudioModeTransition", "SetInputAudioSyncOffset", "GetSceneCollectionList", "BroadcastCustomEvent", "Sleep", "SetSceneSceneTransitionOverride", "CallVendorRequest", "CreateSceneCollection", "SetStudioModeEnabled", "TriggerHotkeyByName", "OpenVideoMixProjector", "TriggerHotkeyByKeySequence", "GetPersistentData", "SetSceneItemIndex", "SetPersistentData", "SetCurrentSceneCollection", "SetInputMute", "SetCurrentPreviewScene", "SetCurrentProgramScene", "OpenSourceProjector", "GetProfileList", "SetCurrentProfile", "RemoveProfile", "CreateProfile", "GetProfileParameter", "SetProfileParameter", "GetInputPropertiesListPropertyItems", "GetInputAudioBalance", "GetStreamServiceSettings", "GetVideoSettings", "SetVideoSettings", "SetInputAudioBalance", "SetInputVolume", "SetStreamServiceSettings", "GetInputDefaultSettings", "GetSpecialInputs", "GetInputKindList", "GetRecordDirectory", "GetInputMute", "GetCurrentPreviewScene", "GetReplayBufferStatus", "GetSourceActive", "GetSourceScreenshot", "GetSourcePrivateSettings", "SetSourcePrivateSettings", "SetSourceFilterEnabled", "GetInputList", "GetSceneList", "GetGroupList", "SetInputSettings", "GetCurrentProgramScene", "GetSceneItemId", "RemoveScene", "CreateScene", "GetSceneSceneTransitionOverride", "RemoveInput", "CreateInput", "GetSceneItemLocked", "GetInputSettings", "ToggleInputMute", "SetCurrentSceneTransition", "GetInputVolume", "GetInputAudioSyncOffset", "GetInputAudioMonitorType", "SetInputAudioMonitorType", "StartVirtualCam", "GetInputAudioTracks", "SetInputAudioTracks", "GetTransitionKindList", "GetSceneItemTransform", "GetSceneTransitionList", "GetVirtualCamStatus", "GetCurrentSceneTransition", "SetCurrentSceneTransitionDuration", "SetCurrentSceneTransitionSettings", "GetCurrentSceneTransitionCursor", "SetTBarPosition", "StopOutput", "ToggleOutput", "GetSourceFilterList", "GetSourceFilterDefaultSettings", "CreateSourceFilter", "RemoveSourceFilter", "SetSourceFilterName", "GetSourceFilter", "StopRecord", "ToggleRecord", "SetSourceFilterIndex", "SetSourceFilterSettings", "SetSceneItemTransform", "GetSceneItemList", "GetGroupSceneItemList", "CreateSceneItem", "RemoveSceneItem", "DuplicateSceneItem", "GetSceneItemEnabled", "SetSceneItemEnabled", "SetSceneItemLocked", "GetSceneItemIndex", "StartReplayBuffer", "GetSceneItemBlendMode", "SetSceneItemBlendMode", "GetSceneItemPrivateSettings", "SetSceneItemPrivateSettings", "StopVirtualCam", "ToggleVirtualCam", "StopReplayBuffer", "ToggleReplayBuffer", "SaveReplayBuffer", "GetLastReplayBufferReplay", "GetOutputList", "GetOutputStatus", "StartOutput", "GetOutputSettings", "SetOutputSettings", "GetStreamStatus", "StopStream", "ToggleStream", "StartStream", "SendStreamCaption", "GetRecordStatus", "StartRecord", "ToggleRecordPause", "PauseRecord", "ResumeRecord", "SetMediaInputCursor", "GetMediaInputStatus", "OffsetMediaInputCursor", "TriggerMediaInputAction", "GetStudioModeEnabled", "OpenInputPropertiesDialog", "OpenInputFiltersDialog", "GetMonitorList"],
+      "obsVersion": "27.2.4",
+      "obsWebSocketVersion": "5.0.1",
+      "platform": "windows",
+      "platformDescription": "{{platformDescription}}",
+      "rpcVersion": 1,
+      "supportedImageFormats": ["bmp", "jpeg", "jpg", "pbm", "pgm", "png", "ppm", "xbm", "xpm"]
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid).Replace("{platformDescription}", platformDescription));
+  "op": 7
+}
+""");
     }
 
     public Task SendGetRecordDirectoryResponseAsync(string guid) {
-      return SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+      return SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""GetRecordDirectory"",
-    ""responseData"": {
-      ""recordDirectory"": ""{cd}""
+    "requestType": "GetRecordDirectory",
+    "responseData": {
+      "recordDirectory": "{{Directory.GetCurrentDirectory().Replace(@"\", @"\\")}}"
     }
   },
-  ""op"": 7
-}".Replace("{guid}", guid).Replace("{cd}", Directory.GetCurrentDirectory().Replace(@"\", @"\\")));
+  "op": 7
+}
+""");
     }
 
     public Task SendStudioModeStateChangedAsync(bool enabled = false) {
-      return SendAsync(@"{
-  ""op"": 5,
-  ""d"": {
-    ""eventType"": ""StudioModeStateChanged"",
-    ""eventIntent"": 1,
-    ""eventData"": {
-      ""studioModeEnabled"": {enabled},
+      return SendAsync($$"""
+{
+  "op": 5,
+  "d": {
+    "eventType": "StudioModeStateChanged",
+    "eventIntent": 1,
+    "eventData": {
+      "studioModeEnabled": {{(enabled ? "true" : "false")}},
     }
   }
-}".Replace("{enabled}", enabled ? "true" : "false"));
+}
+""");
     }
 
     public void Dispose() {

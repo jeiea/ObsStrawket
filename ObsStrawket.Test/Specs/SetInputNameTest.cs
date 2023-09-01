@@ -27,73 +27,85 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""inputName"": ""Browser source"",
-      ""newInputName"": ""test scene renamed""
+      string? guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "inputName": "Browser source",
+      "newInputName": "test scene renamed"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetInputName""
+    "requestId": "{guid}",
+    "requestType": "SetInputName"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""inputName"": ""test scene renamed"",
-      ""oldInputName"": ""Browser source""
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "inputName": "test scene renamed",
+      "oldInputName": "Browser source"
     },
-    ""eventIntent"": 8,
-    ""eventType"": ""InputNameChanged""
+    "eventIntent": 8,
+    "eventType": "InputNameChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetInputName""
+    "requestType": "SetInputName"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync(@"{
-  ""d"": {
-    ""requestData"": {
-      ""inputName"": ""test scene renamed"",
-      ""newInputName"": ""Browser source""
+      guid = await session.ReceiveAsync("""
+{
+  "d": {
+    "requestData": {
+      "inputName": "test scene renamed",
+      "newInputName": "Browser source"
     },
-    ""requestId"": ""{guid}"",
-    ""requestType"": ""SetInputName""
+    "requestId": "{guid}",
+    "requestType": "SetInputName"
   },
-  ""op"": 6
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""eventData"": {
-      ""inputName"": ""Browser source"",
-      ""oldInputName"": ""test scene renamed""
+  "op": 6
+}
+""").ConfigureAwait(false);
+      await session.SendAsync("""
+{
+  "d": {
+    "eventData": {
+      "inputName": "Browser source",
+      "oldInputName": "test scene renamed"
     },
-    ""eventIntent"": 8,
-    ""eventType"": ""InputNameChanged""
+    "eventIntent": 8,
+    "eventType": "InputNameChanged"
   },
-  ""op"": 5
-}").ConfigureAwait(false);
-      await session.SendAsync(@"{
-  ""d"": {
-    ""requestId"": ""{guid}"",
-    ""requestStatus"": {
-      ""code"": 100,
-      ""result"": true
+  "op": 5
+}
+""").ConfigureAwait(false);
+      await session.SendAsync($$"""
+{
+  "d": {
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
     },
-    ""requestType"": ""SetInputName""
+    "requestType": "SetInputName"
   },
-  ""op"": 7
-}".Replace("{guid}", guid)).ConfigureAwait(false);
+  "op": 7
+}
+""").ConfigureAwait(false);
     }
   }
 }
