@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace SourceGenerator {
   internal class EventGenerator {
-    private readonly SourceFetcher _fetcher = new();
+    private readonly IDirectoryHelper _directoryHelper;
+    private readonly ISourceFetcher _fetcher;
+
+    public EventGenerator(IDirectoryHelper directoryHelper, ISourceFetcher fetcher) {
+      _directoryHelper = directoryHelper;
+      _fetcher = fetcher;
+    }
 
     public async Task GenerateAsync() {
       var json = await _fetcher.GetModifiedProtocolJsonAsync().ConfigureAwait(false);

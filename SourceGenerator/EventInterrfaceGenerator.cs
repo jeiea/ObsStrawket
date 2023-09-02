@@ -5,9 +5,13 @@ using System.Threading.Tasks;
 
 namespace SourceGenerator {
   internal class EventInterfaceGenerator {
-    public static string ObsClientPath => "../../../../ObsStrawket/ObsClientSocket.cs";
+    private readonly IDirectoryHelper _directoryHelper;
+    private readonly ISourceFetcher _fetcher;
 
-    private readonly SourceFetcher _fetcher = new();
+    public EventInterfaceGenerator(IDirectoryHelper directoryHelper, ISourceFetcher fetcher) {
+      _directoryHelper = directoryHelper;
+      _fetcher = fetcher;
+    }
 
     public async Task GenerateAsync() {
       var json = await _fetcher.GetModifiedProtocolJsonAsync().ConfigureAwait(false);
@@ -42,7 +46,7 @@ namespace SourceGenerator {
       part.WriteLine();
       part.Write(@"    #endregion");
 
-      string previous = await File.ReadAllTextAsync(ObsClientPath).ConfigureAwait(false);
+      string previous = await File.ReadAllTextAsync(_directoryHelper.ObsClientPath).ConfigureAwait(false);
 
       bool isReplaced = false;
       string result = Regex.Replace(previous, @"    #region Events\r\n.*?#endregion", (match) => {
@@ -54,7 +58,7 @@ namespace SourceGenerator {
         throw new Exception("Unexpected file");
       }
 
-      await File.WriteAllTextAsync(ObsClientPath, result).ConfigureAwait(false);
+      await File.WriteAllTextAsync(_directoryHelper.ObsClientPath, result).ConfigureAwait(false);
     }
   }
 }
