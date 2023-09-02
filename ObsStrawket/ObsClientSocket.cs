@@ -505,7 +505,12 @@ namespace ObsStrawket {
     /// <summary>
     /// Close this connection. Pending requests will be cancelled.
     /// </summary>
-    public Task CloseAsync() => _clientSocket.CloseAsync();
+    public async Task CloseAsync() {
+      await _clientSocket.CloseAsync().ConfigureAwait(false);
+      if (_dispatch != null) {
+        await _dispatch.ConfigureAwait(false);
+      }
+    }
 
     /// <summary>
     /// Low level request method. It can send <see cref="RawRequest"/>.

@@ -4,6 +4,7 @@
 - ! Calling `ConnectAsync` or `CloseAsync` during a request or event subscription
   now throws an `OperationCancelledException`, whereas previously
   it might have thrown an `ObsWebSocketException`.
+- Prevent CloseAsync from emitting Disconnected event before it exits.
 - Fix integer overflow with some response field.
 - Fix throwing at second `Dispose()`.
 
