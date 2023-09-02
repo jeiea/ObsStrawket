@@ -52,6 +52,6 @@ jobs:
         run: |
           version=${{needs.test.outputs.version}}
           dotnet pack --include-source --configuration Release -p:Version=$version
-          echo dotnet nuget push ObsStrawket/bin/Release/*.symbols.nupkg --source https://api.nuget.org/v3/index.json
+          dotnet nuget push ObsStrawket/bin/Release/*.symbols.nupkg --source https://api.nuget.org/v3/index.json
           git tag v$version
           git push origin v$version
