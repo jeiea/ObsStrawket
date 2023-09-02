@@ -7,7 +7,13 @@ using System.Threading.Tasks;
 
 namespace SourceGenerator {
   internal class EnumGenerator {
-    private readonly SourceFetcher _fetcher = new();
+    private readonly IDirectoryHelper _directoryHelper;
+    private readonly ISourceFetcher _fetcher;
+
+    public EnumGenerator(IDirectoryHelper directoryHelper, ISourceFetcher fetcher) {
+      _directoryHelper = directoryHelper;
+      _fetcher = fetcher;
+    }
 
     public async Task GenerateAsync() {
       var json = await _fetcher.GetModifiedProtocolJsonAsync().ConfigureAwait(false);
@@ -28,7 +34,7 @@ namespace SourceGenerator {
         { "ObsOutputState", "Represents output sending state." },
       };
 
-      using var file = File.CreateText("../../../../ObsStrawket/DataTypes/Predefineds/Enums.cs");
+      using var file = File.CreateText($"{_directoryHelper.MainProjectDirectory}/DataTypes/Predefineds/Enums.cs");
       file.Write(@"using MessagePack;
 using MessagePack.Formatters;
 using System;

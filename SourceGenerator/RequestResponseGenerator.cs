@@ -5,12 +5,17 @@ using System.Threading.Tasks;
 
 namespace SourceGenerator {
   internal class RequestResponseGenerator {
-    private readonly SourceFetcher _fetcher = new();
+    private readonly IDirectoryHelper _directoryHelper;
+    private readonly ISourceFetcher _fetcher;
+
+    public RequestResponseGenerator(IDirectoryHelper directoryHelper, ISourceFetcher fetcher) {
+      _directoryHelper = directoryHelper;
+      _fetcher = fetcher;
+    }
 
     public async Task GenerateAsync() {
       var json = await _fetcher.GetModifiedProtocolJsonAsync().ConfigureAwait(false);
-
-      using var file = File.CreateText("../../../../ObsStrawket/DataTypes/Predefineds/RequestsAndResponses.cs");
+      using var file = File.CreateText($"{_directoryHelper.MainProjectDirectory}/DataTypes/Predefineds/RequestsAndResponses.cs");
 
       file.WriteLine(@"using MessagePack;
 using System.Collections.Generic;

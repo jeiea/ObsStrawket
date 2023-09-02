@@ -6,7 +6,12 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SourceGenerator {
-  internal class SourceFetcher {
+  interface ISourceFetcher {
+    Task<string> GetObsHeaderAsync();
+    Task<ProtocolJson> GetModifiedProtocolJsonAsync();
+  }
+
+  internal class SourceFetcher : ISourceFetcher {
     private static readonly string ProtocolJsonPath = "protocol.json";
     private static readonly string ObsHeaderPath = "Obs.h";
     private static readonly string _rawRoot = "https://raw.githubusercontent.com/obsproject/obs-websocket/master";
