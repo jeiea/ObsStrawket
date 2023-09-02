@@ -17,8 +17,8 @@ namespace SourceGenerator {
     public async Task GenerateAsync() {
       var json = await _fetcher.GetModifiedProtocolJsonAsync().ConfigureAwait(false);
 
-      using var file = File.CreateText("../../../../ObsStrawket/DataTypes/Predefineds/Events.cs");
-      file.Write(@"using MessagePack;
+      using var file = File.CreateText($"{_directoryHelper.MainProjectDirectory}/DataTypes/Predefineds/Events.cs");
+      file.Write(@"using System.Text.Json.Serialization;
 using System.Collections.Generic;
 
 namespace ObsStrawket.DataTypes.Predefineds {");
@@ -55,7 +55,7 @@ namespace ObsStrawket.DataTypes.Predefineds {");
             file.WriteLine("    /// <summary>");
             file.WriteLine("    /// {0}", TransformHelper.EscapeForXml(field.ValueDescription!));
             file.WriteLine("    /// </summary>");
-            file.WriteLine("    [Key(\"{0}\")]", field.ValueName);
+            file.WriteLine("    [JsonPropertyName(\"{0}\")]", field.ValueName);
             file.WriteLine("    {0}", MakeFieldDeclaration(
               field.ValueName!, field.ValueType!, field.ValueDescription!
             ));

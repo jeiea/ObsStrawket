@@ -1,6 +1,7 @@
 using MessagePack;
 using MessagePack.Formatters;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace ObsStrawket.DataTypes {
   // Input: search NLOHMANN_JSON_SERIALIZE_ENUM

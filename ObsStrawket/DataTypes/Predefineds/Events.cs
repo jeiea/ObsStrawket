@@ -1,4 +1,4 @@
-using MessagePack;
+using System.Text.Json.Serialization;
 using System.Collections.Generic;
 
 namespace ObsStrawket.DataTypes.Predefineds {
@@ -83,19 +83,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the vendor emitting the event
     /// </summary>
-    [Key("vendorName")]
+    [JsonPropertyName("vendorName")]
     public string VendorName { get; set; } = "";
 
     /// <summary>
     /// Vendor-provided event typedef
     /// </summary>
-    [Key("eventType")]
+    [JsonPropertyName("eventType")]
     public string VendorEventType { get; set; } = "";
 
     /// <summary>
     /// Vendor-provided event data. {} if event does not provide any data
     /// </summary>
-    [Key("eventData")]
+    [JsonPropertyName("eventData")]
     public Dictionary<string, object?> EventData { get; set; } = new();
   }
 
@@ -109,7 +109,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Custom event data
     /// </summary>
-    [Key("eventData")]
+    [JsonPropertyName("eventData")]
     public Dictionary<string, object?> EventData { get; set; } = new();
   }
 
@@ -126,7 +126,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the current scene collection
     /// </summary>
-    [Key("sceneCollectionName")]
+    [JsonPropertyName("sceneCollectionName")]
     public string SceneCollectionName { get; set; } = "";
   }
 
@@ -142,7 +142,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the new scene collection
     /// </summary>
-    [Key("sceneCollectionName")]
+    [JsonPropertyName("sceneCollectionName")]
     public string SceneCollectionName { get; set; } = "";
   }
 
@@ -156,7 +156,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Updated list of scene collections
     /// </summary>
-    [Key("sceneCollections")]
+    [JsonPropertyName("sceneCollections")]
     public List<string> SceneCollections { get; set; } = new();
   }
 
@@ -170,7 +170,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the current profile
     /// </summary>
-    [Key("profileName")]
+    [JsonPropertyName("profileName")]
     public string ProfileName { get; set; } = "";
   }
 
@@ -184,7 +184,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the new profile
     /// </summary>
-    [Key("profileName")]
+    [JsonPropertyName("profileName")]
     public string ProfileName { get; set; } = "";
   }
 
@@ -198,7 +198,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Updated list of profiles
     /// </summary>
-    [Key("profiles")]
+    [JsonPropertyName("profiles")]
     public List<string> Profiles { get; set; } = new();
   }
 
@@ -212,13 +212,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the new scene
     /// </summary>
-    [Key("sceneName")]
+    [JsonPropertyName("sceneName")]
     public string SceneName { get; set; } = "";
 
     /// <summary>
     /// Whether the new scene is a group
     /// </summary>
-    [Key("isGroup")]
+    [JsonPropertyName("isGroup")]
     public bool IsGroup { get; set; }
   }
 
@@ -232,13 +232,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the removed scene
     /// </summary>
-    [Key("sceneName")]
+    [JsonPropertyName("sceneName")]
     public string SceneName { get; set; } = "";
 
     /// <summary>
     /// Whether the scene was a group
     /// </summary>
-    [Key("isGroup")]
+    [JsonPropertyName("isGroup")]
     public bool IsGroup { get; set; }
   }
 
@@ -252,13 +252,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Old name of the scene
     /// </summary>
-    [Key("oldSceneName")]
+    [JsonPropertyName("oldSceneName")]
     public string OldSceneName { get; set; } = "";
 
     /// <summary>
     /// New name of the scene
     /// </summary>
-    [Key("sceneName")]
+    [JsonPropertyName("sceneName")]
     public string SceneName { get; set; } = "";
   }
 
@@ -272,7 +272,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the scene that was switched to
     /// </summary>
-    [Key("sceneName")]
+    [JsonPropertyName("sceneName")]
     public string SceneName { get; set; } = "";
   }
 
@@ -286,7 +286,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the scene that was switched to
     /// </summary>
-    [Key("sceneName")]
+    [JsonPropertyName("sceneName")]
     public string SceneName { get; set; } = "";
   }
 
@@ -302,7 +302,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Updated array of scenes
     /// </summary>
-    [Key("scenes")]
+    [JsonPropertyName("scenes")]
     public List<Scene> Scenes { get; set; } = new();
   }
 
@@ -316,31 +316,31 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the input
     /// </summary>
-    [Key("inputName")]
+    [JsonPropertyName("inputName")]
     public string InputName { get; set; } = "";
 
     /// <summary>
     /// The kind of the input
     /// </summary>
-    [Key("inputKind")]
+    [JsonPropertyName("inputKind")]
     public string InputKind { get; set; } = "";
 
     /// <summary>
     /// The unversioned kind of input (aka no <c>_v2</c> stuff)
     /// </summary>
-    [Key("unversionedInputKind")]
+    [JsonPropertyName("unversionedInputKind")]
     public string UnversionedInputKind { get; set; } = "";
 
     /// <summary>
     /// The settings configured to the input when it was created
     /// </summary>
-    [Key("inputSettings")]
+    [JsonPropertyName("inputSettings")]
     public Dictionary<string, object?> InputSettings { get; set; } = new();
 
     /// <summary>
     /// The default settings for the input
     /// </summary>
-    [Key("defaultInputSettings")]
+    [JsonPropertyName("defaultInputSettings")]
     public Dictionary<string, object?> DefaultInputSettings { get; set; } = new();
   }
 
@@ -354,7 +354,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the input
     /// </summary>
-    [Key("inputName")]
+    [JsonPropertyName("inputName")]
     public string InputName { get; set; } = "";
   }
 
@@ -368,13 +368,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Old name of the input
     /// </summary>
-    [Key("oldInputName")]
+    [JsonPropertyName("oldInputName")]
     public string OldInputName { get; set; } = "";
 
     /// <summary>
     /// New name of the input
     /// </summary>
-    [Key("inputName")]
+    [JsonPropertyName("inputName")]
     public string InputName { get; set; } = "";
   }
 
@@ -390,13 +390,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the input
     /// </summary>
-    [Key("inputName")]
+    [JsonPropertyName("inputName")]
     public string InputName { get; set; } = "";
 
     /// <summary>
     /// Whether the input is active
     /// </summary>
-    [Key("videoActive")]
+    [JsonPropertyName("videoActive")]
     public bool VideoActive { get; set; }
   }
 
@@ -412,13 +412,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the input
     /// </summary>
-    [Key("inputName")]
+    [JsonPropertyName("inputName")]
     public string InputName { get; set; } = "";
 
     /// <summary>
     /// Whether the input is showing
     /// </summary>
-    [Key("videoShowing")]
+    [JsonPropertyName("videoShowing")]
     public bool VideoShowing { get; set; }
   }
 
@@ -432,13 +432,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the input
     /// </summary>
-    [Key("inputName")]
+    [JsonPropertyName("inputName")]
     public string InputName { get; set; } = "";
 
     /// <summary>
     /// Whether the input is muted
     /// </summary>
-    [Key("inputMuted")]
+    [JsonPropertyName("inputMuted")]
     public bool InputMuted { get; set; }
   }
 
@@ -452,19 +452,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the input
     /// </summary>
-    [Key("inputName")]
+    [JsonPropertyName("inputName")]
     public string InputName { get; set; } = "";
 
     /// <summary>
     /// New volume level multiplier
     /// </summary>
-    [Key("inputVolumeMul")]
+    [JsonPropertyName("inputVolumeMul")]
     public double InputVolumeMul { get; set; }
 
     /// <summary>
     /// New volume level in dB
     /// </summary>
-    [Key("inputVolumeDb")]
+    [JsonPropertyName("inputVolumeDb")]
     public double InputVolumeDb { get; set; }
   }
 
@@ -478,13 +478,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the affected input
     /// </summary>
-    [Key("inputName")]
+    [JsonPropertyName("inputName")]
     public string InputName { get; set; } = "";
 
     /// <summary>
     /// New audio balance value of the input
     /// </summary>
-    [Key("inputAudioBalance")]
+    [JsonPropertyName("inputAudioBalance")]
     public double InputAudioBalance { get; set; }
   }
 
@@ -498,13 +498,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the input
     /// </summary>
-    [Key("inputName")]
+    [JsonPropertyName("inputName")]
     public string InputName { get; set; } = "";
 
     /// <summary>
     /// New sync offset in milliseconds
     /// </summary>
-    [Key("inputAudioSyncOffset")]
+    [JsonPropertyName("inputAudioSyncOffset")]
     public int InputAudioSyncOffset { get; set; }
   }
 
@@ -518,13 +518,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the input
     /// </summary>
-    [Key("inputName")]
+    [JsonPropertyName("inputName")]
     public string InputName { get; set; } = "";
 
     /// <summary>
     /// Object of audio tracks along with their associated enable states
     /// </summary>
-    [Key("inputAudioTracks")]
+    [JsonPropertyName("inputAudioTracks")]
     public Dictionary<string, object?> InputAudioTracks { get; set; } = new();
   }
 
@@ -544,13 +544,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the input
     /// </summary>
-    [Key("inputName")]
+    [JsonPropertyName("inputName")]
     public string InputName { get; set; } = "";
 
     /// <summary>
     /// New monitor type of the input
     /// </summary>
-    [Key("monitorType")]
+    [JsonPropertyName("monitorType")]
     public MonitoringType MonitorType { get; set; } = new();
   }
 
@@ -564,7 +564,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Array of active inputs with their associated volume levels
     /// </summary>
-    [Key("inputs")]
+    [JsonPropertyName("inputs")]
     public List<Input> Inputs { get; set; } = new();
   }
 
@@ -578,7 +578,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the new transition
     /// </summary>
-    [Key("transitionName")]
+    [JsonPropertyName("transitionName")]
     public string TransitionName { get; set; } = "";
   }
 
@@ -592,7 +592,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Transition duration in milliseconds
     /// </summary>
-    [Key("transitionDuration")]
+    [JsonPropertyName("transitionDuration")]
     public long TransitionDuration { get; set; }
   }
 
@@ -606,7 +606,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Scene transition name
     /// </summary>
-    [Key("transitionName")]
+    [JsonPropertyName("transitionName")]
     public string TransitionName { get; set; } = "";
   }
 
@@ -622,7 +622,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Scene transition name
     /// </summary>
-    [Key("transitionName")]
+    [JsonPropertyName("transitionName")]
     public string TransitionName { get; set; } = "";
   }
 
@@ -641,7 +641,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Scene transition name
     /// </summary>
-    [Key("transitionName")]
+    [JsonPropertyName("transitionName")]
     public string TransitionName { get; set; } = "";
   }
 
@@ -655,13 +655,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the source
     /// </summary>
-    [Key("sourceName")]
+    [JsonPropertyName("sourceName")]
     public string SourceName { get; set; } = "";
 
     /// <summary>
     /// Array of filter objects
     /// </summary>
-    [Key("filters")]
+    [JsonPropertyName("filters")]
     public List<SourceFilter> Filters { get; set; } = new();
   }
 
@@ -675,37 +675,37 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the source the filter was added to
     /// </summary>
-    [Key("sourceName")]
+    [JsonPropertyName("sourceName")]
     public string SourceName { get; set; } = "";
 
     /// <summary>
     /// Name of the filter
     /// </summary>
-    [Key("filterName")]
+    [JsonPropertyName("filterName")]
     public string FilterName { get; set; } = "";
 
     /// <summary>
     /// The kind of the filter
     /// </summary>
-    [Key("filterKind")]
+    [JsonPropertyName("filterKind")]
     public string FilterKind { get; set; } = "";
 
     /// <summary>
     /// Index position of the filter
     /// </summary>
-    [Key("filterIndex")]
+    [JsonPropertyName("filterIndex")]
     public int FilterIndex { get; set; }
 
     /// <summary>
     /// The settings configured to the filter when it was created
     /// </summary>
-    [Key("filterSettings")]
+    [JsonPropertyName("filterSettings")]
     public Dictionary<string, object?> FilterSettings { get; set; } = new();
 
     /// <summary>
     /// The default settings for the filter
     /// </summary>
-    [Key("defaultFilterSettings")]
+    [JsonPropertyName("defaultFilterSettings")]
     public Dictionary<string, object?> DefaultFilterSettings { get; set; } = new();
   }
 
@@ -719,13 +719,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the source the filter was on
     /// </summary>
-    [Key("sourceName")]
+    [JsonPropertyName("sourceName")]
     public string SourceName { get; set; } = "";
 
     /// <summary>
     /// Name of the filter
     /// </summary>
-    [Key("filterName")]
+    [JsonPropertyName("filterName")]
     public string FilterName { get; set; } = "";
   }
 
@@ -739,19 +739,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// The source the filter is on
     /// </summary>
-    [Key("sourceName")]
+    [JsonPropertyName("sourceName")]
     public string SourceName { get; set; } = "";
 
     /// <summary>
     /// Old name of the filter
     /// </summary>
-    [Key("oldFilterName")]
+    [JsonPropertyName("oldFilterName")]
     public string OldFilterName { get; set; } = "";
 
     /// <summary>
     /// New name of the filter
     /// </summary>
-    [Key("filterName")]
+    [JsonPropertyName("filterName")]
     public string FilterName { get; set; } = "";
   }
 
@@ -765,19 +765,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the source the filter is on
     /// </summary>
-    [Key("sourceName")]
+    [JsonPropertyName("sourceName")]
     public string SourceName { get; set; } = "";
 
     /// <summary>
     /// Name of the filter
     /// </summary>
-    [Key("filterName")]
+    [JsonPropertyName("filterName")]
     public string FilterName { get; set; } = "";
 
     /// <summary>
     /// Whether the filter is enabled
     /// </summary>
-    [Key("filterEnabled")]
+    [JsonPropertyName("filterEnabled")]
     public bool FilterEnabled { get; set; }
   }
 
@@ -791,25 +791,25 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the scene the item was added to
     /// </summary>
-    [Key("sceneName")]
+    [JsonPropertyName("sceneName")]
     public string SceneName { get; set; } = "";
 
     /// <summary>
     /// Name of the underlying source (input/scene)
     /// </summary>
-    [Key("sourceName")]
+    [JsonPropertyName("sourceName")]
     public string SourceName { get; set; } = "";
 
     /// <summary>
     /// Numeric ID of the scene item
     /// </summary>
-    [Key("sceneItemId")]
+    [JsonPropertyName("sceneItemId")]
     public int SceneItemId { get; set; }
 
     /// <summary>
     /// Index position of the item
     /// </summary>
-    [Key("sceneItemIndex")]
+    [JsonPropertyName("sceneItemIndex")]
     public int SceneItemIndex { get; set; }
   }
 
@@ -825,19 +825,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the scene the item was removed from
     /// </summary>
-    [Key("sceneName")]
+    [JsonPropertyName("sceneName")]
     public string SceneName { get; set; } = "";
 
     /// <summary>
     /// Name of the underlying source (input/scene)
     /// </summary>
-    [Key("sourceName")]
+    [JsonPropertyName("sourceName")]
     public string SourceName { get; set; } = "";
 
     /// <summary>
     /// Numeric ID of the scene item
     /// </summary>
-    [Key("sceneItemId")]
+    [JsonPropertyName("sceneItemId")]
     public int SceneItemId { get; set; }
   }
 
@@ -851,13 +851,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the scene
     /// </summary>
-    [Key("sceneName")]
+    [JsonPropertyName("sceneName")]
     public string SceneName { get; set; } = "";
 
     /// <summary>
     /// Array of scene item objects
     /// </summary>
-    [Key("sceneItems")]
+    [JsonPropertyName("sceneItems")]
     public List<BasicSceneItem> SceneItems { get; set; } = new();
   }
 
@@ -871,19 +871,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the scene the item is in
     /// </summary>
-    [Key("sceneName")]
+    [JsonPropertyName("sceneName")]
     public string SceneName { get; set; } = "";
 
     /// <summary>
     /// Numeric ID of the scene item
     /// </summary>
-    [Key("sceneItemId")]
+    [JsonPropertyName("sceneItemId")]
     public int SceneItemId { get; set; }
 
     /// <summary>
     /// Whether the scene item is enabled (visible)
     /// </summary>
-    [Key("sceneItemEnabled")]
+    [JsonPropertyName("sceneItemEnabled")]
     public bool SceneItemEnabled { get; set; }
   }
 
@@ -897,19 +897,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the scene the item is in
     /// </summary>
-    [Key("sceneName")]
+    [JsonPropertyName("sceneName")]
     public string SceneName { get; set; } = "";
 
     /// <summary>
     /// Numeric ID of the scene item
     /// </summary>
-    [Key("sceneItemId")]
+    [JsonPropertyName("sceneItemId")]
     public int SceneItemId { get; set; }
 
     /// <summary>
     /// Whether the scene item is locked
     /// </summary>
-    [Key("sceneItemLocked")]
+    [JsonPropertyName("sceneItemLocked")]
     public bool SceneItemLocked { get; set; }
   }
 
@@ -923,13 +923,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the scene the item is in
     /// </summary>
-    [Key("sceneName")]
+    [JsonPropertyName("sceneName")]
     public string SceneName { get; set; } = "";
 
     /// <summary>
     /// Numeric ID of the scene item
     /// </summary>
-    [Key("sceneItemId")]
+    [JsonPropertyName("sceneItemId")]
     public int SceneItemId { get; set; }
   }
 
@@ -943,19 +943,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// The name of the scene the item is in
     /// </summary>
-    [Key("sceneName")]
+    [JsonPropertyName("sceneName")]
     public string SceneName { get; set; } = "";
 
     /// <summary>
     /// Numeric ID of the scene item
     /// </summary>
-    [Key("sceneItemId")]
+    [JsonPropertyName("sceneItemId")]
     public int SceneItemId { get; set; }
 
     /// <summary>
     /// New transform/crop info of the scene item
     /// </summary>
-    [Key("sceneItemTransform")]
+    [JsonPropertyName("sceneItemTransform")]
     public Dictionary<string, object?> SceneItemTransform { get; set; } = new();
   }
 
@@ -969,13 +969,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Whether the output is active
     /// </summary>
-    [Key("outputActive")]
+    [JsonPropertyName("outputActive")]
     public bool OutputActive { get; set; }
 
     /// <summary>
     /// The specific state of the output
     /// </summary>
-    [Key("outputState")]
+    [JsonPropertyName("outputState")]
     public ObsOutputState OutputState { get; set; } = new();
   }
 
@@ -989,19 +989,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Whether the output is active
     /// </summary>
-    [Key("outputActive")]
+    [JsonPropertyName("outputActive")]
     public bool OutputActive { get; set; }
 
     /// <summary>
     /// The specific state of the output
     /// </summary>
-    [Key("outputState")]
+    [JsonPropertyName("outputState")]
     public ObsOutputState OutputState { get; set; } = new();
 
     /// <summary>
     /// File name for the saved recording, if record stopped. <c>null</c> otherwise
     /// </summary>
-    [Key("outputPath")]
+    [JsonPropertyName("outputPath")]
     public string? OutputPath { get; set; }
   }
 
@@ -1015,13 +1015,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Whether the output is active
     /// </summary>
-    [Key("outputActive")]
+    [JsonPropertyName("outputActive")]
     public bool OutputActive { get; set; }
 
     /// <summary>
     /// The specific state of the output
     /// </summary>
-    [Key("outputState")]
+    [JsonPropertyName("outputState")]
     public ObsOutputState OutputState { get; set; } = new();
   }
 
@@ -1035,13 +1035,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Whether the output is active
     /// </summary>
-    [Key("outputActive")]
+    [JsonPropertyName("outputActive")]
     public bool OutputActive { get; set; }
 
     /// <summary>
     /// The specific state of the output
     /// </summary>
-    [Key("outputState")]
+    [JsonPropertyName("outputState")]
     public ObsOutputState OutputState { get; set; } = new();
   }
 
@@ -1055,7 +1055,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Path of the saved replay file
     /// </summary>
-    [Key("savedReplayPath")]
+    [JsonPropertyName("savedReplayPath")]
     public string SavedReplayPath { get; set; } = "";
   }
 
@@ -1069,7 +1069,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the input
     /// </summary>
-    [Key("inputName")]
+    [JsonPropertyName("inputName")]
     public string InputName { get; set; } = "";
   }
 
@@ -1083,7 +1083,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the input
     /// </summary>
-    [Key("inputName")]
+    [JsonPropertyName("inputName")]
     public string InputName { get; set; } = "";
   }
 
@@ -1097,13 +1097,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Name of the input
     /// </summary>
-    [Key("inputName")]
+    [JsonPropertyName("inputName")]
     public string InputName { get; set; } = "";
 
     /// <summary>
     /// Action performed on the input. See <c>ObsMediaInputAction</c> enum
     /// </summary>
-    [Key("mediaAction")]
+    [JsonPropertyName("mediaAction")]
     public MediaInputAction MediaAction { get; set; } = new();
   }
 
@@ -1117,7 +1117,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// True == Enabled, False == Disabled
     /// </summary>
-    [Key("studioModeEnabled")]
+    [JsonPropertyName("studioModeEnabled")]
     public bool StudioModeEnabled { get; set; }
   }
 
@@ -1135,7 +1135,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <summary>
     /// Path of the saved image file
     /// </summary>
-    [Key("savedScreenshotPath")]
+    [JsonPropertyName("savedScreenshotPath")]
     public string SavedScreenshotPath { get; set; } = "";
   }
 }

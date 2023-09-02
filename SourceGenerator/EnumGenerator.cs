@@ -35,9 +35,7 @@ namespace SourceGenerator {
       };
 
       using var file = File.CreateText($"{_directoryHelper.MainProjectDirectory}/DataTypes/Predefineds/Enums.cs");
-      file.Write(@"using MessagePack;
-using MessagePack.Formatters;
-using System;
+      file.Write(@" using System;
 using System.Runtime.Serialization;
 
 namespace ObsStrawket.DataTypes.Predefineds {");

@@ -24,14 +24,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="2.5.124" />
-    <PackageReference Include="MessagePackAnalyzer" Version="2.5.124">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
-    <PackageReference Include="System.IO.Pipelines" Version="7.0.0" />
     <PackageReference Include="System.Net.WebSockets" Version="4.3.0" />
+    <PackageReference Include="System.Text.Json" Version="7.0.3" />
     <PackageReference Include="System.Threading.Channels" Version="7.0.0" />
   </ItemGroup>
 </Project>
