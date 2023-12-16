@@ -13,6 +13,7 @@ namespace ObsStrawket.Test {
       await new ClientFlow().RunClientAsync(server.Uri, client, cancellation: cancellation.Token);
       await new ClientFlow().RunClientAsync(server.Uri, client, cancellation: cancellation.Token);
       client.Dispose();
+      // Duplicate disposal should be no problem.
       client.Dispose();
     }
   }
