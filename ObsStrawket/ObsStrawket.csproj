@@ -3,7 +3,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>ObsStrawket</RootNamespace>
     <Nullable>enable</Nullable>
-    <LangVersion>10</LangVersion>
+    <LangVersion>latest</LangVersion>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
     <PackageProjectUrl>https://github.com/jeiea/ObsStrawket</PackageProjectUrl>

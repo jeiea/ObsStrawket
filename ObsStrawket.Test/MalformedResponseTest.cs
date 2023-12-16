@@ -1,5 +1,7 @@
 using ObsStrawket.DataTypes;
 using ObsStrawket.Test.Utilities;
+using System.Net;
+using System.Net.WebSockets;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -7,7 +9,19 @@ namespace ObsStrawket.Test {
   public class MalformedResponseTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new MalformedResponseFlow()).ConfigureAwait(false);
+      try {
+        await SpecTester.TestAsync(new MalformedResponseFlow()).ConfigureAwait(false);
+      }
+      catch (WebSocketException exception) {
+        if (exception.InnerException is not HttpListenerException mayBeClientAbort) {
+          throw;
+        }
+        // Message is "An operation was attempted on a nonexistent network connection."
+        bool isClientAbort = mayBeClientAbort.ErrorCode == 1229;
+        if (!isClientAbort) {
+          throw;
+        }
+      }
     }
   }
 

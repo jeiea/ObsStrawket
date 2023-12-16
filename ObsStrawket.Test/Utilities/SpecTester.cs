@@ -30,7 +30,7 @@ namespace ObsStrawket.Test.Utilities {
         await client.CloseAsync().ConfigureAwait(false);
       }
 
-      await TestUtil.WhenAnyThrowsAsync(taskSource.Task, RunClientAsync()).ConfigureAwait(false);
+      await Task.WhenAll(taskSource.Task, RunClientAsync()).ConfigureAwait(false);
     }
   }
 }
