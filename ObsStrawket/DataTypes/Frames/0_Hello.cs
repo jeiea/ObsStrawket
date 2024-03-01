@@ -1,5 +1,7 @@
+using System.Text.Json.Serialization;
 
 namespace ObsStrawket.DataTypes {
+
   /// <summary>
   /// Hello (OpCode 0)<br />
   /// Sent from: obs-websocket<br />
@@ -14,29 +16,30 @@ namespace ObsStrawket.DataTypes {
   /// }</code>
   /// </summary>
   public class Hello : IOpCodeMessage {
+
     /// <summary>
     /// <see cref="OpCode.Hello"/> (OpCode 0)
     /// </summary>
-    [IgnoreMember]
+    [JsonIgnore]
     public OpCode Op => OpCode.Hello;
 
     /// <summary>
     /// Websocket server's library version.
     /// </summary>
-    [Key("obsWebSocketVersion")]
+    [JsonPropertyName("obsWebSocketVersion")]
     public string ObsWebSocketVersion { get; set; } = "";
 
     /// <summary>
     /// A version number which gets incremented on each breaking change to the obs-websocket protocol.
     /// Its usage in this context is to provide the current rpc version that the server would like to use.
     /// </summary>
-    [Key("rpcVersion")]
+    [JsonPropertyName("rpcVersion")]
     public int RpcVersion { get; set; }
 
     /// <summary>
     /// Authentication strings
     /// </summary>
-    [Key("authentication")]
+    [JsonPropertyName("authentication")]
     public HelloAuthentication? Authentication { get; set; }
   }
 
@@ -60,16 +63,17 @@ namespace ObsStrawket.DataTypes {
   /// For real-world examples of the authentication string creation, refer to the obs-websocket client libraries listed on the README.
   /// </summary>
   public class HelloAuthentication {
+
     /// <summary>
     /// Additional input to a one-way function that hashes base64 secret.
     /// </summary>
-    [Key("challenge")]
+    [JsonPropertyName("challenge")]
     public string Challenge { get; set; } = "";
 
     /// <summary>
     /// Random base64 string provided as an additional input to a one-way function that hashes password.
     /// </summary>
-    [Key("salt")]
+    [JsonPropertyName("salt")]
     public string Salt { get; set; } = "";
   }
 }
