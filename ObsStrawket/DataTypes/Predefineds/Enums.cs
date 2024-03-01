@@ -1,12 +1,15 @@
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace ObsStrawket.DataTypes.Predefineds {
+
   /// <summary>
   /// Flag specifying which events to subscribe to.
   /// </summary>
   [Flags]
   public enum EventSubscription {
+
     /// <summary>
     /// Subcription value used to disable all events.
     /// </summary>
@@ -114,6 +117,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Type of method to process request
   /// </summary>
   public enum RequestBatchExecutionType {
+
     /// <summary>
     /// Not a request batch.
     /// </summary>
@@ -150,6 +154,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Request result code
   /// </summary>
   public enum RequestStatus {
+
     /// <summary>
     /// Unknown status, should never be used.
     /// </summary>
@@ -370,8 +375,9 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// <summary>
   /// Represents output sending state.
   /// </summary>
-  [MessagePackFormatter(typeof(EnumAsStringFormatter<ObsOutputState>))]
+  [JsonConverter(typeof(JsonStringEnumMemberConverter))]
   public enum ObsOutputState {
+
     /// <summary>
     /// Unknown state.
     /// </summary>
@@ -430,8 +436,9 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// <summary>
   /// Actions used with media source and <c>TriggerMediaInputAction</c>.
   /// </summary>
-  [MessagePackFormatter(typeof(EnumAsStringFormatter<MediaInputAction>))]
+  [JsonConverter(typeof(JsonStringEnumMemberConverter))]
   public enum MediaInputAction {
+
     /// <summary>
     /// No action.
     /// </summary>
@@ -479,6 +486,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Reason that OBS closed the connection.
   /// </summary>
   public enum WebSocketCloseCode {
+
     /// <summary>
     /// For internal use only to tell the request handler not to perform any close action.
     /// </summary>
@@ -566,6 +574,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Type of OBS websocket protocol message.
   /// </summary>
   public enum WebSocketOpCode {
+
     /// <summary>
     /// The initial message sent by obs-websocket to newly connected clients.
     /// </summary>

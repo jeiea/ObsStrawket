@@ -1,4 +1,5 @@
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace ObsStrawket.DataTypes {
   // Input: search NLOHMANN_JSON_SERIALIZE_ENUM
@@ -7,21 +8,25 @@ namespace ObsStrawket.DataTypes {
   /// <summary>
   /// Represents OBS source type.
   /// </summary>
-  [MessagePackFormatter(typeof(EnumAsStringFormatter<SourceType>))]
+  [JsonConverter(typeof(JsonStringEnumMemberConverter))]
   public enum SourceType {
+
     /// <summary>
     /// Input source
     /// </summary>
     [EnumMember(Value = "OBS_SOURCE_TYPE_INPUT")]
     Input,
+
     /// <summary>
     /// </summary>
     [EnumMember(Value = "OBS_SOURCE_TYPE_FILTER")]
     Filter,
+
     /// <summary>
     /// </summary>
     [EnumMember(Value = "OBS_SOURCE_TYPE_TRANSITION")]
     Transition,
+
     /// <summary>
     /// Scene source
     /// </summary>
@@ -32,18 +37,21 @@ namespace ObsStrawket.DataTypes {
   /// <summary>
   /// The desktop audio monitoring type.
   /// </summary>
-  [MessagePackFormatter(typeof(EnumAsStringFormatter<MonitoringType>))]
+  [JsonConverter(typeof(JsonStringEnumMemberConverter))]
   public enum MonitoringType {
+
     /// <summary>
     /// Do not monitor
     /// </summary>
     [EnumMember(Value = "OBS_MONITORING_TYPE_NONE")]
     None,
+
     /// <summary>
     /// Send to monitor device, no outputs
     /// </summary>
     [EnumMember(Value = "OBS_MONITORING_TYPE_MONITOR_ONLY")]
     Only,
+
     /// <summary>
     /// Send to monitor device and outputs
     /// </summary>
@@ -54,37 +62,45 @@ namespace ObsStrawket.DataTypes {
   /// <summary>
   /// State of the media.
   /// </summary>
-  [MessagePackFormatter(typeof(EnumAsStringFormatter<MediaState>))]
+  [JsonConverter(typeof(JsonStringEnumMemberConverter))]
   public enum MediaState {
+
     /// <summary>
     /// Invalid or unsupported state.
     /// </summary>
     [EnumMember(Value = "OBS_MEDIA_STATE_NONE")]
     None,
+
     /// <summary>
     /// </summary>
     [EnumMember(Value = "OBS_MEDIA_STATE_PLAYING")]
     Playing,
+
     /// <summary>
     /// </summary>
     [EnumMember(Value = "OBS_MEDIA_STATE_OPENING")]
     Opening,
+
     /// <summary>
     /// </summary>
     [EnumMember(Value = "OBS_MEDIA_STATE_BUFFERING")]
     Buffering,
+
     /// <summary>
     /// </summary>
     [EnumMember(Value = "OBS_MEDIA_STATE_PAUSED")]
     Paused,
+
     /// <summary>
     /// </summary>
     [EnumMember(Value = "OBS_MEDIA_STATE_STOPPED")]
     Stopped,
+
     /// <summary>
     /// </summary>
     [EnumMember(Value = "OBS_MEDIA_STATE_ENDED")]
     Ended,
+
     /// <summary>
     /// </summary>
     [EnumMember(Value = "OBS_MEDIA_STATE_ERROR")]
@@ -95,38 +111,45 @@ namespace ObsStrawket.DataTypes {
   /// The bounding box type of a scene item. Bounding boxes are used to
   /// stretch/position the source relative to a specific bounding box of a specific size.
   /// </summary>
-  [MessagePackFormatter(typeof(EnumAsStringFormatter<BoundsType>))]
+  [JsonConverter(typeof(JsonStringEnumMemberConverter))]
   public enum BoundsType {
+
     /// <summary>
     /// No bounding box
     /// </summary>
     [EnumMember(Value = "OBS_BOUNDS_NONE")]
     None,
+
     /// <summary>
     /// Stretch to the bounding box without preserving aspect ratio
     /// </summary>
     [EnumMember(Value = "OBS_BOUNDS_STRETCH")]
     Stretch,
+
     /// <summary>
     /// Scales with aspect ratio to inner bounding box rectangle
     /// </summary>
     [EnumMember(Value = "OBS_BOUNDS_SCALE_INNER")]
     Inner,
+
     /// <summary>
     /// Scales with aspect ratio to outer bounding box rectangle
     /// </summary>
     [EnumMember(Value = "OBS_BOUNDS_SCALE_OUTER")]
     Outer,
+
     /// <summary>
     /// Scales with aspect ratio to the bounding box width
     /// </summary>
     [EnumMember(Value = "OBS_BOUNDS_SCALE_TO_WIDTH")]
     Width,
+
     /// <summary>
     /// Scales with aspect ratio to the bounding box height
     /// </summary>
     [EnumMember(Value = "OBS_BOUNDS_SCALE_TO_HEIGHT")]
     Height,
+
     /// <summary>
     /// Scales with aspect ratio, but only to the size of the source maximum
     /// </summary>
@@ -137,23 +160,27 @@ namespace ObsStrawket.DataTypes {
   /// <summary>
   /// The blend mode of a scene item.
   /// </summary>
-  [MessagePackFormatter(typeof(EnumAsStringFormatter<BlendingType>))]
+  [JsonConverter(typeof(JsonStringEnumMemberConverter))]
   public enum BlendingType {
+
     /// <summary>
     /// Overlay.
     /// </summary>
     [EnumMember(Value = "OBS_BLEND_NORMAL")]
     Normal,
+
     /// <summary>
     /// Add RGB value.
     /// </summary>
     [EnumMember(Value = "OBS_BLEND_ADDITIVE")]
     Additive,
+
     /// <summary>
     /// Subtract RGB value.
     /// </summary>
     [EnumMember(Value = "OBS_BLEND_SUBTRACT")]
     Subtract,
+
     /// <summary>
     /// the values of the pixels in the two layers are inverted, multiplied, and then inverted again.
     /// The result is the opposite of Multiply: wherever either layer was darker than white,
@@ -161,19 +188,22 @@ namespace ObsStrawket.DataTypes {
     /// </summary>
     [EnumMember(Value = "OBS_BLEND_SCREEN")]
     Screen,
+
     /// <summary>
     /// takes the RGB channel values from 0 to 1 of each pixel in the top layer and
     /// multiples them with the values for the corresponding pixel from the bottom layer.
     /// </summary>
     [EnumMember(Value = "OBS_BLEND_MULTIPLY")]
     Multiply,
+
     /// <summary>
     /// It selects the maximum of each component from the foreground and background pixels.
     /// </summary>
     [EnumMember(Value = "OBS_BLEND_LIGHTEN")]
     Lighten,
+
     /// <summary>
-    /// Use a pixel that retains the smallest components of the foreground and background pixels. 
+    /// Use a pixel that retains the smallest components of the foreground and background pixels.
     /// </summary>
     [EnumMember(Value = "OBS_BLEND_DARKEN")]
     Darken,
@@ -182,13 +212,15 @@ namespace ObsStrawket.DataTypes {
   /// <summary>
   /// Area where data are stored.
   /// </summary>
-  [MessagePackFormatter(typeof(EnumAsStringFormatter<DataRealm>))]
+  [JsonConverter(typeof(JsonStringEnumMemberConverter))]
   public enum DataRealm {
+
     /// <summary>
     /// For global data.
     /// </summary>
     [EnumMember(Value = "OBS_WEBSOCKET_DATA_REALM_GLOBAL")]
     Global,
+
     /// <summary>
     /// For data per profile.
     /// </summary>
@@ -199,17 +231,20 @@ namespace ObsStrawket.DataTypes {
   /// <summary>
   /// Represents projector for a specific output video mix.
   /// </summary>
-  [MessagePackFormatter(typeof(EnumAsStringFormatter<VideoMixType>))]
+  [JsonConverter(typeof(JsonStringEnumMemberConverter))]
   public enum VideoMixType {
+
     /// <summary>
     /// Studio mode preview
     /// </summary>
     [EnumMember(Value = "OBS_WEBSOCKET_VIDEO_MIX_TYPE_PREVIEW")]
     Preview,
+
     /// <summary>
     /// </summary>
     [EnumMember(Value = "OBS_WEBSOCKET_VIDEO_MIX_TYPE_PROGRAM")]
     Program,
+
     /// <summary>
     /// </summary>
     [EnumMember(Value = "OBS_WEBSOCKET_VIDEO_MIX_TYPE_MULTIVIEW")]
@@ -219,12 +254,14 @@ namespace ObsStrawket.DataTypes {
   /// <summary>
   /// Type of streaming options
   /// </summary>
-  [MessagePackFormatter(typeof(EnumAsStringFormatter<StreamServiceType>))]
+  [JsonConverter(typeof(JsonStringEnumMemberConverter))]
   public enum StreamServiceType {
+
     /// <summary>
     /// </summary>
     [EnumMember(Value = "rtmp_common")]
     RtmpCommon,
+
     /// <summary>
     /// </summary>
     [EnumMember(Value = "rtmp_custom")]

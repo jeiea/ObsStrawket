@@ -1,4 +1,3 @@
-using ObsStrawket.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -11,7 +10,7 @@ namespace ObsStrawket.DataTypes {
   /// Output capability flags
   /// </summary>
   [Flags]
-  [MessagePackFormatter(typeof(EnumAsStringFormatter<OutputFlags>))]
+  [JsonConverter(typeof(JsonStringEnumMemberConverter))]
   public enum OutputFlags {
 
     /// <summary>

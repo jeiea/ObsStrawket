@@ -51,7 +51,7 @@ namespace ObsStrawket.DataTypes.Predefineds {");
         string sample = $"{en.EnumIdentifiers.Last().EnumValue}";
         bool isStringEnum = Regex.IsMatch(sample, @"[A-Z]");
         if (isStringEnum) {
-          file.WriteLine("  [MessagePackFormatter(typeof(EnumAsStringFormatter<{0}>))]", en.EnumType);
+          file.WriteLine("  [JsonConverter(typeof(JsonStringEnumMemberConverter))]", en.EnumType);
         }
         file.Write("  public enum {0} {{", en.EnumType);
         foreach (var identifier in en.EnumIdentifiers!) {
