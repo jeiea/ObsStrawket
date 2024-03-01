@@ -10,7 +10,7 @@
     <RepositoryUrl>https://github.com/jeiea/ObsStrawket.git</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Description>Personal .NET implementation of obs-websocket protocol v5.</Description>
-    <Copyright>Copyright (c) 2022 jeiea</Copyright>
+    <Copyright>Copyright (c) jeiea</Copyright>
     <PackageTags>obs;websocket</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Authors>jeiea</Authors>
