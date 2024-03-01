@@ -17,8 +17,8 @@ namespace SourceGenerator {
     public async Task GenerateAsync() {
       var json = await _fetcher.GetModifiedProtocolJsonAsync().ConfigureAwait(false);
 
-      using var file = File.CreateText("../../../../ObsStrawket/DataTypes/Predefineds/Events.cs");
-      file.Write(@"using MessagePack;
+      using var file = File.CreateText($"{_directoryHelper.MainProjectDirectory}/DataTypes/Predefineds/Events.cs");
+      file.Write(@"using System.Text.Json.Serialization;
 using System.Collections.Generic;
 
 namespace ObsStrawket.DataTypes.Predefineds {");
@@ -28,7 +28,6 @@ namespace ObsStrawket.DataTypes.Predefineds {");
         file.WriteLine("  /// <summary>");
         file.WriteLine("  /// {0}{1} event.", char.ToUpper(category[0]), category[1..]);
         file.WriteLine("  /// </summary>");
-        file.WriteLine("  [MessagePackObject]");
         string pascalCategory = TransformHelper.ToPascalCase(category);
         file.WriteLine("  public class {0}Event : ObsEvent {{ }}", pascalCategory);
       }
@@ -43,7 +42,6 @@ namespace ObsStrawket.DataTypes.Predefineds {");
         if (ev.Deprecated) {
           file.WriteLine("  [Obsolete]");
         }
-        file.WriteLine("  [MessagePackObject]");
         string pascalCategory = TransformHelper.ToPascalCase(ev.Category);
         file.Write("  public class {0} : {1}Event {{", ev.EventType, pascalCategory);
         if (ev.DataFields!.Count == 0) {
@@ -55,7 +53,7 @@ namespace ObsStrawket.DataTypes.Predefineds {");
             file.WriteLine("    /// <summary>");
             file.WriteLine("    /// {0}", TransformHelper.EscapeForXml(field.ValueDescription!));
             file.WriteLine("    /// </summary>");
-            file.WriteLine("    [Key(\"{0}\")]", field.ValueName);
+            file.WriteLine("    [JsonPropertyName(\"{0}\")]", field.ValueName);
             file.WriteLine("    {0}", MakeFieldDeclaration(
               field.ValueName!, field.ValueType!, field.ValueDescription!
             ));

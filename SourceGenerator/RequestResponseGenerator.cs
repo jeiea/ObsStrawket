@@ -17,8 +17,8 @@ namespace SourceGenerator {
       var json = await _fetcher.GetModifiedProtocolJsonAsync().ConfigureAwait(false);
       using var file = File.CreateText($"{_directoryHelper.MainProjectDirectory}/DataTypes/Predefineds/RequestsAndResponses.cs");
 
-      file.WriteLine(@"using MessagePack;
-using System.Collections.Generic;
+      file.WriteLine(@"using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace ObsStrawket.DataTypes.Predefineds {");
       foreach (var request in json.Requests) {
@@ -29,7 +29,6 @@ namespace ObsStrawket.DataTypes.Predefineds {");
         file.WriteLine("  /// Added in: {0}", request.InitialVersion);
         file.WriteLine("  /// </summary>");
 
-        file.WriteLine("  [MessagePackObject]");
         file.Write("  public class {0} : Request {{", request.RequestType);
         if (request.RequestFields!.Count == 0) {
           file.WriteLine(" }");
@@ -54,7 +53,7 @@ namespace ObsStrawket.DataTypes.Predefineds {");
             }
             file.WriteLine();
             file.WriteLine("    /// </summary>");
-            file.WriteLine("    [Key(\"{0}\")]", field.ValueName);
+            file.WriteLine("    [JsonPropertyName(\"{0}\")]", field.ValueName);
             file.WriteLine("    {0}", MakeFieldDeclaration(
               field.ValueName!, field.ValueType!, field.ValueDescription!, field.ValueOptional
             ));
@@ -73,7 +72,7 @@ namespace ObsStrawket.DataTypes.Predefineds {");
             file.WriteLine("    /// <summary>");
             file.WriteLine("    /// {0}", TransformHelper.EscapeForXml(field.ValueDescription!));
             file.WriteLine("    /// </summary>");
-            file.WriteLine("    [Key(\"{0}\")]", field.ValueName);
+            file.WriteLine("    [JsonPropertyName(\"{0}\")]", field.ValueName);
             file.WriteLine("    {0}", MakeFieldDeclaration(
               field.ValueName!, field.ValueType!, field.ValueDescription!, false
             ));
