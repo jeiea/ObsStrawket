@@ -31,7 +31,9 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           version="$(nbgv get-version -v SimpleVersion)$(nbgv get-version -v PrereleaseVersion)"
-          [ $(git tag -l v$version) ] || (echo version=$version >> "$GITHUB_OUTPUT")
+          if [ -z "$(git tag -l v$version)" ] && [ -n "${{ secrets.NUGET_API_KEY }}" ]; then
+            echo version=$version >> "$GITHUB_OUTPUT"
+          fi
 
   publish:
     needs: test
