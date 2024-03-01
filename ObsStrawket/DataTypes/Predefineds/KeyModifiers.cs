@@ -1,10 +1,8 @@
-using MessagePack;
 
 namespace ObsStrawket.DataTypes {
   /// <summary>
   /// Data for representing OBS hotkey combination.
   /// </summary>
-  [MessagePackObject]
   public class KeyModifiers {
     /// <summary>
     /// Press Shift | None | Not pressed<br />

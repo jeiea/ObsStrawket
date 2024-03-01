@@ -1,4 +1,3 @@
-using MessagePack;
 
 namespace ObsStrawket.DataTypes {
   internal static class FormatterUtil {

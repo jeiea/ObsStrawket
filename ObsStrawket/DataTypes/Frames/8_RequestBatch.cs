@@ -1,4 +1,3 @@
-using MessagePack;
 using ObsStrawket.DataTypes.Predefineds;
 using System.Collections.Generic;
 
@@ -39,7 +38,6 @@ namespace ObsStrawket.DataTypes {
   /// Description: Client is making a batch of requests for obs-websocket.
   /// Requests are processed serially (in order) by the server.
   /// </summary>
-  [MessagePackObject]
   public class RequestBatch : IRequestBatch {
     /// <summary>
     /// <see cref="OpCode.RequestBatch"/> (OpCode 8)

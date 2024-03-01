@@ -1,5 +1,4 @@
 namespace ObsStrawket.Test.Utilities {
-  using MessagePack;
   using System;
   using System.Diagnostics;
   using System.IO;

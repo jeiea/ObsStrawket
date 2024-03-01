@@ -1,5 +1,3 @@
-using MessagePack;
-using MessagePack.Formatters;
 using ObsStrawket.Serialization;
 using System;
 using System.Collections.Generic;
@@ -14,7 +12,6 @@ namespace ObsStrawket.DataTypes {
   /// Streaming and recording are two common examples of outputs, but not the only
   /// types of outputs.<br />Outputs can receive the raw data or receive encoded data.
   /// </summary>
-  [MessagePackObject]
   public class Output {
     /// <summary>
     /// Name of the output.
@@ -102,7 +99,6 @@ namespace ObsStrawket.DataTypes {
   /// <summary>
   /// Represents OBS scene.
   /// </summary>
-  [MessagePackObject]
   public class Scene {
     /// <summary>
     /// Scene name.
@@ -121,7 +117,6 @@ namespace ObsStrawket.DataTypes {
   /// <summary>
   /// OBS input, e.g. scene items.
   /// </summary>
-  [MessagePackObject]
   public class Input {
     /// <summary>
     /// Input name.
@@ -148,7 +143,6 @@ namespace ObsStrawket.DataTypes {
   /// <summary>
   /// Represents reindexed scene item.
   /// </summary>
-  [MessagePackObject]
   public class BasicSceneItem {
     [Key("sceneItemId")]
     public int Id { get; set; }
@@ -161,7 +155,6 @@ namespace ObsStrawket.DataTypes {
   /// <summary>
   /// Represents scene item.
   /// </summary>
-  [MessagePackObject]
   public class SceneItem : BasicSceneItem {
     [Key("sceneItemEnabled")]
     public bool? Enabled { get; set; }
@@ -192,7 +185,6 @@ namespace ObsStrawket.DataTypes {
   /// <summary>
   /// Represents source filter.
   /// </summary>
-  [MessagePackObject]
   public class SourceFilter {
     [Key("filterName")]
     public string Name { get; set; } = "";
@@ -214,7 +206,6 @@ namespace ObsStrawket.DataTypes {
   /// <summary>
   /// Listed scene transition.
   /// </summary>
-  [MessagePackObject]
   public class AvailableTransition {
     /// <summary>
     /// Name of the transition.

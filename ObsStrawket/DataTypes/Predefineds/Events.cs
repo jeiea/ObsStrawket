@@ -1,65 +1,54 @@
-using MessagePack;
 using System.Collections.Generic;
 
 namespace ObsStrawket.DataTypes.Predefineds {
   /// <summary>
   /// General event.
   /// </summary>
-  [MessagePackObject]
   public class GeneralEvent : ObsEvent { }
 
   /// <summary>
   /// Config event.
   /// </summary>
-  [MessagePackObject]
   public class ConfigEvent : ObsEvent { }
 
   /// <summary>
   /// Scenes event.
   /// </summary>
-  [MessagePackObject]
   public class ScenesEvent : ObsEvent { }
 
   /// <summary>
   /// Inputs event.
   /// </summary>
-  [MessagePackObject]
   public class InputsEvent : ObsEvent { }
 
   /// <summary>
   /// Transitions event.
   /// </summary>
-  [MessagePackObject]
   public class TransitionsEvent : ObsEvent { }
 
   /// <summary>
   /// Filters event.
   /// </summary>
-  [MessagePackObject]
   public class FiltersEvent : ObsEvent { }
 
   /// <summary>
   /// Scene items event.
   /// </summary>
-  [MessagePackObject]
   public class SceneItemsEvent : ObsEvent { }
 
   /// <summary>
   /// Outputs event.
   /// </summary>
-  [MessagePackObject]
   public class OutputsEvent : ObsEvent { }
 
   /// <summary>
   /// Media inputs event.
   /// </summary>
-  [MessagePackObject]
   public class MediaInputsEvent : ObsEvent { }
 
   /// <summary>
   /// Ui event.
   /// </summary>
-  [MessagePackObject]
   public class UiEvent : ObsEvent { }
 
   /// <summary>
@@ -67,7 +56,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class ExitStarted : GeneralEvent { }
 
   /// <summary>
@@ -78,7 +66,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class VendorEvent : GeneralEvent {
     /// <summary>
     /// Name of the vendor emitting the event
@@ -104,7 +91,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class CustomEvent : GeneralEvent {
     /// <summary>
     /// Custom event data
@@ -121,7 +107,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class CurrentSceneCollectionChanging : ConfigEvent {
     /// <summary>
     /// Name of the current scene collection
@@ -137,7 +122,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class CurrentSceneCollectionChanged : ConfigEvent {
     /// <summary>
     /// Name of the new scene collection
@@ -151,7 +135,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class SceneCollectionListChanged : ConfigEvent {
     /// <summary>
     /// Updated list of scene collections
@@ -165,7 +148,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class CurrentProfileChanging : ConfigEvent {
     /// <summary>
     /// Name of the current profile
@@ -179,7 +161,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class CurrentProfileChanged : ConfigEvent {
     /// <summary>
     /// Name of the new profile
@@ -193,7 +174,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class ProfileListChanged : ConfigEvent {
     /// <summary>
     /// Updated list of profiles
@@ -207,7 +187,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class SceneCreated : ScenesEvent {
     /// <summary>
     /// Name of the new scene
@@ -227,7 +206,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class SceneRemoved : ScenesEvent {
     /// <summary>
     /// Name of the removed scene
@@ -247,7 +225,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class SceneNameChanged : ScenesEvent {
     /// <summary>
     /// Old name of the scene
@@ -267,7 +244,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class CurrentProgramSceneChanged : ScenesEvent {
     /// <summary>
     /// Name of the scene that was switched to
@@ -281,7 +257,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class CurrentPreviewSceneChanged : ScenesEvent {
     /// <summary>
     /// Name of the scene that was switched to
@@ -297,7 +272,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class SceneListChanged : ScenesEvent {
     /// <summary>
     /// Updated array of scenes
@@ -311,7 +285,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class InputCreated : InputsEvent {
     /// <summary>
     /// Name of the input
@@ -349,7 +322,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class InputRemoved : InputsEvent {
     /// <summary>
     /// Name of the input
@@ -363,7 +335,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class InputNameChanged : InputsEvent {
     /// <summary>
     /// Old name of the input
@@ -385,7 +356,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class InputActiveStateChanged : InputsEvent {
     /// <summary>
     /// Name of the input
@@ -407,7 +377,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class InputShowStateChanged : InputsEvent {
     /// <summary>
     /// Name of the input
@@ -427,7 +396,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class InputMuteStateChanged : InputsEvent {
     /// <summary>
     /// Name of the input
@@ -447,7 +415,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class InputVolumeChanged : InputsEvent {
     /// <summary>
     /// Name of the input
@@ -473,7 +440,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class InputAudioBalanceChanged : InputsEvent {
     /// <summary>
     /// Name of the affected input
@@ -493,7 +459,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class InputAudioSyncOffsetChanged : InputsEvent {
     /// <summary>
     /// Name of the input
@@ -513,7 +478,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class InputAudioTracksChanged : InputsEvent {
     /// <summary>
     /// Name of the input
@@ -539,7 +503,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class InputAudioMonitorTypeChanged : InputsEvent {
     /// <summary>
     /// Name of the input
@@ -559,7 +522,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class InputVolumeMeters : InputsEvent {
     /// <summary>
     /// Array of active inputs with their associated volume levels
@@ -573,7 +535,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class CurrentSceneTransitionChanged : TransitionsEvent {
     /// <summary>
     /// Name of the new transition
@@ -587,7 +548,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class CurrentSceneTransitionDurationChanged : TransitionsEvent {
     /// <summary>
     /// Transition duration in milliseconds
@@ -601,7 +561,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class SceneTransitionStarted : TransitionsEvent {
     /// <summary>
     /// Scene transition name
@@ -617,7 +576,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class SceneTransitionEnded : TransitionsEvent {
     /// <summary>
     /// Scene transition name
@@ -636,7 +594,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class SceneTransitionVideoEnded : TransitionsEvent {
     /// <summary>
     /// Scene transition name
@@ -650,7 +607,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class SourceFilterListReindexed : FiltersEvent {
     /// <summary>
     /// Name of the source
@@ -670,7 +626,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class SourceFilterCreated : FiltersEvent {
     /// <summary>
     /// Name of the source the filter was added to
@@ -714,7 +669,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class SourceFilterRemoved : FiltersEvent {
     /// <summary>
     /// Name of the source the filter was on
@@ -734,7 +688,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class SourceFilterNameChanged : FiltersEvent {
     /// <summary>
     /// The source the filter is on
@@ -760,7 +713,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class SourceFilterEnableStateChanged : FiltersEvent {
     /// <summary>
     /// Name of the source the filter is on
@@ -786,7 +738,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class SceneItemCreated : SceneItemsEvent {
     /// <summary>
     /// Name of the scene the item was added to
@@ -820,7 +771,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class SceneItemRemoved : SceneItemsEvent {
     /// <summary>
     /// Name of the scene the item was removed from
@@ -846,7 +796,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class SceneItemListReindexed : SceneItemsEvent {
     /// <summary>
     /// Name of the scene
@@ -866,7 +815,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class SceneItemEnableStateChanged : SceneItemsEvent {
     /// <summary>
     /// Name of the scene the item is in
@@ -892,7 +840,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class SceneItemLockStateChanged : SceneItemsEvent {
     /// <summary>
     /// Name of the scene the item is in
@@ -918,7 +865,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class SceneItemSelected : SceneItemsEvent {
     /// <summary>
     /// Name of the scene the item is in
@@ -938,7 +884,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class SceneItemTransformChanged : SceneItemsEvent {
     /// <summary>
     /// The name of the scene the item is in
@@ -964,7 +909,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class StreamStateChanged : OutputsEvent {
     /// <summary>
     /// Whether the output is active
@@ -984,7 +928,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class RecordStateChanged : OutputsEvent {
     /// <summary>
     /// Whether the output is active
@@ -1010,7 +953,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class ReplayBufferStateChanged : OutputsEvent {
     /// <summary>
     /// Whether the output is active
@@ -1030,7 +972,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class VirtualcamStateChanged : OutputsEvent {
     /// <summary>
     /// Whether the output is active
@@ -1050,7 +991,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class ReplayBufferSaved : OutputsEvent {
     /// <summary>
     /// Path of the saved replay file
@@ -1064,7 +1004,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class MediaInputPlaybackStarted : MediaInputsEvent {
     /// <summary>
     /// Name of the input
@@ -1078,7 +1017,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class MediaInputPlaybackEnded : MediaInputsEvent {
     /// <summary>
     /// Name of the input
@@ -1092,7 +1030,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class MediaInputActionTriggered : MediaInputsEvent {
     /// <summary>
     /// Name of the input
@@ -1112,7 +1049,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  [MessagePackObject]
   public class StudioModeStateChanged : UiEvent {
     /// <summary>
     /// True == Enabled, False == Disabled
@@ -1130,7 +1066,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.1.0
   /// </summary>
-  [MessagePackObject]
   public class ScreenshotSaved : UiEvent {
     /// <summary>
     /// Path of the saved image file

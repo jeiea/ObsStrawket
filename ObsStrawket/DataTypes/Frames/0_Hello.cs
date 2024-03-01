@@ -1,4 +1,3 @@
-using MessagePack;
 
 namespace ObsStrawket.DataTypes {
   /// <summary>
@@ -14,7 +13,6 @@ namespace ObsStrawket.DataTypes {
   ///  "authentication": object(optional)
   /// }</code>
   /// </summary>
-  [MessagePackObject]
   public class Hello : IOpCodeMessage {
     /// <summary>
     /// <see cref="OpCode.Hello"/> (OpCode 0)
@@ -61,7 +59,6 @@ namespace ObsStrawket.DataTypes {
   /// </list>
   /// For real-world examples of the authentication string creation, refer to the obs-websocket client libraries listed on the README.
   /// </summary>
-  [MessagePackObject]
   public class HelloAuthentication {
     /// <summary>
     /// Additional input to a one-way function that hashes base64 secret.

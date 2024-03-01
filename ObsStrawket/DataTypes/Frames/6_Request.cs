@@ -1,4 +1,3 @@
-using MessagePack;
 using System.Collections.Generic;
 
 namespace ObsStrawket.DataTypes {
@@ -24,7 +23,6 @@ namespace ObsStrawket.DataTypes {
   /// Sent to: obs-websocket<br />
   /// Description: Client is making a request to obs-websocket.Eg get current scene, create source.
   /// </summary>
-  [MessagePackObject]
   public class Request : IRequest {
     /// <summary>
     /// Request (OpCode 6)
@@ -50,7 +48,6 @@ namespace ObsStrawket.DataTypes {
   /// Sent to: obs-websocket<br />
   /// Description: Client is making a request to obs-websocket.Eg get current scene, create source.
   /// </summary>
-  [MessagePackObject]
   public class RawRequest : IRequest {
     /// <summary>
     /// Request (OpCode 6)

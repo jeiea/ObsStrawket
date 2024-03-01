@@ -1,4 +1,3 @@
-using MessagePack;
 
 namespace ObsStrawket.DataTypes {
   /// <summary>
@@ -7,7 +6,6 @@ namespace ObsStrawket.DataTypes {
   /// Description: The identify request was received and validated,
   /// and the connection is now ready for normal operation.
   /// </summary>
-  [MessagePackObject]
   public class Identified : IOpCodeMessage {
     /// <summary>
     /// Identified (OpCode 2)

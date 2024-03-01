@@ -1,4 +1,3 @@
-using MessagePack;
 using System.Collections.Generic;
 
 namespace ObsStrawket.DataTypes {
@@ -29,7 +28,6 @@ namespace ObsStrawket.DataTypes {
   /// Sent to: Identified client which made the request<br />
   /// Description: obs-websocket is responding to a request coming from a client.
   /// </summary>
-  [MessagePackObject]
   public class RequestResponse : IRequestResponse {
     /// <summary>
     /// RequestResponse (OpCode 7)
@@ -61,7 +59,6 @@ namespace ObsStrawket.DataTypes {
   /// Sent to: Identified client which made the request<br />
   /// Description: obs-websocket is responding to a request coming from a client.
   /// </summary>
-  [MessagePackObject]
   public class RawRequestResponse : IRequestResponse {
     /// <summary>
     /// RequestResponse (OpCode 7)
@@ -101,7 +98,6 @@ namespace ObsStrawket.DataTypes {
   ///   "code": 100
   /// }</code>
   /// </summary>
-  [MessagePackObject]
   public class RequestStatus {
     /// <summary>
     /// <c>true</c> if the request resulted in <see cref="RequestStatusCode.Success"/>. False if otherwise.

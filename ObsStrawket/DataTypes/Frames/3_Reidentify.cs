@@ -1,4 +1,3 @@
-using MessagePack;
 
 namespace ObsStrawket.DataTypes {
   /// <summary>
@@ -6,7 +5,6 @@ namespace ObsStrawket.DataTypes {
   /// Sent to: obs-websocket<br />
   /// Description: Sent at any time after initial identification to update the provided session parameters.
   /// </summary>
-  [MessagePackObject]
   public class Reidentify : IOpCodeMessage {
     /// <summary>
     /// Reidentify (OpCode 3)

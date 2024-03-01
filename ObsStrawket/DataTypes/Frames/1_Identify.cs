@@ -1,4 +1,3 @@
-using MessagePack;
 using ObsStrawket.DataTypes.Predefineds;
 
 namespace ObsStrawket.DataTypes {
@@ -8,7 +7,6 @@ namespace ObsStrawket.DataTypes {
   /// Description: Response to <c>Hello</c> message, should contain authentication string
   /// if authentication is required, along with PubSub subscriptions and other session parameters.
   /// </summary>
-  [MessagePackObject]
   public class Identify : IOpCodeMessage {
     /// <summary>
     /// Identify (OpCode 1)

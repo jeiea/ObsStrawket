@@ -1,4 +1,3 @@
-using MessagePack;
 using Microsoft.Extensions.Logging;
 using ObsStrawket.DataTypes;
 using ObsStrawket.Serialization;

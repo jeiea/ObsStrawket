@@ -1,4 +1,3 @@
-using MessagePack;
 using System.Collections.Generic;
 
 namespace ObsStrawket.DataTypes {
@@ -24,7 +23,6 @@ namespace ObsStrawket.DataTypes {
   /// Sent to: Identified client which made the request<br />
   /// Description: obs-websocket is responding to a request batch coming from the client.
   /// </summary>
-  [MessagePackObject]
   public class RequestBatchResponse : IRequestBatchResponse {
     /// <summary>
     /// <see cref="OpCode.RequestBatchResponse"/> (OpCode 9)

@@ -1,4 +1,3 @@
-using MessagePack;
 using ObsStrawket.DataTypes.Predefineds;
 using System.Collections.Generic;
 
@@ -25,7 +24,6 @@ namespace ObsStrawket.DataTypes {
   /// Sent to: All subscribed and identified clients<br />
   /// Description: An event coming from OBS has occurred. E.g. scene switched, source muted.
   /// </summary>
-  [MessagePackObject]
   public class ObsEvent : IObsEvent {
     /// <summary>
     /// Event (OpCode 5)
@@ -52,7 +50,6 @@ namespace ObsStrawket.DataTypes {
   /// Description: An event coming from OBS has occurred. E.g. scene switched, source muted.<br />
   /// Unidentifiable event will be this.
   /// </summary>
-  [MessagePackObject]
   public sealed class RawEvent : IObsEvent {
     /// <summary>
     /// Event (OpCode 5)

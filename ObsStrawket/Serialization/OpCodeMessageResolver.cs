@@ -1,6 +1,3 @@
-using MessagePack;
-using MessagePack.Formatters;
-using MessagePack.Resolvers;
 using ObsStrawket.DataTypes;
 
 namespace ObsStrawket.Serialization {

@@ -1,5 +1,3 @@
-using MessagePack;
-
 namespace ObsStrawket.DataTypes {
   /// <summary>
   /// The interface for representing low-level message types which may be sent to and from obs-websocket.
@@ -15,7 +13,6 @@ namespace ObsStrawket.DataTypes {
   /// The low-level message types which may be sent to and from obs-websocket.
   /// </summary>
   /// <typeparam name="T">Type of the data fields associated with the operation.</typeparam>
-  [MessagePackObject]
   public class OpCodeMessage<T> : IOpCodeMessage where T : new() {
     /// <summary>
     /// Create websocket protocol message.
