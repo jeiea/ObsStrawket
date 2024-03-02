@@ -1,14 +1,19 @@
 using System;
 using System.Net.WebSockets;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ObsStrawket.Test.Utilities {
-  interface ITestFlow {
+
+  internal interface ITestFlow {
+
     Task RequestAsync(ObsClientSocket client);
+
     Task RespondAsync(MockServerSession session);
   }
 
-  class SpecTester {
+  internal class SpecTester {
+
     public static async Task TestAsync(ITestFlow flow) {
       var taskSource = new TaskCompletionSource();
       using var server = new MockServer().Run(default, async (context, cancellation) => {
@@ -30,7 +35,42 @@ namespace ObsStrawket.Test.Utilities {
         await client.CloseAsync().ConfigureAwait(false);
       }
 
-      await Task.WhenAll(taskSource.Task, RunClientAsync()).ConfigureAwait(false);
+      await WhenAllFailFast(taskSource.Task, RunClientAsync()).ConfigureAwait(false);
+    }
+
+    public static Task WhenAllFailFast(params Task[] tasks) {
+      ArgumentNullException.ThrowIfNull(tasks);
+
+      if (tasks.Length == 0) {
+        return Task.CompletedTask;
+      }
+
+      int remaining = tasks.Length;
+      var tcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+      for (int i = 0; i < tasks.Length; i++) {
+        var task = tasks[i] ?? throw new ArgumentException(
+          $"The {nameof(tasks)} argument included a null value.",
+          nameof(tasks)
+        );
+        HandleCompletion(task, i);
+      }
+      return tcs.Task;
+
+      async void HandleCompletion(Task task, int index) {
+        try {
+          await task.ConfigureAwait(false);
+          if (Interlocked.Decrement(ref remaining) == 0) {
+            tcs.TrySetResult();
+          }
+        }
+        catch (OperationCanceledException) {
+          tcs.TrySetCanceled();
+        }
+        catch (Exception ex) {
+          tcs.TrySetException(ex);
+        }
+      }
     }
   }
 }
