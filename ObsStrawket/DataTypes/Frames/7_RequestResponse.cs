@@ -1,3 +1,4 @@
+using ObsStrawket.DataTypes.Predefineds;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -23,7 +24,7 @@ namespace ObsStrawket.DataTypes {
     /// <summary>
     /// Result of the request processing.
     /// </summary>
-    public RequestStatus RequestStatus { get; }
+    public RequestStatusObject RequestStatus { get; }
   }
 
   /// <summary>
@@ -55,7 +56,7 @@ namespace ObsStrawket.DataTypes {
     /// Result of the request processing.
     /// </summary>
     [JsonIgnore]
-    public RequestStatus RequestStatus { get; set; } = new();
+    public RequestStatusObject RequestStatus { get; set; } = new();
   }
 
   /// <summary>
@@ -87,7 +88,7 @@ namespace ObsStrawket.DataTypes {
     /// Result of the request processing.
     /// </summary>
     [JsonPropertyName("requestStatus")]
-    public RequestStatus RequestStatus { get; set; } = new();
+    public RequestStatusObject RequestStatus { get; set; } = new();
 
     /// <summary>
     /// Response data.
@@ -103,10 +104,10 @@ namespace ObsStrawket.DataTypes {
   ///   "code": 100
   /// }</code>
   /// </summary>
-  public class RequestStatus {
+  public class RequestStatusObject {
 
     /// <summary>
-    /// <c>true</c> if the request resulted in <see cref="RequestStatusCode.Success"/>. False if otherwise.
+    /// <c>true</c> if the request resulted in <see cref="RequestStatus.Success"/>. False if otherwise.
     /// </summary>
     [JsonPropertyName("result")]
     public bool Result { get; set; }
@@ -115,7 +116,7 @@ namespace ObsStrawket.DataTypes {
     /// RequestStatus code.
     /// </summary>
     [JsonPropertyName("code")]
-    public RequestStatusCode Code { get; set; }
+    public RequestStatus Code { get; set; }
 
     /// <summary>
     /// This may be provided by the server on errors to offer further details on why a request failed.

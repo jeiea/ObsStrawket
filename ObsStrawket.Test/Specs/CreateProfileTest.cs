@@ -1,4 +1,3 @@
-using ObsStrawket.DataTypes;
 using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
 using System.Linq;
@@ -21,7 +20,7 @@ namespace ObsStrawket.Test.Specs {
         await CreateProfileAsync(client).ConfigureAwait(false);
       }
       catch (FailureResponseException failure)
-      when (failure.Response.RequestStatus.Code == RequestStatusCode.ResourceAlreadyExists) {
+      when (failure.Response.RequestStatus.Code == RequestStatus.ResourceAlreadyExists) {
         await client.RemoveProfileAsync(NewProfileName).ConfigureAwait(false);
         await client.Events.ReadAllAsync()
           .Where((x) => x is CurrentProfileChanging || x is ProfileListChanged || x is CurrentProfileChanged)
