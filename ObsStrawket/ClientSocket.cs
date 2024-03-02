@@ -6,24 +6,22 @@ using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace ObsStrawket {
+
   /// <summary>
   /// Low level client interface.
   /// </summary>
   public class ClientSocket : IDisposable {
-    internal static Uri DefaultUri => new("ws://127.0.0.1:4455");
-
     private const int _supportedRpcVersion = 1;
-
     private readonly ConcurrentDictionary<string, TaskCompletionSource<IRequestResponse>> _requests = new();
     private readonly ConcurrentDictionary<string, TaskCompletionSource<IRequestBatchResponse>> _batchRequests = new();
     private readonly SemaphoreSlim _connectSemaphore = new(1);
     private readonly ILogger? _logger;
-
     private ClientWebSocket _clientWebSocket = new();
     private CancellationTokenSource? _cancellation;
     private bool _isOpen = false;
@@ -31,6 +29,16 @@ namespace ObsStrawket {
     private ReceivePipeline _receiver;
     private Channel<IObsEvent> _events = Channel.CreateUnbounded<IObsEvent>();
     private Task? _receiveLoop;
+
+    /// <summary>
+    /// Create low level OBS websocket client.
+    /// </summary>
+    /// <param name="logger">Logger for library debugging.</param>
+    public ClientSocket(ILogger? logger = null) {
+      _logger = logger;
+      _sender = new(_clientWebSocket);
+      _receiver = new(_clientWebSocket);
+    }
 
     /// <summary>
     /// Whether it is connected to websocket server
@@ -47,15 +55,7 @@ namespace ObsStrawket {
     /// </summary>
     public Action<ClientWebSocket> SetOptions { get; set; } = delegate { };
 
-    /// <summary>
-    /// Create low level OBS websocket client.
-    /// </summary>
-    /// <param name="logger">Logger for library debugging.</param>
-    public ClientSocket(ILogger? logger = null) {
-      _logger = logger;
-      _sender = new(_clientWebSocket);
-      _receiver = new(_clientWebSocket);
-    }
+    internal static Uri DefaultUri => new("ws://127.0.0.1:4455");
 
     /// <summary>
     ///  Connect to OBS websocket server.
@@ -212,6 +212,30 @@ namespace ObsStrawket {
       GC.SuppressFinalize(this);
     }
 
+    private static async Task<IOpCodeMessage> ReceiveMessageAsync(
+      ChannelReader<Task<IOpCodeMessage>> receiver, CancellationToken cancellation
+    ) {
+      var deserialization = await receiver.ReadAsync(cancellation).ConfigureAwait(false);
+      return await deserialization.ConfigureAwait(false)!;
+    }
+
+    private static string? MakeOneTimePass(string? password, HelloAuthentication? auth) {
+      if (auth == null) {
+        return null;
+      }
+      if (password == null) {
+        throw new AuthenticationFailureException("Password requested.");
+      }
+      string base64Secret = ApplySha256Base64($"{password}{auth.Salt}");
+      return ApplySha256Base64($"{base64Secret}{auth.Challenge}");
+    }
+
+    private static string ApplySha256Base64(string rawData) {
+      using var sha256Hash = SHA256.Create();
+      byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+      return Convert.ToBase64String(bytes);
+    }
+
     private CancellationTokenSource LinkInstanceCancellation(CancellationToken cancellation) {
       var instanceCancellation = _cancellation?.Token ?? CancellationToken.None;
       return CancellationTokenSource.CreateLinkedTokenSource(cancellation, instanceCancellation);
@@ -267,28 +291,20 @@ namespace ObsStrawket {
       _logger?.LogDebug("Exit. IsCancellationRequested: {}", token.IsCancellationRequested);
     }
 
-    private async static Task<IOpCodeMessage> ReceiveMessageAsync(
-      ChannelReader<Task<IOpCodeMessage>> receiver, CancellationToken cancellation
-    ) {
-      var deserialization = await receiver.ReadAsync(cancellation).ConfigureAwait(false);
-      return await deserialization.ConfigureAwait(false)!;
-    }
-
     private async Task DispatchAsync(
       IOpCodeMessage message, ChannelWriter<IObsEvent> events, CancellationToken token
     ) {
       switch (message) {
       case IObsEvent ev:
         if (ev is RawEvent rawEvent) {
-          string json = MessagePackSerializer.SerializeToJson(rawEvent, cancellationToken: default);
-          _logger?.LogWarning("Received raw event: {}", json);
+          _logger?.LogWarning("Received raw event: {}", JsonSerializer.Serialize(rawEvent));
         }
         await events.WriteAsync(ev, token).ConfigureAwait(false);
         break;
+
       case IRequestResponse response:
         if (response is RawRequestResponse rawResponse) {
-          string json = MessagePackSerializer.SerializeToJson(rawResponse, cancellationToken: default);
-          _logger?.LogWarning("Received raw response: {}", json);
+          _logger?.LogWarning("Received raw response: {}", JsonSerializer.Serialize(rawResponse));
         }
         if (_requests.TryRemove(response.RequestId, out var request)) {
           if (response.RequestStatus.Result) {
@@ -302,6 +318,7 @@ namespace ObsStrawket {
           _logger?.LogWarning("Dispatch: Failed to remove completed request: {}", response.RequestId);
         }
         break;
+
       case IRequestBatchResponse batchResponse:
         if (_batchRequests.TryRemove(batchResponse.RequestId, out var batchRequest)) {
           batchRequest.SetResult(batchResponse);
@@ -310,6 +327,7 @@ namespace ObsStrawket {
           _logger?.LogWarning("Dispatch: Failed to remove completed batch: {}", batchResponse.RequestId);
         }
         break;
+
       default:
         _logger?.LogWarning("Dispatch: Unknown message type: {}", message.GetType());
         break;
@@ -351,23 +369,6 @@ namespace ObsStrawket {
         return null;
       }
       return $"{_clientWebSocket.CloseStatus}: {_clientWebSocket.CloseStatusDescription}";
-    }
-
-    private static string? MakeOneTimePass(string? password, HelloAuthentication? auth) {
-      if (auth == null) {
-        return null;
-      }
-      if (password == null) {
-        throw new AuthenticationFailureException("Password requested.");
-      }
-      string base64Secret = ApplySha256Base64($"{password}{auth.Salt}");
-      return ApplySha256Base64($"{base64Secret}{auth.Challenge}");
-    }
-
-    private static string ApplySha256Base64(string rawData) {
-      using var sha256Hash = SHA256.Create();
-      byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
-      return Convert.ToBase64String(bytes);
     }
   }
 }

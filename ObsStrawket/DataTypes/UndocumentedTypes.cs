@@ -93,7 +93,6 @@ namespace ObsStrawket.DataTypes {
     ///
     /// </summary>
     [JsonPropertyName("outputFlags")]
-    [MessagePackFormatter(typeof(OutputFlagsMapFormatter))]
     public OutputFlags Flags { get; set; }
   }
 

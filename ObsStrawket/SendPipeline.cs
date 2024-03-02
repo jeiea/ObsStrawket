@@ -1,28 +1,28 @@
 using Microsoft.Extensions.Logging;
 using ObsStrawket.DataTypes;
-using ObsStrawket.Serialization;
 using System;
+using System.IO;
 using System.IO.Pipelines;
 using System.Net.WebSockets;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace ObsStrawket {
-  internal class SendPipeline {
-    private static readonly MessagePackSerializerOptions _serialOptions = new(OpCodeMessageResolver.Instance);
 
+  internal class SendPipeline {
     private readonly WebSocket _socket;
     private readonly ILogger? _logger;
     private readonly PipeOptions _pipeOptions = new(useSynchronizationContext: false);
-    private readonly Channel<Deferred<Pipe, object?>> _sendQueue = Channel.CreateUnbounded<Deferred<Pipe, object?>>();
-
-    public Task? SendTask { get; private set; }
+    private readonly Channel<Deferred<byte[], object?>> _sendQueue = Channel.CreateUnbounded<Deferred<byte[], object?>>();
 
     public SendPipeline(WebSocket socket, ILogger? logger = null) {
       _socket = socket;
       _logger = logger;
     }
+
+    public Task? SendTask { get; private set; }
 
     public void Start() {
       SendTask ??= Task.Run(LoopWebsocketSendAsync);
@@ -32,18 +32,17 @@ namespace ObsStrawket {
       _sendQueue.Writer.TryComplete();
     }
 
-    public async Task SendAsync(IOpCodeMessage value, CancellationToken cancellation = default) {
+    public async Task SendAsync(IOpCodeMessage value, CancellationToken token = default) {
       using var _1 = _logger?.BeginScope(nameof(SendAsync));
-
-      var token = cancellation;
       token.ThrowIfCancellationRequested();
 
-      var pipe = new Pipe(_pipeOptions);
-      MessagePackSerializer.Serialize(pipe.Writer, value, _serialOptions, token);
+      var ms = new MemoryStream();
+
+      byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(value, (JsonSerializerOptions?)null);
       token.ThrowIfCancellationRequested();
 
       var output = new TaskCompletionSource<object?>();
-      await _sendQueue.Writer.WriteAsync(new(pipe, output, token), token).ConfigureAwait(false);
+      await _sendQueue.Writer.WriteAsync(new(bytes, output, token), token).ConfigureAwait(false);
 
       _logger?.LogDebug("Await sending {}", value.GetType().Name);
       await output.Task.ConfigureAwait(false);
@@ -64,17 +63,8 @@ namespace ObsStrawket {
           }
 
           try {
-            var sequence = await PipelineHelpers.RealAllAsync(item.Input, default).ConfigureAwait(false);
-            long remainingBytes = sequence.Length;
-            foreach (var memory in sequence) {
-              var segment = PipelineHelpers.GetSegment(memory);
-              var cut = new ArraySegment<byte>(segment.Array, segment.Offset, segment.Count);
-              remainingBytes -= memory.Length;
-              bool isEnd = remainingBytes == 0;
-
-              _logger?.LogDebug("Send {cut} bytes: {bytes}", cut.Count, BitConverter.ToString(cut.Array, cut.Offset, cut.Count));
-              await _socket.SendAsync(cut, WebSocketMessageType.Binary, isEnd, default).ConfigureAwait(false);
-            }
+            var segment = new ArraySegment<byte>(item.Input);
+            await _socket.SendAsync(segment, WebSocketMessageType.Binary, true, default).ConfigureAwait(false);
             item.Output.SetResult(null);
           }
           catch (Exception exception) {
