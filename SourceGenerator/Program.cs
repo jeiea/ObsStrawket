@@ -3,8 +3,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace SourceGenerator {
+
   internal class Program {
-    public async static Task Main() {
+
+    public static async Task Main() {
       var builder = Host.CreateApplicationBuilder();
 
       var services = builder.Services;
@@ -15,15 +17,19 @@ namespace SourceGenerator {
       services.AddSingleton<EventInterfaceGenerator>();
       services.AddSingleton<RequestInterfaceGenerator>();
       services.AddSingleton<RequestResponseGenerator>();
+      services.AddSingleton<DataTypeMappingGenerator>();
 
       using var host = builder.Build();
       var provider = host.Services;
 
-      await provider.GetRequiredService<EnumGenerator>().GenerateAsync().ConfigureAwait(false);
-      await provider.GetRequiredService<EventGenerator>().GenerateAsync().ConfigureAwait(false);
-      await provider.GetRequiredService<EventInterfaceGenerator>().GenerateAsync().ConfigureAwait(false);
-      await provider.GetRequiredService<RequestInterfaceGenerator>().GenerateAsync().ConfigureAwait(false);
-      await provider.GetRequiredService<RequestResponseGenerator>().GenerateAsync().ConfigureAwait(false);
+      await Task.WhenAll([
+        provider.GetRequiredService<EnumGenerator>().GenerateAsync(),
+        provider.GetRequiredService<EventGenerator>().GenerateAsync(),
+        provider.GetRequiredService<EventInterfaceGenerator>().GenerateAsync(),
+        provider.GetRequiredService<RequestInterfaceGenerator>().GenerateAsync(),
+        provider.GetRequiredService<RequestResponseGenerator>().GenerateAsync(),
+        provider.GetRequiredService<DataTypeMappingGenerator>().GenerateAsync(),
+      ]).ConfigureAwait(false);
     }
   }
 }
