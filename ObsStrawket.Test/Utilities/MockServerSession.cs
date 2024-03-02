@@ -1,19 +1,18 @@
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Net.WebSockets;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.JsonDiffPatch;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
+
 namespace ObsStrawket.Test.Utilities {
-  using System;
-  using System.Diagnostics;
-  using System.IO;
-  using System.Net.WebSockets;
-  using System.Text.Json;
-  using System.Text.Json.JsonDiffPatch;
-  using System.Text.RegularExpressions;
-  using System.Threading;
-  using System.Threading.Tasks;
-  using Xunit;
 
-  partial class MockServerSession : IDisposable {
-    [GeneratedRegex("[0-9a-f]{8}-[0-9a-f]{4}[^\"]*")]
-    private static partial Regex _guidPattern();
-
+  internal partial class MockServerSession : IDisposable {
     private readonly ArraySegment<byte> _buffer = new(new byte[1024]);
     private readonly WebSocket _webSocket;
     private readonly CancellationToken _cancellation;
@@ -26,16 +25,16 @@ namespace ObsStrawket.Test.Utilities {
 
     public Task SendAsync(string json) {
       _cancellation.ThrowIfCancellationRequested();
-      var binary = WebSocketMessageType.Binary;
-      byte[] buffer = MessagePackSerializer.ConvertFromJson(json, cancellationToken: _cancellation);
+      var text = WebSocketMessageType.Text;
       _ = Task.Run(() => Debug.WriteLine($"Mock send {Regex.Replace(json, @"\s+", "")}"));
-      return _webSocket.SendAsync(new ArraySegment<byte>(buffer), binary, true, _cancellation);
+      byte[] bytes = Encoding.UTF8.GetBytes(json);
+      return _webSocket.SendAsync(new ArraySegment<byte>(bytes), text, true, _cancellation);
     }
 
     public async Task<string> ReceiveAsync() {
       var result = await _webSocket.ReceiveAsync(_buffer, _cancellation).ConfigureAwait(false);
       _cancellation.ThrowIfCancellationRequested();
-      return MessagePackSerializer.ConvertToJson(new ArraySegment<byte>(_buffer.Array!, 0, result.Count), cancellationToken: _cancellation);
+      return Encoding.UTF8.GetString(_buffer.Array!, 0, result.Count);
     }
 
     public async Task<string?> ReceiveAsync(string expectedJson) {
@@ -140,6 +139,9 @@ namespace ObsStrawket.Test.Utilities {
         _isDisposed = true;
       }
     }
+
+    [GeneratedRegex("[0-9a-f]{8}-[0-9a-f]{4}[^\"]*")]
+    private static partial Regex _guidPattern();
 
     private static void AssertJsonEqual(string expected, string actual) {
       var expectation = JsonDocument.Parse(expected);
