@@ -128,12 +128,12 @@ namespace SourceGenerator {
 
     private static bool GetCustomType(string name, out string? type) {
       switch (name) {
-      case "outputs":
-        type = "Array<Output>";
-        return true;
-
       case "filters":
         type = "Array<SourceFilter>";
+        return true;
+
+      case "inputAudioTracks":
+        type = "Dictionary<string, bool>";
         return true;
 
       case "inputs":
@@ -160,16 +160,24 @@ namespace SourceGenerator {
         type = "ObsOutputState";
         return true;
 
-      case "scenes":
-        type = "Array<Scene>";
+      case "outputs":
+        type = "Array<Output>";
+        return true;
+
+      case "realm":
+        type = "DataRealm";
+        return true;
+
+      case "sceneItemBlendMode":
+        type = "BlendingType";
         return true;
 
       case "sceneItems":
         type = "Array<SceneItem>";
         return true;
 
-      case "sceneItemBlendMode":
-        type = "BlendingType";
+      case "scenes":
+        type = "Array<Scene>";
         return true;
 
       case "streamServiceType":
@@ -178,10 +186,6 @@ namespace SourceGenerator {
 
       case "transitions":
         type = "Array<AvailableTransition>";
-        return true;
-
-      case "realm":
-        type = "DataRealm";
         return true;
 
       case "videoMixType":
