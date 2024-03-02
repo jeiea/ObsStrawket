@@ -3712,12 +3712,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("outputActive")]
     public bool OutputActive { get; set; }
-
-    /// <summary>
-    /// Whether the output is active
-    /// </summary>
-    [JsonPropertyName("outputActive")]
-    public bool OutputActive { get; set; }
   }
 
   /// <summary>

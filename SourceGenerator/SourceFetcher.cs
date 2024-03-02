@@ -6,8 +6,11 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SourceGenerator {
-  interface ISourceFetcher {
+
+  internal interface ISourceFetcher {
+
     Task<string> GetObsHeaderAsync();
+
     Task<ProtocolJson> GetModifiedProtocolJsonAsync();
   }
 
@@ -57,7 +60,6 @@ namespace SourceGenerator {
         identifier.EnumIdentifier = TransformHelper.ToPascalCase(essence);
       }
 
-
       var categoryOrder = new List<string>() {
         "General", "Config", "Sources", "Scenes", "Inputs", "Transitions", "Filters",
         "Scene Items", "Outputs", "Stream", "Record", "Media Inputs", "Ui", "High-Volume",
@@ -102,12 +104,10 @@ namespace SourceGenerator {
 
     private static void PatchOthers(ObsRequest request) {
       switch (request.RequestType) {
-      case "ToggleRecord":
-        request.ResponseFields!.Add(new ObsDataField { ValueName = "outputActive", ValueDescription = "Whether the output is active", ValueType = "Boolean" });
-        break;
       case "ToggleRecordPause":
         request.ResponseFields!.Add(new ObsDataField { ValueName = "outputPaused", ValueDescription = "Whether the output is paused", ValueType = "Boolean" });
         break;
+
       case "SaveSourceScreenshot":
         request.ResponseFields!.Clear();
         break;
@@ -130,48 +130,63 @@ namespace SourceGenerator {
       case "outputs":
         type = "Array<Output>";
         return true;
+
       case "filters":
         type = "Array<SourceFilter>";
         return true;
+
       case "inputs":
         type = "Array<Input>";
         return true;
+
       case "keyModifiers":
         type = "KeyModifiers";
         return true;
+
       case "mediaAction":
         type = "MediaInputAction";
         return true;
+
       case "mediaState":
         type = "MediaState";
         return true;
+
       case "monitorType":
         type = "MonitoringType";
         return true;
+
       case "outputState":
         type = "ObsOutputState";
         return true;
+
       case "scenes":
         type = "Array<Scene>";
         return true;
+
       case "sceneItems":
         type = "Array<SceneItem>";
         return true;
+
       case "sceneItemBlendMode":
         type = "BlendingType";
         return true;
+
       case "streamServiceType":
         type = "StreamServiceType";
         return true;
+
       case "transitions":
         type = "Array<AvailableTransition>";
         return true;
+
       case "realm":
         type = "DataRealm";
         return true;
+
       case "videoMixType":
         type = "VideoMixType";
         return true;
+
       default:
         type = null;
         return false;
