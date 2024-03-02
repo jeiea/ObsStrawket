@@ -756,6 +756,12 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class GetSourceScreenshot : Request {
     /// <summary>
+    /// Image compression format to use. Use <c>GetVersion</c> to get compatible image formats
+    /// </summary>
+    [JsonPropertyName("imageFormat")]
+    public string ImageFormat { get; set; } = "";
+
+    /// <summary>
     /// Name of the source to take a screenshot of<br />
     /// If null, Unknown
     /// </summary>
@@ -768,12 +774,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sourceUuid")]
     public string? SourceUuid { get; set; } = "";
-
-    /// <summary>
-    /// Image compression format to use. Use <c>GetVersion</c> to get compatible image formats
-    /// </summary>
-    [JsonPropertyName("imageFormat")]
-    public string ImageFormat { get; set; } = "";
 
     /// <summary>
     /// Width to scale the screenshot to<br />
@@ -823,6 +823,18 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class SaveSourceScreenshot : Request {
     /// <summary>
+    /// Image compression format to use. Use <c>GetVersion</c> to get compatible image formats
+    /// </summary>
+    [JsonPropertyName("imageFormat")]
+    public string ImageFormat { get; set; } = "";
+
+    /// <summary>
+    /// Path to save the screenshot file to. Eg. <c>C:\Users\user\Desktop\screenshot.png</c>
+    /// </summary>
+    [JsonPropertyName("imageFilePath")]
+    public string ImageFilePath { get; set; } = "";
+
+    /// <summary>
     /// Name of the source to take a screenshot of<br />
     /// If null, Unknown
     /// </summary>
@@ -835,18 +847,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sourceUuid")]
     public string? SourceUuid { get; set; } = "";
-
-    /// <summary>
-    /// Image compression format to use. Use <c>GetVersion</c> to get compatible image formats
-    /// </summary>
-    [JsonPropertyName("imageFormat")]
-    public string ImageFormat { get; set; } = "";
-
-    /// <summary>
-    /// Path to save the screenshot file to. Eg. <c>C:\Users\user\Desktop\screenshot.png</c>
-    /// </summary>
-    [JsonPropertyName("imageFilePath")]
-    public string ImageFilePath { get; set; } = "";
 
     /// <summary>
     /// Width to scale the screenshot to<br />
@@ -1109,6 +1109,12 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class SetSceneName : Request {
     /// <summary>
+    /// New name for the scene
+    /// </summary>
+    [JsonPropertyName("newSceneName")]
+    public string NewSceneName { get; set; } = "";
+
+    /// <summary>
     /// Name of the scene to be renamed<br />
     /// If null, Unknown
     /// </summary>
@@ -1121,12 +1127,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; } = "";
-
-    /// <summary>
-    /// New name for the scene
-    /// </summary>
-    [JsonPropertyName("newSceneName")]
-    public string NewSceneName { get; set; } = "";
   }
 
   /// <summary>
@@ -1310,6 +1310,18 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class CreateInput : Request {
     /// <summary>
+    /// Name of the new input to created
+    /// </summary>
+    [JsonPropertyName("inputName")]
+    public string InputName { get; set; } = "";
+
+    /// <summary>
+    /// The kind of input to be created
+    /// </summary>
+    [JsonPropertyName("inputKind")]
+    public string InputKind { get; set; } = "";
+
+    /// <summary>
     /// Name of the scene to add the input to as a scene item<br />
     /// If null, Unknown
     /// </summary>
@@ -1322,18 +1334,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; } = "";
-
-    /// <summary>
-    /// Name of the new input to created
-    /// </summary>
-    [JsonPropertyName("inputName")]
-    public string InputName { get; set; } = "";
-
-    /// <summary>
-    /// The kind of input to be created
-    /// </summary>
-    [JsonPropertyName("inputKind")]
-    public string InputKind { get; set; } = "";
 
     /// <summary>
     /// Settings object to initialize the input with<br />
@@ -1397,6 +1397,12 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class SetInputName : Request {
     /// <summary>
+    /// New name for the input
+    /// </summary>
+    [JsonPropertyName("newInputName")]
+    public string NewInputName { get; set; } = "";
+
+    /// <summary>
     /// Current input name<br />
     /// If null, Unknown
     /// </summary>
@@ -1409,12 +1415,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("inputUuid")]
     public string? InputUuid { get; set; } = "";
-
-    /// <summary>
-    /// New name for the input
-    /// </summary>
-    [JsonPropertyName("newInputName")]
-    public string NewInputName { get; set; } = "";
   }
 
   /// <summary>
@@ -1488,6 +1488,12 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class SetInputSettings : Request {
     /// <summary>
+    /// Object of settings to apply
+    /// </summary>
+    [JsonPropertyName("inputSettings")]
+    public Dictionary<string, object?> InputSettings { get; set; } = new();
+
+    /// <summary>
     /// Name of the input to set the settings of<br />
     /// If null, Unknown
     /// </summary>
@@ -1500,12 +1506,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("inputUuid")]
     public string? InputUuid { get; set; } = "";
-
-    /// <summary>
-    /// Object of settings to apply
-    /// </summary>
-    [JsonPropertyName("inputSettings")]
-    public Dictionary<string, object?> InputSettings { get; set; } = new();
 
     /// <summary>
     /// True == apply the settings on top of existing ones, False == reset the input to its defaults, then apply settings.<br />
@@ -1554,6 +1554,12 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class SetInputMute : Request {
     /// <summary>
+    /// Whether to mute the input or not
+    /// </summary>
+    [JsonPropertyName("inputMuted")]
+    public bool InputMuted { get; set; }
+
+    /// <summary>
     /// Name of the input to set the mute state of<br />
     /// If null, Unknown
     /// </summary>
@@ -1566,12 +1572,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("inputUuid")]
     public string? InputUuid { get; set; } = "";
-
-    /// <summary>
-    /// Whether to mute the input or not
-    /// </summary>
-    [JsonPropertyName("inputMuted")]
-    public bool InputMuted { get; set; }
   }
 
   /// <summary>
@@ -1720,6 +1720,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class SetInputAudioBalance : Request {
     /// <summary>
+    /// New audio balance value<br />
+    /// It should be &gt;= 0.0, &lt;= 1.0
+    /// </summary>
+    [JsonPropertyName("inputAudioBalance")]
+    public double InputAudioBalance { get; set; }
+
+    /// <summary>
     /// Name of the input to set the audio balance of<br />
     /// If null, Unknown
     /// </summary>
@@ -1732,13 +1739,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("inputUuid")]
     public string? InputUuid { get; set; } = "";
-
-    /// <summary>
-    /// New audio balance value<br />
-    /// It should be &gt;= 0.0, &lt;= 1.0
-    /// </summary>
-    [JsonPropertyName("inputAudioBalance")]
-    public double InputAudioBalance { get; set; }
   }
 
   /// <summary>
@@ -1782,6 +1782,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class SetInputAudioSyncOffset : Request {
     /// <summary>
+    /// New audio sync offset in milliseconds<br />
+    /// It should be &gt;= -950, &lt;= 20000
+    /// </summary>
+    [JsonPropertyName("inputAudioSyncOffset")]
+    public int InputAudioSyncOffset { get; set; }
+
+    /// <summary>
     /// Name of the input to set the audio sync offset of<br />
     /// If null, Unknown
     /// </summary>
@@ -1794,13 +1801,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("inputUuid")]
     public string? InputUuid { get; set; } = "";
-
-    /// <summary>
-    /// New audio sync offset in milliseconds<br />
-    /// It should be &gt;= -950, &lt;= 20000
-    /// </summary>
-    [JsonPropertyName("inputAudioSyncOffset")]
-    public int InputAudioSyncOffset { get; set; }
   }
 
   /// <summary>
@@ -1848,6 +1848,12 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class SetInputAudioMonitorType : Request {
     /// <summary>
+    /// Audio monitor type
+    /// </summary>
+    [JsonPropertyName("monitorType")]
+    public MonitoringType MonitorType { get; set; } = new();
+
+    /// <summary>
     /// Name of the input to set the audio monitor type of<br />
     /// If null, Unknown
     /// </summary>
@@ -1860,12 +1866,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("inputUuid")]
     public string? InputUuid { get; set; } = "";
-
-    /// <summary>
-    /// Audio monitor type
-    /// </summary>
-    [JsonPropertyName("monitorType")]
-    public MonitoringType MonitorType { get; set; } = new();
   }
 
   /// <summary>
@@ -1907,6 +1907,12 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class SetInputAudioTracks : Request {
     /// <summary>
+    /// Track settings to apply
+    /// </summary>
+    [JsonPropertyName("inputAudioTracks")]
+    public Dictionary<string, object?> InputAudioTracks { get; set; } = new();
+
+    /// <summary>
     /// Name of the input<br />
     /// If null, Unknown
     /// </summary>
@@ -1919,12 +1925,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("inputUuid")]
     public string? InputUuid { get; set; } = "";
-
-    /// <summary>
-    /// Track settings to apply
-    /// </summary>
-    [JsonPropertyName("inputAudioTracks")]
-    public Dictionary<string, object?> InputAudioTracks { get; set; } = new();
   }
 
   /// <summary>
@@ -1936,6 +1936,12 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class GetInputPropertiesListPropertyItems : Request {
     /// <summary>
+    /// Name of the list property to get the items of
+    /// </summary>
+    [JsonPropertyName("propertyName")]
+    public string PropertyName { get; set; } = "";
+
+    /// <summary>
     /// Name of the input<br />
     /// If null, Unknown
     /// </summary>
@@ -1948,12 +1954,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("inputUuid")]
     public string? InputUuid { get; set; } = "";
-
-    /// <summary>
-    /// Name of the list property to get the items of
-    /// </summary>
-    [JsonPropertyName("propertyName")]
-    public string PropertyName { get; set; } = "";
   }
 
   /// <summary>
@@ -1980,6 +1980,12 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class PressInputPropertiesButton : Request {
     /// <summary>
+    /// Name of the button property to press
+    /// </summary>
+    [JsonPropertyName("propertyName")]
+    public string PropertyName { get; set; } = "";
+
+    /// <summary>
     /// Name of the input<br />
     /// If null, Unknown
     /// </summary>
@@ -1992,12 +1998,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("inputUuid")]
     public string? InputUuid { get; set; } = "";
-
-    /// <summary>
-    /// Name of the button property to press
-    /// </summary>
-    [JsonPropertyName("propertyName")]
-    public string PropertyName { get; set; } = "";
   }
 
   /// <summary>
@@ -2292,6 +2292,18 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class CreateSourceFilter : Request {
     /// <summary>
+    /// Name of the new filter to be created
+    /// </summary>
+    [JsonPropertyName("filterName")]
+    public string FilterName { get; set; } = "";
+
+    /// <summary>
+    /// The kind of filter to be created
+    /// </summary>
+    [JsonPropertyName("filterKind")]
+    public string FilterKind { get; set; } = "";
+
+    /// <summary>
     /// Name of the source to add the filter to<br />
     /// If null, Unknown
     /// </summary>
@@ -2304,18 +2316,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sourceUuid")]
     public string? SourceUuid { get; set; } = "";
-
-    /// <summary>
-    /// Name of the new filter to be created
-    /// </summary>
-    [JsonPropertyName("filterName")]
-    public string FilterName { get; set; } = "";
-
-    /// <summary>
-    /// The kind of filter to be created
-    /// </summary>
-    [JsonPropertyName("filterKind")]
-    public string FilterKind { get; set; } = "";
 
     /// <summary>
     /// Settings object to initialize the filter with<br />
@@ -2332,6 +2332,12 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class RemoveSourceFilter : Request {
     /// <summary>
+    /// Name of the filter to remove
+    /// </summary>
+    [JsonPropertyName("filterName")]
+    public string FilterName { get; set; } = "";
+
+    /// <summary>
     /// Name of the source the filter is on<br />
     /// If null, Unknown
     /// </summary>
@@ -2344,12 +2350,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sourceUuid")]
     public string? SourceUuid { get; set; } = "";
-
-    /// <summary>
-    /// Name of the filter to remove
-    /// </summary>
-    [JsonPropertyName("filterName")]
-    public string FilterName { get; set; } = "";
   }
 
   /// <summary>
@@ -2358,20 +2358,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetSourceFilterName : Request {
-    /// <summary>
-    /// Name of the source the filter is on<br />
-    /// If null, Unknown
-    /// </summary>
-    [JsonPropertyName("sourceName")]
-    public string? SourceName { get; set; } = "";
-
-    /// <summary>
-    /// UUID of the source the filter is on<br />
-    /// If null, Unknown
-    /// </summary>
-    [JsonPropertyName("sourceUuid")]
-    public string? SourceUuid { get; set; } = "";
-
     /// <summary>
     /// Current name of the filter
     /// </summary>
@@ -2383,6 +2369,20 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("newFilterName")]
     public string NewFilterName { get; set; } = "";
+
+    /// <summary>
+    /// Name of the source the filter is on<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("sourceName")]
+    public string? SourceName { get; set; } = "";
+
+    /// <summary>
+    /// UUID of the source the filter is on<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("sourceUuid")]
+    public string? SourceUuid { get; set; } = "";
   }
 
   /// <summary>
@@ -2391,6 +2391,12 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetSourceFilter : Request {
+    /// <summary>
+    /// Name of the filter
+    /// </summary>
+    [JsonPropertyName("filterName")]
+    public string FilterName { get; set; } = "";
+
     /// <summary>
     /// Name of the source<br />
     /// If null, Unknown
@@ -2404,12 +2410,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sourceUuid")]
     public string? SourceUuid { get; set; } = "";
-
-    /// <summary>
-    /// Name of the filter
-    /// </summary>
-    [JsonPropertyName("filterName")]
-    public string FilterName { get; set; } = "";
   }
 
   /// <summary>
@@ -2448,20 +2448,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class SetSourceFilterIndex : Request {
     /// <summary>
-    /// Name of the source the filter is on<br />
-    /// If null, Unknown
-    /// </summary>
-    [JsonPropertyName("sourceName")]
-    public string? SourceName { get; set; } = "";
-
-    /// <summary>
-    /// UUID of the source the filter is on<br />
-    /// If null, Unknown
-    /// </summary>
-    [JsonPropertyName("sourceUuid")]
-    public string? SourceUuid { get; set; } = "";
-
-    /// <summary>
     /// Name of the filter
     /// </summary>
     [JsonPropertyName("filterName")]
@@ -2473,14 +2459,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("filterIndex")]
     public int FilterIndex { get; set; }
-  }
 
-  /// <summary>
-  /// Sets the settings of a source filter.<br />
-  /// Latest supported RPC version: 1<br />
-  /// Added in: 5.0.0
-  /// </summary>
-  public class SetSourceFilterSettings : Request {
     /// <summary>
     /// Name of the source the filter is on<br />
     /// If null, Unknown
@@ -2494,7 +2473,14 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sourceUuid")]
     public string? SourceUuid { get; set; } = "";
+  }
 
+  /// <summary>
+  /// Sets the settings of a source filter.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
+  /// </summary>
+  public class SetSourceFilterSettings : Request {
     /// <summary>
     /// Name of the filter to set the settings of
     /// </summary>
@@ -2506,6 +2492,20 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("filterSettings")]
     public Dictionary<string, object?> FilterSettings { get; set; } = new();
+
+    /// <summary>
+    /// Name of the source the filter is on<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("sourceName")]
+    public string? SourceName { get; set; } = "";
+
+    /// <summary>
+    /// UUID of the source the filter is on<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("sourceUuid")]
+    public string? SourceUuid { get; set; } = "";
 
     /// <summary>
     /// True == apply the settings on top of existing ones, False == reset the input to its defaults, then apply settings.<br />
@@ -2522,6 +2522,18 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class SetSourceFilterEnabled : Request {
     /// <summary>
+    /// Name of the filter
+    /// </summary>
+    [JsonPropertyName("filterName")]
+    public string FilterName { get; set; } = "";
+
+    /// <summary>
+    /// New enable state of the filter
+    /// </summary>
+    [JsonPropertyName("filterEnabled")]
+    public bool FilterEnabled { get; set; }
+
+    /// <summary>
     /// Name of the source the filter is on<br />
     /// If null, Unknown
     /// </summary>
@@ -2534,18 +2546,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sourceUuid")]
     public string? SourceUuid { get; set; } = "";
-
-    /// <summary>
-    /// Name of the filter
-    /// </summary>
-    [JsonPropertyName("filterName")]
-    public string FilterName { get; set; } = "";
-
-    /// <summary>
-    /// New enable state of the filter
-    /// </summary>
-    [JsonPropertyName("filterEnabled")]
-    public bool FilterEnabled { get; set; }
   }
 
   /// <summary>
@@ -2627,6 +2627,12 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class GetSceneItemId : Request {
     /// <summary>
+    /// Name of the source to find
+    /// </summary>
+    [JsonPropertyName("sourceName")]
+    public string SourceName { get; set; } = "";
+
+    /// <summary>
     /// Name of the scene or group to search in<br />
     /// If null, Unknown
     /// </summary>
@@ -2639,12 +2645,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; } = "";
-
-    /// <summary>
-    /// Name of the source to find
-    /// </summary>
-    [JsonPropertyName("sourceName")]
-    public string SourceName { get; set; } = "";
 
     /// <summary>
     /// Number of matches to skip during search. &gt;= 0 means first forward. -1 means last (top) item<br />
@@ -2673,6 +2673,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class GetSceneItemSource : Request {
     /// <summary>
+    /// Numeric ID of the scene item<br />
+    /// It should be &gt;= 0
+    /// </summary>
+    [JsonPropertyName("sceneItemId")]
+    public int SceneItemId { get; set; }
+
+    /// <summary>
     /// Name of the scene the item is in<br />
     /// If null, Unknown
     /// </summary>
@@ -2685,13 +2692,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; } = "";
-
-    /// <summary>
-    /// Numeric ID of the scene item<br />
-    /// It should be &gt;= 0
-    /// </summary>
-    [JsonPropertyName("sceneItemId")]
-    public int SceneItemId { get; set; }
   }
 
   /// <summary>
@@ -2775,6 +2775,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class RemoveSceneItem : Request {
     /// <summary>
+    /// Numeric ID of the scene item<br />
+    /// It should be &gt;= 0
+    /// </summary>
+    [JsonPropertyName("sceneItemId")]
+    public int SceneItemId { get; set; }
+
+    /// <summary>
     /// Name of the scene the item is in<br />
     /// If null, Unknown
     /// </summary>
@@ -2787,13 +2794,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; } = "";
-
-    /// <summary>
-    /// Numeric ID of the scene item<br />
-    /// It should be &gt;= 0
-    /// </summary>
-    [JsonPropertyName("sceneItemId")]
-    public int SceneItemId { get; set; }
   }
 
   /// <summary>
@@ -2805,6 +2805,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class DuplicateSceneItem : Request {
     /// <summary>
+    /// Numeric ID of the scene item<br />
+    /// It should be &gt;= 0
+    /// </summary>
+    [JsonPropertyName("sceneItemId")]
+    public int SceneItemId { get; set; }
+
+    /// <summary>
     /// Name of the scene the item is in<br />
     /// If null, Unknown
     /// </summary>
@@ -2817,13 +2824,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; } = "";
-
-    /// <summary>
-    /// Numeric ID of the scene item<br />
-    /// It should be &gt;= 0
-    /// </summary>
-    [JsonPropertyName("sceneItemId")]
-    public int SceneItemId { get; set; }
 
     /// <summary>
     /// Name of the scene to create the duplicated item in<br />
@@ -2860,6 +2860,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class GetSceneItemTransform : Request {
     /// <summary>
+    /// Numeric ID of the scene item<br />
+    /// It should be &gt;= 0
+    /// </summary>
+    [JsonPropertyName("sceneItemId")]
+    public int SceneItemId { get; set; }
+
+    /// <summary>
     /// Name of the scene the item is in<br />
     /// If null, Unknown
     /// </summary>
@@ -2872,13 +2879,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; } = "";
-
-    /// <summary>
-    /// Numeric ID of the scene item<br />
-    /// It should be &gt;= 0
-    /// </summary>
-    [JsonPropertyName("sceneItemId")]
-    public int SceneItemId { get; set; }
   }
 
   /// <summary>
@@ -2899,20 +2899,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class SetSceneItemTransform : Request {
     /// <summary>
-    /// Name of the scene the item is in<br />
-    /// If null, Unknown
-    /// </summary>
-    [JsonPropertyName("sceneName")]
-    public string? SceneName { get; set; } = "";
-
-    /// <summary>
-    /// UUID of the scene the item is in<br />
-    /// If null, Unknown
-    /// </summary>
-    [JsonPropertyName("sceneUuid")]
-    public string? SceneUuid { get; set; } = "";
-
-    /// <summary>
     /// Numeric ID of the scene item<br />
     /// It should be &gt;= 0
     /// </summary>
@@ -2924,16 +2910,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneItemTransform")]
     public Dictionary<string, object?> SceneItemTransform { get; set; } = new();
-  }
 
-  /// <summary>
-  /// Gets the enable state of a scene item.<br />
-  /// <br />
-  /// Scenes and Groups<br />
-  /// Latest supported RPC version: 1<br />
-  /// Added in: 5.0.0
-  /// </summary>
-  public class GetSceneItemEnabled : Request {
     /// <summary>
     /// Name of the scene the item is in<br />
     /// If null, Unknown
@@ -2947,13 +2924,36 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; } = "";
+  }
 
+  /// <summary>
+  /// Gets the enable state of a scene item.<br />
+  /// <br />
+  /// Scenes and Groups<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
+  /// </summary>
+  public class GetSceneItemEnabled : Request {
     /// <summary>
     /// Numeric ID of the scene item<br />
     /// It should be &gt;= 0
     /// </summary>
     [JsonPropertyName("sceneItemId")]
     public int SceneItemId { get; set; }
+
+    /// <summary>
+    /// Name of the scene the item is in<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("sceneName")]
+    public string? SceneName { get; set; } = "";
+
+    /// <summary>
+    /// UUID of the scene the item is in<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("sceneUuid")]
+    public string? SceneUuid { get; set; } = "";
   }
 
   /// <summary>
@@ -2976,20 +2976,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class SetSceneItemEnabled : Request {
     /// <summary>
-    /// Name of the scene the item is in<br />
-    /// If null, Unknown
-    /// </summary>
-    [JsonPropertyName("sceneName")]
-    public string? SceneName { get; set; } = "";
-
-    /// <summary>
-    /// UUID of the scene the item is in<br />
-    /// If null, Unknown
-    /// </summary>
-    [JsonPropertyName("sceneUuid")]
-    public string? SceneUuid { get; set; } = "";
-
-    /// <summary>
     /// Numeric ID of the scene item<br />
     /// It should be &gt;= 0
     /// </summary>
@@ -3001,16 +2987,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneItemEnabled")]
     public bool SceneItemEnabled { get; set; }
-  }
 
-  /// <summary>
-  /// Gets the lock state of a scene item.<br />
-  /// <br />
-  /// Scenes and Groups<br />
-  /// Latest supported RPC version: 1<br />
-  /// Added in: 5.0.0
-  /// </summary>
-  public class GetSceneItemLocked : Request {
     /// <summary>
     /// Name of the scene the item is in<br />
     /// If null, Unknown
@@ -3024,13 +3001,36 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; } = "";
+  }
 
+  /// <summary>
+  /// Gets the lock state of a scene item.<br />
+  /// <br />
+  /// Scenes and Groups<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.0.0
+  /// </summary>
+  public class GetSceneItemLocked : Request {
     /// <summary>
     /// Numeric ID of the scene item<br />
     /// It should be &gt;= 0
     /// </summary>
     [JsonPropertyName("sceneItemId")]
     public int SceneItemId { get; set; }
+
+    /// <summary>
+    /// Name of the scene the item is in<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("sceneName")]
+    public string? SceneName { get; set; } = "";
+
+    /// <summary>
+    /// UUID of the scene the item is in<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("sceneUuid")]
+    public string? SceneUuid { get; set; } = "";
   }
 
   /// <summary>
@@ -3053,6 +3053,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class SetSceneItemLocked : Request {
     /// <summary>
+    /// Numeric ID of the scene item<br />
+    /// It should be &gt;= 0
+    /// </summary>
+    [JsonPropertyName("sceneItemId")]
+    public int SceneItemId { get; set; }
+
+    /// <summary>
+    /// New lock state of the scene item
+    /// </summary>
+    [JsonPropertyName("sceneItemLocked")]
+    public bool SceneItemLocked { get; set; }
+
+    /// <summary>
     /// Name of the scene the item is in<br />
     /// If null, Unknown
     /// </summary>
@@ -3065,19 +3078,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; } = "";
-
-    /// <summary>
-    /// Numeric ID of the scene item<br />
-    /// It should be &gt;= 0
-    /// </summary>
-    [JsonPropertyName("sceneItemId")]
-    public int SceneItemId { get; set; }
-
-    /// <summary>
-    /// New lock state of the scene item
-    /// </summary>
-    [JsonPropertyName("sceneItemLocked")]
-    public bool SceneItemLocked { get; set; }
   }
 
   /// <summary>
@@ -3091,6 +3091,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class GetSceneItemIndex : Request {
     /// <summary>
+    /// Numeric ID of the scene item<br />
+    /// It should be &gt;= 0
+    /// </summary>
+    [JsonPropertyName("sceneItemId")]
+    public int SceneItemId { get; set; }
+
+    /// <summary>
     /// Name of the scene the item is in<br />
     /// If null, Unknown
     /// </summary>
@@ -3103,13 +3110,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; } = "";
-
-    /// <summary>
-    /// Numeric ID of the scene item<br />
-    /// It should be &gt;= 0
-    /// </summary>
-    [JsonPropertyName("sceneItemId")]
-    public int SceneItemId { get; set; }
   }
 
   /// <summary>
@@ -3132,20 +3132,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class SetSceneItemIndex : Request {
     /// <summary>
-    /// Name of the scene the item is in<br />
-    /// If null, Unknown
-    /// </summary>
-    [JsonPropertyName("sceneName")]
-    public string? SceneName { get; set; } = "";
-
-    /// <summary>
-    /// UUID of the scene the item is in<br />
-    /// If null, Unknown
-    /// </summary>
-    [JsonPropertyName("sceneUuid")]
-    public string? SceneUuid { get; set; } = "";
-
-    /// <summary>
     /// Numeric ID of the scene item<br />
     /// It should be &gt;= 0
     /// </summary>
@@ -3158,6 +3144,20 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneItemIndex")]
     public int SceneItemIndex { get; set; }
+
+    /// <summary>
+    /// Name of the scene the item is in<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("sceneName")]
+    public string? SceneName { get; set; } = "";
+
+    /// <summary>
+    /// UUID of the scene the item is in<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("sceneUuid")]
+    public string? SceneUuid { get; set; } = "";
   }
 
   /// <summary>
@@ -3179,6 +3179,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class GetSceneItemBlendMode : Request {
     /// <summary>
+    /// Numeric ID of the scene item<br />
+    /// It should be &gt;= 0
+    /// </summary>
+    [JsonPropertyName("sceneItemId")]
+    public int SceneItemId { get; set; }
+
+    /// <summary>
     /// Name of the scene the item is in<br />
     /// If null, Unknown
     /// </summary>
@@ -3191,13 +3198,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; } = "";
-
-    /// <summary>
-    /// Numeric ID of the scene item<br />
-    /// It should be &gt;= 0
-    /// </summary>
-    [JsonPropertyName("sceneItemId")]
-    public int SceneItemId { get; set; }
   }
 
   /// <summary>
@@ -3220,6 +3220,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class SetSceneItemBlendMode : Request {
     /// <summary>
+    /// Numeric ID of the scene item<br />
+    /// It should be &gt;= 0
+    /// </summary>
+    [JsonPropertyName("sceneItemId")]
+    public int SceneItemId { get; set; }
+
+    /// <summary>
+    /// New blend mode
+    /// </summary>
+    [JsonPropertyName("sceneItemBlendMode")]
+    public BlendingType SceneItemBlendMode { get; set; } = new();
+
+    /// <summary>
     /// Name of the scene the item is in<br />
     /// If null, Unknown
     /// </summary>
@@ -3232,19 +3245,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; } = "";
-
-    /// <summary>
-    /// Numeric ID of the scene item<br />
-    /// It should be &gt;= 0
-    /// </summary>
-    [JsonPropertyName("sceneItemId")]
-    public int SceneItemId { get; set; }
-
-    /// <summary>
-    /// New blend mode
-    /// </summary>
-    [JsonPropertyName("sceneItemBlendMode")]
-    public BlendingType SceneItemBlendMode { get; set; } = new();
   }
 
   /// <summary>
@@ -3835,6 +3835,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class SetMediaInputCursor : Request {
     /// <summary>
+    /// New cursor position to set<br />
+    /// It should be &gt;= 0
+    /// </summary>
+    [JsonPropertyName("mediaCursor")]
+    public double MediaCursor { get; set; }
+
+    /// <summary>
     /// Name of the media input<br />
     /// If null, Unknown
     /// </summary>
@@ -3847,13 +3854,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("inputUuid")]
     public string? InputUuid { get; set; } = "";
-
-    /// <summary>
-    /// New cursor position to set<br />
-    /// It should be &gt;= 0
-    /// </summary>
-    [JsonPropertyName("mediaCursor")]
-    public double MediaCursor { get; set; }
   }
 
   /// <summary>
@@ -3865,6 +3865,12 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class OffsetMediaInputCursor : Request {
     /// <summary>
+    /// Value to offset the current cursor position by
+    /// </summary>
+    [JsonPropertyName("mediaCursorOffset")]
+    public int MediaCursorOffset { get; set; }
+
+    /// <summary>
     /// Name of the media input<br />
     /// If null, Unknown
     /// </summary>
@@ -3877,12 +3883,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("inputUuid")]
     public string? InputUuid { get; set; } = "";
-
-    /// <summary>
-    /// Value to offset the current cursor position by
-    /// </summary>
-    [JsonPropertyName("mediaCursorOffset")]
-    public int MediaCursorOffset { get; set; }
   }
 
   /// <summary>
@@ -3892,6 +3892,12 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// </summary>
   public class TriggerMediaInputAction : Request {
     /// <summary>
+    /// Identifier of the <c>ObsMediaInputAction</c> enum
+    /// </summary>
+    [JsonPropertyName("mediaAction")]
+    public MediaInputAction MediaAction { get; set; } = new();
+
+    /// <summary>
     /// Name of the media input<br />
     /// If null, Unknown
     /// </summary>
@@ -3904,12 +3910,6 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("inputUuid")]
     public string? InputUuid { get; set; } = "";
-
-    /// <summary>
-    /// Identifier of the <c>ObsMediaInputAction</c> enum
-    /// </summary>
-    [JsonPropertyName("mediaAction")]
-    public MediaInputAction MediaAction { get; set; } = new();
   }
 
   /// <summary>

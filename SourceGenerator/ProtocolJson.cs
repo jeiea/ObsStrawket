@@ -16,7 +16,6 @@ namespace SourceGenerator {
     public string EnumType { get; set; } = "";
 
     public List<ObsEnumIdentifier> EnumIdentifiers { get; set; } = new();
-
   }
 
   public record class ObsEnumIdentifier {
@@ -91,13 +90,15 @@ namespace SourceGenerator {
 
     public string? Category { get; set; }
 
-    public List<ObsRequestField>? RequestFields { get; set; }
+    public List<ObsRequestField> RequestFields { get; set; } = [];
 
-    public List<ObsDataField>? ResponseFields { get; set; }
+    public List<ObsDataField> ResponseFields { get; set; } = [];
   }
 
-  class StringToNumberConverter : JsonConverter<string> {
-    public StringToNumberConverter() : base() { }
+  internal class StringToNumberConverter : JsonConverter<string> {
+
+    public StringToNumberConverter() : base() {
+    }
 
     public override string Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
       if (reader.TokenType == JsonTokenType.Number) {

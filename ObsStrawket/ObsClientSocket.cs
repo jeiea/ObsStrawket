@@ -909,15 +909,15 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="imageFormat">Image compression format to use. Use <c>GetVersion</c> to get compatible image formats</param>
     /// <param name="sourceName">Name of the source to take a screenshot of<br />If null, Unknown</param>
     /// <param name="sourceUuid">UUID of the source to take a screenshot of<br />If null, Unknown</param>
-    /// <param name="imageFormat">Image compression format to use. Use <c>GetVersion</c> to get compatible image formats</param>
     /// <param name="imageWidth">Width to scale the screenshot to<br />If null, Source value is used</param>
     /// <param name="imageHeight">Height to scale the screenshot to<br />If null, Source value is used</param>
     /// <param name="imageCompressionQuality">Compression quality to use. 0 for high compression, 100 for uncompressed. -1 to use "default" (whatever that means, idk)<br />If null, -1</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<GetSourceScreenshotResponse> GetSourceScreenshotAsync(string? sourceName = default, string? sourceUuid = default, string imageFormat, int? imageWidth = default, int? imageHeight = default, int? imageCompressionQuality = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSourceScreenshot() { SourceName = sourceName, SourceUuid = sourceUuid, ImageFormat = imageFormat, ImageWidth = imageWidth, ImageHeight = imageHeight, ImageCompressionQuality = imageCompressionQuality }, cancellation).ConfigureAwait(false) as GetSourceScreenshotResponse)!;
+    public async Task<GetSourceScreenshotResponse> GetSourceScreenshotAsync(string imageFormat, string? sourceName = default, string? sourceUuid = default, int? imageWidth = default, int? imageHeight = default, int? imageCompressionQuality = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new GetSourceScreenshot() { ImageFormat = imageFormat, SourceName = sourceName, SourceUuid = sourceUuid, ImageWidth = imageWidth, ImageHeight = imageHeight, ImageCompressionQuality = imageCompressionQuality }, cancellation).ConfigureAwait(false) as GetSourceScreenshotResponse)!;
     }
 
     /// <summary>
@@ -930,16 +930,16 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name="sourceName">Name of the source to take a screenshot of<br />If null, Unknown</param>
-    /// <param name="sourceUuid">UUID of the source to take a screenshot of<br />If null, Unknown</param>
     /// <param name="imageFormat">Image compression format to use. Use <c>GetVersion</c> to get compatible image formats</param>
     /// <param name="imageFilePath">Path to save the screenshot file to. Eg. <c>C:\Users\user\Desktop\screenshot.png</c></param>
+    /// <param name="sourceName">Name of the source to take a screenshot of<br />If null, Unknown</param>
+    /// <param name="sourceUuid">UUID of the source to take a screenshot of<br />If null, Unknown</param>
     /// <param name="imageWidth">Width to scale the screenshot to<br />If null, Source value is used</param>
     /// <param name="imageHeight">Height to scale the screenshot to<br />If null, Source value is used</param>
     /// <param name="imageCompressionQuality">Compression quality to use. 0 for high compression, 100 for uncompressed. -1 to use "default" (whatever that means, idk)<br />If null, -1</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SaveSourceScreenshotAsync(string? sourceName = default, string? sourceUuid = default, string imageFormat, string imageFilePath, int? imageWidth = default, int? imageHeight = default, int? imageCompressionQuality = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SaveSourceScreenshot() { SourceName = sourceName, SourceUuid = sourceUuid, ImageFormat = imageFormat, ImageFilePath = imageFilePath, ImageWidth = imageWidth, ImageHeight = imageHeight, ImageCompressionQuality = imageCompressionQuality }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> SaveSourceScreenshotAsync(string imageFormat, string imageFilePath, string? sourceName = default, string? sourceUuid = default, int? imageWidth = default, int? imageHeight = default, int? imageCompressionQuality = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new SaveSourceScreenshot() { ImageFormat = imageFormat, ImageFilePath = imageFilePath, SourceName = sourceName, SourceUuid = sourceUuid, ImageWidth = imageWidth, ImageHeight = imageHeight, ImageCompressionQuality = imageCompressionQuality }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -1044,12 +1044,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="newSceneName">New name for the scene</param>
     /// <param name="sceneName">Name of the scene to be renamed<br />If null, Unknown</param>
     /// <param name="sceneUuid">UUID of the scene to be renamed<br />If null, Unknown</param>
-    /// <param name="newSceneName">New name for the scene</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetSceneNameAsync(string? sceneName = default, string? sceneUuid = default, string newSceneName, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetSceneName() { SceneName = sceneName, SceneUuid = sceneUuid, NewSceneName = newSceneName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> SetSceneNameAsync(string newSceneName, string? sceneName = default, string? sceneUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new SetSceneName() { NewSceneName = newSceneName, SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -1117,15 +1117,15 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name="sceneName">Name of the scene to add the input to as a scene item<br />If null, Unknown</param>
-    /// <param name="sceneUuid">UUID of the scene to add the input to as a scene item<br />If null, Unknown</param>
     /// <param name="inputName">Name of the new input to created</param>
     /// <param name="inputKind">The kind of input to be created</param>
+    /// <param name="sceneName">Name of the scene to add the input to as a scene item<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene to add the input to as a scene item<br />If null, Unknown</param>
     /// <param name="inputSettings">Settings object to initialize the input with<br />If null, Default settings used</param>
     /// <param name="sceneItemEnabled">Whether to set the created scene item to enabled or disabled<br />If null, True</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<CreateInputResponse> CreateInputAsync(string? sceneName = default, string? sceneUuid = default, string inputName, string inputKind, Dictionary<string, object?>? inputSettings = default, bool? sceneItemEnabled = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new CreateInput() { SceneName = sceneName, SceneUuid = sceneUuid, InputName = inputName, InputKind = inputKind, InputSettings = inputSettings, SceneItemEnabled = sceneItemEnabled }, cancellation).ConfigureAwait(false) as CreateInputResponse)!;
+    public async Task<CreateInputResponse> CreateInputAsync(string inputName, string inputKind, string? sceneName = default, string? sceneUuid = default, Dictionary<string, object?>? inputSettings = default, bool? sceneItemEnabled = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new CreateInput() { InputName = inputName, InputKind = inputKind, SceneName = sceneName, SceneUuid = sceneUuid, InputSettings = inputSettings, SceneItemEnabled = sceneItemEnabled }, cancellation).ConfigureAwait(false) as CreateInputResponse)!;
     }
 
     /// <summary>
@@ -1147,12 +1147,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="newInputName">New name for the input</param>
     /// <param name="inputName">Current input name<br />If null, Unknown</param>
     /// <param name="inputUuid">Current input UUID<br />If null, Unknown</param>
-    /// <param name="newInputName">New name for the input</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetInputNameAsync(string? inputName = default, string? inputUuid = default, string newInputName, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetInputName() { InputName = inputName, InputUuid = inputUuid, NewInputName = newInputName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> SetInputNameAsync(string newInputName, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new SetInputName() { NewInputName = newInputName, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -1185,13 +1185,13 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="inputSettings">Object of settings to apply</param>
     /// <param name="inputName">Name of the input to set the settings of<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input to set the settings of<br />If null, Unknown</param>
-    /// <param name="inputSettings">Object of settings to apply</param>
     /// <param name="overlay">True == apply the settings on top of existing ones, False == reset the input to its defaults, then apply settings.<br />If null, true</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetInputSettingsAsync(string? inputName = default, string? inputUuid = default, Dictionary<string, object?> inputSettings, bool? overlay = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetInputSettings() { InputName = inputName, InputUuid = inputUuid, InputSettings = inputSettings, Overlay = overlay }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> SetInputSettingsAsync(Dictionary<string, object?> inputSettings, string? inputName = default, string? inputUuid = default, bool? overlay = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new SetInputSettings() { InputSettings = inputSettings, InputName = inputName, InputUuid = inputUuid, Overlay = overlay }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -1211,12 +1211,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="inputMuted">Whether to mute the input or not</param>
     /// <param name="inputName">Name of the input to set the mute state of<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input to set the mute state of<br />If null, Unknown</param>
-    /// <param name="inputMuted">Whether to mute the input or not</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetInputMuteAsync(string? inputName = default, string? inputUuid = default, bool inputMuted, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetInputMute() { InputName = inputName, InputUuid = inputUuid, InputMuted = inputMuted }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> SetInputMuteAsync(bool inputMuted, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new SetInputMute() { InputMuted = inputMuted, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -1274,12 +1274,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="inputAudioBalance">New audio balance value</param>
     /// <param name="inputName">Name of the input to set the audio balance of<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input to set the audio balance of<br />If null, Unknown</param>
-    /// <param name="inputAudioBalance">New audio balance value</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetInputAudioBalanceAsync(string? inputName = default, string? inputUuid = default, double inputAudioBalance, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetInputAudioBalance() { InputName = inputName, InputUuid = inputUuid, InputAudioBalance = inputAudioBalance }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> SetInputAudioBalanceAsync(double inputAudioBalance, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new SetInputAudioBalance() { InputAudioBalance = inputAudioBalance, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -1301,12 +1301,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="inputAudioSyncOffset">New audio sync offset in milliseconds</param>
     /// <param name="inputName">Name of the input to set the audio sync offset of<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input to set the audio sync offset of<br />If null, Unknown</param>
-    /// <param name="inputAudioSyncOffset">New audio sync offset in milliseconds</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetInputAudioSyncOffsetAsync(string? inputName = default, string? inputUuid = default, int inputAudioSyncOffset, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetInputAudioSyncOffset() { InputName = inputName, InputUuid = inputUuid, InputAudioSyncOffset = inputAudioSyncOffset }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> SetInputAudioSyncOffsetAsync(int inputAudioSyncOffset, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new SetInputAudioSyncOffset() { InputAudioSyncOffset = inputAudioSyncOffset, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -1332,12 +1332,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="monitorType">Audio monitor type</param>
     /// <param name="inputName">Name of the input to set the audio monitor type of<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input to set the audio monitor type of<br />If null, Unknown</param>
-    /// <param name="monitorType">Audio monitor type</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetInputAudioMonitorTypeAsync(string? inputName = default, string? inputUuid = default, MonitoringType monitorType, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetInputAudioMonitorType() { InputName = inputName, InputUuid = inputUuid, MonitorType = monitorType }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> SetInputAudioMonitorTypeAsync(MonitoringType monitorType, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new SetInputAudioMonitorType() { MonitorType = monitorType, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -1357,12 +1357,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="inputAudioTracks">Track settings to apply</param>
     /// <param name="inputName">Name of the input<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input<br />If null, Unknown</param>
-    /// <param name="inputAudioTracks">Track settings to apply</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetInputAudioTracksAsync(string? inputName = default, string? inputUuid = default, Dictionary<string, object?> inputAudioTracks, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetInputAudioTracks() { InputName = inputName, InputUuid = inputUuid, InputAudioTracks = inputAudioTracks }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> SetInputAudioTracksAsync(Dictionary<string, object?> inputAudioTracks, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new SetInputAudioTracks() { InputAudioTracks = inputAudioTracks, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -1372,12 +1372,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="propertyName">Name of the list property to get the items of</param>
     /// <param name="inputName">Name of the input<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input<br />If null, Unknown</param>
-    /// <param name="propertyName">Name of the list property to get the items of</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<GetInputPropertiesListPropertyItemsResponse> GetInputPropertiesListPropertyItemsAsync(string? inputName = default, string? inputUuid = default, string propertyName, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetInputPropertiesListPropertyItems() { InputName = inputName, InputUuid = inputUuid, PropertyName = propertyName }, cancellation).ConfigureAwait(false) as GetInputPropertiesListPropertyItemsResponse)!;
+    public async Task<GetInputPropertiesListPropertyItemsResponse> GetInputPropertiesListPropertyItemsAsync(string propertyName, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new GetInputPropertiesListPropertyItems() { PropertyName = propertyName, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetInputPropertiesListPropertyItemsResponse)!;
     }
 
     /// <summary>
@@ -1391,12 +1391,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="propertyName">Name of the button property to press</param>
     /// <param name="inputName">Name of the input<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input<br />If null, Unknown</param>
-    /// <param name="propertyName">Name of the button property to press</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> PressInputPropertiesButtonAsync(string? inputName = default, string? inputUuid = default, string propertyName, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new PressInputPropertiesButton() { InputName = inputName, InputUuid = inputUuid, PropertyName = propertyName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> PressInputPropertiesButtonAsync(string propertyName, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new PressInputPropertiesButton() { PropertyName = propertyName, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -1543,14 +1543,14 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name="sourceName">Name of the source to add the filter to<br />If null, Unknown</param>
-    /// <param name="sourceUuid">UUID of the source to add the filter to<br />If null, Unknown</param>
     /// <param name="filterName">Name of the new filter to be created</param>
     /// <param name="filterKind">The kind of filter to be created</param>
+    /// <param name="sourceName">Name of the source to add the filter to<br />If null, Unknown</param>
+    /// <param name="sourceUuid">UUID of the source to add the filter to<br />If null, Unknown</param>
     /// <param name="filterSettings">Settings object to initialize the filter with<br />If null, Default settings used</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> CreateSourceFilterAsync(string? sourceName = default, string? sourceUuid = default, string filterName, string filterKind, Dictionary<string, object?>? filterSettings = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new CreateSourceFilter() { SourceName = sourceName, SourceUuid = sourceUuid, FilterName = filterName, FilterKind = filterKind, FilterSettings = filterSettings }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> CreateSourceFilterAsync(string filterName, string filterKind, string? sourceName = default, string? sourceUuid = default, Dictionary<string, object?>? filterSettings = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new CreateSourceFilter() { FilterName = filterName, FilterKind = filterKind, SourceName = sourceName, SourceUuid = sourceUuid, FilterSettings = filterSettings }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -1558,12 +1558,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="filterName">Name of the filter to remove</param>
     /// <param name="sourceName">Name of the source the filter is on<br />If null, Unknown</param>
     /// <param name="sourceUuid">UUID of the source the filter is on<br />If null, Unknown</param>
-    /// <param name="filterName">Name of the filter to remove</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> RemoveSourceFilterAsync(string? sourceName = default, string? sourceUuid = default, string filterName, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new RemoveSourceFilter() { SourceName = sourceName, SourceUuid = sourceUuid, FilterName = filterName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> RemoveSourceFilterAsync(string filterName, string? sourceName = default, string? sourceUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new RemoveSourceFilter() { FilterName = filterName, SourceName = sourceName, SourceUuid = sourceUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -1571,13 +1571,13 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name="sourceName">Name of the source the filter is on<br />If null, Unknown</param>
-    /// <param name="sourceUuid">UUID of the source the filter is on<br />If null, Unknown</param>
     /// <param name="filterName">Current name of the filter</param>
     /// <param name="newFilterName">New name for the filter</param>
+    /// <param name="sourceName">Name of the source the filter is on<br />If null, Unknown</param>
+    /// <param name="sourceUuid">UUID of the source the filter is on<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetSourceFilterNameAsync(string? sourceName = default, string? sourceUuid = default, string filterName, string newFilterName, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetSourceFilterName() { SourceName = sourceName, SourceUuid = sourceUuid, FilterName = filterName, NewFilterName = newFilterName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> SetSourceFilterNameAsync(string filterName, string newFilterName, string? sourceName = default, string? sourceUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new SetSourceFilterName() { FilterName = filterName, NewFilterName = newFilterName, SourceName = sourceName, SourceUuid = sourceUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -1585,12 +1585,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="filterName">Name of the filter</param>
     /// <param name="sourceName">Name of the source<br />If null, Unknown</param>
     /// <param name="sourceUuid">UUID of the source<br />If null, Unknown</param>
-    /// <param name="filterName">Name of the filter</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<GetSourceFilterResponse> GetSourceFilterAsync(string? sourceName = default, string? sourceUuid = default, string filterName, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSourceFilter() { SourceName = sourceName, SourceUuid = sourceUuid, FilterName = filterName }, cancellation).ConfigureAwait(false) as GetSourceFilterResponse)!;
+    public async Task<GetSourceFilterResponse> GetSourceFilterAsync(string filterName, string? sourceName = default, string? sourceUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new GetSourceFilter() { FilterName = filterName, SourceName = sourceName, SourceUuid = sourceUuid }, cancellation).ConfigureAwait(false) as GetSourceFilterResponse)!;
     }
 
     /// <summary>
@@ -1598,13 +1598,13 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name="sourceName">Name of the source the filter is on<br />If null, Unknown</param>
-    /// <param name="sourceUuid">UUID of the source the filter is on<br />If null, Unknown</param>
     /// <param name="filterName">Name of the filter</param>
     /// <param name="filterIndex">New index position of the filter</param>
+    /// <param name="sourceName">Name of the source the filter is on<br />If null, Unknown</param>
+    /// <param name="sourceUuid">UUID of the source the filter is on<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetSourceFilterIndexAsync(string? sourceName = default, string? sourceUuid = default, string filterName, int filterIndex, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetSourceFilterIndex() { SourceName = sourceName, SourceUuid = sourceUuid, FilterName = filterName, FilterIndex = filterIndex }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> SetSourceFilterIndexAsync(string filterName, int filterIndex, string? sourceName = default, string? sourceUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new SetSourceFilterIndex() { FilterName = filterName, FilterIndex = filterIndex, SourceName = sourceName, SourceUuid = sourceUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -1612,14 +1612,14 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name="sourceName">Name of the source the filter is on<br />If null, Unknown</param>
-    /// <param name="sourceUuid">UUID of the source the filter is on<br />If null, Unknown</param>
     /// <param name="filterName">Name of the filter to set the settings of</param>
     /// <param name="filterSettings">Object of settings to apply</param>
+    /// <param name="sourceName">Name of the source the filter is on<br />If null, Unknown</param>
+    /// <param name="sourceUuid">UUID of the source the filter is on<br />If null, Unknown</param>
     /// <param name="overlay">True == apply the settings on top of existing ones, False == reset the input to its defaults, then apply settings.<br />If null, true</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetSourceFilterSettingsAsync(string? sourceName = default, string? sourceUuid = default, string filterName, Dictionary<string, object?> filterSettings, bool? overlay = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetSourceFilterSettings() { SourceName = sourceName, SourceUuid = sourceUuid, FilterName = filterName, FilterSettings = filterSettings, Overlay = overlay }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> SetSourceFilterSettingsAsync(string filterName, Dictionary<string, object?> filterSettings, string? sourceName = default, string? sourceUuid = default, bool? overlay = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new SetSourceFilterSettings() { FilterName = filterName, FilterSettings = filterSettings, SourceName = sourceName, SourceUuid = sourceUuid, Overlay = overlay }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -1627,13 +1627,13 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name="sourceName">Name of the source the filter is on<br />If null, Unknown</param>
-    /// <param name="sourceUuid">UUID of the source the filter is on<br />If null, Unknown</param>
     /// <param name="filterName">Name of the filter</param>
     /// <param name="filterEnabled">New enable state of the filter</param>
+    /// <param name="sourceName">Name of the source the filter is on<br />If null, Unknown</param>
+    /// <param name="sourceUuid">UUID of the source the filter is on<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetSourceFilterEnabledAsync(string? sourceName = default, string? sourceUuid = default, string filterName, bool filterEnabled, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetSourceFilterEnabled() { SourceName = sourceName, SourceUuid = sourceUuid, FilterName = filterName, FilterEnabled = filterEnabled }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> SetSourceFilterEnabledAsync(string filterName, bool filterEnabled, string? sourceName = default, string? sourceUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new SetSourceFilterEnabled() { FilterName = filterName, FilterEnabled = filterEnabled, SourceName = sourceName, SourceUuid = sourceUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -1673,13 +1673,13 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="sourceName">Name of the source to find</param>
     /// <param name="sceneName">Name of the scene or group to search in<br />If null, Unknown</param>
     /// <param name="sceneUuid">UUID of the scene or group to search in<br />If null, Unknown</param>
-    /// <param name="sourceName">Name of the source to find</param>
     /// <param name="searchOffset">Number of matches to skip during search. &gt;= 0 means first forward. -1 means last (top) item<br />If null, 0</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<GetSceneItemIdResponse> GetSceneItemIdAsync(string? sceneName = default, string? sceneUuid = default, string sourceName, int? searchOffset = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSceneItemId() { SceneName = sceneName, SceneUuid = sceneUuid, SourceName = sourceName, SearchOffset = searchOffset }, cancellation).ConfigureAwait(false) as GetSceneItemIdResponse)!;
+    public async Task<GetSceneItemIdResponse> GetSceneItemIdAsync(string sourceName, string? sceneName = default, string? sceneUuid = default, int? searchOffset = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new GetSceneItemId() { SourceName = sourceName, SceneName = sceneName, SceneUuid = sceneUuid, SearchOffset = searchOffset }, cancellation).ConfigureAwait(false) as GetSceneItemIdResponse)!;
     }
 
     /// <summary>
@@ -1687,12 +1687,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.4.0
     /// </summary>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
     /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
-    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<GetSceneItemSourceResponse> GetSceneItemSourceAsync(string? sceneName = default, string? sceneUuid = default, int sceneItemId, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSceneItemSource() { SceneName = sceneName, SceneUuid = sceneUuid, SceneItemId = sceneItemId }, cancellation).ConfigureAwait(false) as GetSceneItemSourceResponse)!;
+    public async Task<GetSceneItemSourceResponse> GetSceneItemSourceAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new GetSceneItemSource() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false) as GetSceneItemSourceResponse)!;
     }
 
     /// <summary>
@@ -1719,12 +1719,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
     /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
-    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> RemoveSceneItemAsync(string? sceneName = default, string? sceneUuid = default, int sceneItemId, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new RemoveSceneItem() { SceneName = sceneName, SceneUuid = sceneUuid, SceneItemId = sceneItemId }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> RemoveSceneItemAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new RemoveSceneItem() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -1734,14 +1734,14 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
     /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
-    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="destinationSceneName">Name of the scene to create the duplicated item in<br />If null, From scene is assumed</param>
     /// <param name="destinationSceneUuid">UUID of the scene to create the duplicated item in<br />If null, From scene is assumed</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<DuplicateSceneItemResponse> DuplicateSceneItemAsync(string? sceneName = default, string? sceneUuid = default, int sceneItemId, string? destinationSceneName = default, string? destinationSceneUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new DuplicateSceneItem() { SceneName = sceneName, SceneUuid = sceneUuid, SceneItemId = sceneItemId, DestinationSceneName = destinationSceneName, DestinationSceneUuid = destinationSceneUuid }, cancellation).ConfigureAwait(false) as DuplicateSceneItemResponse)!;
+    public async Task<DuplicateSceneItemResponse> DuplicateSceneItemAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? destinationSceneName = default, string? destinationSceneUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new DuplicateSceneItem() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, DestinationSceneName = destinationSceneName, DestinationSceneUuid = destinationSceneUuid }, cancellation).ConfigureAwait(false) as DuplicateSceneItemResponse)!;
     }
 
     /// <summary>
@@ -1751,12 +1751,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
     /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
-    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<GetSceneItemTransformResponse> GetSceneItemTransformAsync(string? sceneName = default, string? sceneUuid = default, int sceneItemId, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSceneItemTransform() { SceneName = sceneName, SceneUuid = sceneUuid, SceneItemId = sceneItemId }, cancellation).ConfigureAwait(false) as GetSceneItemTransformResponse)!;
+    public async Task<GetSceneItemTransformResponse> GetSceneItemTransformAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new GetSceneItemTransform() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false) as GetSceneItemTransformResponse)!;
     }
 
     /// <summary>
@@ -1764,13 +1764,13 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
-    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="sceneItemTransform">Object containing scene item transform info to update</param>
+    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetSceneItemTransformAsync(string? sceneName = default, string? sceneUuid = default, int sceneItemId, Dictionary<string, object?> sceneItemTransform, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetSceneItemTransform() { SceneName = sceneName, SceneUuid = sceneUuid, SceneItemId = sceneItemId, SceneItemTransform = sceneItemTransform }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> SetSceneItemTransformAsync(int sceneItemId, Dictionary<string, object?> sceneItemTransform, string? sceneName = default, string? sceneUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new SetSceneItemTransform() { SceneItemId = sceneItemId, SceneItemTransform = sceneItemTransform, SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -1780,12 +1780,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
     /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
-    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<GetSceneItemEnabledResponse> GetSceneItemEnabledAsync(string? sceneName = default, string? sceneUuid = default, int sceneItemId, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSceneItemEnabled() { SceneName = sceneName, SceneUuid = sceneUuid, SceneItemId = sceneItemId }, cancellation).ConfigureAwait(false) as GetSceneItemEnabledResponse)!;
+    public async Task<GetSceneItemEnabledResponse> GetSceneItemEnabledAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new GetSceneItemEnabled() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false) as GetSceneItemEnabledResponse)!;
     }
 
     /// <summary>
@@ -1795,13 +1795,13 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
-    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="sceneItemEnabled">New enable state of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetSceneItemEnabledAsync(string? sceneName = default, string? sceneUuid = default, int sceneItemId, bool sceneItemEnabled, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetSceneItemEnabled() { SceneName = sceneName, SceneUuid = sceneUuid, SceneItemId = sceneItemId, SceneItemEnabled = sceneItemEnabled }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> SetSceneItemEnabledAsync(int sceneItemId, bool sceneItemEnabled, string? sceneName = default, string? sceneUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new SetSceneItemEnabled() { SceneItemId = sceneItemId, SceneItemEnabled = sceneItemEnabled, SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -1811,12 +1811,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
     /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
-    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<GetSceneItemLockedResponse> GetSceneItemLockedAsync(string? sceneName = default, string? sceneUuid = default, int sceneItemId, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSceneItemLocked() { SceneName = sceneName, SceneUuid = sceneUuid, SceneItemId = sceneItemId }, cancellation).ConfigureAwait(false) as GetSceneItemLockedResponse)!;
+    public async Task<GetSceneItemLockedResponse> GetSceneItemLockedAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new GetSceneItemLocked() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false) as GetSceneItemLockedResponse)!;
     }
 
     /// <summary>
@@ -1826,13 +1826,13 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
-    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="sceneItemLocked">New lock state of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetSceneItemLockedAsync(string? sceneName = default, string? sceneUuid = default, int sceneItemId, bool sceneItemLocked, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetSceneItemLocked() { SceneName = sceneName, SceneUuid = sceneUuid, SceneItemId = sceneItemId, SceneItemLocked = sceneItemLocked }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> SetSceneItemLockedAsync(int sceneItemId, bool sceneItemLocked, string? sceneName = default, string? sceneUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new SetSceneItemLocked() { SceneItemId = sceneItemId, SceneItemLocked = sceneItemLocked, SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -1844,12 +1844,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
     /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
-    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<GetSceneItemIndexResponse> GetSceneItemIndexAsync(string? sceneName = default, string? sceneUuid = default, int sceneItemId, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSceneItemIndex() { SceneName = sceneName, SceneUuid = sceneUuid, SceneItemId = sceneItemId }, cancellation).ConfigureAwait(false) as GetSceneItemIndexResponse)!;
+    public async Task<GetSceneItemIndexResponse> GetSceneItemIndexAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new GetSceneItemIndex() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false) as GetSceneItemIndexResponse)!;
     }
 
     /// <summary>
@@ -1859,13 +1859,13 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
-    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="sceneItemIndex">New index position of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetSceneItemIndexAsync(string? sceneName = default, string? sceneUuid = default, int sceneItemId, int sceneItemIndex, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetSceneItemIndex() { SceneName = sceneName, SceneUuid = sceneUuid, SceneItemId = sceneItemId, SceneItemIndex = sceneItemIndex }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> SetSceneItemIndexAsync(int sceneItemId, int sceneItemIndex, string? sceneName = default, string? sceneUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new SetSceneItemIndex() { SceneItemId = sceneItemId, SceneItemIndex = sceneItemIndex, SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -1885,12 +1885,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
     /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
-    /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<GetSceneItemBlendModeResponse> GetSceneItemBlendModeAsync(string? sceneName = default, string? sceneUuid = default, int sceneItemId, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSceneItemBlendMode() { SceneName = sceneName, SceneUuid = sceneUuid, SceneItemId = sceneItemId }, cancellation).ConfigureAwait(false) as GetSceneItemBlendModeResponse)!;
+    public async Task<GetSceneItemBlendModeResponse> GetSceneItemBlendModeAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new GetSceneItemBlendMode() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false) as GetSceneItemBlendModeResponse)!;
     }
 
     /// <summary>
@@ -1900,13 +1900,13 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
-    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="sceneItemId">Numeric ID of the scene item</param>
     /// <param name="sceneItemBlendMode">New blend mode</param>
+    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetSceneItemBlendModeAsync(string? sceneName = default, string? sceneUuid = default, int sceneItemId, BlendingType sceneItemBlendMode, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetSceneItemBlendMode() { SceneName = sceneName, SceneUuid = sceneUuid, SceneItemId = sceneItemId, SceneItemBlendMode = sceneItemBlendMode }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> SetSceneItemBlendModeAsync(int sceneItemId, BlendingType sceneItemBlendMode, string? sceneName = default, string? sceneUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new SetSceneItemBlendMode() { SceneItemId = sceneItemId, SceneItemBlendMode = sceneItemBlendMode, SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -2237,12 +2237,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="mediaCursor">New cursor position to set</param>
     /// <param name="inputName">Name of the media input<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the media input<br />If null, Unknown</param>
-    /// <param name="mediaCursor">New cursor position to set</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetMediaInputCursorAsync(string? inputName = default, string? inputUuid = default, double mediaCursor, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetMediaInputCursor() { InputName = inputName, InputUuid = inputUuid, MediaCursor = mediaCursor }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> SetMediaInputCursorAsync(double mediaCursor, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new SetMediaInputCursor() { MediaCursor = mediaCursor, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -2252,12 +2252,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="mediaCursorOffset">Value to offset the current cursor position by</param>
     /// <param name="inputName">Name of the media input<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the media input<br />If null, Unknown</param>
-    /// <param name="mediaCursorOffset">Value to offset the current cursor position by</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> OffsetMediaInputCursorAsync(string? inputName = default, string? inputUuid = default, int mediaCursorOffset, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new OffsetMediaInputCursor() { InputName = inputName, InputUuid = inputUuid, MediaCursorOffset = mediaCursorOffset }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> OffsetMediaInputCursorAsync(int mediaCursorOffset, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new OffsetMediaInputCursor() { MediaCursorOffset = mediaCursorOffset, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>
@@ -2265,12 +2265,12 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
+    /// <param name="mediaAction">Identifier of the <c>ObsMediaInputAction</c> enum</param>
     /// <param name="inputName">Name of the media input<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the media input<br />If null, Unknown</param>
-    /// <param name="mediaAction">Identifier of the <c>ObsMediaInputAction</c> enum</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> TriggerMediaInputActionAsync(string? inputName = default, string? inputUuid = default, MediaInputAction mediaAction, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new TriggerMediaInputAction() { InputName = inputName, InputUuid = inputUuid, MediaAction = mediaAction }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+    public async Task<RequestResponse> TriggerMediaInputActionAsync(MediaInputAction mediaAction, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return (await _clientSocket.RequestAsync(new TriggerMediaInputAction() { MediaAction = mediaAction, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
     /// <summary>

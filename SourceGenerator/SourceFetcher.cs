@@ -89,7 +89,7 @@ namespace SourceGenerator {
           continue;
         }
 
-        PatchOthers(request);
+        PatchRequest(request);
       }
     }
 
@@ -102,23 +102,24 @@ namespace SourceGenerator {
       }
     }
 
-    private static void PatchOthers(ObsRequest request) {
+    private static void PatchRequest(ObsRequest request) {
       switch (request.RequestType) {
       case "ToggleRecordPause":
-        request.ResponseFields!.Add(new ObsDataField { ValueName = "outputPaused", ValueDescription = "Whether the output is paused", ValueType = "Boolean" });
+        request.ResponseFields.Add(new ObsDataField { ValueName = "outputPaused", ValueDescription = "Whether the output is paused", ValueType = "Boolean" });
         break;
 
       case "SaveSourceScreenshot":
-        request.ResponseFields!.Clear();
+        request.ResponseFields.Clear();
         break;
       }
 
-      foreach (var field in request.RequestFields!) {
+      request.RequestFields = [.. request.RequestFields.OrderBy(field => field.ValueOptional)];
+      foreach (var field in request.RequestFields) {
         if (GetCustomType(field.ValueName!, out string? type)) {
           field.ValueType = type;
         }
       }
-      foreach (var field in request.ResponseFields!) {
+      foreach (var field in request.ResponseFields) {
         if (GetCustomType(field.ValueName!, out string? type)) {
           field.ValueType = type;
         }
