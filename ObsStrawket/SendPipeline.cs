@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Net.WebSockets;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -14,6 +15,10 @@ namespace ObsStrawket {
     private readonly WebSocket _socket;
     private readonly ILogger? _logger;
     private readonly Channel<Deferred<byte[], object?>> _sendQueue = Channel.CreateUnbounded<Deferred<byte[], object?>>();
+
+    private readonly JsonSerializerOptions _serializerOptions = new() {
+      DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+    };
 
     public SendPipeline(WebSocket socket, ILogger? logger = null) {
       _socket = socket;
@@ -36,7 +41,7 @@ namespace ObsStrawket {
 
       var ms = new MemoryStream();
 
-      byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(value, (JsonSerializerOptions?)null);
+      byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(value, _serializerOptions);
       token.ThrowIfCancellationRequested();
 
       var output = new TaskCompletionSource<object?>();
