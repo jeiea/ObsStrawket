@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SourceGenerator {
+
   internal class EnumGenerator {
     private readonly IDirectoryHelper _directoryHelper;
     private readonly ISourceFetcher _fetcher;
@@ -35,10 +36,12 @@ namespace SourceGenerator {
       };
 
       using var file = File.CreateText($"{_directoryHelper.MainProjectDirectory}/DataTypes/Predefineds/Enums.cs");
-      file.Write(@" using System;
+      file.Write(@"using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
-namespace ObsStrawket.DataTypes.Predefineds {");
+namespace ObsStrawket.DataTypes.Predefineds {
+");
 
       foreach (var en in json.Enums) {
         file.WriteLine();
@@ -53,7 +56,7 @@ namespace ObsStrawket.DataTypes.Predefineds {");
         if (isStringEnum) {
           file.WriteLine("  [JsonConverter(typeof(JsonStringEnumMemberConverter))]", en.EnumType);
         }
-        file.Write("  public enum {0} {{", en.EnumType);
+        file.WriteLine("  public enum {0} {{", en.EnumType);
         foreach (var identifier in en.EnumIdentifiers!) {
           file.WriteLine();
           file.WriteLine("    /// <summary>");
