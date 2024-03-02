@@ -429,7 +429,8 @@ namespace System.Text.Json.Serialization {
       ulong rawValue = JsonStringEnumMemberConverter.GetEnumValue(_EnumTypeCode, value);
 
       if (_IsFlags
-        && TryGetStringForFlagsEnumValue(value, rawValue, rawToTransformed, out string? flagsValueString)) {
+        && TryGetStringForFlagsEnumValue(value, rawValue, rawToTransformed, out string? flagsValueString)
+        && flagsValueString != null) {
         writer.WritePropertyName(flagsValueString);
         return;
       }
