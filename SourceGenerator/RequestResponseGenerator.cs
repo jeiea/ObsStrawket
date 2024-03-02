@@ -103,7 +103,7 @@ namespace ObsStrawket.DataTypes.Predefineds {");
         builder.Append(name[1..]);
       }
       builder.Append(" { get; set; }");
-      if (valueType == "string") {
+      if (valueType == "string" && !isOptional) {
         builder.Append(" = \"\";");
       }
       else if (char.IsUpper(valueType[0])) {
