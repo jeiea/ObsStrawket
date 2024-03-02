@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using Xunit;
 
 namespace ObsStrawket.Test {
+
   public class AuthenticationFailureTest {
+
     [Fact]
     public async Task TestAsync() {
       using var server = new MockServer().Run(default, AlwaysRejectAuth);
@@ -21,7 +23,7 @@ namespace ObsStrawket.Test {
       token.ThrowIfCancellationRequested();
 
       Assert.True(context.Request.IsWebSocketRequest);
-      string subProtocol = "obswebsocket.msgpack";
+      string subProtocol = "obswebsocket.json";
       Assert.Equal(subProtocol, context.Request.Headers["Sec-WebSocket-Protocol"]);
 
       var webSocketContext = await context.AcceptWebSocketAsync(subProtocol).ConfigureAwait(false);

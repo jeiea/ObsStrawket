@@ -1,3 +1,4 @@
+using ObsStrawket.Serialization;
 using System.Text.Json.Serialization;
 
 namespace ObsStrawket.DataTypes {
@@ -5,6 +6,7 @@ namespace ObsStrawket.DataTypes {
   /// <summary>
   /// The interface for representing low-level message types which may be sent to and from obs-websocket.
   /// </summary>
+  [JsonConverter(typeof(IOpCodeMessageConverter))]
   public interface IOpCodeMessage {
 
     /// <summary>
