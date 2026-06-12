@@ -2,7 +2,6 @@ using Microsoft.Extensions.Logging;
 using ObsStrawket.DataTypes;
 using System;
 using System.IO;
-using System.IO.Pipelines;
 using System.Net.WebSockets;
 using System.Text.Json;
 using System.Threading;
@@ -14,7 +13,6 @@ namespace ObsStrawket {
   internal class SendPipeline {
     private readonly WebSocket _socket;
     private readonly ILogger? _logger;
-    private readonly PipeOptions _pipeOptions = new(useSynchronizationContext: false);
     private readonly Channel<Deferred<byte[], object?>> _sendQueue = Channel.CreateUnbounded<Deferred<byte[], object?>>();
 
     public SendPipeline(WebSocket socket, ILogger? logger = null) {
