@@ -1,5 +1,6 @@
 using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
+using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -13,7 +14,8 @@ namespace ObsStrawket.Test.Specs {
 
   class StopRecordFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.StopRecordAsync().ConfigureAwait(false);
+      var recording = await client.StopRecordAsync().ConfigureAwait(false);
+      Assert.True(File.Exists(recording.OutputPath), $"{recording.OutputPath} is not exists.");
 
       var changed = await client.Events.ReadAsync().ConfigureAwait(false);
       Assert.Equal(ObsOutputState.Stopping, (changed as RecordStateChanged)!.OutputState);

@@ -8,7 +8,14 @@ using System.Threading.Tasks;
 
 namespace SourceGenerator {
   internal class RequestInterfaceGenerator {
-    private readonly SourceFetcher _fetcher = new();
+    private readonly IDirectoryHelper _directoryHelper;
+    private readonly ISourceFetcher _fetcher;
+
+    public RequestInterfaceGenerator(IDirectoryHelper directoryHelper, ISourceFetcher fetcher) {
+      _directoryHelper = directoryHelper;
+      _fetcher = fetcher;
+    }
+
 
     public async Task GenerateAsync() {
       var json = await _fetcher.GetModifiedProtocolJsonAsync().ConfigureAwait(false);
@@ -46,7 +53,7 @@ namespace SourceGenerator {
 
       part.Write("    #endregion");
 
-      string previous = await File.ReadAllTextAsync(EventInterfaceGenerator.ObsClientPath).ConfigureAwait(false);
+      string previous = await File.ReadAllTextAsync(_directoryHelper.ObsClientPath).ConfigureAwait(false);
 
       bool isReplaced = false;
       string result = Regex.Replace(previous, @"    #region Requests\r\n.*?#endregion", (match) => {
@@ -57,7 +64,7 @@ namespace SourceGenerator {
         throw new Exception("Unexpected file");
       }
 
-      await File.WriteAllTextAsync(EventInterfaceGenerator.ObsClientPath, result).ConfigureAwait(false);
+      await File.WriteAllTextAsync(_directoryHelper.ObsClientPath, result).ConfigureAwait(false);
     }
 
     private static void PatchTriggerHotkeyByKeySequence(List<ObsRequestField> requestFields) {

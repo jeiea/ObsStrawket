@@ -36,6 +36,16 @@
 				"${workspaceFolder}/ObsStrawket.Test/ObsStrawket.Test.csproj"
 			],
 			"problemMatcher": "$msCompile"
-		}
+		},
+		{
+			"label": "build generator",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/SourceGenerator/SourceGenerator.csproj",
+			],
+			"problemMatcher": "$msCompile"
+		},
 	]
 }
