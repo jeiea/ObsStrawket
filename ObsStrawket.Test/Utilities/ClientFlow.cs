@@ -13,23 +13,12 @@ using System.Threading.Tasks;
 using Xunit;
 
 namespace ObsStrawket.Test.Utilities {
+
   internal class ClientFlow {
     private readonly Channel<IObsEvent> _events = Channel.CreateUnbounded<IObsEvent>();
 
     public static ObsClientSocket GetDebugClient(ClientSocket? socket = null, ILogger? logger = null, bool useChannel = false) {
       return new ObsClientSocket(logger ?? new DebugLoggerProvider().CreateLogger("Client"), socket, useChannel);
-    }
-
-    public async Task RunClientAsync(Uri uri, ObsClientSocket? socket = null, CancellationToken cancellation = default) {
-      var client = socket ?? GetDebugClient();
-      try {
-        await RunClientInternalAsync(uri, client, cancellation).ConfigureAwait(false);
-      }
-      finally {
-        client.Disconnected -= TryComplete;
-        client.StudioModeStateChanged -= QueueEvent;
-        client.Event -= QueueEvent;
-      }
     }
 
     public static List<IObsEvent> DrainEvents(ObsClientSocket client) {
@@ -64,6 +53,18 @@ namespace ObsStrawket.Test.Utilities {
       }
     }
 
+    public async Task RunClientAsync(Uri uri, ObsClientSocket? socket = null, CancellationToken cancellation = default) {
+      var client = socket ?? GetDebugClient();
+      try {
+        await RunClientInternalAsync(uri, client, cancellation).ConfigureAwait(false);
+      }
+      finally {
+        client.Disconnected -= TryComplete;
+        client.StudioModeStateChanged -= QueueEvent;
+        client.Event -= QueueEvent;
+      }
+    }
+
     private async Task RunClientInternalAsync(Uri uri, ObsClientSocket client, CancellationToken cancellation) {
       client.Event += QueueEvent;
       client.StudioModeStateChanged += QueueEvent;
@@ -92,7 +93,7 @@ namespace ObsStrawket.Test.Utilities {
       Assert.Equal(0, _events.Reader.Count);
 
       var specials = await client.GetSpecialInputsAsync(cancellation).ConfigureAwait(false);
-      var inputSettings = await client.GetInputSettingsAsync(specials.Desktop1!, cancellation).ConfigureAwait(false);
+      var inputSettings = await client.GetInputSettingsAsync(specials.Desktop1!, cancellation: cancellation).ConfigureAwait(false);
       Assert.True(inputSettings.InputSettings.ContainsKey("device_id"), "device_id not found");
 
       var directory = await client.GetRecordDirectoryAsync(cancellation).ConfigureAwait(false);

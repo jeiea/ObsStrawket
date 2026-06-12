@@ -1,66 +1,18 @@
-using MessagePack;
-using MessagePack.Formatters;
-using ObsStrawket.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace ObsStrawket.DataTypes {
-
-  // https://github.com/obsproject/obs-websocket/blob/5f8a0122bdd0146fdb33968f6bdf6ab624851e7a/src/utils/Obs_ArrayHelper.cpp#L335
-  // https://github.com/obsproject/obs-studio/blob/master/docs/sphinx/reference-outputs.rst
-  /// <summary>
-  /// Outputs allow the ability to output the currently rendering audio/video.<br />
-  /// Streaming and recording are two common examples of outputs, but not the only
-  /// types of outputs.<br />Outputs can receive the raw data or receive encoded data.
-  /// </summary>
-  [MessagePackObject]
-  public class Output {
-    /// <summary>
-    /// Name of the output.
-    /// </summary>
-    [Key("outputName")]
-    public string Name { get; set; } = "";
-
-    /// <summary>
-    /// Example: <c>ffmpeg_muxer</c>, <c>virtualcam_output</c>
-    /// </summary>
-    [Key("outputKind")]
-    public string Kind { get; set; } = "";
-
-    /// <summary>
-    /// Video width.
-    /// </summary>
-    [Key("outputWidth")]
-    public int Width { get; set; }
-
-    /// <summary>
-    /// Video height.
-    /// </summary>
-    [Key("outputHeight")]
-    public int Height { get; set; }
-
-    /// <summary>
-    /// Whether it is recorded or streamed.
-    /// </summary>
-    [Key("outputActive")]
-    public bool Active { get; set; }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    [Key("outputFlags")]
-    [MessagePackFormatter(typeof(OutputFlagsMapFormatter))]
-    public OutputFlags Flags { get; set; }
-  }
 
   // https://github.com/obsproject/obs-websocket/blob/7893ae5caafecddb9589fe90719809b4f528f03e/src/utils/Obs_ArrayHelper.cpp#L339
   /// <summary>
   /// Output capability flags
   /// </summary>
   [Flags]
-  [MessagePackFormatter(typeof(EnumAsStringFormatter<OutputFlags>))]
+  [JsonConverter(typeof(JsonStringEnumMemberConverter))]
   public enum OutputFlags {
+
     /// <summary>
     /// Output has video.
     /// </summary>
@@ -98,22 +50,68 @@ namespace ObsStrawket.DataTypes {
     CanPause = 1 << 5,
   }
 
+  // https://github.com/obsproject/obs-websocket/blob/5f8a0122bdd0146fdb33968f6bdf6ab624851e7a/src/utils/Obs_ArrayHelper.cpp#L335
+  // https://github.com/obsproject/obs-studio/blob/master/docs/sphinx/reference-outputs.rst
+  /// <summary>
+  /// Outputs allow the ability to output the currently rendering audio/video.<br />
+  /// Streaming and recording are two common examples of outputs, but not the only
+  /// types of outputs.<br />Outputs can receive the raw data or receive encoded data.
+  /// </summary>
+  public class Output {
+
+    /// <summary>
+    /// Name of the output.
+    /// </summary>
+    [JsonPropertyName("outputName")]
+    public string Name { get; set; } = "";
+
+    /// <summary>
+    /// Example: <c>ffmpeg_muxer</c>, <c>virtualcam_output</c>
+    /// </summary>
+    [JsonPropertyName("outputKind")]
+    public string Kind { get; set; } = "";
+
+    /// <summary>
+    /// Video width.
+    /// </summary>
+    [JsonPropertyName("outputWidth")]
+    public int Width { get; set; }
+
+    /// <summary>
+    /// Video height.
+    /// </summary>
+    [JsonPropertyName("outputHeight")]
+    public int Height { get; set; }
+
+    /// <summary>
+    /// Whether it is recorded or streamed.
+    /// </summary>
+    [JsonPropertyName("outputActive")]
+    public bool Active { get; set; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    [JsonPropertyName("outputFlags")]
+    public OutputFlags Flags { get; set; }
+  }
+
   // https://github.com/obsproject/obs-websocket/blob/5f8a0122bdd0146fdb33968f6bdf6ab624851e7a/src/utils/Obs_ArrayHelper.cpp#L87
   /// <summary>
   /// Represents OBS scene.
   /// </summary>
-  [MessagePackObject]
   public class Scene {
+
     /// <summary>
     /// Scene name.
     /// </summary>
-    [Key("sceneName")]
+    [JsonPropertyName("sceneName")]
     public string Name { get; set; } = "";
 
     /// <summary>
     /// Scene index.
     /// </summary>
-    [Key("sceneIndex")]
+    [JsonPropertyName("sceneIndex")]
     public int Index { get; set; }
   }
 
@@ -121,24 +119,24 @@ namespace ObsStrawket.DataTypes {
   /// <summary>
   /// OBS input, e.g. scene items.
   /// </summary>
-  [MessagePackObject]
   public class Input {
+
     /// <summary>
     /// Input name.
     /// </summary>
-    [Key("inputName")]
+    [JsonPropertyName("inputName")]
     public string Name { get; set; } = "";
 
     /// <summary>
     /// Input kind. e.g. <c>color_source_v3</c>
     /// </summary>
-    [Key("inputKind")]
+    [JsonPropertyName("inputKind")]
     public string Kind { get; set; } = "";
 
     /// <summary>
     /// Input kind without version. e.g. <c>color_source</c>
     /// </summary>
-    [Key("unversionedInputKind")]
+    [JsonPropertyName("unversionedInputKind")]
     public string UnversionedKind { get; set; } = "";
   }
 
@@ -148,12 +146,12 @@ namespace ObsStrawket.DataTypes {
   /// <summary>
   /// Represents reindexed scene item.
   /// </summary>
-  [MessagePackObject]
   public class BasicSceneItem {
-    [Key("sceneItemId")]
+
+    [JsonPropertyName("sceneItemId")]
     public int Id { get; set; }
 
-    [Key("sceneItemIndex")]
+    [JsonPropertyName("sceneItemIndex")]
     public int Index { get; set; }
   }
 
@@ -161,30 +159,30 @@ namespace ObsStrawket.DataTypes {
   /// <summary>
   /// Represents scene item.
   /// </summary>
-  [MessagePackObject]
   public class SceneItem : BasicSceneItem {
-    [Key("sceneItemEnabled")]
+
+    [JsonPropertyName("sceneItemEnabled")]
     public bool? Enabled { get; set; }
 
-    [Key("sceneItemLocked")]
+    [JsonPropertyName("sceneItemLocked")]
     public bool? Locked { get; set; }
 
-    [Key("sceneItemTransform")]
+    [JsonPropertyName("sceneItemTransform")]
     public Dictionary<string, object>? Transform { get; set; }
 
-    [Key("sceneItemBlendMode")]
+    [JsonPropertyName("sceneItemBlendMode")]
     public BlendingType? BlendMode { get; set; }
 
-    [Key("sourceName")]
+    [JsonPropertyName("sourceName")]
     public string? SourceName { get; set; }
 
-    [Key("sourceType")]
+    [JsonPropertyName("sourceType")]
     public SourceType? SourceType { get; set; }
 
-    [Key("inputKind")]
+    [JsonPropertyName("inputKind")]
     public string? InputKind { get; set; }
 
-    [Key("isGroup")]
+    [JsonPropertyName("isGroup")]
     public bool? IsGroup { get; set; }
   }
 
@@ -192,21 +190,21 @@ namespace ObsStrawket.DataTypes {
   /// <summary>
   /// Represents source filter.
   /// </summary>
-  [MessagePackObject]
   public class SourceFilter {
-    [Key("filterName")]
+
+    [JsonPropertyName("filterName")]
     public string Name { get; set; } = "";
 
-    [Key("filterIndex")]
+    [JsonPropertyName("filterIndex")]
     public int Index { get; set; }
 
-    [Key("filterKind")]
+    [JsonPropertyName("filterKind")]
     public string Kind { get; set; } = "";
 
-    [Key("filterEnabled")]
+    [JsonPropertyName("filterEnabled")]
     public bool Enabled { get; set; }
 
-    [Key("filterSettings")]
+    [JsonPropertyName("filterSettings")]
     public Dictionary<string, object?> Settings { get; set; } = new();
   }
 
@@ -214,30 +212,30 @@ namespace ObsStrawket.DataTypes {
   /// <summary>
   /// Listed scene transition.
   /// </summary>
-  [MessagePackObject]
   public class AvailableTransition {
+
     /// <summary>
     /// Name of the transition.
     /// </summary>
-    [Key("transitionName")]
+    [JsonPropertyName("transitionName")]
     public string Name { get; set; } = "";
 
     /// <summary>
     /// Kind of the transition.
     /// </summary>
-    [Key("transitionKind")]
+    [JsonPropertyName("transitionKind")]
     public string Kind { get; set; } = "";
 
     /// <summary>
     /// Whether the transition uses a fixed (unconfigurable) duration.
     /// </summary>
-    [Key("transitionFixed")]
+    [JsonPropertyName("transitionFixed")]
     public bool Fixed { get; set; }
 
     /// <summary>
     /// Whether the transition supports being configured.
     /// </summary>
-    [Key("transitionConfigurable")]
+    [JsonPropertyName("transitionConfigurable")]
     public bool Configurable { get; set; }
   }
 

@@ -4,18 +4,21 @@ using System.Threading.Tasks;
 using Xunit;
 
 namespace ObsStrawket.Test.Specs {
+
   public class GetSourceScreenshotTest {
+
     [Fact]
     public async Task TestAsync() {
       await SpecTester.TestAsync(new GetSourceScreenshotFlow()).ConfigureAwait(false);
     }
   }
 
-  class GetSourceScreenshotFlow : ITestFlow {
+  internal class GetSourceScreenshotFlow : ITestFlow {
     public static readonly string Base64SmallestPng = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==";
+
     public async Task RequestAsync(ObsClientSocket client) {
       var list = await client.GetSceneListAsync().ConfigureAwait(false);
-      var response = await client.GetSourceScreenshotAsync(list.CurrentProgramSceneName, imageFormat: "png", imageWidth: 1920, imageHeight: 1080).ConfigureAwait(false);
+      var response = await client.GetSourceScreenshotAsync("png", sourceName: list.CurrentProgramSceneName, imageWidth: 1920, imageHeight: 1080).ConfigureAwait(false);
       byte[] buffer = Convert.FromBase64String(response.ImageData.Replace("data:image/png;base64,", ""));
       Assert.InRange(buffer.Length, 1, 300000);
     }

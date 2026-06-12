@@ -1,14 +1,16 @@
-using MessagePack;
 using ObsStrawket.DataTypes.Predefineds;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace ObsStrawket.DataTypes {
+
   /// <summary>
   /// Sent from: obs-websocket<br />
   /// Sent to: All subscribed and identified clients<br />
   /// Description: An event coming from OBS has occurred. E.g. scene switched, source muted.
   /// </summary>
   public interface IObsEvent : IOpCodeMessage {
+
     /// <summary>
     /// Event (OpCode 5)
     /// </summary>
@@ -25,24 +27,24 @@ namespace ObsStrawket.DataTypes {
   /// Sent to: All subscribed and identified clients<br />
   /// Description: An event coming from OBS has occurred. E.g. scene switched, source muted.
   /// </summary>
-  [MessagePackObject]
   public class ObsEvent : IObsEvent {
+
     /// <summary>
     /// Event (OpCode 5)
     /// </summary>
-    [IgnoreMember]
+    [JsonIgnore]
     public OpCode Op => OpCode.Event;
 
     /// <summary>
     /// The string identifying event type.
     /// </summary>
-    [IgnoreMember]
+    [JsonIgnore]
     public string EventType { get => GetType().Name; }
 
     /// <summary>
     /// The original intent required to be subscribed to in order to receive the event.
     /// </summary>
-    [IgnoreMember]
+    [JsonIgnore]
     public EventSubscription EventIntent { get; set; }
   }
 
@@ -52,30 +54,30 @@ namespace ObsStrawket.DataTypes {
   /// Description: An event coming from OBS has occurred. E.g. scene switched, source muted.<br />
   /// Unidentifiable event will be this.
   /// </summary>
-  [MessagePackObject]
   public sealed class RawEvent : IObsEvent {
+
     /// <summary>
     /// Event (OpCode 5)
     /// </summary>
-    [IgnoreMember]
+    [JsonIgnore]
     public OpCode Op => OpCode.Event;
 
     /// <summary>
     /// The string identifying event type.
     /// </summary>
-    [Key("eventType")]
+    [JsonPropertyName("eventType")]
     public string EventType { get; set; } = "";
 
     /// <summary>
     /// The original intent required to be subscribed to in order to receive the event.
     /// </summary>
-    [Key("eventIntent")]
+    [JsonPropertyName("eventIntent")]
     public EventSubscription EventIntent { get; set; }
 
     /// <summary>
     /// Raw event data from server.
     /// </summary>
-    [Key("eventData")]
+    [JsonPropertyName("eventData")]
     public Dictionary<string, object?>? EventData { get; set; }
   }
 }
