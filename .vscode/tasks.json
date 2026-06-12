@@ -1,51 +1,19 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"label": "build",
-			"command": "dotnet",
-			"type": "process",
-			"args": [
-				"build",
-				"${workspaceFolder}/ObsStrawket.Test/ObsStrawket.Test.csproj",
-				"/property:GenerateFullPaths=true",
-				"/consoleloggerparameters:NoSummary"
-			],
-			"problemMatcher": "$msCompile"
-		},
-		{
-			"label": "publish",
-			"command": "dotnet",
-			"type": "process",
-			"args": [
-				"publish",
-				"${workspaceFolder}/ObsStrawket.Test/ObsStrawket.Test.csproj",
-				"/property:GenerateFullPaths=true",
-				"/consoleloggerparameters:NoSummary"
-			],
-			"problemMatcher": "$msCompile"
-		},
-		{
-			"label": "watch",
-			"command": "dotnet",
-			"type": "process",
-			"args": [
-				"watch",
-				"run",
-				"--project",
-				"${workspaceFolder}/ObsStrawket.Test/ObsStrawket.Test.csproj"
-			],
-			"problemMatcher": "$msCompile"
-		},
-		{
-			"label": "build generator",
-			"command": "dotnet",
-			"type": "process",
-			"args": [
-				"build",
-				"${workspaceFolder}/SourceGenerator/SourceGenerator.csproj",
-			],
-			"problemMatcher": "$msCompile"
-		},
-	]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "watch",
+      "command": "mise",
+      "type": "process",
+      "args": ["run", "watch"],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "Update protocol",
+      "command": "mise",
+      "type": "process",
+      "args": ["run", "update-protocol"],
+      "problemMatcher": "$msCompile"
+    }
+  ]
 }

@@ -1,2 +1,10 @@
 [tools]
 dotnet = "10.0.301"
+
+[tasks.watch]
+description = "Watch and run test project"
+run = "dotnet watch run --project ObsStrawket.Test/ObsStrawket.Test.csproj"
+
+[tasks.update-protocol]
+description = "Update Obs.h and protocol.json for new API reflection"
+run = "dotnet run --project SourceGenerator/SourceGenerator.csproj -- --update-upstream"
