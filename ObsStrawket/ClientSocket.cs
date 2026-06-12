@@ -251,10 +251,14 @@ namespace ObsStrawket {
         if (socket.State == WebSocketState.Open || socket.State == WebSocketState.CloseReceived) {
           await socket.CloseOutputAsync(status, description, default).ConfigureAwait(false);
         }
-        Reset(exception);
       }
       catch (OperationCanceledException) { }
+      catch (WebSocketException) {
+        // The connection may die between the state check and the close output send.
+      }
       finally {
+        // Without this, pending requests outlive the connection and their awaiters hang.
+        Reset(exception);
         _isOpen = false;
       }
     }
