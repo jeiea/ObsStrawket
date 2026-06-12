@@ -43,7 +43,8 @@ namespace ObsStrawket.Test.Real {
       return;
     }
 
-    [Fact]
+    // Manual monitoring testbed. It never ends until OBS quits, so opt-in only.
+    [Fact(Explicit = true)]
     public async Task JustMonitorObsEventAsync() {
       Assert.SkipWhen(_shouldSkip, "Requires a running OBS instance.");
       var source = new TaskCompletionSource<object?>();
