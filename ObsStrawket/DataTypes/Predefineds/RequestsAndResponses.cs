@@ -14,6 +14,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetVersion
   /// </summary>
   public class GetVersionResponse : RequestResponse {
+
     /// <summary>
     /// Current OBS Studio version
     /// </summary>
@@ -68,6 +69,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetStats
   /// </summary>
   public class GetStatsResponse : RequestResponse {
+
     /// <summary>
     /// Current CPU usage in percent
     /// </summary>
@@ -141,6 +143,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class BroadcastCustomEvent : Request {
+
     /// <summary>
     /// Data payload to emit to all receivers
     /// </summary>
@@ -157,6 +160,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class CallVendorRequest : Request {
+
     /// <summary>
     /// Name of the vendor to use
     /// </summary>
@@ -181,6 +185,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of CallVendorRequest
   /// </summary>
   public class CallVendorRequestResponse : RequestResponse {
+
     /// <summary>
     /// Echoed of <c>vendorName</c>
     /// </summary>
@@ -213,6 +218,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetHotkeyList
   /// </summary>
   public class GetHotkeyListResponse : RequestResponse {
+
     /// <summary>
     /// Array of hotkey names
     /// </summary>
@@ -228,6 +234,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class TriggerHotkeyByName : Request {
+
     /// <summary>
     /// Name of the hotkey to trigger
     /// </summary>
@@ -250,6 +257,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class TriggerHotkeyByKeySequence : Request {
+
     /// <summary>
     /// The OBS key ID to use. See https://github.com/obsproject/obs-studio/blob/master/libobs/obs-hotkeys.h<br />
     /// If null, Not pressed
@@ -271,6 +279,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class Sleep : Request {
+
     /// <summary>
     /// Number of milliseconds to sleep for (if <c>SERIAL_REALTIME</c> mode)<br />
     /// It should be &gt;= 0, &lt;= 50000<br />
@@ -294,6 +303,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetPersistentData : Request {
+
     /// <summary>
     /// The data realm to select. <c>OBS_WEBSOCKET_DATA_REALM_GLOBAL</c> or <c>OBS_WEBSOCKET_DATA_REALM_PROFILE</c>
     /// </summary>
@@ -311,6 +321,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetPersistentData
   /// </summary>
   public class GetPersistentDataResponse : RequestResponse {
+
     /// <summary>
     /// Value associated with the slot. <c>null</c> if not set
     /// </summary>
@@ -324,6 +335,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetPersistentData : Request {
+
     /// <summary>
     /// The data realm to select. <c>OBS_WEBSOCKET_DATA_REALM_GLOBAL</c> or <c>OBS_WEBSOCKET_DATA_REALM_PROFILE</c>
     /// </summary>
@@ -354,6 +366,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetSceneCollectionList
   /// </summary>
   public class GetSceneCollectionListResponse : RequestResponse {
+
     /// <summary>
     /// The name of the current scene collection
     /// </summary>
@@ -375,6 +388,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetCurrentSceneCollection : Request {
+
     /// <summary>
     /// Name of the scene collection to switch to
     /// </summary>
@@ -390,6 +404,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class CreateSceneCollection : Request {
+
     /// <summary>
     /// Name for the new scene collection
     /// </summary>
@@ -408,6 +423,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetProfileList
   /// </summary>
   public class GetProfileListResponse : RequestResponse {
+
     /// <summary>
     /// The name of the current profile
     /// </summary>
@@ -427,6 +443,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetCurrentProfile : Request {
+
     /// <summary>
     /// Name of the profile to switch to
     /// </summary>
@@ -440,6 +457,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class CreateProfile : Request {
+
     /// <summary>
     /// Name for the new profile
     /// </summary>
@@ -453,6 +471,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class RemoveProfile : Request {
+
     /// <summary>
     /// Name of the profile to remove
     /// </summary>
@@ -466,6 +485,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetProfileParameter : Request {
+
     /// <summary>
     /// Category of the parameter to get
     /// </summary>
@@ -483,6 +503,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetProfileParameter
   /// </summary>
   public class GetProfileParameterResponse : RequestResponse {
+
     /// <summary>
     /// Value associated with the parameter. <c>null</c> if not set and no default
     /// </summary>
@@ -502,6 +523,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetProfileParameter : Request {
+
     /// <summary>
     /// Category of the parameter to set
     /// </summary>
@@ -534,6 +556,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetVideoSettings
   /// </summary>
   public class GetVideoSettingsResponse : RequestResponse {
+
     /// <summary>
     /// Numerator of the fractional FPS value
     /// </summary>
@@ -579,6 +602,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetVideoSettings : Request {
+
     /// <summary>
     /// Numerator of the fractional FPS value<br />
     /// It should be &gt;= 1<br />
@@ -639,6 +663,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetStreamServiceSettings
   /// </summary>
   public class GetStreamServiceSettingsResponse : RequestResponse {
+
     /// <summary>
     /// Stream service type, like <c>rtmp_custom</c> or <c>rtmp_common</c>
     /// </summary>
@@ -660,6 +685,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetStreamServiceSettings : Request {
+
     /// <summary>
     /// Type of stream service to apply. Example: <c>rtmp_common</c> or <c>rtmp_custom</c>
     /// </summary>
@@ -684,6 +710,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetRecordDirectory
   /// </summary>
   public class GetRecordDirectoryResponse : RequestResponse {
+
     /// <summary>
     /// Output directory
     /// </summary>
@@ -697,6 +724,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.3.0
   /// </summary>
   public class SetRecordDirectory : Request {
+
     /// <summary>
     /// Output directory
     /// </summary>
@@ -712,6 +740,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetSourceActive : Request {
+
     /// <summary>
     /// Name of the source to get the active state of<br />
     /// If null, Unknown
@@ -731,6 +760,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetSourceActive
   /// </summary>
   public class GetSourceActiveResponse : RequestResponse {
+
     /// <summary>
     /// Whether the source is showing in Program
     /// </summary>
@@ -755,6 +785,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetSourceScreenshot : Request {
+
     /// <summary>
     /// Image compression format to use. Use <c>GetVersion</c> to get compatible image formats
     /// </summary>
@@ -804,6 +835,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetSourceScreenshot
   /// </summary>
   public class GetSourceScreenshotResponse : RequestResponse {
+
     /// <summary>
     /// Base64-encoded screenshot
     /// </summary>
@@ -822,6 +854,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SaveSourceScreenshot : Request {
+
     /// <summary>
     /// Image compression format to use. Use <c>GetVersion</c> to get compatible image formats
     /// </summary>
@@ -884,6 +917,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetSceneList
   /// </summary>
   public class GetSceneListResponse : RequestResponse {
+
     /// <summary>
     /// Current program scene name. Can be <c>null</c> if internal state desync
     /// </summary>
@@ -928,6 +962,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetGroupList
   /// </summary>
   public class GetGroupListResponse : RequestResponse {
+
     /// <summary>
     /// Array of group names
     /// </summary>
@@ -948,6 +983,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetCurrentProgramScene
   /// </summary>
   public class GetCurrentProgramSceneResponse : RequestResponse {
+
     /// <summary>
     /// Current program scene name
     /// </summary>
@@ -979,6 +1015,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetCurrentProgramScene : Request {
+
     /// <summary>
     /// Scene name to set as the current program scene<br />
     /// If null, Unknown
@@ -1009,6 +1046,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetCurrentPreviewScene
   /// </summary>
   public class GetCurrentPreviewSceneResponse : RequestResponse {
+
     /// <summary>
     /// Current preview scene name
     /// </summary>
@@ -1042,6 +1080,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetCurrentPreviewScene : Request {
+
     /// <summary>
     /// Scene name to set as the current preview scene<br />
     /// If null, Unknown
@@ -1063,6 +1102,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class CreateScene : Request {
+
     /// <summary>
     /// Name for the new scene
     /// </summary>
@@ -1074,6 +1114,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of CreateScene
   /// </summary>
   public class CreateSceneResponse : RequestResponse {
+
     /// <summary>
     /// UUID of the created scene
     /// </summary>
@@ -1087,6 +1128,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class RemoveScene : Request {
+
     /// <summary>
     /// Name of the scene to remove<br />
     /// If null, Unknown
@@ -1108,6 +1150,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetSceneName : Request {
+
     /// <summary>
     /// New name for the scene
     /// </summary>
@@ -1137,6 +1180,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetSceneSceneTransitionOverride : Request {
+
     /// <summary>
     /// Name of the scene<br />
     /// If null, Unknown
@@ -1156,6 +1200,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetSceneSceneTransitionOverride
   /// </summary>
   public class GetSceneSceneTransitionOverrideResponse : RequestResponse {
+
     /// <summary>
     /// Name of the overridden scene transition, else <c>null</c>
     /// </summary>
@@ -1175,6 +1220,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetSceneSceneTransitionOverride : Request {
+
     /// <summary>
     /// Name of the scene<br />
     /// If null, Unknown
@@ -1211,6 +1257,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetInputList : Request {
+
     /// <summary>
     /// Restrict the array to only inputs of the specified kind<br />
     /// If null, All kinds included
@@ -1223,6 +1270,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetInputList
   /// </summary>
   public class GetInputListResponse : RequestResponse {
+
     /// <summary>
     /// Array of inputs
     /// </summary>
@@ -1236,6 +1284,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetInputKindList : Request {
+
     /// <summary>
     /// True == Return all kinds as unversioned, False == Return with version suffixes (if available)<br />
     /// If null, false
@@ -1248,6 +1297,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetInputKindList
   /// </summary>
   public class GetInputKindListResponse : RequestResponse {
+
     /// <summary>
     /// Array of input kinds
     /// </summary>
@@ -1266,6 +1316,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetSpecialInputs
   /// </summary>
   public class GetSpecialInputsResponse : RequestResponse {
+
     /// <summary>
     /// Name of the Desktop Audio input
     /// </summary>
@@ -1309,6 +1360,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class CreateInput : Request {
+
     /// <summary>
     /// Name of the new input to created
     /// </summary>
@@ -1354,6 +1406,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of CreateInput
   /// </summary>
   public class CreateInputResponse : RequestResponse {
+
     /// <summary>
     /// UUID of the newly created input
     /// </summary>
@@ -1375,6 +1428,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class RemoveInput : Request {
+
     /// <summary>
     /// Name of the input to remove<br />
     /// If null, Unknown
@@ -1396,6 +1450,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetInputName : Request {
+
     /// <summary>
     /// New name for the input
     /// </summary>
@@ -1423,6 +1478,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetInputDefaultSettings : Request {
+
     /// <summary>
     /// Input kind to get the default settings for
     /// </summary>
@@ -1434,6 +1490,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetInputDefaultSettings
   /// </summary>
   public class GetInputDefaultSettingsResponse : RequestResponse {
+
     /// <summary>
     /// Object of default settings for the input kind
     /// </summary>
@@ -1449,6 +1506,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetInputSettings : Request {
+
     /// <summary>
     /// Name of the input to get the settings of<br />
     /// If null, Unknown
@@ -1468,6 +1526,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetInputSettings
   /// </summary>
   public class GetInputSettingsResponse : RequestResponse {
+
     /// <summary>
     /// Object of settings for the input
     /// </summary>
@@ -1487,6 +1546,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetInputSettings : Request {
+
     /// <summary>
     /// Object of settings to apply
     /// </summary>
@@ -1521,6 +1581,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetInputMute : Request {
+
     /// <summary>
     /// Name of input to get the mute state of<br />
     /// If null, Unknown
@@ -1540,6 +1601,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetInputMute
   /// </summary>
   public class GetInputMuteResponse : RequestResponse {
+
     /// <summary>
     /// Whether the input is muted
     /// </summary>
@@ -1553,6 +1615,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetInputMute : Request {
+
     /// <summary>
     /// Whether to mute the input or not
     /// </summary>
@@ -1580,6 +1643,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class ToggleInputMute : Request {
+
     /// <summary>
     /// Name of the input to toggle the mute state of<br />
     /// If null, Unknown
@@ -1599,6 +1663,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of ToggleInputMute
   /// </summary>
   public class ToggleInputMuteResponse : RequestResponse {
+
     /// <summary>
     /// Whether the input has been muted or unmuted
     /// </summary>
@@ -1612,6 +1677,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetInputVolume : Request {
+
     /// <summary>
     /// Name of the input to get the volume of<br />
     /// If null, Unknown
@@ -1631,6 +1697,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetInputVolume
   /// </summary>
   public class GetInputVolumeResponse : RequestResponse {
+
     /// <summary>
     /// Volume setting in mul
     /// </summary>
@@ -1650,6 +1717,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetInputVolume : Request {
+
     /// <summary>
     /// Name of the input to set the volume of<br />
     /// If null, Unknown
@@ -1687,6 +1755,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetInputAudioBalance : Request {
+
     /// <summary>
     /// Name of the input to get the audio balance of<br />
     /// If null, Unknown
@@ -1706,6 +1775,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetInputAudioBalance
   /// </summary>
   public class GetInputAudioBalanceResponse : RequestResponse {
+
     /// <summary>
     /// Audio balance value from 0.0-1.0
     /// </summary>
@@ -1719,6 +1789,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetInputAudioBalance : Request {
+
     /// <summary>
     /// New audio balance value<br />
     /// It should be &gt;= 0.0, &lt;= 1.0
@@ -1749,6 +1820,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetInputAudioSyncOffset : Request {
+
     /// <summary>
     /// Name of the input to get the audio sync offset of<br />
     /// If null, Unknown
@@ -1768,6 +1840,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetInputAudioSyncOffset
   /// </summary>
   public class GetInputAudioSyncOffsetResponse : RequestResponse {
+
     /// <summary>
     /// Audio sync offset in milliseconds
     /// </summary>
@@ -1781,6 +1854,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetInputAudioSyncOffset : Request {
+
     /// <summary>
     /// New audio sync offset in milliseconds<br />
     /// It should be &gt;= -950, &lt;= 20000
@@ -1815,6 +1889,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetInputAudioMonitorType : Request {
+
     /// <summary>
     /// Name of the input to get the audio monitor type of<br />
     /// If null, Unknown
@@ -1834,6 +1909,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetInputAudioMonitorType
   /// </summary>
   public class GetInputAudioMonitorTypeResponse : RequestResponse {
+
     /// <summary>
     /// Audio monitor type
     /// </summary>
@@ -1847,6 +1923,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetInputAudioMonitorType : Request {
+
     /// <summary>
     /// Audio monitor type
     /// </summary>
@@ -1874,6 +1951,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetInputAudioTracks : Request {
+
     /// <summary>
     /// Name of the input<br />
     /// If null, Unknown
@@ -1893,6 +1971,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetInputAudioTracks
   /// </summary>
   public class GetInputAudioTracksResponse : RequestResponse {
+
     /// <summary>
     /// Object of audio tracks and associated enable states
     /// </summary>
@@ -1906,6 +1985,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetInputAudioTracks : Request {
+
     /// <summary>
     /// Track settings to apply
     /// </summary>
@@ -1935,6 +2015,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetInputPropertiesListPropertyItems : Request {
+
     /// <summary>
     /// Name of the list property to get the items of
     /// </summary>
@@ -1960,6 +2041,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetInputPropertiesListPropertyItems
   /// </summary>
   public class GetInputPropertiesListPropertyItemsResponse : RequestResponse {
+
     /// <summary>
     /// Array of items in the list property
     /// </summary>
@@ -1979,6 +2061,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class PressInputPropertiesButton : Request {
+
     /// <summary>
     /// Name of the button property to press
     /// </summary>
@@ -2013,6 +2096,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetTransitionKindList
   /// </summary>
   public class GetTransitionKindListResponse : RequestResponse {
+
     /// <summary>
     /// Array of transition kinds
     /// </summary>
@@ -2031,6 +2115,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetSceneTransitionList
   /// </summary>
   public class GetSceneTransitionListResponse : RequestResponse {
+
     /// <summary>
     /// Name of the current scene transition. Can be null
     /// </summary>
@@ -2067,6 +2152,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetCurrentSceneTransition
   /// </summary>
   public class GetCurrentSceneTransitionResponse : RequestResponse {
+
     /// <summary>
     /// Name of the transition
     /// </summary>
@@ -2118,6 +2204,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetCurrentSceneTransition : Request {
+
     /// <summary>
     /// Name of the transition to make active
     /// </summary>
@@ -2131,6 +2218,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetCurrentSceneTransitionDuration : Request {
+
     /// <summary>
     /// Duration in milliseconds<br />
     /// It should be &gt;= 50, &lt;= 20000
@@ -2145,6 +2233,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetCurrentSceneTransitionSettings : Request {
+
     /// <summary>
     /// Settings object to apply to the transition. Can be <c>{}</c>
     /// </summary>
@@ -2172,6 +2261,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetCurrentSceneTransitionCursor
   /// </summary>
   public class GetCurrentSceneTransitionCursorResponse : RequestResponse {
+
     /// <summary>
     /// Cursor position, between 0.0 and 1.0
     /// </summary>
@@ -2194,6 +2284,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetTBarPosition : Request {
+
     /// <summary>
     /// New position<br />
     /// It should be &gt;= 0.0, &lt;= 1.0
@@ -2222,6 +2313,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetSourceFilterKindList
   /// </summary>
   public class GetSourceFilterKindListResponse : RequestResponse {
+
     /// <summary>
     /// Array of source filter kinds
     /// </summary>
@@ -2235,6 +2327,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetSourceFilterList : Request {
+
     /// <summary>
     /// Name of the source<br />
     /// If null, Unknown
@@ -2254,6 +2347,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetSourceFilterList
   /// </summary>
   public class GetSourceFilterListResponse : RequestResponse {
+
     /// <summary>
     /// Array of filters
     /// </summary>
@@ -2267,6 +2361,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetSourceFilterDefaultSettings : Request {
+
     /// <summary>
     /// Filter kind to get the default settings for
     /// </summary>
@@ -2278,6 +2373,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetSourceFilterDefaultSettings
   /// </summary>
   public class GetSourceFilterDefaultSettingsResponse : RequestResponse {
+
     /// <summary>
     /// Object of default settings for the filter kind
     /// </summary>
@@ -2291,6 +2387,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class CreateSourceFilter : Request {
+
     /// <summary>
     /// Name of the new filter to be created
     /// </summary>
@@ -2331,6 +2428,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class RemoveSourceFilter : Request {
+
     /// <summary>
     /// Name of the filter to remove
     /// </summary>
@@ -2358,6 +2456,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetSourceFilterName : Request {
+
     /// <summary>
     /// Current name of the filter
     /// </summary>
@@ -2391,6 +2490,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetSourceFilter : Request {
+
     /// <summary>
     /// Name of the filter
     /// </summary>
@@ -2416,6 +2516,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetSourceFilter
   /// </summary>
   public class GetSourceFilterResponse : RequestResponse {
+
     /// <summary>
     /// Whether the filter is enabled
     /// </summary>
@@ -2447,6 +2548,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetSourceFilterIndex : Request {
+
     /// <summary>
     /// Name of the filter
     /// </summary>
@@ -2481,6 +2583,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetSourceFilterSettings : Request {
+
     /// <summary>
     /// Name of the filter to set the settings of
     /// </summary>
@@ -2521,6 +2624,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetSourceFilterEnabled : Request {
+
     /// <summary>
     /// Name of the filter
     /// </summary>
@@ -2556,6 +2660,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetSceneItemList : Request {
+
     /// <summary>
     /// Name of the scene to get the items of<br />
     /// If null, Unknown
@@ -2575,6 +2680,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetSceneItemList
   /// </summary>
   public class GetSceneItemListResponse : RequestResponse {
+
     /// <summary>
     /// Array of scene items in the scene
     /// </summary>
@@ -2592,6 +2698,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetGroupSceneItemList : Request {
+
     /// <summary>
     /// Name of the group to get the items of<br />
     /// If null, Unknown
@@ -2611,6 +2718,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetGroupSceneItemList
   /// </summary>
   public class GetGroupSceneItemListResponse : RequestResponse {
+
     /// <summary>
     /// Array of scene items in the group
     /// </summary>
@@ -2626,6 +2734,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetSceneItemId : Request {
+
     /// <summary>
     /// Name of the source to find
     /// </summary>
@@ -2659,6 +2768,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetSceneItemId
   /// </summary>
   public class GetSceneItemIdResponse : RequestResponse {
+
     /// <summary>
     /// Numeric ID of the scene item
     /// </summary>
@@ -2672,6 +2782,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.4.0
   /// </summary>
   public class GetSceneItemSource : Request {
+
     /// <summary>
     /// Numeric ID of the scene item<br />
     /// It should be &gt;= 0
@@ -2698,6 +2809,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetSceneItemSource
   /// </summary>
   public class GetSceneItemSourceResponse : RequestResponse {
+
     /// <summary>
     /// Name of the source associated with the scene item
     /// </summary>
@@ -2719,6 +2831,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class CreateSceneItem : Request {
+
     /// <summary>
     /// Name of the scene to create the new item in<br />
     /// If null, Unknown
@@ -2759,6 +2872,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of CreateSceneItem
   /// </summary>
   public class CreateSceneItemResponse : RequestResponse {
+
     /// <summary>
     /// Numeric ID of the scene item
     /// </summary>
@@ -2774,6 +2888,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class RemoveSceneItem : Request {
+
     /// <summary>
     /// Numeric ID of the scene item<br />
     /// It should be &gt;= 0
@@ -2804,6 +2919,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class DuplicateSceneItem : Request {
+
     /// <summary>
     /// Numeric ID of the scene item<br />
     /// It should be &gt;= 0
@@ -2844,6 +2960,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of DuplicateSceneItem
   /// </summary>
   public class DuplicateSceneItemResponse : RequestResponse {
+
     /// <summary>
     /// Numeric ID of the duplicated scene item
     /// </summary>
@@ -2859,6 +2976,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetSceneItemTransform : Request {
+
     /// <summary>
     /// Numeric ID of the scene item<br />
     /// It should be &gt;= 0
@@ -2885,6 +3003,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetSceneItemTransform
   /// </summary>
   public class GetSceneItemTransformResponse : RequestResponse {
+
     /// <summary>
     /// Object containing scene item transform info
     /// </summary>
@@ -2898,6 +3017,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetSceneItemTransform : Request {
+
     /// <summary>
     /// Numeric ID of the scene item<br />
     /// It should be &gt;= 0
@@ -2934,6 +3054,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetSceneItemEnabled : Request {
+
     /// <summary>
     /// Numeric ID of the scene item<br />
     /// It should be &gt;= 0
@@ -2960,6 +3081,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetSceneItemEnabled
   /// </summary>
   public class GetSceneItemEnabledResponse : RequestResponse {
+
     /// <summary>
     /// Whether the scene item is enabled. <c>true</c> for enabled, <c>false</c> for disabled
     /// </summary>
@@ -2975,6 +3097,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetSceneItemEnabled : Request {
+
     /// <summary>
     /// Numeric ID of the scene item<br />
     /// It should be &gt;= 0
@@ -3011,6 +3134,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetSceneItemLocked : Request {
+
     /// <summary>
     /// Numeric ID of the scene item<br />
     /// It should be &gt;= 0
@@ -3037,6 +3161,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetSceneItemLocked
   /// </summary>
   public class GetSceneItemLockedResponse : RequestResponse {
+
     /// <summary>
     /// Whether the scene item is locked. <c>true</c> for locked, <c>false</c> for unlocked
     /// </summary>
@@ -3052,6 +3177,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetSceneItemLocked : Request {
+
     /// <summary>
     /// Numeric ID of the scene item<br />
     /// It should be &gt;= 0
@@ -3090,6 +3216,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetSceneItemIndex : Request {
+
     /// <summary>
     /// Numeric ID of the scene item<br />
     /// It should be &gt;= 0
@@ -3116,6 +3243,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetSceneItemIndex
   /// </summary>
   public class GetSceneItemIndexResponse : RequestResponse {
+
     /// <summary>
     /// Index position of the scene item
     /// </summary>
@@ -3131,6 +3259,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetSceneItemIndex : Request {
+
     /// <summary>
     /// Numeric ID of the scene item<br />
     /// It should be &gt;= 0
@@ -3178,6 +3307,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetSceneItemBlendMode : Request {
+
     /// <summary>
     /// Numeric ID of the scene item<br />
     /// It should be &gt;= 0
@@ -3204,6 +3334,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetSceneItemBlendMode
   /// </summary>
   public class GetSceneItemBlendModeResponse : RequestResponse {
+
     /// <summary>
     /// Current blend mode
     /// </summary>
@@ -3219,6 +3350,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetSceneItemBlendMode : Request {
+
     /// <summary>
     /// Numeric ID of the scene item<br />
     /// It should be &gt;= 0
@@ -3258,6 +3390,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetVirtualCamStatus
   /// </summary>
   public class GetVirtualCamStatusResponse : RequestResponse {
+
     /// <summary>
     /// Whether the output is active
     /// </summary>
@@ -3276,6 +3409,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of ToggleVirtualCam
   /// </summary>
   public class ToggleVirtualCamResponse : RequestResponse {
+
     /// <summary>
     /// Whether the output is active
     /// </summary>
@@ -3308,6 +3442,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetReplayBufferStatus
   /// </summary>
   public class GetReplayBufferStatusResponse : RequestResponse {
+
     /// <summary>
     /// Whether the output is active
     /// </summary>
@@ -3326,6 +3461,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of ToggleReplayBuffer
   /// </summary>
   public class ToggleReplayBufferResponse : RequestResponse {
+
     /// <summary>
     /// Whether the output is active
     /// </summary>
@@ -3365,6 +3501,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetLastReplayBufferReplay
   /// </summary>
   public class GetLastReplayBufferReplayResponse : RequestResponse {
+
     /// <summary>
     /// File path
     /// </summary>
@@ -3383,6 +3520,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetOutputList
   /// </summary>
   public class GetOutputListResponse : RequestResponse {
+
     /// <summary>
     /// Array of outputs
     /// </summary>
@@ -3396,6 +3534,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetOutputStatus : Request {
+
     /// <summary>
     /// Output name
     /// </summary>
@@ -3407,6 +3546,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetOutputStatus
   /// </summary>
   public class GetOutputStatusResponse : RequestResponse {
+
     /// <summary>
     /// Whether the output is active
     /// </summary>
@@ -3462,6 +3602,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class ToggleOutput : Request {
+
     /// <summary>
     /// Output name
     /// </summary>
@@ -3473,6 +3614,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of ToggleOutput
   /// </summary>
   public class ToggleOutputResponse : RequestResponse {
+
     /// <summary>
     /// Whether the output is active
     /// </summary>
@@ -3486,6 +3628,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class StartOutput : Request {
+
     /// <summary>
     /// Output name
     /// </summary>
@@ -3499,6 +3642,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class StopOutput : Request {
+
     /// <summary>
     /// Output name
     /// </summary>
@@ -3512,6 +3656,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetOutputSettings : Request {
+
     /// <summary>
     /// Output name
     /// </summary>
@@ -3523,6 +3668,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetOutputSettings
   /// </summary>
   public class GetOutputSettingsResponse : RequestResponse {
+
     /// <summary>
     /// Output settings
     /// </summary>
@@ -3536,6 +3682,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetOutputSettings : Request {
+
     /// <summary>
     /// Output name
     /// </summary>
@@ -3560,6 +3707,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetStreamStatus
   /// </summary>
   public class GetStreamStatusResponse : RequestResponse {
+
     /// <summary>
     /// Whether the output is active
     /// </summary>
@@ -3620,6 +3768,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of ToggleStream
   /// </summary>
   public class ToggleStreamResponse : RequestResponse {
+
     /// <summary>
     /// New state of the stream output
     /// </summary>
@@ -3647,6 +3796,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SendStreamCaption : Request {
+
     /// <summary>
     /// Caption text
     /// </summary>
@@ -3665,6 +3815,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetRecordStatus
   /// </summary>
   public class GetRecordStatusResponse : RequestResponse {
+
     /// <summary>
     /// Whether the output is active
     /// </summary>
@@ -3707,6 +3858,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of ToggleRecord
   /// </summary>
   public class ToggleRecordResponse : RequestResponse {
+
     /// <summary>
     /// The new active state of the output
     /// </summary>
@@ -3732,6 +3884,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of StopRecord
   /// </summary>
   public class StopRecordResponse : RequestResponse {
+
     /// <summary>
     /// File name for the saved recording
     /// </summary>
@@ -3750,6 +3903,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of ToggleRecordPause
   /// </summary>
   public class ToggleRecordPauseResponse : RequestResponse {
+
     /// <summary>
     /// Whether the output is paused
     /// </summary>
@@ -3788,6 +3942,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class GetMediaInputStatus : Request {
+
     /// <summary>
     /// Name of the media input<br />
     /// If null, Unknown
@@ -3807,6 +3962,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetMediaInputStatus
   /// </summary>
   public class GetMediaInputStatusResponse : RequestResponse {
+
     /// <summary>
     /// State of the media input
     /// </summary>
@@ -3834,6 +3990,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetMediaInputCursor : Request {
+
     /// <summary>
     /// New cursor position to set<br />
     /// It should be &gt;= 0
@@ -3864,6 +4021,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class OffsetMediaInputCursor : Request {
+
     /// <summary>
     /// Value to offset the current cursor position by
     /// </summary>
@@ -3891,6 +4049,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class TriggerMediaInputAction : Request {
+
     /// <summary>
     /// Identifier of the <c>ObsMediaInputAction</c> enum
     /// </summary>
@@ -3923,6 +4082,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetStudioModeEnabled
   /// </summary>
   public class GetStudioModeEnabledResponse : RequestResponse {
+
     /// <summary>
     /// Whether studio mode is enabled
     /// </summary>
@@ -3936,6 +4096,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class SetStudioModeEnabled : Request {
+
     /// <summary>
     /// True == Enabled, False == Disabled
     /// </summary>
@@ -3949,6 +4110,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class OpenInputPropertiesDialog : Request {
+
     /// <summary>
     /// Name of the input to open the dialog of<br />
     /// If null, Unknown
@@ -3970,6 +4132,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class OpenInputFiltersDialog : Request {
+
     /// <summary>
     /// Name of the input to open the dialog of<br />
     /// If null, Unknown
@@ -3991,6 +4154,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class OpenInputInteractDialog : Request {
+
     /// <summary>
     /// Name of the input to open the dialog of<br />
     /// If null, Unknown
@@ -4017,6 +4181,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Response of GetMonitorList
   /// </summary>
   public class GetMonitorListResponse : RequestResponse {
+
     /// <summary>
     /// a list of detected monitors with some information
     /// </summary>
@@ -4038,6 +4203,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class OpenVideoMixProjector : Request {
+
     /// <summary>
     /// Type of mix to open
     /// </summary>
@@ -4067,6 +4233,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
   public class OpenSourceProjector : Request {
+
     /// <summary>
     /// Name of the source to open a projector for<br />
     /// If null, Unknown

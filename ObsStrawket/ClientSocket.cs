@@ -89,7 +89,7 @@ namespace ObsStrawket {
         _events = Channel.CreateUnbounded<IObsEvent>();
         _cancellation = new();
         _clientWebSocket = new ClientWebSocket();
-        _clientWebSocket.Options.AddSubProtocol("obswebsocket.msgpack");
+        _clientWebSocket.Options.AddSubProtocol("obswebsocket.json");
         _sender = new(_clientWebSocket, _logger);
         _receiver = new(_clientWebSocket, _logger);
         var messages = _receiver.Messages;

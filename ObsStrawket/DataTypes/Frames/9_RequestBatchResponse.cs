@@ -1,3 +1,4 @@
+using ObsStrawket.Serialization;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -44,6 +45,7 @@ namespace ObsStrawket.DataTypes {
     /// Responses in same order.
     /// </summary>
     [JsonPropertyName("results")]
+    [JsonConverter(typeof(BatchResponseConverter))]
     public List<IRequestResponse> Results { get; set; } = new();
   }
 }

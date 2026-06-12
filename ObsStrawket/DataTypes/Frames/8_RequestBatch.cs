@@ -1,4 +1,5 @@
 using ObsStrawket.DataTypes.Predefineds;
+using ObsStrawket.Serialization;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -73,6 +74,7 @@ namespace ObsStrawket.DataTypes {
     /// however requestId is an optional field.
     /// </summary>
     [JsonPropertyName("requests")]
+    [JsonConverter(typeof(BatchRequestConverter))]
     public List<IRequest> Requests { get; set; } = new();
   }
 }
