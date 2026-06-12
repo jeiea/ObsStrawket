@@ -7,7 +7,7 @@ namespace ObsStrawket.Test.Specs {
   public class SetInputVolumeTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new SetInputVolumeFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new SetInputVolumeFlow());
     }
   }
 

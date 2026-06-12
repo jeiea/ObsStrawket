@@ -7,7 +7,7 @@ namespace ObsStrawket.Test.Specs {
   public class ToggleOutputTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new ToggleOutputFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new ToggleOutputFlow());
     }
   }
 

@@ -7,7 +7,7 @@ namespace ObsStrawket.Test.Specs {
   public class SetProfileParameterTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new SetProfileParameterFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new SetProfileParameterFlow());
     }
   }
 

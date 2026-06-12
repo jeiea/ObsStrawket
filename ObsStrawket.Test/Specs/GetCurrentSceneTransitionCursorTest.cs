@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class GetCurrentSceneTransitionCursorTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetCurrentSceneTransitionCursorFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetCurrentSceneTransitionCursorFlow());
     }
   }
 

@@ -7,7 +7,7 @@ namespace ObsStrawket.Test.Specs {
   public class GetSceneItemBlendModeTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetSceneItemBlendModeFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetSceneItemBlendModeFlow());
     }
   }
 

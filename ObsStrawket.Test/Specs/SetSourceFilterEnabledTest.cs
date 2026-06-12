@@ -7,7 +7,7 @@ namespace ObsStrawket.Test.Specs {
   public class SetSourceFilterEnabledTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new SetSourceFilterEnabledFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new SetSourceFilterEnabledFlow());
     }
   }
 

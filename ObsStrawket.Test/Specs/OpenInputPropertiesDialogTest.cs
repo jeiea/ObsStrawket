@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class OpenInputPropertiesDialogTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new OpenInputPropertiesDialogFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new OpenInputPropertiesDialogFlow());
     }
   }
 

@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class GetInputSettingsTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetInputSettingsFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetInputSettingsFlow());
     }
   }
 

@@ -8,7 +8,7 @@ namespace ObsStrawket.Test.Specs {
   public class TriggerHotkeyByNameTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new TriggerHotkeyByNameFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new TriggerHotkeyByNameFlow());
     }
   }
 

@@ -7,7 +7,7 @@ namespace ObsStrawket.Test.Specs {
   public class ResumeRecordTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new ResumeRecordFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new ResumeRecordFlow());
     }
   }
 

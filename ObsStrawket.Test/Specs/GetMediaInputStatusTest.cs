@@ -7,7 +7,7 @@ namespace ObsStrawket.Test.Specs {
   public class GetMediaInputStatusTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetMediaInputStatusFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetMediaInputStatusFlow());
     }
   }
 

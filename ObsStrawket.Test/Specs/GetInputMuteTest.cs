@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class GetInputMuteTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetInputMuteFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetInputMuteFlow());
     }
   }
 

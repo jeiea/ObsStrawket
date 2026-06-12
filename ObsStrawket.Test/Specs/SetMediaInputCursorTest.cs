@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class SetMediaInputCursorTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new SetMediaInputCursorFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new SetMediaInputCursorFlow());
     }
   }
 

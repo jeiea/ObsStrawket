@@ -7,7 +7,7 @@ namespace ObsStrawket.Test.Specs {
   public class GetSceneItemListTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetSceneItemListFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetSceneItemListFlow());
     }
   }
 

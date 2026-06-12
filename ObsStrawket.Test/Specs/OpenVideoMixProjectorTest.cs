@@ -7,7 +7,7 @@ namespace ObsStrawket.Test.Specs {
   public class OpenVideoMixProjectorTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new OpenVideoMixProjectorFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new OpenVideoMixProjectorFlow());
     }
   }
 

@@ -18,7 +18,7 @@ namespace ObsStrawket.Test {
 
       for (int i = 0; i < 50; i++) {
         cancellation = new CancellationTokenSource();
-        await abort.ConfigureAwait(false);
+        await abort;
         Debug.WriteLine($"Session {i} start");
 
         using var irritatedServer = new MockServer().Run(cancellation.Token);
@@ -26,7 +26,7 @@ namespace ObsStrawket.Test {
         abort = Task.Run(async () => {
           await Task.Delay(milliseconds);
           irritatedServer.Abort();
-        });
+        }, TestContext.Current.CancellationToken);
 
         try {
           await new ClientFlow().RunClientAsync(irritatedServer.Uri, client, cancellation: cancellation.Token);
@@ -38,7 +38,7 @@ namespace ObsStrawket.Test {
       }
 
       cancellation = new CancellationTokenSource();
-      await abort.ConfigureAwait(false);
+      await abort;
       using var normalServer = new MockServer().Run(cancellation.Token);
       await new ClientFlow().RunClientAsync(normalServer.Uri, client, cancellation: cancellation.Token);
     }

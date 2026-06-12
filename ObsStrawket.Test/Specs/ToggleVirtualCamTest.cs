@@ -7,7 +7,7 @@ namespace ObsStrawket.Test.Specs {
   public class ToggleVirtualCamTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new ToggleVirtualCamFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new ToggleVirtualCamFlow());
     }
   }
 

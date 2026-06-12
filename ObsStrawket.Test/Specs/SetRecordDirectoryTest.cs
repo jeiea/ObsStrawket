@@ -8,7 +8,7 @@ namespace ObsStrawket.Test.Specs {
   public class SetRecordDirectoryTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new SetRecordDirectoryFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new SetRecordDirectoryFlow());
     }
   }
 

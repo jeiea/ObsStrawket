@@ -24,7 +24,7 @@ namespace ObsStrawket.Test {
         }
       };
       var client = ClientFlow.GetDebugClient(socket);
-      await client.ConnectAsync(server.Uri, MockServer.Password, cancellation: cancellation.Token).ConfigureAwait(false);
+      await client.ConnectAsync(server.Uri, MockServer.Password, cancellation: cancellation.Token);
 
       var recordTasks = new List<Task<GetRecordDirectoryResponse>>();
       for (int i = 0; i < 30; i++) {
@@ -32,7 +32,7 @@ namespace ObsStrawket.Test {
       }
 
       try {
-        await TestUtil.WhenAnyThrowsAsync(recordTasks).ConfigureAwait(false);
+        await TestUtil.WhenAnyThrowsAsync(recordTasks);
         Assert.Fail("Exception not fired.");
       }
       catch (OperationCanceledException e) {

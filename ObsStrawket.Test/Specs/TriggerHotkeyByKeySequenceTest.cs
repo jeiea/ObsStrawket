@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class TriggerHotkeyByKeySequenceTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new TriggerHotkeyByKeySequenceFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new TriggerHotkeyByKeySequenceFlow());
     }
   }
 

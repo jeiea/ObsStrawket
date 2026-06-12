@@ -10,7 +10,7 @@ namespace ObsStrawket.Test {
       try {
         var client = ClientFlow.GetDebugClient();
 
-        await client.GetRecordDirectoryAsync().ConfigureAwait(false);
+        await client.GetRecordDirectoryAsync(TestContext.Current.CancellationToken);
         Assert.Fail("Exception not fired");
       }
       catch (InvalidOperationException) { }

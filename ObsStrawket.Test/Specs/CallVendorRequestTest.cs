@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class CallVendorRequestTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new CallVendorRequestFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new CallVendorRequestFlow());
     }
   }
 

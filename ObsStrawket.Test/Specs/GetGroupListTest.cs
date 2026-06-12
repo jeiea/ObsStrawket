@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class GetGroupListTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetGroupListFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetGroupListFlow());
     }
   }
 

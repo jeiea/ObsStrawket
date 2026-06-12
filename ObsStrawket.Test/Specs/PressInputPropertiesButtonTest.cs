@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class PressInputPropertiesButtonTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new PressInputPropertiesButtonFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new PressInputPropertiesButtonFlow());
     }
   }
 

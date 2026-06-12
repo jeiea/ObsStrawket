@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class SetCurrentProfileTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new SetCurrentProfileFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new SetCurrentProfileFlow());
     }
   }
 

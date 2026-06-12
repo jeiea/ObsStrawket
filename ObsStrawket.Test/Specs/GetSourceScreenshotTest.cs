@@ -9,7 +9,7 @@ namespace ObsStrawket.Test.Specs {
 
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetSourceScreenshotFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetSourceScreenshotFlow());
     }
   }
 

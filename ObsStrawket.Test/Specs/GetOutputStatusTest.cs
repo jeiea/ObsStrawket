@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class GetOutputStatusTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetOutputStatusFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetOutputStatusFlow());
     }
   }
 

@@ -55,7 +55,7 @@ namespace SourceGenerator.Test {
       Assert.Equal(_protocol, File.ReadAllBytes(Path.Combine(_upstreamDirectory, "protocol.json")));
       Assert.Equal(_obsHeader, File.ReadAllBytes(Path.Combine(_upstreamDirectory, "Obs.h")));
       Assert.Equal(3, handler.Requests.Count);
-      Assert.Single(handler.Requests.Where(uri => uri.Host == "api.github.com"));
+      Assert.Single(handler.Requests, uri => uri.Host == "api.github.com");
       Assert.Equal(2, handler.Requests.Count(uri => uri.AbsoluteUri.Contains(Revision)));
       using var document = JsonDocument.Parse(
         File.ReadAllBytes(Path.Combine(_upstreamDirectory, "upstream-revision.json")));

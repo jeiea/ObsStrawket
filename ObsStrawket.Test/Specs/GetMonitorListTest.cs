@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class GetMonitorListTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetMonitorListFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetMonitorListFlow());
     }
   }
 

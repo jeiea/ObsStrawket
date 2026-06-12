@@ -24,7 +24,7 @@ namespace ObsStrawket.Test {
 
       try {
         var client = ClientFlow.GetDebugClient(useChannel: true);
-        await client.ConnectAsync(server.Uri, MockServer.Password, cancellation: cancellation.Token).ConfigureAwait(false);
+        await client.ConnectAsync(server.Uri, MockServer.Password, cancellation: cancellation.Token);
 
         async Task<IOpCodeMessage> GetStudioModeEnabledAsync() {
           var result = await client.GetStudioModeEnabledAsync(cancellation.Token).ConfigureAwait(false);
@@ -50,9 +50,9 @@ namespace ObsStrawket.Test {
           }));
         }
 
-        await TestUtil.WhenAnyThrowsAsync(tasks).ConfigureAwait(false);
+        await TestUtil.WhenAnyThrowsAsync(tasks);
         Assert.All(tasks, t => Assert.True(t.IsCompletedSuccessfully));
-        await _serverComplete.Task.ConfigureAwait(false);
+        await _serverComplete.Task;
       }
       catch (Exception ex) {
         Debug.WriteLine(ex);

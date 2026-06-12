@@ -12,7 +12,7 @@ namespace ObsStrawket.Test {
     [Fact]
     public async Task TestAsync() {
       try {
-        await SpecTester.TestAsync(new MalformedResponseFlow()).ConfigureAwait(false);
+        await SpecTester.TestAsync(new MalformedResponseFlow());
       }
       catch (WebSocketException exception) {
         if (exception.InnerException is not HttpListenerException mayBeClientAbort) {

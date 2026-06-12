@@ -8,7 +8,7 @@ namespace ObsStrawket.Test.Specs {
   public class TriggerMediaInputActionTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new TriggerMediaInputActionFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new TriggerMediaInputActionFlow());
     }
   }
 

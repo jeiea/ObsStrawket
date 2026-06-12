@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class GetInputAudioBalanceTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetInputAudioBalanceFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetInputAudioBalanceFlow());
     }
   }
 

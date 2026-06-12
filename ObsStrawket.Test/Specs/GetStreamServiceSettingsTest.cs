@@ -7,7 +7,7 @@ namespace ObsStrawket.Test.Specs {
   public class GetStreamServiceSettingsTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetStreamServiceSettingsFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetStreamServiceSettingsFlow());
     }
   }
 

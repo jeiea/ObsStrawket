@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class GetInputKindListTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetInputKindListFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetInputKindListFlow());
     }
   }
 

@@ -7,7 +7,7 @@ namespace ObsStrawket.Test.Specs {
   public class ToggleRecordPauseTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new ToggleRecordPauseFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new ToggleRecordPauseFlow());
     }
   }
 

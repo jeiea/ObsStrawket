@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class OpenInputInteractDialogTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new OpenInputInteractDialogFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new OpenInputInteractDialogFlow());
     }
   }
 

@@ -9,7 +9,7 @@ namespace ObsStrawket.Test.Specs {
   public class SetCurrentSceneTransitionDurationTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new SetCurrentSceneTransitionDurationFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new SetCurrentSceneTransitionDurationFlow());
     }
   }
 

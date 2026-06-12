@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class GetInputPropertiesListPropertyItemsTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetInputPropertiesListPropertyItemsFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetInputPropertiesListPropertyItemsFlow());
     }
   }
 

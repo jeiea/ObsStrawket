@@ -7,7 +7,7 @@ namespace ObsStrawket.Test.Specs {
   public class GetLastReplayBufferReplayTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetLastReplayBufferReplayFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetLastReplayBufferReplayFlow());
     }
   }
 

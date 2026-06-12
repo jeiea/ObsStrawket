@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class GetInputAudioSyncOffsetTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetInputAudioSyncOffsetFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetInputAudioSyncOffsetFlow());
     }
   }
 

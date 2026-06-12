@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class GetVersionTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetVersionFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetVersionFlow());
     }
   }
 

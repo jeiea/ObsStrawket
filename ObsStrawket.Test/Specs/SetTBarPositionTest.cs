@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class SetTBarPositionTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new SetTBarPositionFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new SetTBarPositionFlow());
     }
   }
 

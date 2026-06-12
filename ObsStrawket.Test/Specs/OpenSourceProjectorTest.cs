@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class OpenSourceProjectorTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new OpenSourceProjectorFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new OpenSourceProjectorFlow());
     }
   }
 

@@ -7,7 +7,7 @@ namespace ObsStrawket.Test.Specs {
   public class RemoveSceneItemTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new RemoveSceneItemFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new RemoveSceneItemFlow());
     }
   }
 

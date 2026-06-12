@@ -7,7 +7,7 @@ namespace ObsStrawket.Test.Specs {
   public class PauseRecordTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new PauseRecordFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new PauseRecordFlow());
     }
   }
 

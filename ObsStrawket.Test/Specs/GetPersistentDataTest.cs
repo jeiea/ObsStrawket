@@ -8,7 +8,7 @@ namespace ObsStrawket.Test.Specs {
   public class GetPersistentDataTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetPersistentDataFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetPersistentDataFlow());
     }
   }
 

@@ -8,7 +8,7 @@ namespace ObsStrawket.Test.Specs {
   public class SaveSourceScreenshotTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new SaveSourceScreenshotFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new SaveSourceScreenshotFlow());
     }
   }
 

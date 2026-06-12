@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class GetRecordStatusTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetRecordStatusFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetRecordStatusFlow());
     }
   }
 

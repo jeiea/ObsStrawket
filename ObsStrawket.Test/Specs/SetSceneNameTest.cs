@@ -7,7 +7,7 @@ namespace ObsStrawket.Test.Specs {
   public class SetSceneNameTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new SetSceneNameFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new SetSceneNameFlow());
     }
   }
 

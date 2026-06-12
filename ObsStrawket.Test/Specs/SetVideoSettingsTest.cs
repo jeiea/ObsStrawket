@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class SetVideoSettingsTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new SetVideoSettingsFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new SetVideoSettingsFlow());
     }
   }
 

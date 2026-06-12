@@ -7,7 +7,7 @@ namespace ObsStrawket.Test.Specs {
   public class ToggleInputMuteTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new ToggleInputMuteFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new ToggleInputMuteFlow());
     }
   }
 

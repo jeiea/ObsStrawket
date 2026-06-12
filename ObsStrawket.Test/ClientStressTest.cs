@@ -12,21 +12,21 @@ namespace ObsStrawket.Test {
   public class ClientStressTest {
     [Fact(Timeout = 3 * 60 * 1000)]
     public async Task TestAsync() {
-      await StressTestHelper.RunParameterizedAsync(200, 4).ConfigureAwait(false);
+      await StressTestHelper.RunParameterizedAsync(200, 4);
     }
   }
 
   public class ClientStressTest2 {
     [Fact(Timeout = 3 * 60 * 1000)]
     public async Task TestAsync() {
-      await StressTestHelper.RunParameterizedAsync(80, 4).ConfigureAwait(false);
+      await StressTestHelper.RunParameterizedAsync(80, 4);
     }
   }
 
   public class ClientStressTest3 {
     [Fact(Timeout = 3 * 60 * 1000)]
     public async Task TestAsync() {
-      await StressTestHelper.RunParameterizedAsync(5, 5).ConfigureAwait(false);
+      await StressTestHelper.RunParameterizedAsync(5, 5);
     }
   }
 

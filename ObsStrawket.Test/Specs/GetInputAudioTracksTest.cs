@@ -8,7 +8,7 @@ namespace ObsStrawket.Test.Specs {
 
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetInputAudioTracksFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetInputAudioTracksFlow());
     }
   }
 

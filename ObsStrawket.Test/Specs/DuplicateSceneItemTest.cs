@@ -7,7 +7,7 @@ namespace ObsStrawket.Test.Specs {
   public class DuplicateSceneItemTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new DuplicateSceneItemFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new DuplicateSceneItemFlow());
     }
   }
 

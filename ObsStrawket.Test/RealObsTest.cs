@@ -21,85 +21,76 @@ namespace ObsStrawket.Test.Real {
 
     [Fact]
     public async Task TestNormalAsync() {
-      if (_shouldSkip) {
-        return;
-      }
-      await new ClientFlow().RunClientAsync(_uri).ConfigureAwait(false);
+      Assert.SkipWhen(_shouldSkip, "Requires a running OBS instance.");
+      await new ClientFlow().RunClientAsync(_uri, cancellation: TestContext.Current.CancellationToken);
     }
 
     [Fact]
     public async Task TestBadRequestAsync() {
-      if (_shouldSkip) {
-        return;
-      }
+      Assert.SkipWhen(_shouldSkip, "Requires a running OBS instance.");
       var client = ClientFlow.GetDebugClient(useChannel: true);
-      await client.ConnectAsync(_uri, MockServer.Password).ConfigureAwait(false);
+      await client.ConnectAsync(_uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
 
       await Assert.ThrowsAsync<FailureResponseException>(async () => {
-        var response = await client.StopRecordAsync().ConfigureAwait(false);
-        response = await client.StopRecordAsync().ConfigureAwait(false);
-      }).ConfigureAwait(false);
+        var response = await client.StopRecordAsync(TestContext.Current.CancellationToken);
+        response = await client.StopRecordAsync(TestContext.Current.CancellationToken);
+      });
 
       var exception = await Assert.ThrowsAsync<FailureResponseException>(async () => {
-        await client.BroadcastCustomEventAsync(new Dictionary<string, JsonElement?>()).ConfigureAwait(false);
-      }).ConfigureAwait(false);
+        await client.BroadcastCustomEventAsync(new Dictionary<string, JsonElement?>(), TestContext.Current.CancellationToken);
+      });
 
       return;
     }
 
     [Fact]
     public async Task JustMonitorObsEventAsync() {
-      if (_shouldSkip) {
-        return;
-      }
+      Assert.SkipWhen(_shouldSkip, "Requires a running OBS instance.");
       var source = new TaskCompletionSource<object?>();
       var client = ClientFlow.GetDebugClient();
       client.Disconnected += (e) => {
         source.TrySetResult(e);
       };
 
-      await client.ConnectAsync(_uri, MockServer.Password).ConfigureAwait(false);
+      await client.ConnectAsync(_uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
       //while (await client.Events.WaitToReadAsync().ConfigureAwait(false)) {
       //  var ev = await client.Events.ReadAsync().ConfigureAwait(false);
       //  Debug.WriteLine(ev);
       //}
-      object? result = await source.Task.ConfigureAwait(false);
+      object? result = await source.Task;
       Debug.WriteLine(result);
       return;
     }
 
     [Fact]
     public async Task TestbedAsync() {
-      if (_shouldSkip) {
-        return;
-      }
+      Assert.SkipWhen(_shouldSkip, "Requires a running OBS instance.");
 
       var client = ClientFlow.GetDebugClient(useChannel: true);
       await Assert.ThrowsAsync<AuthenticationFailureException>(
-        () => client.ConnectAsync(_uri, "a")
-      ).ConfigureAwait(false);
+        () => client.ConnectAsync(_uri, "a", cancellation: TestContext.Current.CancellationToken)
+      );
     }
 
     [Fact]
     public async Task TestSequenceAsync() {
-      if (_shouldSkip) {
-        return;
-      }
+      Assert.SkipWhen(_shouldSkip, "Requires a running OBS instance.");
 
       // xUnit doesn't support environment variable in visual studio runner.
       // But I want to do it.
       string envPath = "../../../env.json.tmp";
       if (File.Exists(envPath)) {
         var keyValues = await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(
-          File.OpenRead(envPath)
-        ).ConfigureAwait(false);
+          File.OpenRead(envPath),
+          cancellationToken: TestContext.Current.CancellationToken
+        );
         foreach (var (key, value) in keyValues!) {
           Environment.SetEnvironmentVariable(key, value);
         }
       }
 
       var client = ClientFlow.GetDebugClient(useChannel: true);
-      await client.ConnectAsync(_uri, MockServer.Password).ConfigureAwait(false);
+      await client.ConnectAsync(_uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
       var flows = new List<ITestFlow>() {
         //new CallVendorRequestFlow(), // test how?
         //new SleepFlow(), // Not implemented
@@ -264,9 +255,9 @@ namespace ObsStrawket.Test.Real {
         Debug.WriteLine($"Test {flow.GetType().Name}");
         while (client.Events.TryPeek(out var ev)) {
           ClientFlow.DrainEvents(client);
-          await Task.Delay(100).ConfigureAwait(false);
+          await Task.Delay(100, TestContext.Current.CancellationToken);
         }
-        await flow.RequestAsync(client).ConfigureAwait(false);
+        await flow.RequestAsync(client);
       }
       return;
     }

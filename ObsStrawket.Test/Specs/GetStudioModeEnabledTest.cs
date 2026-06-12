@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class GetStudioModeEnabledTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetStudioModeEnabledFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetStudioModeEnabledFlow());
     }
   }
 

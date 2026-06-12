@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class GetHotkeyListTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetHotkeyListFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new GetHotkeyListFlow());
     }
   }
 

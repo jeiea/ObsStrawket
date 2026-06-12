@@ -6,7 +6,7 @@ namespace ObsStrawket.Test.Specs {
   public class SendStreamCaptionTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new SendStreamCaptionFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new SendStreamCaptionFlow());
     }
   }
 

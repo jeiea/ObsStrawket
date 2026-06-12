@@ -8,7 +8,7 @@ namespace ObsStrawket.Test.Specs {
   public class SleepTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new SleepFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new SleepFlow());
     }
   }
 

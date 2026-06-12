@@ -7,7 +7,7 @@ namespace ObsStrawket.Test.Specs {
   public class ToggleReplayBufferTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new ToggleReplayBufferFlow()).ConfigureAwait(false);
+      await SpecTester.TestAsync(new ToggleReplayBufferFlow());
     }
   }
 
