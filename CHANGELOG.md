@@ -1,3 +1,39 @@
+## 0.15.0-alpha
+
+- ! Replace MessagePack serialization with System.Text.Json.
+  Generated data types now carry `System.Text.Json.Serialization` attributes
+  and the MessagePack dependency is gone.
+- ! Replace dynamic protocol dictionaries such as settings, transforms, and
+  vendor data from `Dictionary<string, object?>` to
+  `Dictionary<string, JsonElement?>`.
+- ! Remove `RequestStatusCode` enum and rename `RequestStatus` class to
+  `RequestStatusObject`. Status codes now use
+  `ObsStrawket.DataTypes.Predefineds.RequestStatus`.
+- ! Remove default value assignments from optional fields.
+  Optional strings are `null` instead of `""` when absent.
+- ! Change `Output.Width` and `Output.Height` from `int` to `uint`, matching
+  the unsigned 32-bit values returned by OBS.
+- ! Refresh generated request methods for the OBS 32 protocol. Many methods
+  now accept UUIDs and canvas UUIDs, and required arguments precede optional
+  name/UUID selectors. Positional call sites may need updating.
+  ```csharp
+  // Before
+  SetInputMuteAsync("Mic", true);
+  // After
+  SetInputMuteAsync(true, inputName: "Mic");
+  ```
+- ! Remove the `ILogger` constructor parameter and
+  Microsoft.Extensions.Logging dependency. Subscribe to `PipelineEvent` for
+  structured diagnostics instead.
+- Multi-target `netstandard2.0` and `net8.0`. On .NET 8+,
+  System.Text.Json and System.Threading.Channels come from the framework
+  instead of package downloads. The `netstandard2.0` target uses version
+  10.0.9 of those packages.
+- Remove System.IO.Pipelines and System.Net.WebSockets package dependencies.
+- Fix pending requests hanging forever when the connection dies during close.
+- Send outgoing JSON as WebSocket text frames instead of binary frames.
+- Reflect upstream obs-websocket changes and regenerate protocol types.
+
 ## 0.14.0
 
 - ! Change `ObsClientSocket.Disconnected` parameter type from `object` to `Exception?`.

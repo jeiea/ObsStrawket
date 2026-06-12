@@ -2,15 +2,15 @@
 
 [![prerelease shield](https://img.shields.io/nuget/vpre/ObsStrawket)](https://www.nuget.org/packages/ObsStrawket) ![Downloads count](https://img.shields.io/nuget/dt/ObsStrawket)
 
-Personal .NET implementation of
-[obs-websocket](https://github.com/obsproject/obs-websocket) protocol v5.
+.NET implementation of [obs-websocket](https://github.com/obsproject/obs-websocket) protocol v5.
 
-## Difference to [obs-websocket-dotnet](https://github.com/BarRaider/obs-websocket-dotnet)
+## Installation
 
-|              |             ObsStrawket              |        obs-websocket-dotnet         |
-| :----------: | :----------------------------------: | :---------------------------------: |
-| Dependencies | System.Net.WebSockets<br>MessagePack | WebSocket.Client<br>Newtonsoft.Json |
-| Method type  |             Asynchronous             |             Synchronous             |
+```powershell
+dotnet add package ObsStrawket --prerelease
+```
+
+Targets `netstandard2.0` and `net8.0`.
 
 ## Example
 
@@ -32,7 +32,6 @@ Assert.Contains("bmp", version.SupportedImageFormats);
 // Listen specific event.
 client.RecordStateChanged += (changed) => {
   switch (changed.OutputState) {
-  case ObsOutputState.Unknown:
   case ObsOutputState.Starting:
   case ObsOutputState.Started:
   case ObsOutputState.Stopping:
@@ -42,6 +41,7 @@ client.RecordStateChanged += (changed) => {
     break;
   }
 };
+
 // Listen all events and filter.
 client.Event += (ev) => {
   switch (ev) {
@@ -49,8 +49,8 @@ client.Event += (ev) => {
     break;
   }
 };
-await client.StartRecordAsync();
 
+await client.StartRecordAsync();
 await client.CloseAsync();
 ```
 
@@ -64,11 +64,8 @@ To update both files from the latest obs-websocket default-branch commit and reg
 client API:
 
 ```powershell
-dotnet run --project SourceGenerator -- --update-upstream
+mise update-protocol
 ```
 
-To reproduce generation from the tracked upstream revision:
-
-```powershell
-dotnet run --project SourceGenerator
-```
+Other generator tasks (such as regenerating from the tracked revision) are defined in
+`mise.toml`; run `mise tasks` to list them.
