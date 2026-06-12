@@ -42,7 +42,8 @@ namespace ObsStrawket {
       try {
         _logger?.LogDebug("Start.");
         var ms = new MemoryStream();
-        var segment = new ArraySegment<byte>(new byte[4 * 1024]);
+        byte[] buffer = new byte[4 * 1024];
+        var segment = new ArraySegment<byte>(buffer);
 
         while (!token.IsCancellationRequested) {
           var readResult = await _socket.ReceiveAsync(segment, token).ConfigureAwait(false);
@@ -62,7 +63,7 @@ namespace ObsStrawket {
           }
 
           _logger?.LogDebug("Read {} bytes", readResult.Count);
-          ms.Write(segment.Array, segment.Offset, readResult.Count);
+          ms.Write(buffer, 0, readResult.Count);
 
           if (readResult.EndOfMessage) {
             var memory = ms;

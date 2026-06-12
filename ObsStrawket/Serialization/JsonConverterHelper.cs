@@ -10,7 +10,7 @@ namespace ObsStrawket.Serialization {
       }
     }
 
-    public static T CreateInstance<T>(Type? type) where T : class {
+    public static T CreateInstance<T>(Type type) where T : class {
       return (Activator.CreateInstance(type) as T)!;
     }
 
