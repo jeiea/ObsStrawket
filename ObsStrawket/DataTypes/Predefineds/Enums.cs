@@ -107,12 +107,20 @@ namespace ObsStrawket.DataTypes.Predefineds {
     Ui = 1 << 10,
 
     /// <summary>
+    /// <para>Subscription value to receive events in the <c>Canvases</c> category.</para>
+    /// <para>Latest Supported RPC Version: 1<br />
+    /// Added in v5.7.0</para>
+    /// </summary>
+    [EnumMember]
+    Canvases = 1 << 11,
+
+    /// <summary>
     /// <para>Helper to receive all non-high-volume events.</para>
     /// <para>Latest Supported RPC Version: 1<br />
     /// Added in v5.0.0</para>
     /// </summary>
     [EnumMember]
-    All = General | Config | Scenes | Inputs | Transitions | Filters | Outputs | SceneItems | MediaInputs | Vendors | Ui,
+    All = General | Config | Scenes | Inputs | Transitions | Filters | Outputs | SceneItems | MediaInputs | Vendors | Ui | Canvases,
 
     /// <summary>
     /// <para>Subscription value to receive the <c>InputVolumeMeters</c> high-volume event.</para>

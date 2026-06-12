@@ -46,6 +46,25 @@ await client.StartRecordAsync();
 await client.CloseAsync();
 ```
 
+## Updating generated protocol sources
+
+The source generator normally uses the tracked `SourceGenerator/Upstream/protocol.json` and
+`SourceGenerator/Upstream/Obs.h` files without network access. Their obs-websocket commit and
+source paths are recorded in `SourceGenerator/Upstream/upstream-revision.json`.
+
+To update both files from the latest obs-websocket default-branch commit and regenerate the
+client API:
+
+```powershell
+dotnet run --project SourceGenerator -- --update-upstream
+```
+
+To reproduce generation from the tracked upstream revision:
+
+```powershell
+dotnet run --project SourceGenerator
+```
+
 # Not yet supported list
 
 ## Events

@@ -27,7 +27,8 @@ namespace ObsStrawket.Test.Specs {
 {
   "d": {
     "requestId": "{guid}",
-    "requestType": "GetSceneList"
+    "requestType": "GetSceneList",
+    "requestData": {}
   },
   "op": 6
 }

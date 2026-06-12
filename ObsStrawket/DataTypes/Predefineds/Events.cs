@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 
 namespace ObsStrawket.DataTypes.Predefineds {
+  /// <summary>
+  /// Canvases event.
+  /// </summary>
+  public class CanvasesEvent : ObsEvent { }
 
   /// <summary>
   /// General event.
@@ -53,6 +57,69 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Ui event.
   /// </summary>
   public class UiEvent : ObsEvent { }
+
+  /// <summary>
+  /// A new canvas has been created.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.7.0
+  /// </summary>
+  public class CanvasCreated : CanvasesEvent {
+    /// <summary>
+    /// Name of the new canvas
+    /// </summary>
+    [JsonPropertyName("canvasName")]
+    public string CanvasName { get; set; } = "";
+
+    /// <summary>
+    /// UUID of the new canvas
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string CanvasUuid { get; set; } = "";
+  }
+
+  /// <summary>
+  /// A canvas has been removed.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.7.0
+  /// </summary>
+  public class CanvasRemoved : CanvasesEvent {
+    /// <summary>
+    /// Name of the removed canvas
+    /// </summary>
+    [JsonPropertyName("canvasName")]
+    public string CanvasName { get; set; } = "";
+
+    /// <summary>
+    /// UUID of the removed canvas
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string CanvasUuid { get; set; } = "";
+  }
+
+  /// <summary>
+  /// The name of a canvas has changed.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.7.0
+  /// </summary>
+  public class CanvasNameChanged : CanvasesEvent {
+    /// <summary>
+    /// UUID of the canvas
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string CanvasUuid { get; set; } = "";
+
+    /// <summary>
+    /// Old name of the canvas
+    /// </summary>
+    [JsonPropertyName("oldCanvasName")]
+    public string OldCanvasName { get; set; } = "";
+
+    /// <summary>
+    /// New name of the canvas
+    /// </summary>
+    [JsonPropertyName("canvasName")]
+    public string CanvasName { get; set; } = "";
+  }
 
   /// <summary>
   /// OBS has begun the shutdown process.<br />
@@ -342,6 +409,12 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("unversionedInputKind")]
     public string UnversionedInputKind { get; set; } = "";
+
+    /// <summary>
+    /// Bitflag value for the caps that an input supports. See obs_source_info.output_flags in the libobs docs
+    /// </summary>
+    [JsonPropertyName("inputKindCaps")]
+    public double InputKindCaps { get; set; }
 
     /// <summary>
     /// The settings configured to the input when it was created
@@ -1175,6 +1248,19 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("outputPath")]
     public string? OutputPath { get; set; }
+  }
+
+  /// <summary>
+  /// The record output has started writing to a new file. For example, when a file split happens.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.5.0
+  /// </summary>
+  public class RecordFileChanged : OutputsEvent {
+    /// <summary>
+    /// File name that the output has begun writing to
+    /// </summary>
+    [JsonPropertyName("newOutputPath")]
+    public string NewOutputPath { get; set; } = "";
   }
 
   /// <summary>

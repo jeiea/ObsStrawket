@@ -5,6 +5,25 @@ using System.Text.Json.Serialization;
 namespace ObsStrawket.DataTypes.Predefineds {
 
   /// <summary>
+  /// Gets an array of canvases in OBS.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.7.0
+  /// </summary>
+  public class GetCanvasList : Request { }
+
+  /// <summary>
+  /// Response of GetCanvasList
+  /// </summary>
+  public class GetCanvasListResponse : RequestResponse {
+
+    /// <summary>
+    /// Array of canvases
+    /// </summary>
+    [JsonPropertyName("canvases")]
+    public List<Dictionary<string, JsonElement?>> Canvases { get; set; } = [];
+  }
+
+  /// <summary>
   /// Gets data about the current plugin and RPC version.<br />
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
@@ -755,6 +774,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sourceUuid")]
     public string? SourceUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the source is in, if using sourceName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -830,6 +856,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("imageCompressionQuality")]
     public int? ImageCompressionQuality { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the source is in, if using sourceName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -905,14 +938,29 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("imageCompressionQuality")]
     public int? ImageCompressionQuality { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the source is in, if using sourceName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
-  /// Gets an array of all scenes in OBS.<br />
+  /// Gets an array of scenes in OBS.<br />
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetSceneList : Request { }
+  public class GetSceneList : Request {
+
+    /// <summary>
+    /// UUID of the canvas the scenes are in<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
+  }
 
   /// <summary>
   /// Response of GetSceneList
@@ -920,25 +968,25 @@ namespace ObsStrawket.DataTypes.Predefineds {
   public class GetSceneListResponse : RequestResponse {
 
     /// <summary>
-    /// Current program scene name. Can be <c>null</c> if internal state desync
+    /// Current program scene name. Can be <c>null</c> if non-main canvas or internal state desync
     /// </summary>
     [JsonPropertyName("currentProgramSceneName")]
     public string? CurrentProgramSceneName { get; set; }
 
     /// <summary>
-    /// Current program scene UUID. Can be <c>null</c> if internal state desync
+    /// Current program scene UUID. Can be <c>null</c> if non-main canvas or internal state desync
     /// </summary>
     [JsonPropertyName("currentProgramSceneUuid")]
     public string? CurrentProgramSceneUuid { get; set; }
 
     /// <summary>
-    /// Current preview scene name. <c>null</c> if not in studio mode
+    /// Current preview scene name. <c>null</c> if not in studio mode or non-main canvas
     /// </summary>
     [JsonPropertyName("currentPreviewSceneName")]
     public string? CurrentPreviewSceneName { get; set; }
 
     /// <summary>
-    /// Current preview scene UUID. <c>null</c> if not in studio mode
+    /// Current preview scene UUID. <c>null</c> if not in studio mode or non-main canvas
     /// </summary>
     [JsonPropertyName("currentPreviewSceneUuid")]
     public string? CurrentPreviewSceneUuid { get; set; }
@@ -974,7 +1022,9 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// <summary>
   /// Gets the current program scene.<br />
   /// <br />
-  /// Note: This request is slated to have the <c>currentProgram</c>-prefixed fields removed from in an upcoming RPC version.<br />
+  /// Note 1: This request is slated to have the <c>currentProgram</c>-prefixed fields removed from in an upcoming RPC version.<br />
+  /// <br />
+  /// Note 2: Canvases do not have any concept of a program or preview scene, so this request does not support canvases.<br />
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
@@ -1109,6 +1159,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneName")]
     public string SceneName { get; set; } = "";
+
+    /// <summary>
+    /// UUID of the canvas to create the new scene in. Leave default to assume main canvas<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -1143,6 +1200,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the scene is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -1171,6 +1235,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the scene is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -1195,6 +1266,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the scene is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -1250,6 +1328,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("transitionDuration")]
     public long? TransitionDuration { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the scene is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -1401,6 +1486,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneItemEnabled")]
     public bool? SceneItemEnabled { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the scene is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -2009,6 +2101,155 @@ namespace ObsStrawket.DataTypes.Predefineds {
   }
 
   /// <summary>
+  /// Gets the deinterlace mode of an input.<br />
+  /// <br />
+  /// Deinterlace Modes:<br />
+  /// <br />
+  /// - <c>OBS_DEINTERLACE_MODE_DISABLE</c><br />
+  /// - <c>OBS_DEINTERLACE_MODE_DISCARD</c><br />
+  /// - <c>OBS_DEINTERLACE_MODE_RETRO</c><br />
+  /// - <c>OBS_DEINTERLACE_MODE_BLEND</c><br />
+  /// - <c>OBS_DEINTERLACE_MODE_BLEND_2X</c><br />
+  /// - <c>OBS_DEINTERLACE_MODE_LINEAR</c><br />
+  /// - <c>OBS_DEINTERLACE_MODE_LINEAR_2X</c><br />
+  /// - <c>OBS_DEINTERLACE_MODE_YADIF</c><br />
+  /// - <c>OBS_DEINTERLACE_MODE_YADIF_2X</c><br />
+  /// <br />
+  /// Note: Deinterlacing functionality is restricted to async inputs only.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.6.0
+  /// </summary>
+  public class GetInputDeinterlaceMode : Request {
+
+    /// <summary>
+    /// Name of the input<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("inputName")]
+    public string? InputName { get; set; }
+
+    /// <summary>
+    /// UUID of the input<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("inputUuid")]
+    public string? InputUuid { get; set; }
+  }
+
+  /// <summary>
+  /// Response of GetInputDeinterlaceMode
+  /// </summary>
+  public class GetInputDeinterlaceModeResponse : RequestResponse {
+
+    /// <summary>
+    /// Deinterlace mode of the input
+    /// </summary>
+    [JsonPropertyName("inputDeinterlaceMode")]
+    public string InputDeinterlaceMode { get; set; } = "";
+  }
+
+  /// <summary>
+  /// Sets the deinterlace mode of an input.<br />
+  /// <br />
+  /// Note: Deinterlacing functionality is restricted to async inputs only.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.6.0
+  /// </summary>
+  public class SetInputDeinterlaceMode : Request {
+
+    /// <summary>
+    /// Deinterlace mode for the input
+    /// </summary>
+    [JsonPropertyName("inputDeinterlaceMode")]
+    public string InputDeinterlaceMode { get; set; } = "";
+
+    /// <summary>
+    /// Name of the input<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("inputName")]
+    public string? InputName { get; set; }
+
+    /// <summary>
+    /// UUID of the input<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("inputUuid")]
+    public string? InputUuid { get; set; }
+  }
+
+  /// <summary>
+  /// Gets the deinterlace field order of an input.<br />
+  /// <br />
+  /// Deinterlace Field Orders:<br />
+  /// <br />
+  /// - <c>OBS_DEINTERLACE_FIELD_ORDER_TOP</c><br />
+  /// - <c>OBS_DEINTERLACE_FIELD_ORDER_BOTTOM</c><br />
+  /// <br />
+  /// Note: Deinterlacing functionality is restricted to async inputs only.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.6.0
+  /// </summary>
+  public class GetInputDeinterlaceFieldOrder : Request {
+
+    /// <summary>
+    /// Name of the input<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("inputName")]
+    public string? InputName { get; set; }
+
+    /// <summary>
+    /// UUID of the input<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("inputUuid")]
+    public string? InputUuid { get; set; }
+  }
+
+  /// <summary>
+  /// Response of GetInputDeinterlaceFieldOrder
+  /// </summary>
+  public class GetInputDeinterlaceFieldOrderResponse : RequestResponse {
+
+    /// <summary>
+    /// Deinterlace field order of the input
+    /// </summary>
+    [JsonPropertyName("inputDeinterlaceFieldOrder")]
+    public string InputDeinterlaceFieldOrder { get; set; } = "";
+  }
+
+  /// <summary>
+  /// Sets the deinterlace field order of an input.<br />
+  /// <br />
+  /// Note: Deinterlacing functionality is restricted to async inputs only.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.6.0
+  /// </summary>
+  public class SetInputDeinterlaceFieldOrder : Request {
+
+    /// <summary>
+    /// Deinterlace field order for the input
+    /// </summary>
+    [JsonPropertyName("inputDeinterlaceFieldOrder")]
+    public string InputDeinterlaceFieldOrder { get; set; } = "";
+
+    /// <summary>
+    /// Name of the input<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("inputName")]
+    public string? InputName { get; set; }
+
+    /// <summary>
+    /// UUID of the input<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("inputUuid")]
+    public string? InputUuid { get; set; }
+  }
+
+  /// <summary>
   /// Gets the items of a list property from an input's properties.<br />
   /// <br />
   /// Note: Use this in cases where an input provides a dynamic, selectable list of items. For example, display capture, where it provides a list of available displays.<br />
@@ -2342,6 +2583,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sourceUuid")]
     public string? SourceUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the source is in, if using the sourceName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -2421,6 +2669,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("filterSettings")]
     public Dictionary<string, JsonElement?>? FilterSettings { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the source is in, if using the sourceName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -2449,6 +2704,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sourceUuid")]
     public string? SourceUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the source is in, if using the sourceName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -2483,6 +2745,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sourceUuid")]
     public string? SourceUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the source is in, if using the sourceName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -2511,6 +2780,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sourceUuid")]
     public string? SourceUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the source is in, if using the sourceName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -2576,6 +2852,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sourceUuid")]
     public string? SourceUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the source is in, if using the sourceName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -2617,6 +2900,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("overlay")]
     public bool? Overlay { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the source is in, if using the sourceName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -2651,6 +2941,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sourceUuid")]
     public string? SourceUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the source is in, if using the sourceName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -2675,6 +2972,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the scene is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -2713,6 +3017,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the group is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -2763,6 +3074,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("searchOffset")]
     public int? SearchOffset { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the scene or group is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -2804,6 +3122,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the scene is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -2867,6 +3192,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneItemEnabled")]
     public bool? SceneItemEnabled { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the scene is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -2910,6 +3242,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the scene is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -2955,6 +3294,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("destinationSceneUuid")]
     public string? DestinationSceneUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the scene is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -2998,6 +3344,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the scene is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -3045,6 +3398,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the scene is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -3076,6 +3436,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the scene is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -3125,6 +3492,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the scene is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -3156,6 +3530,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the scene is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -3205,6 +3586,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the scene is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -3238,6 +3626,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the scene is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -3288,6 +3683,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the scene is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -3329,6 +3731,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the scene is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -3378,6 +3787,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("sceneUuid")]
     public string? SceneUuid { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the scene is in, if using the sceneName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 
   /// <summary>
@@ -3927,6 +4343,30 @@ namespace ObsStrawket.DataTypes.Predefineds {
   public class ResumeRecord : Request { }
 
   /// <summary>
+  /// Splits the current file being recorded into a new file.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.5.0
+  /// </summary>
+  public class SplitRecordFile : Request { }
+
+  /// <summary>
+  /// Adds a new chapter marker to the file currently being recorded.<br />
+  /// <br />
+  /// Note: As of OBS 30.2.0, the only file format supporting this feature is Hybrid MP4.<br />
+  /// Latest supported RPC version: 1<br />
+  /// Added in: 5.5.0
+  /// </summary>
+  public class CreateRecordChapter : Request {
+
+    /// <summary>
+    /// Name of the new chapter<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("chapterName")]
+    public string? ChapterName { get; set; }
+  }
+
+  /// <summary>
   /// Gets the status of a media input.<br />
   /// <br />
   /// Media States:<br />
@@ -4262,5 +4702,12 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// </summary>
     [JsonPropertyName("projectorGeometry")]
     public string? ProjectorGeometry { get; set; }
+
+    /// <summary>
+    /// UUID of the canvas the source is in, if using the sourceName field<br />
+    /// If null, Unknown
+    /// </summary>
+    [JsonPropertyName("canvasUuid")]
+    public string? CanvasUuid { get; set; }
   }
 }

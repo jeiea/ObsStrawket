@@ -82,7 +82,7 @@ namespace ObsStrawket.Test.Utilities {
   "d": {
     "rpcVersion": 1,
     "authentication": "J8rNSuYuYOLlFbHzDw8IHA8lTjMgL29Mq/3lFvl1sJI=",
-    "eventSubscriptions": 2047
+    "eventSubscriptions": 4095
   }
 }
 """).ConfigureAwait(false);

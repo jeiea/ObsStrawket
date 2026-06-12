@@ -7,6 +7,11 @@ namespace ObsStrawket.DataTypes {
   internal static class DataTypeMapping {
     internal static readonly Dictionary<string, Type> EventToTypes = new Type[] {
 
+      // Canvases Events
+      typeof(CanvasCreated),
+      typeof(CanvasRemoved),
+      typeof(CanvasNameChanged),
+
       // General Events
       typeof(ExitStarted),
       typeof(VendorEvent),
@@ -70,6 +75,7 @@ namespace ObsStrawket.DataTypes {
       // Outputs Events
       typeof(StreamStateChanged),
       typeof(RecordStateChanged),
+      typeof(RecordFileChanged),
       typeof(ReplayBufferStateChanged),
       typeof(VirtualcamStateChanged),
       typeof(ReplayBufferSaved),
@@ -87,6 +93,9 @@ namespace ObsStrawket.DataTypes {
     internal record RequestMapping(Type Request, Type Response, bool IsRequestEmpty = false);
 
     internal static readonly Dictionary<string, RequestMapping> RequestToTypes = new RequestMapping[] {
+
+      // Canvases Requests
+      new (typeof(GetCanvasList), typeof(GetCanvasListResponse), true),
 
       // General Requests
       new (typeof(GetVersion), typeof(GetVersionResponse), true),
@@ -123,7 +132,7 @@ namespace ObsStrawket.DataTypes {
       new (typeof(SaveSourceScreenshot), typeof(RequestResponse)),
 
       // Scenes Requests
-      new (typeof(GetSceneList), typeof(GetSceneListResponse), true),
+      new (typeof(GetSceneList), typeof(GetSceneListResponse)),
       new (typeof(GetGroupList), typeof(GetGroupListResponse), true),
       new (typeof(GetCurrentProgramScene), typeof(GetCurrentProgramSceneResponse), true),
       new (typeof(SetCurrentProgramScene), typeof(RequestResponse)),
@@ -158,6 +167,10 @@ namespace ObsStrawket.DataTypes {
       new (typeof(SetInputAudioMonitorType), typeof(RequestResponse)),
       new (typeof(GetInputAudioTracks), typeof(GetInputAudioTracksResponse)),
       new (typeof(SetInputAudioTracks), typeof(RequestResponse)),
+      new (typeof(GetInputDeinterlaceMode), typeof(GetInputDeinterlaceModeResponse)),
+      new (typeof(SetInputDeinterlaceMode), typeof(RequestResponse)),
+      new (typeof(GetInputDeinterlaceFieldOrder), typeof(GetInputDeinterlaceFieldOrderResponse)),
+      new (typeof(SetInputDeinterlaceFieldOrder), typeof(RequestResponse)),
       new (typeof(GetInputPropertiesListPropertyItems), typeof(GetInputPropertiesListPropertyItemsResponse)),
       new (typeof(PressInputPropertiesButton), typeof(RequestResponse)),
 
@@ -237,6 +250,8 @@ namespace ObsStrawket.DataTypes {
       new (typeof(ToggleRecordPause), typeof(ToggleRecordPauseResponse), true),
       new (typeof(PauseRecord), typeof(RequestResponse), true),
       new (typeof(ResumeRecord), typeof(RequestResponse), true),
+      new (typeof(SplitRecordFile), typeof(RequestResponse), true),
+      new (typeof(CreateRecordChapter), typeof(RequestResponse)),
 
       // MediaInputs Requests
       new (typeof(GetMediaInputStatus), typeof(GetMediaInputStatusResponse)),

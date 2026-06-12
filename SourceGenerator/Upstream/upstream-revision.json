@@ -1,0 +1,13 @@
+{
+  "repository": "https://github.com/obsproject/obs-websocket",
+  "revision": "ffb09e892bb829e781172a2883870aa1416c638c",
+  "commitUrl": "https://github.com/obsproject/obs-websocket/commit/ffb09e892bb829e781172a2883870aa1416c638c",
+  "files": {
+    "protocol.json": {
+      "sourcePath": "docs/generated/protocol.json"
+    },
+    "Obs.h": {
+      "sourcePath": "src/utils/Obs.h"
+    }
+  }
+}
