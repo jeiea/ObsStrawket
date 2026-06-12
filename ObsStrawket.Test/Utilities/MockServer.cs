@@ -51,6 +51,16 @@ namespace ObsStrawket.Test.Utilities {
       _httpListener!.Abort();
     }
 
+    public static async Task CloseQuietlyAsync(WebSocket webSocket, CancellationToken token) {
+      try {
+        await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, token).ConfigureAwait(false);
+      }
+      catch (WebSocketException) {
+        // The client may complete its own close and drop the connection first.
+        // The shutdown order is not part of any test contract.
+      }
+    }
+
     public static async Task<(WebSocketContext, MockServerSession)> HandshakeAsync(HttpListenerContext context, CancellationToken token) {
       token.ThrowIfCancellationRequested();
 
@@ -255,7 +265,7 @@ namespace ObsStrawket.Test.Utilities {
       await new StartRecordFlow().RespondAsync(session).ConfigureAwait(false);
       await new StopRecordFlow().RespondAsync(session).ConfigureAwait(false);
 
-      await webSocketContext.WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, token).ConfigureAwait(false);
+      await CloseQuietlyAsync(webSocketContext.WebSocket, token).ConfigureAwait(false);
     }
 
     public void Dispose() {
