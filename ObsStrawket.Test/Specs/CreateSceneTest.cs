@@ -156,7 +156,7 @@ namespace ObsStrawket.Test.Specs {
         await client.CreateSceneAsync(sceneName: name).ConfigureAwait(false);
       }
       catch (FailureResponseException failure)
-      when (failure.Response.RequestStatus.Code == RequestStatusCode.ResourceAlreadyExists) {
+      when (failure.Response.RequestStatus.Code == RequestStatus.ResourceAlreadyExists) {
         // Studio program scene can holds removed input, so reset.
         await client.SetStudioModeEnabledAsync(false).ConfigureAwait(false);
         await client.RemoveSceneAsync(sceneName: name).ConfigureAwait(false);

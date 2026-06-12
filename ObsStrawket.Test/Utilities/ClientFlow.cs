@@ -79,7 +79,7 @@ namespace ObsStrawket.Test.Utilities {
         RequestType = "GetStudioModeEnabled"
       }, cancellation: cancellation).ConfigureAwait(false);
       if (response is not GetStudioModeEnabledResponse studioMode
-          || studioMode.RequestStatus.Code != RequestStatusCode.Success) {
+          || studioMode.RequestStatus.Code != RequestStatus.Success) {
         Assert.Fail("Cannot read the response");
         throw new Exception();
       }

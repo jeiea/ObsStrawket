@@ -60,7 +60,9 @@ namespace ObsStrawket.DataTypes.Predefineds {
         foreach (var identifier in en.EnumIdentifiers!) {
           file.WriteLine();
           file.WriteLine("    /// <summary>");
-          file.WriteLine("    /// {0}", TransformHelper.EscapeForXml(identifier.Description).Replace(Environment.NewLine, $"<br />{Environment.NewLine}    /// "));
+          file.WriteLine("    /// <para>{0}</para>", TransformHelper.EscapeForXml(identifier.Description).Replace(Environment.NewLine, $"<br />{Environment.NewLine}    /// "));
+          file.WriteLine("    /// <para>Latest Supported RPC Version: {0}<br />", identifier.RpcVersion);
+          file.WriteLine("    /// Added in v{0}</para>", identifier.InitialVersion);
           file.WriteLine("    /// </summary>");
           if (identifier.Deprecated) {
             file.WriteLine("    [Obsolete]");
