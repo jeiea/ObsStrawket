@@ -67,7 +67,7 @@ namespace ObsStrawket {
 
           try {
             var segment = new ArraySegment<byte>(item.Input);
-            await _socket.SendAsync(segment, WebSocketMessageType.Binary, true, default).ConfigureAwait(false);
+            await _socket.SendAsync(segment, WebSocketMessageType.Text, true, default).ConfigureAwait(false);
             item.Output.SetResult(null);
           }
           catch (Exception exception) {

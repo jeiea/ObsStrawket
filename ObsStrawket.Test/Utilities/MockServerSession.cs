@@ -34,6 +34,12 @@ namespace ObsStrawket.Test.Utilities {
     public async Task<string> ReceiveAsync() {
       var result = await _webSocket.ReceiveAsync(_buffer, _cancellation).ConfigureAwait(false);
       _cancellation.ThrowIfCancellationRequested();
+      if (result.MessageType != WebSocketMessageType.Text) {
+        // obs-websocket 5.x doesn't accept JSON in binary frames.
+        // Abort so that the client fails fast instead of awaiting a reply forever.
+        _webSocket.Abort();
+        Assert.Fail($"Expected a text frame but received {result.MessageType}.");
+      }
       return Encoding.UTF8.GetString(_buffer.Array!, 0, result.Count);
     }
 
