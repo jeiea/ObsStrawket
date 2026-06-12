@@ -54,7 +54,7 @@ namespace ObsStrawket.Test.Specs {
 {
   "d": {
     "eventData": {
-      "savedScreenshotPath": "C:\obs-screenshot.png"
+      "savedScreenshotPath": "C:\\obs-screenshot.png"
     },
     "eventIntent": 1024,
     "eventType": "ScreenshotSaved"

@@ -13,8 +13,8 @@ namespace ObsStrawket.Test.Specs {
   class GetInputDefaultSettingsFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetInputDefaultSettingsAsync(inputKind: CreateInputFlow.InputKind).ConfigureAwait(false);
-      Assert.Equal("https://obsproject.com/browser-source", response.DefaultInputSettings["url"]);
-      Assert.Equal(30, response.DefaultInputSettings["fps"]);
+      Assert.Equal("https://obsproject.com/browser-source", response.DefaultInputSettings["url"]?.GetString());
+      Assert.Equal(30, response.DefaultInputSettings["fps"]?.GetInt32());
     }
 
     public async Task RespondAsync(MockServerSession session) {

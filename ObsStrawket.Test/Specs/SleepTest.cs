@@ -29,12 +29,10 @@ namespace ObsStrawket.Test.Specs {
 {
   "d": {
     "executionType": 0,
-    "haltOnFailure": null,
     "requestId": "{guid}",
     "requests": [
       {
         "requestData": {
-          "sleepFrames": null,
           "sleepMillis": 100
         },
         "requestId": "",

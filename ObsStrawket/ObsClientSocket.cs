@@ -3,11 +3,13 @@ using ObsStrawket.DataTypes;
 using ObsStrawket.DataTypes.Predefineds;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace ObsStrawket {
+
   /// <summary>
   /// High level client interface.
   /// </summary>
@@ -441,21 +443,41 @@ namespace ObsStrawket {
     /// </summary>
     public event Action<ScreenshotSaved> ScreenshotSaved = delegate { };
 
-    #endregion
+    #endregion Events
+
+    private readonly ClientSocket _clientSocket;
+
+    private readonly ILogger? _logger;
+
+    private readonly SemaphoreSlim _connectSemaphore = new(1);
+
+    private Task? _dispatch;
+
+    /// <summary>
+    /// Create OBS websocket client. It can be reused unless <see cref="Dispose"/> is called.
+    /// </summary>
+    /// <param name="logger">Logger for library debugging.</param>
+    /// <param name="client">Lower level client for custom behavior.</param>
+    /// <param name="useChannel">Use channel for event receive.<br />
+    /// Caution: If <see cref="Events"/> is not consumed it will cause memory leak.
+    /// </param>
+    public ObsClientSocket(ILogger? logger = null, ClientSocket? client = null, bool useChannel = false) {
+      _logger = logger;
+      _clientSocket = client ?? new ClientSocket(logger);
+      if (!useChannel) {
+        _dispatch = Task.CompletedTask;
+      }
+    }
 
     /// <summary>
     /// Fired when it is connected to OBS
     /// </summary>
     public event Action<Uri> Connected = delegate { };
+
     /// <summary>
     /// Fired when it is disconnected to OBS
     /// </summary>
     public event Action<Exception?> Disconnected = delegate { };
-
-    private readonly ClientSocket _clientSocket;
-    private readonly ILogger? _logger;
-    private readonly SemaphoreSlim _connectSemaphore = new(1);
-    private Task? _dispatch;
 
     /// <summary>
     /// Whether it is connected to OBS
@@ -471,22 +493,6 @@ namespace ObsStrawket {
           throw new InvalidOperationException("Create first ObsClientSocket with useChannel: true");
         }
         return _clientSocket.Events;
-      }
-    }
-
-    /// <summary>
-    /// Create OBS websocket client. It can be reused unless <see cref="Dispose"/> is called.
-    /// </summary>
-    /// <param name="logger">Logger for library debugging.</param>
-    /// <param name="client">Lower level client for custom behavior.</param>
-    /// <param name="useChannel">Use channel for event receive.<br />
-    /// Caution: If <see cref="Events"/> is not consumed it will cause memory leak.
-    /// </param>
-    public ObsClientSocket(ILogger? logger = null, ClientSocket? client = null, bool useChannel = false) {
-      _logger = logger;
-      _clientSocket = client ?? new ClientSocket(logger);
-      if (!useChannel) {
-        _dispatch = Task.CompletedTask;
       }
     }
 
@@ -618,7 +624,7 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="eventData">Data payload to emit to all receivers</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> BroadcastCustomEventAsync(Dictionary<string, object?> eventData, CancellationToken cancellation = default) {
+    public async Task<RequestResponse> BroadcastCustomEventAsync(Dictionary<string, JsonElement?> eventData, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new BroadcastCustomEvent() { EventData = eventData }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
@@ -634,7 +640,7 @@ namespace ObsStrawket {
     /// <param name="requestType">The request type to call</param>
     /// <param name="requestData">Object containing appropriate request data<br />If null, {}</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<CallVendorRequestResponse> CallVendorRequestAsync(string vendorName, string requestType, Dictionary<string, object?>? requestData = default, CancellationToken cancellation = default) {
+    public async Task<CallVendorRequestResponse> CallVendorRequestAsync(string vendorName, string requestType, Dictionary<string, JsonElement?>? requestData = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new CallVendorRequest() { VendorName = vendorName, VendorRequestType = requestType, RequestData = requestData }, cancellation).ConfigureAwait(false) as CallVendorRequestResponse)!;
     }
 
@@ -860,7 +866,7 @@ namespace ObsStrawket {
     /// <param name="streamServiceType">Type of stream service to apply. Example: <c>rtmp_common</c> or <c>rtmp_custom</c></param>
     /// <param name="streamServiceSettings">Settings to apply to the service</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetStreamServiceSettingsAsync(StreamServiceType streamServiceType, Dictionary<string, object?> streamServiceSettings, CancellationToken cancellation = default) {
+    public async Task<RequestResponse> SetStreamServiceSettingsAsync(StreamServiceType streamServiceType, Dictionary<string, JsonElement?> streamServiceSettings, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetStreamServiceSettings() { StreamServiceType = streamServiceType, StreamServiceSettings = streamServiceSettings }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
@@ -1124,7 +1130,7 @@ namespace ObsStrawket {
     /// <param name="inputSettings">Settings object to initialize the input with<br />If null, Default settings used</param>
     /// <param name="sceneItemEnabled">Whether to set the created scene item to enabled or disabled<br />If null, True</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<CreateInputResponse> CreateInputAsync(string inputName, string inputKind, string? sceneName = default, string? sceneUuid = default, Dictionary<string, object?>? inputSettings = default, bool? sceneItemEnabled = default, CancellationToken cancellation = default) {
+    public async Task<CreateInputResponse> CreateInputAsync(string inputName, string inputKind, string? sceneName = default, string? sceneUuid = default, Dictionary<string, JsonElement?>? inputSettings = default, bool? sceneItemEnabled = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new CreateInput() { InputName = inputName, InputKind = inputKind, SceneName = sceneName, SceneUuid = sceneUuid, InputSettings = inputSettings, SceneItemEnabled = sceneItemEnabled }, cancellation).ConfigureAwait(false) as CreateInputResponse)!;
     }
 
@@ -1190,7 +1196,7 @@ namespace ObsStrawket {
     /// <param name="inputUuid">UUID of the input to set the settings of<br />If null, Unknown</param>
     /// <param name="overlay">True == apply the settings on top of existing ones, False == reset the input to its defaults, then apply settings.<br />If null, true</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetInputSettingsAsync(Dictionary<string, object?> inputSettings, string? inputName = default, string? inputUuid = default, bool? overlay = default, CancellationToken cancellation = default) {
+    public async Task<RequestResponse> SetInputSettingsAsync(Dictionary<string, JsonElement?> inputSettings, string? inputName = default, string? inputUuid = default, bool? overlay = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetInputSettings() { InputSettings = inputSettings, InputName = inputName, InputUuid = inputUuid, Overlay = overlay }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
@@ -1361,7 +1367,7 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetInputAudioTracksAsync(Dictionary<string, object?> inputAudioTracks, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+    public async Task<RequestResponse> SetInputAudioTracksAsync(Dictionary<string, bool> inputAudioTracks, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetInputAudioTracks() { InputAudioTracks = inputAudioTracks, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
@@ -1463,7 +1469,7 @@ namespace ObsStrawket {
     /// <param name="transitionSettings">Settings object to apply to the transition. Can be <c>{}</c></param>
     /// <param name="overlay">Whether to overlay over the current settings or replace them<br />If null, true</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetCurrentSceneTransitionSettingsAsync(Dictionary<string, object?> transitionSettings, bool? overlay = default, CancellationToken cancellation = default) {
+    public async Task<RequestResponse> SetCurrentSceneTransitionSettingsAsync(Dictionary<string, JsonElement?> transitionSettings, bool? overlay = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetCurrentSceneTransitionSettings() { TransitionSettings = transitionSettings, Overlay = overlay }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
@@ -1549,7 +1555,7 @@ namespace ObsStrawket {
     /// <param name="sourceUuid">UUID of the source to add the filter to<br />If null, Unknown</param>
     /// <param name="filterSettings">Settings object to initialize the filter with<br />If null, Default settings used</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> CreateSourceFilterAsync(string filterName, string filterKind, string? sourceName = default, string? sourceUuid = default, Dictionary<string, object?>? filterSettings = default, CancellationToken cancellation = default) {
+    public async Task<RequestResponse> CreateSourceFilterAsync(string filterName, string filterKind, string? sourceName = default, string? sourceUuid = default, Dictionary<string, JsonElement?>? filterSettings = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new CreateSourceFilter() { FilterName = filterName, FilterKind = filterKind, SourceName = sourceName, SourceUuid = sourceUuid, FilterSettings = filterSettings }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
@@ -1618,7 +1624,7 @@ namespace ObsStrawket {
     /// <param name="sourceUuid">UUID of the source the filter is on<br />If null, Unknown</param>
     /// <param name="overlay">True == apply the settings on top of existing ones, False == reset the input to its defaults, then apply settings.<br />If null, true</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetSourceFilterSettingsAsync(string filterName, Dictionary<string, object?> filterSettings, string? sourceName = default, string? sourceUuid = default, bool? overlay = default, CancellationToken cancellation = default) {
+    public async Task<RequestResponse> SetSourceFilterSettingsAsync(string filterName, Dictionary<string, JsonElement?> filterSettings, string? sourceName = default, string? sourceUuid = default, bool? overlay = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetSourceFilterSettings() { FilterName = filterName, FilterSettings = filterSettings, SourceName = sourceName, SourceUuid = sourceUuid, Overlay = overlay }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
@@ -1769,7 +1775,7 @@ namespace ObsStrawket {
     /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
     /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetSceneItemTransformAsync(int sceneItemId, Dictionary<string, object?> sceneItemTransform, string? sceneName = default, string? sceneUuid = default, CancellationToken cancellation = default) {
+    public async Task<RequestResponse> SetSceneItemTransformAsync(int sceneItemId, Dictionary<string, JsonElement?> sceneItemTransform, string? sceneName = default, string? sceneUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetSceneItemTransform() { SceneItemId = sceneItemId, SceneItemTransform = sceneItemTransform, SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
@@ -2082,7 +2088,7 @@ namespace ObsStrawket {
     /// <param name="outputName">Output name</param>
     /// <param name="outputSettings">Output settings</param>
     /// <param name="cancellation">Token for cancellation</param>
-    public async Task<RequestResponse> SetOutputSettingsAsync(string outputName, Dictionary<string, object?> outputSettings, CancellationToken cancellation = default) {
+    public async Task<RequestResponse> SetOutputSettingsAsync(string outputName, Dictionary<string, JsonElement?> outputSettings, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetOutputSettings() { OutputName = outputName, OutputSettings = outputSettings }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
@@ -2377,9 +2383,10 @@ namespace ObsStrawket {
       return (await _clientSocket.RequestAsync(new OpenSourceProjector() { SourceName = sourceName, SourceUuid = sourceUuid, MonitorIndex = monitorIndex, ProjectorGeometry = projectorGeometry }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
 
-    #endregion
+    #endregion Requests
 
     #region Event dispatch
+
     private void DispatchEvent(IObsEvent message) {
       try {
         Event(message);
@@ -2400,33 +2407,43 @@ namespace ObsStrawket {
       case GeneralEvent general:
         DispatchGeneralEvent(general);
         break;
+
       case ConfigEvent config:
         DispatchConfigEvent(config);
         break;
+
       case ScenesEvent scenes:
         DispatchScenesEvent(scenes);
         break;
+
       case InputsEvent input:
         DispatchInputsEvent(input);
         break;
+
       case TransitionsEvent transitions:
         DispatchTransitionsEvent(transitions);
         break;
+
       case FiltersEvent filters:
         DispatchFiltersEvent(filters);
         break;
+
       case SceneItemsEvent sceneItems:
         DispatchSceneItemsEvent(sceneItems);
         break;
+
       case OutputsEvent outputs:
         DispatchOutputsEvent(outputs);
         break;
+
       case MediaInputsEvent mediaInputs:
         DispatchMediaInputsEvent(mediaInputs);
         break;
+
       case UiEvent ui:
         DispatchUiEvent(ui);
         break;
+
       default:
         _logger?.LogWarning("Ignore unclassified event");
         break;
@@ -2439,9 +2456,11 @@ namespace ObsStrawket {
       case ExitStarted exit:
         ExitStarted(exit);
         break;
+
       case CustomEvent custom:
         CustomEvent(custom);
         break;
+
       case VendorEvent vendor:
         VendorEvent(vendor);
         break;
@@ -2454,18 +2473,23 @@ namespace ObsStrawket {
       case CurrentSceneCollectionChanging ev:
         CurrentSceneCollectionChanging(ev);
         break;
+
       case CurrentSceneCollectionChanged ev:
         CurrentSceneCollectionChanged(ev);
         break;
+
       case SceneCollectionListChanged ev:
         SceneCollectionListChanged(ev);
         break;
+
       case CurrentProfileChanging ev:
         CurrentProfileChanging(ev);
         break;
+
       case CurrentProfileChanged ev:
         CurrentProfileChanged(ev);
         break;
+
       case ProfileListChanged ev:
         ProfileListChanged(ev);
         break;
@@ -2478,18 +2502,23 @@ namespace ObsStrawket {
       case SceneCreated ev:
         SceneCreated(ev);
         break;
+
       case SceneRemoved ev:
         SceneRemoved(ev);
         break;
+
       case SceneNameChanged ev:
         SceneNameChanged(ev);
         break;
+
       case CurrentProgramSceneChanged ev:
         CurrentProgramSceneChanged(ev);
         break;
+
       case CurrentPreviewSceneChanged ev:
         CurrentPreviewSceneChanged(ev);
         break;
+
       case SceneListChanged ev:
         SceneListChanged(ev);
         break;
@@ -2502,36 +2531,47 @@ namespace ObsStrawket {
       case InputCreated ev:
         InputCreated(ev);
         break;
+
       case InputRemoved ev:
         InputRemoved(ev);
         break;
+
       case InputNameChanged ev:
         InputNameChanged(ev);
         break;
+
       case InputActiveStateChanged ev:
         InputActiveStateChanged(ev);
         break;
+
       case InputShowStateChanged ev:
         InputShowStateChanged(ev);
         break;
+
       case InputMuteStateChanged ev:
         InputMuteStateChanged(ev);
         break;
+
       case InputVolumeChanged ev:
         InputVolumeChanged(ev);
         break;
+
       case InputAudioBalanceChanged ev:
         InputAudioBalanceChanged(ev);
         break;
+
       case InputAudioSyncOffsetChanged ev:
         InputAudioSyncOffsetChanged(ev);
         break;
+
       case InputAudioTracksChanged ev:
         InputAudioTracksChanged(ev);
         break;
+
       case InputAudioMonitorTypeChanged ev:
         InputAudioMonitorTypeChanged(ev);
         break;
+
       case InputVolumeMeters ev:
         InputVolumeMeters(ev);
         break;
@@ -2544,15 +2584,19 @@ namespace ObsStrawket {
       case CurrentSceneTransitionChanged ev:
         CurrentSceneTransitionChanged(ev);
         break;
+
       case CurrentSceneTransitionDurationChanged ev:
         CurrentSceneTransitionDurationChanged(ev);
         break;
+
       case SceneTransitionStarted ev:
         SceneTransitionStarted(ev);
         break;
+
       case SceneTransitionEnded ev:
         SceneTransitionEnded(ev);
         break;
+
       case SceneTransitionVideoEnded ev:
         SceneTransitionVideoEnded(ev);
         break;
@@ -2565,15 +2609,19 @@ namespace ObsStrawket {
       case SourceFilterListReindexed ev:
         SourceFilterListReindexed(ev);
         break;
+
       case SourceFilterCreated ev:
         SourceFilterCreated(ev);
         break;
+
       case SourceFilterRemoved ev:
         SourceFilterRemoved(ev);
         break;
+
       case SourceFilterNameChanged ev:
         SourceFilterNameChanged(ev);
         break;
+
       case SourceFilterEnableStateChanged ev:
         SourceFilterEnableStateChanged(ev);
         break;
@@ -2586,21 +2634,27 @@ namespace ObsStrawket {
       case SceneItemCreated ev:
         SceneItemCreated(ev);
         break;
+
       case SceneItemRemoved ev:
         SceneItemRemoved(ev);
         break;
+
       case SceneItemListReindexed ev:
         SceneItemListReindexed(ev);
         break;
+
       case SceneItemEnableStateChanged ev:
         SceneItemEnableStateChanged(ev);
         break;
+
       case SceneItemLockStateChanged ev:
         SceneItemLockStateChanged(ev);
         break;
+
       case SceneItemSelected ev:
         SceneItemSelected(ev);
         break;
+
       case SceneItemTransformChanged ev:
         SceneItemTransformChanged(ev);
         break;
@@ -2613,15 +2667,19 @@ namespace ObsStrawket {
       case StreamStateChanged ev:
         StreamStateChanged(ev);
         break;
+
       case RecordStateChanged ev:
         RecordStateChanged(ev);
         break;
+
       case ReplayBufferStateChanged ev:
         ReplayBufferStateChanged(ev);
         break;
+
       case VirtualcamStateChanged ev:
         VirtualcamStateChanged(ev);
         break;
+
       case ReplayBufferSaved ev:
         ReplayBufferSaved(ev);
         break;
@@ -2634,9 +2692,11 @@ namespace ObsStrawket {
       case MediaInputPlaybackStarted ev:
         MediaInputPlaybackStarted(ev);
         break;
+
       case MediaInputPlaybackEnded ev:
         MediaInputPlaybackEnded(ev);
         break;
+
       case MediaInputActionTriggered ev:
         MediaInputActionTriggered(ev);
         break;
@@ -2649,12 +2709,13 @@ namespace ObsStrawket {
       case StudioModeStateChanged ev:
         StudioModeStateChanged(ev);
         break;
+
       case ScreenshotSaved ev:
         ScreenshotSaved(ev);
         break;
       }
     }
 
-    #endregion
+    #endregion Event dispatch
   }
 }

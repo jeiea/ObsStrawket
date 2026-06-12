@@ -1,6 +1,7 @@
 using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -21,14 +22,14 @@ namespace ObsStrawket.Test.Specs {
         sourceName: CreateInputFlow.InputName,
         filterName: FilterName,
         filterKind: "color_key_filter_v2",
-        filterSettings: new Dictionary<string, object?> {
-          { "brightness", 1.0 },
+        filterSettings: new Dictionary<string, JsonElement?> {
+          { "brightness", 1.0.ToJsonElement() },
         }
       ).ConfigureAwait(false);
 
       var created = await client.Events.ReadAsync().ConfigureAwait(false);
       Assert.Equal(FilterName, (created as SourceFilterCreated)!.FilterName);
-      Assert.Equal(1.0, (created as SourceFilterCreated)!.FilterSettings["brightness"]);
+      Assert.Equal(1.0, (created as SourceFilterCreated)!.FilterSettings["brightness"]?.GetDouble());
 
       await client.CreateSourceFilterAsync(
         sourceName: CreateInputFlow.InputName,
@@ -107,7 +108,6 @@ namespace ObsStrawket.Test.Specs {
     "requestData": {
       "filterKind": "color_key_filter_v2",
       "filterName": "test filter name 2",
-      "filterSettings": null,
       "sourceName": "Browser source"
     },
     "requestId": "{guid}",

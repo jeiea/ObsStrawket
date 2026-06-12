@@ -34,7 +34,6 @@ namespace ObsStrawket.Test.Specs {
 {
   "d": {
     "requestData": {
-      "destinationSceneName": null,
       "sceneItemId": 1,
       "sceneName": "test scene"
     },
@@ -54,7 +53,7 @@ namespace ObsStrawket.Test.Specs {
     },
     "requestType": "DuplicateSceneItem",
     "responseData": {
-      "sceneItemId": 3,
+      "sceneItemId": 3
     }
   },
   "op": 7
@@ -66,7 +65,7 @@ namespace ObsStrawket.Test.Specs {
     "eventData": {
       "sceneItemIndex": 2,
       "sceneName": "test scene",
-      "sceneItemId": 3
+      "sceneItemId": 3,
       "sourceName": "Browser source"
     },
     "eventIntent": 128,

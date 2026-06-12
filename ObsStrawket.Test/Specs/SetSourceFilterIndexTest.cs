@@ -1,5 +1,6 @@
 using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -24,7 +25,8 @@ namespace ObsStrawket.Test.Specs {
       Assert.Equal(1, (reindexed as SourceFilterListReindexed)!.Filters[1].Index);
       Assert.Equal("color_key_filter_v2", (reindexed as SourceFilterListReindexed)!.Filters[1].Kind);
       Assert.True((reindexed as SourceFilterListReindexed)!.Filters[1].Enabled);
-      Assert.Equal(1.0, (reindexed as SourceFilterListReindexed)!.Filters[1].Settings["brightness"]);
+      var brightness = Assert.IsType<JsonElement>((reindexed as SourceFilterListReindexed)!.Filters[1].Settings["brightness"]);
+      Assert.Equal(1.0, brightness.GetDouble());
     }
 
     public async Task RespondAsync(MockServerSession session) {

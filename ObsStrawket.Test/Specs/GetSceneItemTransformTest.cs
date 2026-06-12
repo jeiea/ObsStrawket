@@ -16,7 +16,7 @@ namespace ObsStrawket.Test.Specs {
         sceneName: CreateSceneFlow.NewScene,
         sceneItemId: CreateSceneItemFlow.CreatedItemId
       ).ConfigureAwait(false);
-      Assert.Equal("OBS_BOUNDS_SCALE_TO_WIDTH", response.SceneItemTransform["boundsType"]);
+      Assert.Equal("OBS_BOUNDS_SCALE_TO_WIDTH", response.SceneItemTransform["boundsType"]?.GetString());
     }
 
     public async Task RespondAsync(MockServerSession session) {

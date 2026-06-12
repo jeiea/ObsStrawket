@@ -22,9 +22,6 @@ namespace ObsStrawket.Test.Specs {
     "requestData": {
       "keyId": "OBS_KEY_P",
       "keyModifiers": {
-        "alt": null,
-        "command": null,
-        "control": null,
         "shift": true
       }
     },

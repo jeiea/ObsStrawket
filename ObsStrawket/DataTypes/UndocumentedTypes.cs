@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using ObsStrawket.Serialization;
 using System.Text.Json.Serialization;
 
 namespace ObsStrawket.DataTypes {
@@ -93,6 +94,7 @@ namespace ObsStrawket.DataTypes {
     ///
     /// </summary>
     [JsonPropertyName("outputFlags")]
+    [JsonConverter(typeof(OutputFlagsMapConverter))]
     public OutputFlags Flags { get; set; }
   }
 

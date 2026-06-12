@@ -1,5 +1,6 @@
 using ObsStrawket.Test.Utilities;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -12,10 +13,10 @@ namespace ObsStrawket.Test.Specs {
   }
 
   class SetSourceFilterSettingsFlow : ITestFlow {
-    public static Dictionary<string, object?> FilterSettings => new() {
-      { "gamma", 1.0 },
-      { "key_color", 23000 },
-      { "key_color_type", "red" },
+    public static Dictionary<string, JsonElement?> FilterSettings => new() {
+      { "gamma", 1.0.ToJsonElement() },
+      { "key_color", 23000.ToJsonElement() },
+      { "key_color_type", "red".ToJsonElement() },
     };
 
     public async Task RequestAsync(ObsClientSocket client) {
@@ -37,7 +38,6 @@ namespace ObsStrawket.Test.Specs {
         "key_color": 23000,
         "key_color_type": "red"
       },
-      "overlay": null,
       "sourceName": "Browser source"
     },
     "requestId": "{guid}",

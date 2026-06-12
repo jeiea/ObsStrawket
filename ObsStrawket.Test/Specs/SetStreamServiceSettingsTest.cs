@@ -2,6 +2,7 @@ using ObsStrawket.DataTypes;
 using ObsStrawket.Test.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -34,11 +35,11 @@ namespace ObsStrawket.Test.Specs {
 
       await client.SetStreamServiceSettingsAsync(
         streamServiceType: StreamServiceType.RtmpCommon,
-        streamServiceSettings: new Dictionary<string, object?>() {
-          { "bwtest", true },
-          { "key", settings.Key },
-          { "server", settings.Server },
-          { "service", settings.Service },
+        streamServiceSettings: new Dictionary<string, JsonElement?>() {
+          { "bwtest", true.ToJsonElement() },
+          { "key", settings.Key.ToJsonElement() },
+          { "server", settings.Server.ToJsonElement() },
+          { "service", settings.Service.ToJsonElement() },
         }).ConfigureAwait(false);
     }
 

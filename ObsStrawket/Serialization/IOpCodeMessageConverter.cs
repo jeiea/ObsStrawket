@@ -1,4 +1,5 @@
 using ObsStrawket.DataTypes;
+using ObsStrawket.DataTypes.Predefineds;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -181,15 +182,22 @@ namespace ObsStrawket.Serialization {
     }
 
     internal static void WriteFull(Utf8JsonWriter writer, IRequest request, JsonSerializerOptions options) {
-      if (request is RawRequest) {
-        JsonSerializer.Serialize(writer, request, typeof(RawRequest), options);
-        return;
-      }
-
       writer.WriteStartObject();
 
       writer.WritePropertyName("d");
-      WritePayload(writer, request, options);
+      if (request is RawRequest rawRequest) {
+        writer.WriteStartObject();
+        writer.WriteString("requestType", rawRequest.RequestType);
+        writer.WriteString("requestId", rawRequest.RequestId);
+        if (rawRequest.RequestData != null) {
+          writer.WritePropertyName("requestData");
+          JsonSerializer.Serialize(writer, rawRequest.RequestData, options);
+        }
+        writer.WriteEndObject();
+      }
+      else {
+        WritePayload(writer, request, options);
+      }
 
       writer.WriteNumber("op", (int)request.Op);
 
@@ -277,18 +285,35 @@ namespace ObsStrawket.Serialization {
       }
 
       if (DataTypeMapping.EventToTypes.TryGetValue(typeName, out var eventType)) {
-        var dataReader = reader;
-        bool hasEventData = JsonConverterHelper.SeekByKey(ref dataReader, "eventData");
-        var ev = hasEventData
-          ? (JsonSerializer.Deserialize(ref dataReader, eventType, options) as IObsEvent ?? JsonConverterHelper.CreateInstance<IObsEvent>(eventType))
-          : JsonConverterHelper.CreateInstance<IObsEvent>(eventType);
-        reader.Skip();
-        return ev;
+        try {
+          var dataReader = reader;
+          bool hasEventData = JsonConverterHelper.SeekByKey(ref dataReader, "eventData");
+          IObsEvent ev;
+          if (eventType == typeof(CustomEvent) && hasEventData) {
+            ev = new CustomEvent {
+              EventData = JsonSerializer.Deserialize<Dictionary<string, JsonElement?>>(ref dataReader, options) ?? [],
+            };
+          }
+          else {
+            ev = hasEventData
+              ? (JsonSerializer.Deserialize(ref dataReader, eventType, options) as IObsEvent ?? JsonConverterHelper.CreateInstance<IObsEvent>(eventType))
+              : JsonConverterHelper.CreateInstance<IObsEvent>(eventType);
+          }
+          var intentReader = reader;
+          if (JsonConverterHelper.SeekByKey(ref intentReader, "eventIntent")
+              && intentReader.TokenType == JsonTokenType.Number
+              && intentReader.TryGetInt32(out int eventIntent)) {
+            ev.EventIntent = (EventSubscription)eventIntent;
+          }
+          reader.Skip();
+          return ev;
+        }
+        catch (JsonException) {
+        }
       }
-      else {
-        reader.Skip();
-        return JsonSerializer.Deserialize<RawEvent>(ref rawReader, options) ?? throw new UnexpectedResponseException("");
-      }
+
+      reader.Skip();
+      return JsonSerializer.Deserialize<RawEvent>(ref rawReader, options) ?? throw new UnexpectedResponseException("");
     }
   }
 }

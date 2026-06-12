@@ -20,8 +20,6 @@ namespace ObsStrawket.Test.Specs {
 {
   "d": {
     "requestData": {
-      "monitorIndex": null,
-      "projectorGeometry": null,
       "sourceName": "Browser source"
     },
     "requestId": "{guid}",

@@ -88,13 +88,14 @@ namespace ObsStrawket.Test.Utilities {
 
       var studio = await ReadEventAsync<StudioModeStateChanged>(cancellation).ConfigureAwait(false);
       Assert.Equal(!studioMode.StudioModeEnabled, studio.StudioModeEnabled);
+      Assert.Equal(EventSubscription.General, studio.EventIntent);
       studio = await ReadEventAsync<StudioModeStateChanged>(cancellation).ConfigureAwait(false);
       Assert.Equal(!studioMode.StudioModeEnabled, studio.StudioModeEnabled);
       Assert.Equal(0, _events.Reader.Count);
 
       var specials = await client.GetSpecialInputsAsync(cancellation).ConfigureAwait(false);
       var inputSettings = await client.GetInputSettingsAsync(specials.Desktop1!, cancellation: cancellation).ConfigureAwait(false);
-      Assert.True(inputSettings.InputSettings.ContainsKey("device_id"), "device_id not found");
+      Assert.True(inputSettings.InputSettings["device_id"]?.GetString() is string, "device_id not found");
 
       var directory = await client.GetRecordDirectoryAsync(cancellation).ConfigureAwait(false);
       Assert.True(Directory.Exists(directory.RecordDirectory), $"{directory.RecordDirectory} is not exists.");

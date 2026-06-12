@@ -1,5 +1,6 @@
 using ObsStrawket.Test.Utilities;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -16,8 +17,8 @@ namespace ObsStrawket.Test.Specs {
       await client.SetSceneItemTransformAsync(
         sceneName: CreateSceneFlow.NewScene,
         sceneItemId: CreateSceneItemFlow.CreatedItemId,
-        sceneItemTransform: new Dictionary<string, object?> {
-          { "boundsType", "OBS_BOUNDS_SCALE_TO_WIDTH" }
+        sceneItemTransform: new Dictionary<string, JsonElement?> {
+          { "boundsType", "OBS_BOUNDS_SCALE_TO_WIDTH".ToJsonElement() }
         }
       ).ConfigureAwait(false);
     }

@@ -19,7 +19,13 @@ namespace ObsStrawket.Test.Specs {
       var list = await client.GetSceneListAsync().ConfigureAwait(false);
       string path = Path.Combine(Directory.GetCurrentDirectory(), _fileName);
       File.Delete(path);
-      await client.SaveSourceScreenshotAsync(list.CurrentProgramSceneName, "png", path, imageWidth: 1920, imageHeight: 1080).ConfigureAwait(false);
+      await client.SaveSourceScreenshotAsync(
+        imageFormat: "png",
+        imageFilePath: path,
+        sourceName: list.CurrentProgramSceneName,
+        imageWidth: 1920,
+        imageHeight: 1080
+      ).ConfigureAwait(false);
       Assert.InRange(new FileInfo(path).Length, 1, 600000);
     }
 
@@ -31,7 +37,6 @@ namespace ObsStrawket.Test.Specs {
 {
   "d": {
     "requestData": {
-      "imageCompressionQuality": null,
       "imageFilePath": "{{path.Replace("\\", "\\\\")}}",
       "imageFormat": "png",
       "imageHeight": 1080,

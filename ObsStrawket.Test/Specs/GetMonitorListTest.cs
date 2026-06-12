@@ -13,7 +13,7 @@ namespace ObsStrawket.Test.Specs {
   class GetMonitorListFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetMonitorListAsync().ConfigureAwait(false);
-      Assert.NotInRange((int)response.Monitors[0]["monitorWidth"]!, int.MinValue, 0);
+      Assert.NotInRange(response.Monitors[0]["monitorWidth"]?.GetInt32() ?? 0, int.MinValue, 0);
     }
 
     public async Task RespondAsync(MockServerSession session) {

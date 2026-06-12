@@ -1,5 +1,6 @@
 using ObsStrawket.Test.Utilities;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -15,9 +16,9 @@ namespace ObsStrawket.Test.Specs {
     public async Task RequestAsync(ObsClientSocket client) {
       await client.SetInputSettingsAsync(
         inputName: CreateInputFlow.InputName,
-        inputSettings: new Dictionary<string, object?> {
-          { "width", 1000 },
-          { "url", "about:blank" }
+        inputSettings: new Dictionary<string, JsonElement?> {
+          { "width", 1000.ToJsonElement() },
+          { "url", "about:blank".ToJsonElement() }
         }
       ).ConfigureAwait(false);
     }
@@ -31,8 +32,7 @@ namespace ObsStrawket.Test.Specs {
       "inputSettings": {
         "url": "about:blank",
         "width": 1000
-      },
-      "overlay": null
+      }
     },
     "requestId": "{guid}",
     "requestType": "SetInputSettings"

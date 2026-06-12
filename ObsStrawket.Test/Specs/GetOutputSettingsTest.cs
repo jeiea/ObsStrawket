@@ -13,7 +13,7 @@ namespace ObsStrawket.Test.Specs {
   class GetOutputSettingsFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetOutputSettingsAsync(outputName: GetOutputListFlow.OutputName).ConfigureAwait(false);
-      Assert.Equal(SetOutputSettingsFlow.PropValue, response.OutputSettings[SetOutputSettingsFlow.PropName]);
+      Assert.Equal(SetOutputSettingsFlow.PropValue, response.OutputSettings[SetOutputSettingsFlow.PropName]?.GetString());
     }
 
     public async Task RespondAsync(MockServerSession session) {

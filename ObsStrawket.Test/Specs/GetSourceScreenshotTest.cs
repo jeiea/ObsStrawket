@@ -30,7 +30,6 @@ namespace ObsStrawket.Test.Specs {
 {
   "d": {
     "requestData": {
-      "imageCompressionQuality": null,
       "imageFormat": "png",
       "imageHeight": 1080,
       "imageWidth": 1920,

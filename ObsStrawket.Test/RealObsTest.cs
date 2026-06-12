@@ -41,7 +41,7 @@ namespace ObsStrawket.Test.Real {
       }).ConfigureAwait(false);
 
       var exception = await Assert.ThrowsAsync<FailureResponseException>(async () => {
-        await client.BroadcastCustomEventAsync(new Dictionary<string, object?>()).ConfigureAwait(false);
+        await client.BroadcastCustomEventAsync(new Dictionary<string, JsonElement?>()).ConfigureAwait(false);
       }).ConfigureAwait(false);
 
       return;

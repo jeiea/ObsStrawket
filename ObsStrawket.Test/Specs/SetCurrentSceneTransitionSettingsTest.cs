@@ -1,5 +1,6 @@
 using ObsStrawket.Test.Utilities;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -13,8 +14,8 @@ namespace ObsStrawket.Test.Specs {
 
   class SetCurrentSceneTransitionSettingsFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetCurrentSceneTransitionSettingsAsync(transitionSettings: new Dictionary<string, object?>() {
-        { "direction", "up" },
+      await client.SetCurrentSceneTransitionSettingsAsync(transitionSettings: new Dictionary<string, JsonElement?>() {
+        { "direction", "up".ToJsonElement() },
       }).ConfigureAwait(false);
     }
 
@@ -23,7 +24,6 @@ namespace ObsStrawket.Test.Specs {
 {
   "d": {
     "requestData": {
-      "overlay": null,
       "transitionSettings": {
         "direction": "up"
       }

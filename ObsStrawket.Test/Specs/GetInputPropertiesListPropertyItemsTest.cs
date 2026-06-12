@@ -16,7 +16,7 @@ namespace ObsStrawket.Test.Specs {
         inputName: CreateInputFlow.InputName,
         propertyName: "webpage_control_level"
       ).ConfigureAwait(false);
-      Assert.Equal("No access to OBS", response.PropertyItems[0]["itemName"]);
+      Assert.Equal("No access to OBS", response.PropertyItems[0]["itemName"]?.GetString());
     }
 
     public async Task RespondAsync(MockServerSession session) {

@@ -45,7 +45,7 @@ namespace ObsStrawket.Test.Specs {
   "d": {
     "eventData": {
       "profiles": [
-        "default",
+        "default"
       ]
     },
     "eventIntent": 2,

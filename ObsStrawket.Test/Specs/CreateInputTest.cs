@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -24,7 +25,7 @@ namespace ObsStrawket.Test.Specs {
 
 
     public async Task RequestAsync(ObsClientSocket client) {
-      var response = await client.CreateInputAsync(sceneName: CreateSceneFlow.NewScene, inputName: InputName, inputKind: "browser_source", inputSettings: new Dictionary<string, object?>(), sceneItemEnabled: true).ConfigureAwait(false);
+      var response = await client.CreateInputAsync(sceneName: CreateSceneFlow.NewScene, inputName: InputName, inputKind: "browser_source", inputSettings: new Dictionary<string, JsonElement?>(), sceneItemEnabled: true).ConfigureAwait(false);
       Assert.NotInRange(response.SceneItemId, int.MinValue, 0);
       var created = await client.Events.ReadAsync().ConfigureAwait(false);
       Assert.Equal(InputName, (created as InputCreated)!.InputName);
@@ -40,11 +41,11 @@ namespace ObsStrawket.Test.Specs {
         sceneName: CreateSceneFlow.NewScene,
         inputName: MediaInputName,
         inputKind: MediaInputKind,
-        inputSettings: new Dictionary<string, object?> {
-          { "hw_decode", true },
-          { "local_file", GetMp4Path() },
-          { "looping", true },
-          { "restart_on_activate", false },
+        inputSettings: new Dictionary<string, JsonElement?> {
+          { "hw_decode", true.ToJsonElement() },
+          { "local_file", GetMp4Path().ToJsonElement() },
+          { "looping", true.ToJsonElement() },
+          { "restart_on_activate", false.ToJsonElement() },
         },
         sceneItemEnabled: true
       ).ConfigureAwait(false);

@@ -1,7 +1,9 @@
 using ObsStrawket.DataTypes;
+using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
 using System.Net;
 using System.Net.WebSockets;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -28,7 +30,9 @@ namespace ObsStrawket.Test {
   class MalformedResponseFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var ev = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal("OSOFJWEOIFJWEOIJF", (ev as RawEvent)!.EventData!["monitorType"]);
+      var monitorType = Assert.IsType<JsonElement>((ev as RawEvent)!.EventData!["monitorType"]);
+      Assert.Equal("OSOFJWEOIFJWEOIJF", monitorType.GetString());
+      Assert.Equal(EventSubscription.Inputs, ev.EventIntent);
 
       var response = await client.GetRecordStatusAsync().ConfigureAwait(false);
       Assert.True(response.OutputActive);
@@ -112,7 +116,7 @@ namespace ObsStrawket.Test {
       "outputBytes": 1469,
       "outputDuration": 4796153459128734987162398746123978416448,
       "outputPaused": true,
-      "outputTimecode": "133226484:58:36.448",
+      "outputTimecode": "133226484:58:36.448"
     }
   },
   "op": 7

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SourceGenerator {
+
   internal class EventGenerator {
     private readonly IDirectoryHelper _directoryHelper;
     private readonly ISourceFetcher _fetcher;
@@ -20,6 +21,7 @@ namespace SourceGenerator {
       using var file = File.CreateText($"{_directoryHelper.MainProjectDirectory}/DataTypes/Predefineds/Events.cs");
       file.Write(@"using System.Text.Json.Serialization;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace ObsStrawket.DataTypes.Predefineds {");
 

@@ -30,7 +30,6 @@ namespace ObsStrawket.Test.Specs {
   "d": {
     "requestData": {
       "sceneName": "test scene",
-      "searchOffset": null,
       "sourceName": "Browser source"
     },
     "requestId": "{guid}",

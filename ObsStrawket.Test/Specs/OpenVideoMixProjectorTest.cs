@@ -21,8 +21,6 @@ namespace ObsStrawket.Test.Specs {
 {
   "d": {
     "requestData": {
-      "monitorIndex": null,
-      "projectorGeometry": null,
       "videoMixType": "OBS_WEBSOCKET_VIDEO_MIX_TYPE_PROGRAM"
     },
     "requestId": "{guid}",

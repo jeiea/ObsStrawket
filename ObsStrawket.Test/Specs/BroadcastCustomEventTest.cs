@@ -1,26 +1,30 @@
 using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace ObsStrawket.Test.Specs {
+
   public class BroadcastCustomEventTest {
+
     [Fact]
     public async Task TestAsync() {
       await SpecTester.TestAsync(new BroadcastCustomEventFlow()).ConfigureAwait(false);
     }
   }
 
-  class BroadcastCustomEventFlow : ITestFlow {
+  internal class BroadcastCustomEventFlow : ITestFlow {
+
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.BroadcastCustomEventAsync(eventData: new Dictionary<string, object?>() {
-        { "sample", 3 }
-      }).ConfigureAwait(false);
+      await client.BroadcastCustomEventAsync(
+        eventData: new Dictionary<string, JsonElement?> { { "sample", 3.ToJsonElement() } }
+      ).ConfigureAwait(false);
 
       var ev = await client.Events.ReadAsync().ConfigureAwait(false) as CustomEvent;
       Assert.IsType<CustomEvent>(ev);
-      Assert.Equal(3, ev.EventData!["sample"]);
+      Assert.Equal(3, ev.EventData["sample"]?.GetInt32());
     }
 
     public async Task RespondAsync(MockServerSession session) {

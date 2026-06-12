@@ -18,11 +18,10 @@ namespace ObsStrawket.Test.Specs {
       ).ConfigureAwait(false);
 
       Assert.False(response.FilterEnabled);
-      Assert.Equal(1.0, response.FilterSettings["brightness"]);
-      object gamma = response.FilterSettings["gamma"]!;
-      Assert.Equal(1.0, gamma);
-      Assert.Equal(23000, response.FilterSettings["key_color"]);
-      Assert.Equal("red", response.FilterSettings["key_color_type"]);
+      Assert.Equal(1.0, response.FilterSettings["brightness"]?.GetDouble());
+      Assert.Equal(1.0, response.FilterSettings["gamma"]?.GetDouble());
+      Assert.Equal(23000, response.FilterSettings["key_color"]?.GetInt32());
+      Assert.Equal("red", response.FilterSettings["key_color_type"]?.GetString());
     }
 
     public async Task RespondAsync(MockServerSession session) {

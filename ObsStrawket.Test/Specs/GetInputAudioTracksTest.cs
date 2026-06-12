@@ -3,18 +3,21 @@ using System.Threading.Tasks;
 using Xunit;
 
 namespace ObsStrawket.Test.Specs {
+
   public class GetInputAudioTracksTest {
+
     [Fact]
     public async Task TestAsync() {
       await SpecTester.TestAsync(new GetInputAudioTracksFlow()).ConfigureAwait(false);
     }
   }
 
-  class GetInputAudioTracksFlow : ITestFlow {
+  internal class GetInputAudioTracksFlow : ITestFlow {
+
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetInputAudioTracksAsync(inputName: CreateInputFlow.InputName).ConfigureAwait(false);
-      Assert.True((response.InputAudioTracks["1"] as bool?)!);
-      Assert.False((response.InputAudioTracks["2"] as bool?)!);
+      Assert.True(response.InputAudioTracks["1"]);
+      Assert.False(response.InputAudioTracks["2"]);
     }
 
     public async Task RespondAsync(MockServerSession session) {

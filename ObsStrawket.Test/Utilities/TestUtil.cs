@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ObsStrawket.Test.Utilities {
@@ -16,6 +17,10 @@ namespace ObsStrawket.Test.Utilities {
         await finished.ConfigureAwait(false);
         runnings.Remove(finished);
       }
+    }
+
+    public static JsonElement ToJsonElement<T>(this T value) {
+      return JsonSerializer.SerializeToElement(value);
     }
   }
 }

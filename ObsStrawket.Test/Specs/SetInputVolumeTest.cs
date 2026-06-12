@@ -26,7 +26,6 @@ namespace ObsStrawket.Test.Specs {
   "d": {
     "requestData": {
       "inputName": "Browser source",
-      "inputVolumeDb": null,
       "inputVolumeMul": 10
     },
     "requestId": "{guid}",

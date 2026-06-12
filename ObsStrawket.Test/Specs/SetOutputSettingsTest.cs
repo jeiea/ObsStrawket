@@ -1,5 +1,6 @@
 using ObsStrawket.Test.Utilities;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -19,8 +20,8 @@ namespace ObsStrawket.Test.Specs {
     public async Task RequestAsync(ObsClientSocket client) {
       await client.SetOutputSettingsAsync(
         outputName: OutputName,
-        outputSettings: new Dictionary<string, object?> {
-          { PropName, PropValue }
+        outputSettings: new Dictionary<string, JsonElement?> {
+          { PropName, PropValue.ToJsonElement() }
         }
       ).ConfigureAwait(false);
     }

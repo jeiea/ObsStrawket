@@ -16,14 +16,14 @@ namespace ObsStrawket.Test.Specs {
     public async Task RequestAsync(ObsClientSocket client) {
       await client.SetInputAudioTracksAsync(
         inputName: CreateInputFlow.InputName,
-        inputAudioTracks: new Dictionary<string, object?> {
+        inputAudioTracks: new Dictionary<string, bool> {
           { "2", false },
         }
       ).ConfigureAwait(false);
 
       var changed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.True((changed as InputAudioTracksChanged)!.InputAudioTracks["1"] as bool?);
-      Assert.False((changed as InputAudioTracksChanged)!.InputAudioTracks["2"] as bool?);
+      Assert.True((changed as InputAudioTracksChanged)!.InputAudioTracks["1"]);
+      Assert.False((changed as InputAudioTracksChanged)!.InputAudioTracks["2"]);
     }
 
     public async Task RespondAsync(MockServerSession session) {

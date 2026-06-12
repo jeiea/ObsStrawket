@@ -111,8 +111,7 @@ namespace ObsStrawket.Test.Utilities {
   "op": 6,
   "d": {
     "requestType": "GetStudioModeEnabled",
-    "requestId": "{guid}",
-    "requestData":null
+    "requestId": "{guid}"
   }
 }
 """).ConfigureAwait(false);

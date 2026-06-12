@@ -1,5 +1,6 @@
 using ObsStrawket.DataTypes;
 using ObsStrawket.Test.Utilities;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -14,7 +15,8 @@ namespace ObsStrawket.Test.Specs {
   class GetPersistentDataFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetPersistentDataAsync(realm: DataRealm.Profile, slotName: SetPersistentDataFlow.TestSlot).ConfigureAwait(false);
-      Assert.Equal(SetPersistentDataFlow.TestSlotValue, response.SlotValue);
+      var slotValue = Assert.IsType<JsonElement>(response.SlotValue);
+      Assert.Equal(SetPersistentDataFlow.TestSlotValue, slotValue.GetString());
     }
 
     public async Task RespondAsync(MockServerSession session) {
