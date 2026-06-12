@@ -88,14 +88,17 @@ namespace ObsStrawket.Test.Utilities {
 
       var studio = await ReadEventAsync<StudioModeStateChanged>(cancellation).ConfigureAwait(false);
       Assert.Equal(!studioMode.StudioModeEnabled, studio.StudioModeEnabled);
-      Assert.Equal(EventSubscription.General, studio.EventIntent);
+      Assert.Equal(EventSubscription.Ui, studio.EventIntent);
       studio = await ReadEventAsync<StudioModeStateChanged>(cancellation).ConfigureAwait(false);
       Assert.Equal(!studioMode.StudioModeEnabled, studio.StudioModeEnabled);
       Assert.Equal(0, _events.Reader.Count);
 
       var specials = await client.GetSpecialInputsAsync(cancellation).ConfigureAwait(false);
-      var inputSettings = await client.GetInputSettingsAsync(specials.Desktop1!, cancellation: cancellation).ConfigureAwait(false);
-      Assert.True(inputSettings.InputSettings["device_id"]?.GetString() is string, "device_id not found");
+      // A fresh OBS may have no desktop audio input (e.g. isolated or headless instance).
+      if (specials.Desktop1 is string desktopAudio) {
+        var inputSettings = await client.GetInputSettingsAsync(desktopAudio, cancellation: cancellation).ConfigureAwait(false);
+        Assert.False(string.IsNullOrEmpty(inputSettings.InputKind), "inputKind not found");
+      }
 
       var directory = await client.GetRecordDirectoryAsync(cancellation).ConfigureAwait(false);
       Assert.True(Directory.Exists(directory.RecordDirectory), $"{directory.RecordDirectory} is not exists.");

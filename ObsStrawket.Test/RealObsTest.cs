@@ -11,23 +11,28 @@ using System.Threading.Tasks;
 using Xunit;
 
 namespace ObsStrawket.Test.Real {
+  [Collection("IsolatedObs")]
   public class RealObsTest {
-    private readonly bool _shouldSkip = false;
-    private readonly Uri _uri = new("ws://127.0.0.1:4455");
+    private readonly IsolatedObsFixture _obs;
 
-    public RealObsTest() {
-      _shouldSkip = Environment.GetEnvironmentVariable("CI") != null;
+    private Uri _uri {
+      get {
+        Assert.SkipWhen(!_obs.IsAvailable, "OBS is not installed.");
+        return _obs.Uri!;
+      }
+    }
+
+    public RealObsTest(IsolatedObsFixture obs) {
+      _obs = obs;
     }
 
     [Fact]
     public async Task TestNormalAsync() {
-      Assert.SkipWhen(_shouldSkip, "Requires a running OBS instance.");
       await new ClientFlow().RunClientAsync(_uri, cancellation: TestContext.Current.CancellationToken);
     }
 
     [Fact]
     public async Task TestBadRequestAsync() {
-      Assert.SkipWhen(_shouldSkip, "Requires a running OBS instance.");
       var client = ClientFlow.GetDebugClient(useChannel: true);
       await client.ConnectAsync(_uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
 
@@ -46,7 +51,6 @@ namespace ObsStrawket.Test.Real {
     // Manual monitoring testbed. It never ends until OBS quits, so opt-in only.
     [Fact(Explicit = true)]
     public async Task JustMonitorObsEventAsync() {
-      Assert.SkipWhen(_shouldSkip, "Requires a running OBS instance.");
       var source = new TaskCompletionSource<object?>();
       var client = ClientFlow.GetDebugClient();
       client.Disconnected += (e) => {
@@ -65,8 +69,6 @@ namespace ObsStrawket.Test.Real {
 
     [Fact]
     public async Task TestbedAsync() {
-      Assert.SkipWhen(_shouldSkip, "Requires a running OBS instance.");
-
       var client = ClientFlow.GetDebugClient(useChannel: true);
       await Assert.ThrowsAsync<AuthenticationFailureException>(
         () => client.ConnectAsync(_uri, "a", cancellation: TestContext.Current.CancellationToken)
@@ -75,8 +77,6 @@ namespace ObsStrawket.Test.Real {
 
     [Fact]
     public async Task TestSequenceAsync() {
-      Assert.SkipWhen(_shouldSkip, "Requires a running OBS instance.");
-
       // xUnit doesn't support environment variable in visual studio runner.
       // But I want to do it.
       string envPath = "../../../env.json.tmp";

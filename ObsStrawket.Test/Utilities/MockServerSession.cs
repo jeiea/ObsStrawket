@@ -119,7 +119,7 @@ namespace ObsStrawket.Test.Utilities {
   "op": 5,
   "d": {
     "eventType": "StudioModeStateChanged",
-    "eventIntent": 1,
+    "eventIntent": 1024,
     "eventData": {
       "studioModeEnabled": {{(enabled ? "true" : "false")}}
     }
