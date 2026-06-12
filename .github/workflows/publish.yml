@@ -16,46 +16,53 @@ jobs:
     outputs:
       version: ${{ steps.versioning.outputs.version }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@main
+      - uses: actions/checkout@main
         with:
           fetch-depth: 0
-      - name: Setup
-        uses: actions/setup-dotnet@main
+      - uses: actions/setup-dotnet@main
         with:
           dotnet-version: "10.0"
-      - name: Test
-        run: dotnet test
+      - run: dotnet test
       - id: versioning
-        name: Set publish
+        name: Set publish version unless already on nuget.org
         if: matrix.os == 'ubuntu-latest'
         run: |
           version="$(nbgv get-version -v SimpleVersion)$(nbgv get-version -v PrereleaseVersion)"
-          if [ -z "$(git tag -l v$version)" ] && [ -n "${{ secrets.NUGET_API_KEY }}" ]; then
-            echo version=$version >> "$GITHUB_OUTPUT"
+          published=$(curl -fsSL https://api.nuget.org/v3-flatcontainer/obsstrawket/index.json | jq -r '.versions[]' || true)
+          if ! grep -qix "$version" <<< "$published"; then
+            echo "version=$version" >> "$GITHUB_OUTPUT"
           fi
 
   publish:
     needs: test
     if: needs.test.outputs.version && github.ref_name == 'main'
     runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: write # tag push
+      id-token: write # nuget.org trusted publishing
     env:
       DOTNET_NOLOGO: true
     steps:
-      - name: Checkout
-        uses: actions/checkout@main
+      - uses: actions/checkout@main
         with:
           fetch-depth: 0
-      - name: Setup
-        uses: actions/setup-dotnet@main
+      - uses: actions/setup-dotnet@main
         with:
           dotnet-version: "10.0"
-      - name: Publish
+      - name: dotnet pack
+        run: dotnet pack --include-source --configuration Release -p:Version=${{ needs.test.outputs.version }}
+      - name: NuGet login (OIDC → temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: jeiea
+      - name: Push package
         run: |
-          version=${{needs.test.outputs.version}}
-          dotnet pack --include-source --configuration Release -p:Version=$version
           dotnet nuget push ObsStrawket/bin/Release/*.symbols.nupkg \
-            --api-key ${{ secrets.NUGET_API_KEY }} \
+            --api-key ${{ steps.login.outputs.NUGET_API_KEY }} \
             --source https://api.nuget.org/v3/index.json
-          git tag v$version
-          git push origin v$version
+      - name: Tag release
+        run: |
+          git tag v${{ needs.test.outputs.version }}
+          git push origin v${{ needs.test.outputs.version }}
