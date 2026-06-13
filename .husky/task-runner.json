@@ -1,0 +1,12 @@
+{
+   "$schema": "https://alirezanet.github.io/Husky.Net/schema.json",
+   "tasks": [
+      {
+         "name": "lint",
+         "group": "pre-commit",
+         "command": "dotnet",
+         "args": ["format", "style", "--verify-no-changes", "--severity", "info", "--include", "${staged}"],
+         "include": ["**/*.cs"]
+      }
+   ]
+}

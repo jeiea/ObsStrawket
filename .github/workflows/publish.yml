@@ -4,6 +4,9 @@ on:
   push:
     branches: [main, dev]
 
+env:
+  HUSKY: 0
+
 jobs:
   test:
     strategy:
@@ -22,6 +25,18 @@ jobs:
         with:
           dotnet-version: "10.0"
       - run: dotnet test
+      - name: dotnet format style
+        shell: pwsh
+        run: |
+          $output = dotnet format style --verify-no-changes --severity info --no-restore 2>&1 | Out-String
+          $root = (Get-Location).Path
+          $diagnostics = [regex]::Matches($output, '(?m)^\s*(?<file>.+?\.cs)\((?<line>\d+),(?<col>\d+)\): info (?<id>IDE\d+): (?<msg>.+?) \[')
+          foreach ($d in $diagnostics) {
+            $rel = [System.IO.Path]::GetRelativePath($root, $d.Groups['file'].Value).Replace('\', '/')
+            Write-Output "::warning file=$rel,line=$($d.Groups['line'].Value),col=$($d.Groups['col'].Value)::$($d.Groups['id'].Value): $($d.Groups['msg'].Value)"
+          }
+          Write-Output "Reported $($diagnostics.Count) code-style diagnostic(s)."
+          exit 0
       - id: versioning
         name: Set publish version unless already on nuget.org
         if: matrix.os == 'ubuntu-latest'

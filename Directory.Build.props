@@ -4,4 +4,14 @@
     <PackageReference Include="DotNet.ReproducibleBuilds" Version="2.0.2" PrivateAssets="All"/>
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.9.50" PrivateAssets="All"/>
   </ItemGroup>
+
+  <!-- Restore the gitignored .husky/_ hooks after a fresh clone. Skipped in CI via HUSKY=0. -->
+  <Target Name="HuskyInstall" BeforeTargets="Restore;CollectPackageReferences"
+          Condition="'$(HUSKY)' != '0'"
+          Inputs="$(MSBuildThisFileDirectory).config/dotnet-tools.json"
+          Outputs="$(MSBuildThisFileDirectory).husky/_/install.stamp">
+    <Exec Command="dotnet tool restore" StandardOutputImportance="Low" StandardErrorImportance="High"/>
+    <Exec Command="dotnet husky install" WorkingDirectory="$(MSBuildThisFileDirectory)" StandardOutputImportance="Low" StandardErrorImportance="High"/>
+    <Touch Files="$(MSBuildThisFileDirectory).husky/_/install.stamp" AlwaysCreate="true"/>
+  </Target>
 </Project>
