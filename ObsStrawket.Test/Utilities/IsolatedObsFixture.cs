@@ -23,6 +23,7 @@ namespace ObsStrawket.Test.Utilities {
     private static readonly string[] _junctionNames = ["bin", "data", "obs-plugins"];
 
     public bool IsAvailable => Uri != null;
+    public bool HasVendorPlugin => GetVendorPluginRoot() != null;
     public Uri? Uri { get; private set; }
     public string Password { get; } = MockServer.Password;
 
@@ -37,15 +38,21 @@ namespace ObsStrawket.Test.Utilities {
       int port = GetFreeTcpPort();
       _root = Path.Combine(Path.GetTempPath(), "obsstrawket-test", $"{Guid.NewGuid():N}");
       SeedPortableRoot(_root, installation, port);
+      string? pluginRoot = GetVendorPluginRoot();
 
       string binDirectory = Path.Combine(_root, "bin", "64bit");
-      _process = Process.Start(new ProcessStartInfo {
+      var startInfo = new ProcessStartInfo {
         FileName = Path.Combine(binDirectory, "obs64.exe"),
         WorkingDirectory = binDirectory,
         Arguments = "--portable --multi --minimize-to-tray --disable-updater"
           + " --disable-shutdown-check --disable-missing-files-check",
         UseShellExecute = false,
-      })!;
+      };
+      if (pluginRoot != null) {
+        startInfo.Environment["OBS_PLUGINS_PATH"] = Path.Combine(pluginRoot, "obs-plugins", "64bit");
+        startInfo.Environment["OBS_PLUGINS_DATA_PATH"] = Path.Combine(pluginRoot, "data", "obs-plugins");
+      }
+      _process = Process.Start(startInfo)!;
 
       await WaitUntilListeningAsync(port).ConfigureAwait(false);
       Uri = new Uri($"ws://127.0.0.1:{port}");
@@ -105,6 +112,15 @@ namespace ObsStrawket.Test.Utilities {
         }
       }
       return null;
+    }
+
+    private static string? GetVendorPluginRoot() {
+      string? root = Environment.GetEnvironmentVariable("OBSSTRAWKET_TEST_PLUGIN_ROOT");
+      if (root == null) {
+        return null;
+      }
+      string plugin = Path.Combine(root, "obs-plugins", "64bit", "advanced-scene-switcher.dll");
+      return File.Exists(plugin) ? root : null;
     }
 
     private static void SeedPortableRoot(string root, string installation, int port) {

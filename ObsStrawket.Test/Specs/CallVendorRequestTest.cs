@@ -1,4 +1,6 @@
 using ObsStrawket.Test.Utilities;
+using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -12,15 +14,37 @@ namespace ObsStrawket.Test.Specs {
 
   class CallVendorRequestFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await Task.Yield();
-      // TBD
-      //var response = await client.CallVendorRequestAsync(vendorName: "test vendor name", requestType: "test request type").ConfigureAwait(false);
+      var response = await client.CallVendorRequestAsync(
+        vendorName: "test-vendor",
+        requestType: "echo",
+        requestData: new Dictionary<string, JsonElement?> {
+          ["message"] = "hello".ToJsonElement(),
+        }
+      ).ConfigureAwait(false);
+      Assert.Equal("test-vendor", response.VendorName);
+      Assert.Equal("echo", response.VendorRequestType);
+      Assert.Equal("hello", response.ResponseData["message"]!.Value.GetString());
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      await Task.Yield();
-      //string? guid = await session.ReceiveAsync(@"").ConfigureAwait(false);
-      //await session.SendAsync(@"".Replace("{guid}", guid)).ConfigureAwait(false);
+      string guid = (await session.ReceiveRequestAsync("CallVendorRequest", """
+{
+  "vendorName": "test-vendor",
+  "requestType": "echo",
+  "requestData": {
+    "message": "hello"
+  }
+}
+""").ConfigureAwait(false))!;
+      await session.SendSuccessResponseAsync("CallVendorRequest", guid, """
+{
+  "vendorName": "test-vendor",
+  "requestType": "echo",
+  "responseData": {
+    "message": "hello"
+  }
+}
+""").ConfigureAwait(false);
     }
   }
 }

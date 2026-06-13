@@ -64,17 +64,3 @@ To reproduce generation from the tracked upstream revision:
 ```powershell
 dotnet run --project SourceGenerator
 ```
-
-# Not yet supported list
-
-## Events
-
-- [ ] InputActiveStateChanged
-- [ ] InputShowStateChanged
-- [ ] InputVolumeMeters
-- [ ] SceneItemTransformChanged
-- [ ] VendorEvent
-
-## Requests
-
-- [ ] CallVendorRequest

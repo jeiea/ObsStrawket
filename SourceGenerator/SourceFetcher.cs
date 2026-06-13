@@ -272,7 +272,10 @@ namespace SourceGenerator {
         }
 
         foreach (var field in ev.DataFields!) {
-          if (field.ValueName == "sceneItems") {
+          if (ev.EventType == "InputVolumeMeters" && field.ValueName == "inputs") {
+            field.ValueType = "Array<InputVolumeMeter>";
+          }
+          else if (field.ValueName == "sceneItems") {
             field.ValueType = "Array<BasicSceneItem>";
           }
           else if (GetCustomType(field.ValueName!, out string? type)) {

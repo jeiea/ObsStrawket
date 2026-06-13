@@ -52,6 +52,21 @@ jobs:
           if (-not (Test-Path $obs)) {
             throw "OBS Studio executable not found at $obs"
           }
+      - name: Install OBS test vendor plugin
+        shell: pwsh
+        run: |
+          $pluginRoot = Join-Path $env:RUNNER_TEMP "advanced-scene-switcher"
+          $archive = Join-Path $env:RUNNER_TEMP "advanced-scene-switcher-1.33.1-windows-x64.zip"
+          Invoke-WebRequest `
+            "https://github.com/WarmUpTill/SceneSwitcher/releases/download/1.33.1/advanced-scene-switcher-1.33.1-windows-x64.zip" `
+            -OutFile $archive
+          $actualHash = (Get-FileHash $archive -Algorithm SHA256).Hash
+          $expectedHash = "F326D96EF5DBAE9DD12A7DD7255A58F9B75CD89FFC1BE673C3A3C30190400BBC"
+          if ($actualHash -ne $expectedHash) {
+            throw "Unexpected Advanced Scene Switcher archive hash: $actualHash"
+          }
+          Expand-Archive $archive $pluginRoot
+          "OBSSTRAWKET_TEST_PLUGIN_ROOT=$pluginRoot" >> $env:GITHUB_ENV
       - run: dotnet test
 
   publish:

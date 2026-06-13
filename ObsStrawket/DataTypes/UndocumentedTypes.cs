@@ -142,6 +142,29 @@ namespace ObsStrawket.DataTypes {
     public string UnversionedKind { get; set; } = "";
   }
 
+  /// <summary>
+  /// Volume meter values for an active input.
+  /// </summary>
+  public class InputVolumeMeter {
+    /// <summary>
+    /// Input name.
+    /// </summary>
+    [JsonPropertyName("inputName")]
+    public string Name { get; set; } = "";
+
+    /// <summary>
+    /// Input UUID.
+    /// </summary>
+    [JsonPropertyName("inputUuid")]
+    public string Uuid { get; set; } = "";
+
+    /// <summary>
+    /// Per-channel magnitude, peak, and input peak multipliers.
+    /// </summary>
+    [JsonPropertyName("inputLevelsMul")]
+    public List<List<double>> LevelsMul { get; set; } = [];
+  }
+
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
   //https://github.com/obsproject/obs-websocket/blob/265899f76f88a5be74747308fff3d35347ce43c5/src/utils/Obs_ArrayHelper.cpp#L142

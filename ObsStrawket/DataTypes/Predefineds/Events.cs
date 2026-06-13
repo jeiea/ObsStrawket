@@ -726,7 +726,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Array of active inputs with their associated volume levels
     /// </summary>
     [JsonPropertyName("inputs")]
-    public List<Input> Inputs { get; set; } = new();
+    public List<InputVolumeMeter> Inputs { get; set; } = new();
   }
 
   /// <summary>
