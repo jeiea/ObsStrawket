@@ -16,6 +16,8 @@ jobs:
       version: ${{ steps.versioning.outputs.version }}
     steps:
       - uses: actions/checkout@main
+        with:
+          fetch-depth: 0
       - uses: actions/setup-dotnet@main
         with:
           dotnet-version: "10.0"
@@ -34,7 +36,6 @@ jobs:
           exit 0
       - id: versioning
         name: Set publish version unless already on nuget.org
-        if: matrix.os == 'ubuntu-latest'
         run: |
           version="$(nbgv get-version -v SimpleVersion)$(nbgv get-version -v PrereleaseVersion)"
           published=$(curl -fsSL https://api.nuget.org/v3-flatcontainer/obsstrawket/index.json | jq -r '.versions[]' || true)
@@ -46,9 +47,10 @@ jobs:
     runs-on: windows-latest
     env:
       DOTNET_NOLOGO: true
-      OBSSTRAWKET_TEST_ARTIFACTS: ${{ runner.temp }}/obsstrawket-diagnostics
     steps:
       - uses: actions/checkout@main
+        with:
+          fetch-depth: 0
       - uses: actions/setup-dotnet@main
         with:
           dotnet-version: "10.0"
@@ -77,6 +79,8 @@ jobs:
           Expand-Archive $archive $pluginRoot
           "OBSSTRAWKET_TEST_PLUGIN_ROOT=$pluginRoot" >> $env:GITHUB_ENV
       - run: dotnet test
+        env:
+          OBSSTRAWKET_TEST_ARTIFACTS: ${{ runner.temp }}/obsstrawket-diagnostics
       - name: Upload OBS diagnostics
         if: always()
         uses: actions/upload-artifact@v4
