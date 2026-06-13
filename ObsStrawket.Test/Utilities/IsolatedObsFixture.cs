@@ -1,3 +1,5 @@
+using ObsStrawket;
+using ObsStrawket.DataTypes.Predefineds;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -54,7 +57,9 @@ namespace ObsStrawket.Test.Utilities {
       }
       _process = Process.Start(startInfo)!;
 
-      await WaitUntilListeningAsync(port).ConfigureAwait(false);
+      var deadline = DateTime.UtcNow + _bootTimeout;
+      await WaitUntilListeningAsync(port, deadline).ConfigureAwait(false);
+      await WaitUntilReadyAsync(port, deadline).ConfigureAwait(false);
       Uri = new Uri($"ws://127.0.0.1:{port}");
     }
 
@@ -199,8 +204,7 @@ namespace ObsStrawket.Test.Utilities {
       }
     }
 
-    private async Task WaitUntilListeningAsync(int port) {
-      var deadline = DateTime.UtcNow + _bootTimeout;
+    private async Task WaitUntilListeningAsync(int port, DateTime deadline) {
       while (DateTime.UtcNow < deadline) {
         if (_process!.HasExited) {
           throw new InvalidOperationException($"OBS exited with code {_process.ExitCode}.{GetLogTail()}");
@@ -215,6 +219,39 @@ namespace ObsStrawket.Test.Utilities {
         }
       }
       throw new TimeoutException($"obs-websocket did not listen within {_bootTimeout}.{GetLogTail()}");
+    }
+
+    // obs-websocket starts listening before the OBS frontend finishes loading, so
+    // frontend requests (CreateScene, etc.) return NotReady during that gap. Connect
+    // once and poll a read-only frontend request until it stops reporting NotReady.
+    private async Task WaitUntilReadyAsync(int port, DateTime deadline) {
+      var uri = new Uri($"ws://127.0.0.1:{port}");
+      var remaining = deadline - DateTime.UtcNow;
+      using var timeout = new CancellationTokenSource(remaining > TimeSpan.Zero ? remaining : TimeSpan.Zero);
+      var token = timeout.Token;
+      using var client = new ObsClientSocket();
+      try {
+        await client.ConnectAsync(uri, Password, cancellation: token).ConfigureAwait(false);
+        while (true) {
+          if (_process!.HasExited) {
+            throw new InvalidOperationException($"OBS exited with code {_process.ExitCode}.{GetLogTail()}");
+          }
+          try {
+            await client.GetSceneListAsync(cancellation: token).ConfigureAwait(false);
+            return;
+          }
+          catch (FailureResponseException ex)
+              when (ex.Response.RequestStatus.Code == RequestStatus.NotReady) {
+            await Task.Delay(500, token).ConfigureAwait(false);
+          }
+        }
+      }
+      catch (OperationCanceledException) {
+        throw new TimeoutException($"OBS frontend was not ready within {_bootTimeout}.{GetLogTail()}");
+      }
+      finally {
+        await client.CloseAsync().ConfigureAwait(false);
+      }
     }
 
     private async Task<HashSet<nint>> WaitForNewWindowsAsync(string requestName, HashSet<nint> existing) {
