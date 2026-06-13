@@ -16,6 +16,14 @@ Personal .NET implementation of
 
 ```csharp
 var client = new ObsClientSocket();
+
+// The client reports internal pipeline activity through this.
+client.PipelineEvent += (e) => {
+  if (e.Level >= PipelineLevel.Warning) {
+    Console.Error.WriteLine(e);
+  }
+};
+
 await client.ConnectAsync(new Uri("ws://localhost:4455"), "ahrEYXzXKytCIlpI");
 
 var version = await client.GetVersionAsync();

@@ -1,6 +1,6 @@
-using Microsoft.Extensions.Logging;
 using ObsStrawket.DataTypes;
 using ObsStrawket.DataTypes.Predefineds;
+using ObsStrawket.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -476,8 +476,6 @@ namespace ObsStrawket {
 
     private readonly ClientSocket _clientSocket;
 
-    private readonly ILogger? _logger;
-
     private readonly SemaphoreSlim _connectSemaphore = new(1);
 
     private Task? _dispatch;
@@ -485,18 +483,27 @@ namespace ObsStrawket {
     /// <summary>
     /// Create OBS websocket client. It can be reused unless <see cref="Dispose"/> is called.
     /// </summary>
-    /// <param name="logger">Logger for library debugging.</param>
     /// <param name="client">Lower level client for custom behavior.</param>
     /// <param name="useChannel">Use channel for event receive.<br />
     /// Caution: If <see cref="Events"/> is not consumed it will cause memory leak.
     /// </param>
-    public ObsClientSocket(ILogger? logger = null, ClientSocket? client = null, bool useChannel = false) {
-      _logger = logger;
-      _clientSocket = client ?? new ClientSocket(logger);
+    public ObsClientSocket(ClientSocket? client = null, bool useChannel = false) {
+      _clientSocket = client ?? new ClientSocket();
+      _clientSocket.PipelineEvent += Emit;
       if (!useChannel) {
         _dispatch = Task.CompletedTask;
       }
     }
+
+    /// <summary>
+    /// Diagnostic notifications emitted while processing the websocket pipeline. Forwards the
+    /// underlying <see cref="ClientSocket.PipelineEvent"/> and adds dispatch-stage notifications.
+    /// </summary>
+    /// <remarks>
+    /// Handlers may run concurrently from several threads and the emission order is not
+    /// guaranteed; write them to be thread-safe. See <see cref="Diagnostics.PipelineEvent"/>.
+    /// </remarks>
+    public event Action<PipelineEvent>? PipelineEvent;
 
     /// <summary>
     /// Fired when it is connected to OBS
@@ -584,6 +591,7 @@ namespace ObsStrawket {
     /// Dispose this forever.
     /// </summary>
     public void Dispose() {
+      _clientSocket.PipelineEvent -= Emit;
       _clientSocket.Dispose();
       _connectSemaphore.Dispose();
       GC.SuppressFinalize(this);
@@ -592,25 +600,24 @@ namespace ObsStrawket {
     private async Task DispatchEventAsync(Task former, ChannelReader<IObsEvent> events, Uri uri) {
       await former.ConfigureAwait(false);
 
-      using var _1 = _logger?.BeginScope(nameof(DispatchEventAsync));
-      _logger?.LogDebug("Start");
+      Emit(new PipelineTrace(PipelineLevel.Debug, "Start"));
 
       try {
         Connected(uri);
       }
       catch (Exception exception) {
-        _logger?.LogWarning(exception, "Connected event handler throws");
+        Emit(new EventHandlerFaulted(EventHandlerKind.Connected, null, exception));
       }
 
       try {
         while (await events.WaitToReadAsync().ConfigureAwait(false)) {
           DispatchEvent(await events.ReadAsync().ConfigureAwait(false));
         }
-        _logger?.LogDebug("Terminated");
+        Emit(new PipelineTrace(PipelineLevel.Debug, "Terminated"));
         InvokeCloseSafe(null);
       }
       catch (Exception exception) {
-        _logger?.LogDebug(exception, "Terminated with exception: {message}", exception.Message);
+        Emit(new PipelineTrace(PipelineLevel.Debug, $"Terminated with exception: {exception.Message}", exception));
         InvokeCloseSafe(exception);
       }
     }
@@ -620,7 +627,20 @@ namespace ObsStrawket {
         Disconnected(info);
       }
       catch (Exception ex) {
-        _logger?.LogWarning(ex, "Disconnected event handler throws: {message}", ex.Message);
+        Emit(new EventHandlerFaulted(EventHandlerKind.Disconnected, null, ex));
+      }
+    }
+
+    private void Emit(PipelineEvent diagnostic) {
+      var handler = PipelineEvent;
+      if (handler == null) {
+        return;
+      }
+      try {
+        handler(diagnostic);
+      }
+      catch {
+        // Isolate consumer exceptions so the dispatch pump keeps running.
       }
     }
 
@@ -2567,13 +2587,13 @@ namespace ObsStrawket {
         Event(message);
       }
       catch (Exception ex) {
-        _logger?.LogWarning(ex, "Event handler throws: {}", message.EventType);
+        Emit(new EventHandlerFaulted(EventHandlerKind.Event, message.EventType, ex));
       }
       try {
         DispatchSpecificEvent(message);
       }
       catch (Exception ex) {
-        _logger?.LogWarning(ex, "{} event handler throws", message.EventType);
+        Emit(new EventHandlerFaulted(EventHandlerKind.SpecificEvent, message.EventType, ex));
       }
     }
 
@@ -2624,7 +2644,7 @@ namespace ObsStrawket {
         break;
 
       default:
-        _logger?.LogWarning("Ignore unclassified event");
+        Emit(new UnclassifiedEventIgnored(message.EventType));
         break;
       }
     }

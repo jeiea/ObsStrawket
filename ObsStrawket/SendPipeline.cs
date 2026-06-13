@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Logging;
 using ObsStrawket.DataTypes;
+using ObsStrawket.Diagnostics;
 using System;
 using System.IO;
 using System.Net.WebSockets;
@@ -13,16 +13,16 @@ namespace ObsStrawket {
 
   internal class SendPipeline {
     private readonly WebSocket _socket;
-    private readonly ILogger? _logger;
+    private readonly Action<PipelineEvent>? _emit;
     private readonly Channel<Deferred<byte[], object?>> _sendQueue = Channel.CreateUnbounded<Deferred<byte[], object?>>();
 
     private readonly JsonSerializerOptions _serializerOptions = new() {
       DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
 
-    public SendPipeline(WebSocket socket, ILogger? logger = null) {
+    public SendPipeline(WebSocket socket, Action<PipelineEvent>? emit = null) {
       _socket = socket;
-      _logger = logger;
+      _emit = emit;
     }
 
     public Task? SendTask { get; private set; }
@@ -36,7 +36,6 @@ namespace ObsStrawket {
     }
 
     public async Task SendAsync(IOpCodeMessage value, CancellationToken token = default) {
-      using var _1 = _logger?.BeginScope(nameof(SendAsync));
       token.ThrowIfCancellationRequested();
 
       var ms = new MemoryStream();
@@ -47,20 +46,19 @@ namespace ObsStrawket {
       var output = new TaskCompletionSource<object?>();
       await _sendQueue.Writer.WriteAsync(new(bytes, output, token), token).ConfigureAwait(false);
 
-      _logger?.LogDebug("Await sending {}", value.GetType().Name);
+      _emit?.Invoke(new PipelineTrace(PipelineLevel.Debug, $"Await sending {value.GetType().Name}"));
       await output.Task.ConfigureAwait(false);
-      _logger?.LogDebug("Sent {}", value.GetType().Name);
+      _emit?.Invoke(new PipelineTrace(PipelineLevel.Debug, $"Sent {value.GetType().Name}"));
     }
 
     private async Task LoopWebsocketSendAsync() {
-      using var _1 = _logger?.BeginScope(nameof(LoopWebsocketSendAsync));
       var queue = _sendQueue.Reader;
 
       try {
         while (await queue.WaitToReadAsync().ConfigureAwait(false)) {
           var item = await queue.ReadAsync().ConfigureAwait(false);
           if (item.Cancellation.IsCancellationRequested) {
-            _logger?.LogInformation("User cancelled request");
+            _emit?.Invoke(new PipelineTrace(PipelineLevel.Info, "User cancelled request"));
             item.Output.SetException(new OperationCanceledException(item.Cancellation));
             continue;
           }
@@ -77,7 +75,7 @@ namespace ObsStrawket {
         }
       }
       catch (Exception fault) {
-        _logger?.LogDebug(fault, "Quit");
+        _emit?.Invoke(new PipelineTrace(PipelineLevel.Debug, "Quit", fault));
         _sendQueue.Writer.TryComplete(fault);
         while (!queue.Completion.IsCompleted) {
           var item = await queue.ReadAsync(default).ConfigureAwait(false);

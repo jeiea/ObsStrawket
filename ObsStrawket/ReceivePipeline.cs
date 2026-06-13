@@ -1,6 +1,6 @@
-using Microsoft.Extensions.Logging;
 using ObsStrawket.DataTypes;
 using ObsStrawket.DataTypes.Predefineds;
+using ObsStrawket.Diagnostics;
 using System;
 using System.IO;
 using System.Net.WebSockets;
@@ -13,12 +13,12 @@ namespace ObsStrawket {
 
   internal class ReceivePipeline {
     private readonly WebSocket _socket;
-    private readonly ILogger? _logger;
+    private readonly Action<PipelineEvent>? _emit;
     private readonly Channel<Task<IOpCodeMessage>> _messages = Channel.CreateUnbounded<Task<IOpCodeMessage>>();
 
-    public ReceivePipeline(WebSocket socket, ILogger? logger = null) {
+    public ReceivePipeline(WebSocket socket, Action<PipelineEvent>? emit = null) {
       _socket = socket;
-      _logger = logger;
+      _emit = emit;
     }
 
     public ChannelReader<Task<IOpCodeMessage>> Messages { get => _messages.Reader; }
@@ -37,10 +37,8 @@ namespace ObsStrawket {
     }
 
     private async Task LoopWebSocketReceiveAsync(CancellationToken token = default) {
-      using var _1 = _logger?.BeginScope(nameof(LoopWebSocketReceiveAsync));
-
       try {
-        _logger?.LogDebug("Start.");
+        _emit?.Invoke(new PipelineTrace(PipelineLevel.Debug, "Start."));
         var ms = new MemoryStream();
         byte[] buffer = new byte[4 * 1024];
         var segment = new ArraySegment<byte>(buffer);
@@ -49,7 +47,7 @@ namespace ObsStrawket {
           var readResult = await _socket.ReceiveAsync(segment, token).ConfigureAwait(false);
 
           if (_socket.State == WebSocketState.CloseReceived && readResult.MessageType == WebSocketMessageType.Close) {
-            _logger?.LogDebug("Exit by websocket close");
+            _emit?.Invoke(new PipelineTrace(PipelineLevel.Debug, "Exit by websocket close"));
             switch ((int?)_socket.CloseStatus) {
             case (int?)WebSocketCloseCode.AuthenticationFailed:
               _messages.Writer.TryComplete(new AuthenticationFailureException());
@@ -62,7 +60,7 @@ namespace ObsStrawket {
             break;
           }
 
-          _logger?.LogDebug("Read {} bytes", readResult.Count);
+          _emit?.Invoke(new PipelineTrace(PipelineLevel.Debug, $"Read {readResult.Count} bytes"));
           ms.Write(buffer, 0, readResult.Count);
 
           if (readResult.EndOfMessage) {
@@ -73,10 +71,10 @@ namespace ObsStrawket {
         }
 
         _messages.Writer.TryComplete();
-        _logger?.LogDebug("Complete. IsCancellationRequested: {}", token.IsCancellationRequested);
+        _emit?.Invoke(new PipelineTrace(PipelineLevel.Debug, $"Complete. IsCancellationRequested: {token.IsCancellationRequested}"));
       }
       catch (Exception exception) {
-        _logger?.LogDebug(exception, "Complete with exception: {message}", exception.Message);
+        _emit?.Invoke(new PipelineTrace(PipelineLevel.Debug, $"Complete with exception: {exception.Message}", exception));
         _messages.Writer.TryComplete(exception);
       }
     }

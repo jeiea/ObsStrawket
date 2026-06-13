@@ -1,6 +1,6 @@
-using Microsoft.Extensions.Logging;
 using ObsStrawket.Test.Utilities;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
@@ -32,7 +32,7 @@ namespace ObsStrawket.Test {
 
   internal static class StressTestHelper {
     public static async Task RunParameterizedAsync(int delay, int division) {
-      var logger = new MemoryLogger();
+      var traces = new ConcurrentQueue<string>();
       var client = ClientFlow.GetDebugClient();
       using var server = new MockServer().Run(default);
       int openCloseDifference = 0;
@@ -40,14 +40,14 @@ namespace ObsStrawket.Test {
 
       client.Connected += (uri) => {
         int difference = Interlocked.Increment(ref openCloseDifference);
-        logger.LogDebug("Connected: {}", difference);
+        traces.Enqueue($"Connected: {difference}");
         if (difference < 0 || 1 < difference) {
           Assert.True(failures.Writer.TryWrite($"open close difference {difference}"));
         }
       };
       client.Disconnected += (o) => {
         int difference = Interlocked.Decrement(ref openCloseDifference);
-        logger.LogDebug("Disconnected: {}", difference);
+        traces.Enqueue($"Disconnected: {difference}");
         if (difference < 0 || 1 < difference) {
           Assert.True(failures.Writer.TryWrite($"open close difference {difference}"));
         }
@@ -103,9 +103,9 @@ namespace ObsStrawket.Test {
         await monitor.ConfigureAwait(false);
       }
       catch (Exception ex) {
-        logger.LogError("OpenClose mismatch: {}", ex);
-        string error = logger.GetAll();
-        throw new Exception(error);
+        Debug.WriteLine(ex);
+        string error = string.Join(Environment.NewLine, traces);
+        throw new Exception(error, ex);
       }
 
       Assert.InRange(openCloseDifference, 0, 1);
