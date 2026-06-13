@@ -101,7 +101,7 @@ namespace ObsStrawket.Test {
 """).ConfigureAwait(false);
       }
 
-      byte[] buffer = new byte[] { 0x01, 0x02, 0x03, 0x04 };
+      byte[] buffer = [0x01, 0x02, 0x03, 0x04];
       await webSocketContext.WebSocket.SendAsync(
         new ArraySegment<byte>(buffer), WebSocketMessageType.Binary, true, token
       ).ConfigureAwait(false);

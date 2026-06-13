@@ -36,7 +36,8 @@ namespace SourceGenerator {
       };
 
       using var file = File.CreateText($"{_directoryHelper.MainProjectDirectory}/DataTypes/Predefineds/Enums.cs");
-      file.Write(@"using System;
+      file.Write(@"using ObsStrawket.Serialization;
+using System;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 

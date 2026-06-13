@@ -5,6 +5,14 @@ dotnet = "10.0.301"
 description = "Watch and run test project"
 run = "dotnet watch run --project ObsStrawket.Test/ObsStrawket.Test.csproj"
 
+[tasks.lint]
+description = "Report C# IDE code-style diagnostics"
+run = "dotnet format style --verify-no-changes --severity info"
+
 [tasks.update-protocol]
 description = "Update Obs.h and protocol.json for new API reflection"
 run = "dotnet run --project SourceGenerator/SourceGenerator.csproj -- --update-upstream"
+
+[tasks.generate-protocol]
+description = "Regenerate client API from the tracked upstream revision"
+run = "dotnet run --project SourceGenerator/SourceGenerator.csproj"

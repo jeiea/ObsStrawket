@@ -25,7 +25,7 @@ namespace ObsStrawket.Test.Specs {
 
 
     public async Task RequestAsync(ObsClientSocket client) {
-      var response = await client.CreateInputAsync(sceneName: CreateSceneFlow.NewScene, inputName: InputName, inputKind: "browser_source", inputSettings: new Dictionary<string, JsonElement?>(), sceneItemEnabled: true).ConfigureAwait(false);
+      var response = await client.CreateInputAsync(sceneName: CreateSceneFlow.NewScene, inputName: InputName, inputKind: "browser_source", inputSettings: [], sceneItemEnabled: true).ConfigureAwait(false);
       Assert.NotInRange(response.SceneItemId, int.MinValue, 0);
       var created = await ClientFlow.WaitEventAsync<InputCreated>(client).ConfigureAwait(false);
       Assert.Equal(InputName, (created as InputCreated)!.InputName);

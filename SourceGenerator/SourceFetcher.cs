@@ -264,7 +264,7 @@ namespace SourceGenerator {
         "Scene Items", "Outputs", "Stream", "Record", "Media Inputs", "Ui", "High-Volume",
       }.Select(x => x.ToLower()).ToList();
 
-      protocol.Events = protocol.Events.OrderBy(x => categoryOrder.IndexOf(x.Category!)).ToList();
+      protocol.Events = [.. protocol.Events.OrderBy(x => categoryOrder.IndexOf(x.Category!))];
       foreach (var ev in protocol.Events) {
         var dataFields = ev.DataFields;
         if (dataFields == null) {
@@ -284,7 +284,7 @@ namespace SourceGenerator {
         }
       }
 
-      protocol.Requests = protocol.Requests.OrderBy(x => categoryOrder.IndexOf(x.Category!)).ToList();
+      protocol.Requests = [.. protocol.Requests.OrderBy(x => categoryOrder.IndexOf(x.Category!))];
       foreach (var request in protocol.Requests) {
         var requestFields = request.RequestFields;
         if (requestFields == null) {

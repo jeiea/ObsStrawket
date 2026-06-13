@@ -53,11 +53,11 @@ namespace ObsStrawket.Test.Utilities {
           $"The {nameof(tasks)} argument included a null value.",
           nameof(tasks)
         );
-        HandleCompletion(task, i);
+        HandleCompletion(task);
       }
       return tcs.Task;
 
-      async void HandleCompletion(Task task, int index) {
+      async void HandleCompletion(Task task) {
         try {
           await task.ConfigureAwait(false);
           if (Interlocked.Decrement(ref remaining) == 0) {

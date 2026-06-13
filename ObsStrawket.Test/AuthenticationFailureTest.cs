@@ -43,8 +43,7 @@ namespace ObsStrawket.Test {
   }
 }
 """).ConfigureAwait(false);
-
-      var message = await session.ReceiveAsync();
+      _ = await session.ReceiveAsync();
 
       await webSocketContext.WebSocket.CloseAsync(
         (WebSocketCloseStatus)WebSocketCloseCode.AuthenticationFailed,

@@ -12,7 +12,7 @@ namespace ObsStrawket.Test.Specs {
 
   class GetCurrentSceneTransitionFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      var response = await client.GetCurrentSceneTransitionAsync().ConfigureAwait(false);
+      _ = await client.GetCurrentSceneTransitionAsync().ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {

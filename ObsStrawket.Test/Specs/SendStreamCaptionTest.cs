@@ -12,7 +12,7 @@ namespace ObsStrawket.Test.Specs {
 
   class SendStreamCaptionFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      var response = await client.SendStreamCaptionAsync(captionText: "test caption text").ConfigureAwait(false);
+      _ = await client.SendStreamCaptionAsync(captionText: "test caption text").ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {

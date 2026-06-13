@@ -46,6 +46,6 @@ namespace ObsStrawket.DataTypes {
     /// </summary>
     [JsonPropertyName("results")]
     [JsonConverter(typeof(BatchResponseConverter))]
-    public List<IRequestResponse> Results { get; set; } = new();
+    public List<IRequestResponse> Results { get; set; } = [];
   }
 }

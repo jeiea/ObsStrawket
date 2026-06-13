@@ -5,17 +5,17 @@ using System.Text.Json.Serialization;
 
 namespace SourceGenerator {
   public record class ProtocolJson {
-    public List<ObsEnum> Enums { get; set; } = new();
+    public List<ObsEnum> Enums { get; set; } = [];
 
-    public List<ObsEvent> Events { get; set; } = new();
+    public List<ObsEvent> Events { get; set; } = [];
 
-    public List<ObsRequest> Requests { get; set; } = new();
+    public List<ObsRequest> Requests { get; set; } = [];
   }
 
   public record class ObsEnum {
     public string EnumType { get; set; } = "";
 
-    public List<ObsEnumIdentifier> EnumIdentifiers { get; set; } = new();
+    public List<ObsEnumIdentifier> EnumIdentifiers { get; set; } = [];
   }
 
   public record class ObsEnumIdentifier {

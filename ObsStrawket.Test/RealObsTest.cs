@@ -11,12 +11,12 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace ObsStrawket.Test.Real {
+namespace ObsStrawket.Test {
   [Collection("IsolatedObs")]
   public class RealObsTest {
     private readonly IsolatedObsFixture _obs;
 
-    private Uri _uri {
+    private Uri Uri {
       get {
         Assert.SkipWhen(!_obs.IsAvailable, "OBS is not installed.");
         return _obs.Uri!;
@@ -29,13 +29,13 @@ namespace ObsStrawket.Test.Real {
 
     [Fact]
     public async Task TestNormalAsync() {
-      await new ClientFlow().RunClientAsync(_uri, cancellation: TestContext.Current.CancellationToken);
+      await new ClientFlow().RunClientAsync(Uri, cancellation: TestContext.Current.CancellationToken);
     }
 
     [Fact]
     public async Task TestBadRequestAsync() {
       var client = ClientFlow.GetDebugClient(useChannel: true);
-      await client.ConnectAsync(_uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
+      await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
 
       await Assert.ThrowsAsync<FailureResponseException>(async () => {
         var response = await client.StopRecordAsync(TestContext.Current.CancellationToken);
@@ -43,7 +43,7 @@ namespace ObsStrawket.Test.Real {
       });
 
       var exception = await Assert.ThrowsAsync<FailureResponseException>(async () => {
-        await client.BroadcastCustomEventAsync(new Dictionary<string, JsonElement?>(), TestContext.Current.CancellationToken);
+        await client.BroadcastCustomEventAsync([], TestContext.Current.CancellationToken);
       });
 
       return;
@@ -52,7 +52,7 @@ namespace ObsStrawket.Test.Real {
     [Fact]
     public async Task TestMissingVendorRequestAsync() {
       var client = ClientFlow.GetDebugClient(useChannel: true);
-      await client.ConnectAsync(_uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
+      await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
       var exception = await Assert.ThrowsAsync<FailureResponseException>(
         () => client.CallVendorRequestAsync(
           "ObsStrawket.MissingVendor",
@@ -97,7 +97,7 @@ namespace ObsStrawket.Test.Real {
           | EventSubscription.InputVolumeMeters
           | EventSubscription.SceneItemTransformChanged;
         await client.ConnectAsync(
-          _uri,
+          Uri,
           MockServer.Password,
           subscriptions,
           TestContext.Current.CancellationToken
@@ -174,7 +174,7 @@ namespace ObsStrawket.Test.Real {
       };
       try {
         await client.ConnectAsync(
-          _uri,
+          Uri,
           MockServer.Password,
           EventSubscription.All,
           TestContext.Current.CancellationToken
@@ -222,7 +222,7 @@ namespace ObsStrawket.Test.Real {
         source.TrySetResult(e);
       };
 
-      await client.ConnectAsync(_uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
+      await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
       //while (await client.Events.WaitToReadAsync().ConfigureAwait(false)) {
       //  var ev = await client.Events.ReadAsync().ConfigureAwait(false);
       //  Debug.WriteLine(ev);
@@ -236,7 +236,7 @@ namespace ObsStrawket.Test.Real {
     public async Task TestbedAsync() {
       var client = ClientFlow.GetDebugClient(useChannel: true);
       await Assert.ThrowsAsync<AuthenticationFailureException>(
-        () => client.ConnectAsync(_uri, "a", cancellation: TestContext.Current.CancellationToken)
+        () => client.ConnectAsync(Uri, "a", cancellation: TestContext.Current.CancellationToken)
       );
     }
 
@@ -244,7 +244,7 @@ namespace ObsStrawket.Test.Real {
     public async Task TestUiAsync() {
       var client = ClientFlow.GetDebugClient(useChannel: true);
       try {
-        await client.ConnectAsync(_uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
+        await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
         const string sceneName = "UI test scene";
         const string inputName = "UI test source";
         await client.CreateSceneAsync(
@@ -255,7 +255,7 @@ namespace ObsStrawket.Test.Real {
           inputName: inputName,
           inputKind: "browser_source",
           sceneName: sceneName,
-          inputSettings: new Dictionary<string, JsonElement?>(),
+          inputSettings: [],
           sceneItemEnabled: true,
           cancellation: TestContext.Current.CancellationToken
         );
@@ -317,7 +317,7 @@ namespace ObsStrawket.Test.Real {
       }
 
       var client = ClientFlow.GetDebugClient(useChannel: true);
-      await client.ConnectAsync(_uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
+      await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
       var flows = new List<ITestFlow>() {
         //new CallVendorRequestFlow(), // test how?
         //new SleepFlow(), // Not implemented
@@ -478,7 +478,7 @@ namespace ObsStrawket.Test.Real {
       };
       foreach (var flow in flows) {
         Debug.WriteLine($"Test {flow.GetType().Name}");
-        while (client.Events.TryPeek(out var ev)) {
+        while (client.Events.TryPeek(out _)) {
           ClientFlow.DrainEvents(client);
           await Task.Delay(100, TestContext.Current.CancellationToken);
         }

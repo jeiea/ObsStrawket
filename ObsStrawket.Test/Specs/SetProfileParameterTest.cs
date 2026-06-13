@@ -12,14 +12,14 @@ namespace ObsStrawket.Test.Specs {
   }
 
   class SetProfileParameterFlow : ITestFlow {
-    public static List<(string Category, string Name, string Value, string? Default)> AppliedParameters = new() {
+    public static List<(string Category, string Name, string Value, string? Default)> AppliedParameters = [
       ("Output", "Mode", "Advanced", "Simple"),
       ("AdvOut", "RecRB", "true", "false"),
       ("AdvOut", "RecEncoder", "obs_x264", "none"),
       ("AdvOut", "RecFormat2", "hybrid_mp4", "hybrid_mp4"),
       ("AdvOut", "RecSplitFile", "true", null),
       ("AdvOut", "RecSplitFileType", "Manual", null),
-    };
+    ];
 
     public async Task RequestAsync(ObsClientSocket client) {
       foreach (var (category, name, value, _) in AppliedParameters) {

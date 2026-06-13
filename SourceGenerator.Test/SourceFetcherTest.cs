@@ -64,8 +64,8 @@ namespace SourceGenerator.Test {
 
     [Fact]
     public async Task PrepareAsyncPreservesTrackedSourcesWhenDownloadFails() {
-      byte[] oldProtocol = _protocol.Concat([(byte)0x20]).ToArray();
-      byte[] oldObsHeader = _obsHeader.Concat([(byte)0x20]).ToArray();
+      byte[] oldProtocol = [.. _protocol, (byte)0x20];
+      byte[] oldObsHeader = [.. _obsHeader, (byte)0x20];
       WriteTrackedSources(oldProtocol, oldObsHeader);
       byte[] oldRevision = File.ReadAllBytes(Path.Combine(_upstreamDirectory, "upstream-revision.json"));
       var handler = new FakeHttpMessageHandler([

@@ -230,7 +230,7 @@ namespace ObsStrawket.DataTypes {
     public bool Enabled { get; set; }
 
     [JsonPropertyName("filterSettings")]
-    public Dictionary<string, object?> Settings { get; set; } = new();
+    public Dictionary<string, object?> Settings { get; set; } = [];
   }
 
   // https://github.com/obsproject/obs-websocket/blob/265899f76f88a5be74747308fff3d35347ce43c5/src/utils/Obs_ArrayHelper.cpp#L273

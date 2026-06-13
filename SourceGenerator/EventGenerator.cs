@@ -86,6 +86,11 @@ namespace ObsStrawket.DataTypes.Predefineds {");
       if (valueType == "string") {
         builder.Append(" = \"\";");
       }
+      else if (valueType.StartsWith("List<", StringComparison.Ordinal)
+          || valueType.StartsWith("Dictionary<", StringComparison.Ordinal)
+          || valueType.EndsWith("[]", StringComparison.Ordinal)) {
+        builder.Append(" = [];");
+      }
       else if (char.IsUpper(valueType[0])) {
         builder.Append(" = new();");
       }

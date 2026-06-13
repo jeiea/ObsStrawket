@@ -153,7 +153,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Vendor-provided event data. {} if event does not provide any data
     /// </summary>
     [JsonPropertyName("eventData")]
-    public Dictionary<string, JsonElement?> EventData { get; set; } = new();
+    public Dictionary<string, JsonElement?> EventData { get; set; } = [];
   }
 
   /// <summary>
@@ -166,7 +166,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Custom event data
     /// </summary>
     [JsonPropertyName("eventData")]
-    public Dictionary<string, JsonElement?> EventData { get; set; } = new();
+    public Dictionary<string, JsonElement?> EventData { get; set; } = [];
   }
 
   /// <summary>
@@ -210,7 +210,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Updated list of scene collections
     /// </summary>
     [JsonPropertyName("sceneCollections")]
-    public List<string> SceneCollections { get; set; } = new();
+    public List<string> SceneCollections { get; set; } = [];
   }
 
   /// <summary>
@@ -249,7 +249,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Updated list of profiles
     /// </summary>
     [JsonPropertyName("profiles")]
-    public List<string> Profiles { get; set; } = new();
+    public List<string> Profiles { get; set; } = [];
   }
 
   /// <summary>
@@ -377,7 +377,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Updated array of scenes
     /// </summary>
     [JsonPropertyName("scenes")]
-    public List<Scene> Scenes { get; set; } = new();
+    public List<Scene> Scenes { get; set; } = [];
   }
 
   /// <summary>
@@ -420,13 +420,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// The settings configured to the input when it was created
     /// </summary>
     [JsonPropertyName("inputSettings")]
-    public Dictionary<string, JsonElement?> InputSettings { get; set; } = new();
+    public Dictionary<string, JsonElement?> InputSettings { get; set; } = [];
 
     /// <summary>
     /// The default settings for the input
     /// </summary>
     [JsonPropertyName("defaultInputSettings")]
-    public Dictionary<string, JsonElement?> DefaultInputSettings { get; set; } = new();
+    public Dictionary<string, JsonElement?> DefaultInputSettings { get; set; } = [];
   }
 
   /// <summary>
@@ -497,7 +497,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// New settings object of the input
     /// </summary>
     [JsonPropertyName("inputSettings")]
-    public Dictionary<string, JsonElement?> InputSettings { get; set; } = new();
+    public Dictionary<string, JsonElement?> InputSettings { get; set; } = [];
   }
 
   /// <summary>
@@ -682,7 +682,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Object of audio tracks along with their associated enable states
     /// </summary>
     [JsonPropertyName("inputAudioTracks")]
-    public Dictionary<string, bool> InputAudioTracks { get; set; } = new();
+    public Dictionary<string, bool> InputAudioTracks { get; set; } = [];
   }
 
   /// <summary>
@@ -726,7 +726,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Array of active inputs with their associated volume levels
     /// </summary>
     [JsonPropertyName("inputs")]
-    public List<InputVolumeMeter> Inputs { get; set; } = new();
+    public List<InputVolumeMeter> Inputs { get; set; } = [];
   }
 
   /// <summary>
@@ -841,7 +841,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Array of filter objects
     /// </summary>
     [JsonPropertyName("filters")]
-    public List<SourceFilter> Filters { get; set; } = new();
+    public List<SourceFilter> Filters { get; set; } = [];
   }
 
   /// <summary>
@@ -878,13 +878,13 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// The settings configured to the filter when it was created
     /// </summary>
     [JsonPropertyName("filterSettings")]
-    public Dictionary<string, JsonElement?> FilterSettings { get; set; } = new();
+    public Dictionary<string, JsonElement?> FilterSettings { get; set; } = [];
 
     /// <summary>
     /// The default settings for the filter
     /// </summary>
     [JsonPropertyName("defaultFilterSettings")]
-    public Dictionary<string, JsonElement?> DefaultFilterSettings { get; set; } = new();
+    public Dictionary<string, JsonElement?> DefaultFilterSettings { get; set; } = [];
   }
 
   /// <summary>
@@ -953,7 +953,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// New settings object of the filter
     /// </summary>
     [JsonPropertyName("filterSettings")]
-    public Dictionary<string, JsonElement?> FilterSettings { get; set; } = new();
+    public Dictionary<string, JsonElement?> FilterSettings { get; set; } = [];
   }
 
   /// <summary>
@@ -1085,7 +1085,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// Array of scene item objects
     /// </summary>
     [JsonPropertyName("sceneItems")]
-    public List<BasicSceneItem> SceneItems { get; set; } = new();
+    public List<BasicSceneItem> SceneItems { get; set; } = [];
   }
 
   /// <summary>
@@ -1203,7 +1203,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// New transform/crop info of the scene item
     /// </summary>
     [JsonPropertyName("sceneItemTransform")]
-    public Dictionary<string, JsonElement?> SceneItemTransform { get; set; } = new();
+    public Dictionary<string, JsonElement?> SceneItemTransform { get; set; } = [];
   }
 
   /// <summary>
