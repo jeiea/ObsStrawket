@@ -18,7 +18,7 @@ namespace ObsStrawket.Test.Specs {
       Assert.True(response.OutputActive);
       Assert.NotInRange(response.OutputBytes, int.MinValue, 0);
       Assert.NotInRange(response.OutputDuration, int.MinValue, 0);
-      Assert.Equal("00:28:04.583", response.OutputTimecode);
+      Assert.Matches(@"^\d{2}:\d{2}:\d{2}\.\d{3}$", response.OutputTimecode);
       Assert.False(response.OutputPaused);
     }
 

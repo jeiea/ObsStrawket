@@ -15,9 +15,9 @@ namespace ObsStrawket.Test.Specs {
   class SetCurrentProgramSceneFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       await client.SetCurrentProgramSceneAsync(sceneName: CreateSceneFlow.NewScene2).ConfigureAwait(false);
-      var started = await client.Events.ReadAsync().ConfigureAwait(false);
+      var started = await ClientFlow.WaitEventAsync<SceneTransitionStarted>(client).ConfigureAwait(false);
       Assert.NotEqual("", (started as SceneTransitionStarted)!.TransitionName);
-      var ended = await client.Events.ReadAsync().ConfigureAwait(false);
+      var ended = await ClientFlow.WaitEventAsync<SceneTransitionVideoEnded>(client).ConfigureAwait(false);
       Assert.NotEqual("", (ended as SceneTransitionVideoEnded)!.TransitionName);
       var events = await client.Events.ReadAllAsync().Take(2).ToListAsync().ConfigureAwait(false);
       Assert.Contains(events, (x) => x is CurrentProgramSceneChanged changed && changed.SceneName == CreateSceneFlow.NewScene2);

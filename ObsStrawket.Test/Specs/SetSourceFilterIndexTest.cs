@@ -20,7 +20,7 @@ namespace ObsStrawket.Test.Specs {
         filterIndex: 1
       ).ConfigureAwait(false);
 
-      var reindexed = await client.Events.ReadAsync().ConfigureAwait(false);
+      var reindexed = await ClientFlow.WaitEventAsync<SourceFilterListReindexed>(client).ConfigureAwait(false);
       Assert.Equal(CreateSourceFilterFlow.FilterName, (reindexed as SourceFilterListReindexed)!.Filters[1].Name);
       Assert.Equal(1, (reindexed as SourceFilterListReindexed)!.Filters[1].Index);
       Assert.Equal("color_key_filter_v2", (reindexed as SourceFilterListReindexed)!.Filters[1].Kind);

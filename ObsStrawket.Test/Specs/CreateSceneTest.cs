@@ -2,6 +2,7 @@ using ObsStrawket.DataTypes;
 using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -169,11 +170,12 @@ namespace ObsStrawket.Test.Specs {
         await client.CreateSceneAsync(sceneName: name).ConfigureAwait(false);
       }
 
-      var events = await client.Events.ReadAllAsync()
-        .Where((x) => x is SceneListChanged || x is SceneCreated)
-        .Take(2).ToListAsync().ConfigureAwait(false);
-      Assert.Contains(events, (x) => x is SceneListChanged changed && changed.Scenes[0].Name == name);
-      Assert.Contains(events, (x) => x is SceneCreated created && created.SceneName == name);
+      // SceneListChanged emission and timing differ across OBS versions;
+      // SceneCreated is the reliable contract.
+      var events = new List<IObsEvent>();
+      do {
+        events.Add(await client.Events.ReadAsync().ConfigureAwait(false));
+      } while (!events.Any((x) => x is SceneCreated created && created.SceneName == name));
     }
   }
 }

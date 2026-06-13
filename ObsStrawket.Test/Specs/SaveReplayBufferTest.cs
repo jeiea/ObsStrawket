@@ -17,7 +17,7 @@ namespace ObsStrawket.Test.Specs {
       await Task.Delay(100).ConfigureAwait(false);
       await client.SaveReplayBufferAsync().ConfigureAwait(false);
 
-      var saved = await client.Events.ReadAsync().ConfigureAwait(false);
+      var saved = await ClientFlow.WaitEventAsync<ReplayBufferSaved>(client).ConfigureAwait(false);
       Assert.True(File.Exists((saved as ReplayBufferSaved)!.SavedReplayPath));
     }
 

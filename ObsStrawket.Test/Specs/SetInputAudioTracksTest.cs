@@ -21,7 +21,7 @@ namespace ObsStrawket.Test.Specs {
         }
       ).ConfigureAwait(false);
 
-      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      var changed = await ClientFlow.WaitEventAsync<InputAudioTracksChanged>(client).ConfigureAwait(false);
       Assert.True((changed as InputAudioTracksChanged)!.InputAudioTracks["1"]);
       Assert.False((changed as InputAudioTracksChanged)!.InputAudioTracks["2"]);
     }

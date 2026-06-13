@@ -20,9 +20,9 @@ namespace ObsStrawket.Test.Specs {
         mediaAction: MediaInputAction.Stop
       ).ConfigureAwait(false);
 
-      var triggered = await client.Events.ReadAsync().ConfigureAwait(false);
+      var triggered = await ClientFlow.WaitEventAsync<MediaInputActionTriggered>(client).ConfigureAwait(false);
       Assert.Equal(MediaInputAction.Stop, (triggered as MediaInputActionTriggered)!.MediaAction);
-      var ended = await client.Events.ReadAsync().ConfigureAwait(false);
+      var ended = await ClientFlow.WaitEventAsync<MediaInputPlaybackEnded>(client).ConfigureAwait(false);
       Assert.Equal(CreateInputFlow.MediaInputName, (ended as MediaInputPlaybackEnded)!.InputName);
 
       await client.TriggerMediaInputActionAsync(

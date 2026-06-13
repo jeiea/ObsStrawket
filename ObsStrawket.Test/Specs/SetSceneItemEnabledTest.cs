@@ -21,7 +21,7 @@ namespace ObsStrawket.Test.Specs {
         sceneItemEnabled: false
       ).ConfigureAwait(false);
 
-      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      var changed = await ClientFlow.WaitEventAsync<SceneItemEnableStateChanged>(client).ConfigureAwait(false);
       Assert.Equal(CreateSceneFlow.NewScene, (changed as SceneItemEnableStateChanged)!.SceneName);
       Assert.Equal(DisablingItemId, (changed as SceneItemEnableStateChanged)!.SceneItemId);
       Assert.False((changed as SceneItemEnableStateChanged)!.SceneItemEnabled);

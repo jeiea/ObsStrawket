@@ -19,7 +19,7 @@ namespace ObsStrawket.Test.Specs {
       await client.SetInputAudioMonitorTypeAsync(
         inputName: CreateInputFlow.InputName, monitorType: MonitoringType
       ).ConfigureAwait(false);
-      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      var changed = await ClientFlow.WaitEventAsync<InputAudioMonitorTypeChanged>(client).ConfigureAwait(false);
       Assert.Equal(CreateInputFlow.InputName, (changed as InputAudioMonitorTypeChanged)!.InputName);
       Assert.Equal(MonitoringType, (changed as InputAudioMonitorTypeChanged)!.MonitorType);
 

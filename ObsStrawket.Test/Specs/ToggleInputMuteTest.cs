@@ -16,9 +16,9 @@ namespace ObsStrawket.Test.Specs {
       var response = await client.ToggleInputMuteAsync(inputName: CreateInputFlow.InputName).ConfigureAwait(false);
       Assert.False(response.InputMuted);
 
-      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.False((changed as InputMuteStateChanged)!.InputMuted);
-      Assert.Equal(CreateInputFlow.InputName, (changed as InputMuteStateChanged)!.InputName);
+      var changed = await ClientFlow.WaitEventAsync<InputMuteStateChanged>(client).ConfigureAwait(false);
+      Assert.False(changed.InputMuted);
+      Assert.Equal(CreateInputFlow.InputName, changed.InputName);
     }
 
     public async Task RespondAsync(MockServerSession session) {

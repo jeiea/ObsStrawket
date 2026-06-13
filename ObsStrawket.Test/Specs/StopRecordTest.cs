@@ -17,9 +17,9 @@ namespace ObsStrawket.Test.Specs {
       var recording = await client.StopRecordAsync().ConfigureAwait(false);
       Assert.True(File.Exists(recording.OutputPath), $"{recording.OutputPath} is not exists.");
 
-      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      var changed = await ClientFlow.WaitEventAsync<RecordStateChanged>(client).ConfigureAwait(false);
       Assert.Equal(ObsOutputState.Stopping, (changed as RecordStateChanged)!.OutputState);
-      changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      changed = await ClientFlow.WaitEventAsync<RecordStateChanged>(client).ConfigureAwait(false);
       Assert.Equal(ObsOutputState.Stopped, (changed as RecordStateChanged)!.OutputState);
     }
 

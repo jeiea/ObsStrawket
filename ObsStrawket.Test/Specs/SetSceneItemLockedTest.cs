@@ -21,7 +21,7 @@ namespace ObsStrawket.Test.Specs {
         sceneItemLocked: true
       ).ConfigureAwait(false);
 
-      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      var changed = await ClientFlow.WaitEventAsync<SceneItemLockStateChanged>(client).ConfigureAwait(false);
       Assert.Equal(CreateSceneFlow.NewScene, (changed as SceneItemLockStateChanged)!.SceneName);
       Assert.Equal(LockingItemId, (changed as SceneItemLockStateChanged)!.SceneItemId);
       Assert.True((changed as SceneItemLockStateChanged)!.SceneItemLocked);

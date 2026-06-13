@@ -27,7 +27,7 @@ namespace ObsStrawket.Test.Specs {
         }
       ).ConfigureAwait(false);
 
-      var created = await client.Events.ReadAsync().ConfigureAwait(false);
+      var created = await ClientFlow.WaitEventAsync<SourceFilterCreated>(client).ConfigureAwait(false);
       Assert.Equal(FilterName, (created as SourceFilterCreated)!.FilterName);
       Assert.Equal(1.0, (created as SourceFilterCreated)!.FilterSettings["brightness"]?.GetDouble());
 
@@ -37,7 +37,7 @@ namespace ObsStrawket.Test.Specs {
         filterKind: "color_key_filter_v2"
       ).ConfigureAwait(false);
 
-      created = await client.Events.ReadAsync().ConfigureAwait(false);
+      created = await ClientFlow.WaitEventAsync<SourceFilterCreated>(client).ConfigureAwait(false);
       Assert.Equal(FilterName2, (created as SourceFilterCreated)!.FilterName);
       Assert.Empty((created as SourceFilterCreated)!.FilterSettings);
     }

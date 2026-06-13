@@ -17,9 +17,9 @@ namespace ObsStrawket.Test.Specs {
     public async Task RequestAsync(ObsClientSocket client) {
       await client.StartRecordAsync().ConfigureAwait(false);
 
-      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      var changed = await ClientFlow.WaitEventAsync<RecordStateChanged>(client).ConfigureAwait(false);
       Assert.Equal(ObsOutputState.Starting, (changed as RecordStateChanged)!.OutputState);
-      changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      changed = await ClientFlow.WaitEventAsync<RecordStateChanged>(client).ConfigureAwait(false);
       Assert.Equal(ObsOutputState.Started, (changed as RecordStateChanged)!.OutputState);
     }
 

@@ -17,7 +17,7 @@ namespace ObsStrawket.Test.Specs {
         sceneName: CreateSceneFlow.NewScene,
         sceneItemId: CreateSceneItemFlow.CreatedItemId
       ).ConfigureAwait(false);
-      var itemRemoved = await client.Events.ReadAsync().ConfigureAwait(false);
+      var itemRemoved = await ClientFlow.WaitEventAsync<SceneItemRemoved>(client).ConfigureAwait(false);
       Assert.Equal(CreateSceneItemFlow.CreatedItemId, (itemRemoved as SceneItemRemoved)!.SceneItemId);
       Assert.Equal(CreateSceneFlow.NewScene, (itemRemoved as SceneItemRemoved)!.SceneName);
       Assert.Equal(CreateInputFlow.InputName, (itemRemoved as SceneItemRemoved)!.SourceName);

@@ -19,7 +19,7 @@ namespace ObsStrawket.Test.Specs {
         inputName: CreateInputFlow.InputName,
         inputAudioBalance: InputAudioBalance
       ).ConfigureAwait(false);
-      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      var changed = await ClientFlow.WaitEventAsync<InputAudioBalanceChanged>(client).ConfigureAwait(false);
       Assert.Equal(CreateInputFlow.InputName, (changed as InputAudioBalanceChanged)!.InputName);
       Assert.Equal(InputAudioBalance, (changed as InputAudioBalanceChanged)!.InputAudioBalance, TestUtil.Epsilon);
     }

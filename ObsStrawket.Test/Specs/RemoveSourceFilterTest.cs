@@ -18,7 +18,7 @@ namespace ObsStrawket.Test.Specs {
         filterName: CreateSourceFilterFlow.FilterName
       ).ConfigureAwait(false);
 
-      var removed = await client.Events.ReadAsync().ConfigureAwait(false);
+      var removed = await ClientFlow.WaitEventAsync<SourceFilterRemoved>(client).ConfigureAwait(false);
       Assert.Equal("Browser source", (removed as SourceFilterRemoved)!.SourceName);
       Assert.Equal(CreateSourceFilterFlow.FilterName, (removed as SourceFilterRemoved)!.FilterName);
 
@@ -27,7 +27,7 @@ namespace ObsStrawket.Test.Specs {
         filterName: SetSourceFilterNameFlow.NewFilterName
       ).ConfigureAwait(false);
 
-      removed = await client.Events.ReadAsync().ConfigureAwait(false);
+      removed = await ClientFlow.WaitEventAsync<SourceFilterRemoved>(client).ConfigureAwait(false);
       Assert.Equal("Browser source", (removed as SourceFilterRemoved)!.SourceName);
       Assert.Equal(SetSourceFilterNameFlow.NewFilterName, (removed as SourceFilterRemoved)!.FilterName);
     }

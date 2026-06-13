@@ -14,7 +14,7 @@ namespace ObsStrawket.Test.Specs {
   class SetCurrentPreviewSceneFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       await client.SetCurrentPreviewSceneAsync(sceneName: CreateSceneFlow.NewScene).ConfigureAwait(false);
-      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      var changed = await ClientFlow.WaitEventAsync<CurrentPreviewSceneChanged>(client).ConfigureAwait(false);
       Assert.Equal(CreateSceneFlow.NewScene, (changed as CurrentPreviewSceneChanged)!.SceneName);
     }
 

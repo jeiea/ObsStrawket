@@ -16,12 +16,12 @@ namespace ObsStrawket.Test.Specs {
     public async Task RequestAsync(ObsClientSocket client) {
       await client.SetSceneNameAsync(sceneName: CreateSceneFlow.NewScene2, newSceneName: ChangedName).ConfigureAwait(false);
 
-      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      var changed = await ClientFlow.WaitEventAsync<SceneNameChanged>(client).ConfigureAwait(false);
       Assert.Equal(ChangedName, (changed as SceneNameChanged)!.SceneName);
 
       await client.SetSceneNameAsync(sceneName: ChangedName, newSceneName: CreateSceneFlow.NewScene2).ConfigureAwait(false);
 
-      changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      changed = await ClientFlow.WaitEventAsync<SceneNameChanged>(client).ConfigureAwait(false);
       Assert.Equal(CreateSceneFlow.NewScene2, (changed as SceneNameChanged)!.SceneName);
     }
 

@@ -14,7 +14,7 @@ namespace ObsStrawket.Test.Specs {
   class RemoveInputFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       await client.RemoveInputAsync(inputName: CreateInputFlow.InputName).ConfigureAwait(false);
-      var removed = await client.Events.ReadAsync().ConfigureAwait(false);
+      var removed = await ClientFlow.WaitEventAsync<InputRemoved>(client).ConfigureAwait(false);
       Assert.Equal(CreateInputFlow.InputName, (removed as InputRemoved)!.InputName);
       //var itemRemoved = await client.Events.ReadAsync().ConfigureAwait(false);
       //Assert.Equal(CreateSceneFlow.NewScene, (itemRemoved as SceneItemRemoved)!.SceneName);

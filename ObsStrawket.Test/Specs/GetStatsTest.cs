@@ -1,3 +1,4 @@
+using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
 using System.Threading.Tasks;
 using Xunit;
@@ -13,6 +14,11 @@ namespace ObsStrawket.Test.Specs {
   class GetStatsFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetStatsAsync().ConfigureAwait(false);
+      // A just-booted OBS reports zero until it takes the first samples.
+      for (int i = 0; i < 50 && IsWarmingUp(response); i++) {
+        await Task.Delay(100).ConfigureAwait(false);
+        response = await client.GetStatsAsync().ConfigureAwait(false);
+      }
       Assert.NotInRange(response.ActiveFps, double.NegativeInfinity, 0);
       Assert.NotInRange(response.AvailableDiskSpace, double.NegativeInfinity, 0);
       Assert.NotInRange(response.AverageFrameRenderTime, double.NegativeInfinity, 0);
@@ -22,6 +28,10 @@ namespace ObsStrawket.Test.Specs {
       Assert.NotInRange(response.RenderTotalFrames, int.MinValue, 0);
       Assert.NotInRange(response.WebSocketSessionIncomingMessages, int.MinValue, 0);
       Assert.NotInRange(response.WebSocketSessionOutgoingMessages, int.MinValue, 0);
+    }
+
+    private static bool IsWarmingUp(GetStatsResponse response) {
+      return response.ActiveFps == 0 || response.AverageFrameRenderTime == 0 || response.CpuUsage == 0;
     }
 
     public async Task RespondAsync(MockServerSession session) {

@@ -15,7 +15,7 @@ namespace ObsStrawket.Test.Specs {
     public async Task RequestAsync(ObsClientSocket client) {
       await client.StartVirtualCamAsync().ConfigureAwait(false);
 
-      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      var changed = await ClientFlow.WaitEventAsync<VirtualcamStateChanged>(client).ConfigureAwait(false);
       Assert.Equal(ObsOutputState.Started, (changed as VirtualcamStateChanged)!.OutputState);
     }
 

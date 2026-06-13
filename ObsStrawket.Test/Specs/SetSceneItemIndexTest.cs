@@ -21,7 +21,7 @@ namespace ObsStrawket.Test.Specs {
         sceneItemIndex: NewIndex
       ).ConfigureAwait(false);
 
-      var reindexed = await client.Events.ReadAsync().ConfigureAwait(false);
+      var reindexed = await ClientFlow.WaitEventAsync<SceneItemListReindexed>(client).ConfigureAwait(false);
       Assert.Equal(CreateSceneFlow.NewScene, (reindexed as SceneItemListReindexed)!.SceneName);
       Assert.Contains(
         (reindexed as SceneItemListReindexed)!.SceneItems,

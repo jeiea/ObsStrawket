@@ -14,12 +14,12 @@ namespace ObsStrawket.Test.Specs {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetSceneTransitionListAsync().ConfigureAwait(false);
 
-      Assert.Equal("swipe_transition", response.CurrentSceneTransitionKind);
+      // Default transitions only: Cut (fixed) and Fade. None is configurable.
+      Assert.Equal("fade_transition", response.CurrentSceneTransitionKind);
       Assert.Equal(SetCurrentSceneTransitionFlow.TransitionName, response.CurrentSceneTransitionName);
-      Assert.Contains(response.Transitions, (x) => x.Configurable);
       Assert.Contains(response.Transitions, (x) => x.Fixed);
       Assert.Contains(response.Transitions, (x) => x.Name == SetCurrentSceneTransitionFlow.TransitionName);
-      Assert.Contains(response.Transitions, (x) => x.Kind == "swipe_transition");
+      Assert.Contains(response.Transitions, (x) => x.Kind == "fade_transition");
     }
 
     public async Task RespondAsync(MockServerSession session) {
@@ -42,8 +42,8 @@ namespace ObsStrawket.Test.Specs {
     },
     "requestType": "GetSceneTransitionList",
     "responseData": {
-      "currentSceneTransitionKind": "swipe_transition",
-      "currentSceneTransitionName": "Swipe",
+      "currentSceneTransitionKind": "fade_transition",
+      "currentSceneTransitionName": "Fade",
       "transitions": [
         {
           "transitionConfigurable": false,
@@ -56,12 +56,6 @@ namespace ObsStrawket.Test.Specs {
           "transitionFixed": false,
           "transitionKind": "fade_transition",
           "transitionName": "Fade"
-        },
-        {
-          "transitionConfigurable": true,
-          "transitionFixed": false,
-          "transitionKind": "swipe_transition",
-          "transitionName": "Swipe"
         }
       ]
     }

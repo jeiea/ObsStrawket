@@ -21,7 +21,7 @@ namespace ObsStrawket.Test.Specs {
         newFilterName: NewFilterName
       ).ConfigureAwait(false);
 
-      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      var changed = await ClientFlow.WaitEventAsync<SourceFilterNameChanged>(client).ConfigureAwait(false);
       Assert.Equal(CreateSourceFilterFlow.FilterName2, (changed as SourceFilterNameChanged)!.OldFilterName);
       Assert.Equal(NewFilterName, (changed as SourceFilterNameChanged)!.FilterName);
       Assert.Equal("Browser source", (changed as SourceFilterNameChanged)!.SourceName);

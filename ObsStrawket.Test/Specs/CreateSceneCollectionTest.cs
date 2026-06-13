@@ -1,5 +1,7 @@
+using ObsStrawket.DataTypes;
 using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -16,11 +18,15 @@ namespace ObsStrawket.Test.Specs {
 
     public async Task RequestAsync(ObsClientSocket client) {
       await client.CreateSceneCollectionAsync(sceneCollectionName: NewSceneCollection).ConfigureAwait(false);
-      var list = ClientFlow.DrainEvents(client);
-      Assert.Contains(list, (x) => x is CurrentSceneCollectionChanging);
-      Assert.Contains(list, (x) => x is SceneCreated);
-      Assert.Contains(list, (x) => x is SceneCollectionListChanged);
-      Assert.Contains(list, (x) => x is CurrentSceneCollectionChanged);
+      // Event makeup and order differ across OBS versions; read until the
+      // guaranteed CurrentSceneCollectionChanged and verify what came with it.
+      var events = new List<IObsEvent>();
+      do {
+        events.Add(await client.Events.ReadAsync().ConfigureAwait(false));
+      } while (events[^1] is not CurrentSceneCollectionChanged);
+
+      Assert.Contains(events, (x) => x is CurrentSceneCollectionChanging);
+      Assert.Equal(NewSceneCollection, ((CurrentSceneCollectionChanged)events[^1]).SceneCollectionName);
     }
 
     public async Task RespondAsync(MockServerSession session) {

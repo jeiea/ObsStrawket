@@ -16,13 +16,13 @@ namespace ObsStrawket.Test.Specs {
       var response = await client.ToggleVirtualCamAsync().ConfigureAwait(false);
       Assert.True(response.OutputActive, "outputActive is not true.");
 
-      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      var changed = await ClientFlow.WaitEventAsync<VirtualcamStateChanged>(client).ConfigureAwait(false);
       Assert.Equal(ObsOutputState.Started, (changed as VirtualcamStateChanged)!.OutputState);
 
       response = await client.ToggleVirtualCamAsync().ConfigureAwait(false);
       Assert.False(response.OutputActive, "outputActive is not false.");
 
-      changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      changed = await ClientFlow.WaitEventAsync<VirtualcamStateChanged>(client).ConfigureAwait(false);
       Assert.Equal(ObsOutputState.Stopped, (changed as VirtualcamStateChanged)!.OutputState);
     }
 

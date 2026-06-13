@@ -14,7 +14,7 @@ namespace ObsStrawket.Test.Specs {
   class SetInputMuteFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       await client.SetInputMuteAsync(inputName: CreateInputFlow.InputName, inputMuted: true).ConfigureAwait(false);
-      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      var changed = await ClientFlow.WaitEventAsync<InputMuteStateChanged>(client).ConfigureAwait(false);
       Assert.True((changed as InputMuteStateChanged)!.InputMuted);
       Assert.Equal(CreateInputFlow.InputName, (changed as InputMuteStateChanged)!.InputName);
     }

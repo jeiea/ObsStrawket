@@ -16,12 +16,12 @@ namespace ObsStrawket.Test.Specs {
 
     public async Task RequestAsync(ObsClientSocket client) {
       await client.SetInputNameAsync(inputName: CreateInputFlow.InputName, newInputName: _temporaryName).ConfigureAwait(false);
-      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      var changed = await ClientFlow.WaitEventAsync<InputNameChanged>(client).ConfigureAwait(false);
       Assert.Equal(CreateInputFlow.InputName, (changed as InputNameChanged)!.OldInputName);
       Assert.Equal(_temporaryName, (changed as InputNameChanged)!.InputName);
 
       await client.SetInputNameAsync(inputName: _temporaryName, newInputName: CreateInputFlow.InputName).ConfigureAwait(false);
-      changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      changed = await ClientFlow.WaitEventAsync<InputNameChanged>(client).ConfigureAwait(false);
       Assert.Equal(_temporaryName, (changed as InputNameChanged)!.OldInputName);
       Assert.Equal(CreateInputFlow.InputName, (changed as InputNameChanged)!.InputName);
     }

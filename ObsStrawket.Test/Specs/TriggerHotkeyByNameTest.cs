@@ -15,7 +15,7 @@ namespace ObsStrawket.Test.Specs {
   class TriggerHotkeyByNameFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       await client.TriggerHotkeyByNameAsync(hotkeyName: "OBSBasic.Screenshot").ConfigureAwait(false);
-      var saved = await client.Events.ReadAsync().ConfigureAwait(false);
+      var saved = await ClientFlow.WaitEventAsync<ScreenshotSaved>(client).ConfigureAwait(false);
 
       string path = (saved as ScreenshotSaved)!.SavedScreenshotPath;
       Assert.NotEmpty(path);

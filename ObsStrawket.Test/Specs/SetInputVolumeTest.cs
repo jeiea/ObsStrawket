@@ -14,7 +14,7 @@ namespace ObsStrawket.Test.Specs {
   class SetInputVolumeFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       await client.SetInputVolumeAsync(inputName: CreateInputFlow.InputName, inputVolumeMul: 10).ConfigureAwait(false);
-      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      var changed = await ClientFlow.WaitEventAsync<InputVolumeChanged>(client).ConfigureAwait(false);
       Assert.Equal(CreateInputFlow.InputName, (changed as InputVolumeChanged)!.InputName);
       Assert.Equal(20.0, (changed as InputVolumeChanged)!.InputVolumeDb);
       Assert.Equal(10.0, (changed as InputVolumeChanged)!.InputVolumeMul);

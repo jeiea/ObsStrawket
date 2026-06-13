@@ -16,17 +16,17 @@ namespace ObsStrawket.Test.Specs {
       await Task.Delay(100).ConfigureAwait(false);
       var response = await client.ToggleStreamAsync().ConfigureAwait(false);
       Assert.True(response.OutputActive);
-      var starting = await client.Events.ReadAsync().ConfigureAwait(false);
+      var starting = await ClientFlow.WaitEventAsync<StreamStateChanged>(client).ConfigureAwait(false);
       Assert.Equal(ObsOutputState.Starting, (starting as StreamStateChanged)!.OutputState);
-      var started = await client.Events.ReadAsync().ConfigureAwait(false);
+      var started = await ClientFlow.WaitEventAsync<StreamStateChanged>(client).ConfigureAwait(false);
       Assert.Equal(ObsOutputState.Started, (started as StreamStateChanged)!.OutputState);
 
       await Task.Delay(100).ConfigureAwait(false);
       response = await client.ToggleStreamAsync().ConfigureAwait(false);
       Assert.False(response.OutputActive);
-      var stopping = await client.Events.ReadAsync().ConfigureAwait(false);
+      var stopping = await ClientFlow.WaitEventAsync<StreamStateChanged>(client).ConfigureAwait(false);
       Assert.Equal(ObsOutputState.Stopping, (stopping as StreamStateChanged)!.OutputState);
-      var stopped = await client.Events.ReadAsync().ConfigureAwait(false);
+      var stopped = await ClientFlow.WaitEventAsync<StreamStateChanged>(client).ConfigureAwait(false);
       Assert.Equal(ObsOutputState.Stopped, (stopped as StreamStateChanged)!.OutputState);
     }
 

@@ -17,18 +17,18 @@ namespace ObsStrawket.Test.Specs {
       var response = await client.ToggleRecordAsync().ConfigureAwait(false);
       Assert.True(response.OutputActive, "outputActive is not true.");
 
-      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      var changed = await ClientFlow.WaitEventAsync<RecordStateChanged>(client).ConfigureAwait(false);
       Assert.Equal(ObsOutputState.Starting, (changed as RecordStateChanged)!.OutputState);
-      changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      changed = await ClientFlow.WaitEventAsync<RecordStateChanged>(client).ConfigureAwait(false);
       Assert.Equal(ObsOutputState.Started, (changed as RecordStateChanged)!.OutputState);
 
       await Task.Delay(100).ConfigureAwait(false);
       response = await client.ToggleRecordAsync().ConfigureAwait(false);
       Assert.False(response.OutputActive, "outputActive is not false.");
 
-      changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      changed = await ClientFlow.WaitEventAsync<RecordStateChanged>(client).ConfigureAwait(false);
       Assert.Equal(ObsOutputState.Stopping, (changed as RecordStateChanged)!.OutputState);
-      changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      changed = await ClientFlow.WaitEventAsync<RecordStateChanged>(client).ConfigureAwait(false);
       Assert.Equal(ObsOutputState.Stopped, (changed as RecordStateChanged)!.OutputState);
     }
 

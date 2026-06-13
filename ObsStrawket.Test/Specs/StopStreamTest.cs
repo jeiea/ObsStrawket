@@ -14,9 +14,9 @@ namespace ObsStrawket.Test.Specs {
   class StopStreamFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       await client.StopStreamAsync().ConfigureAwait(false);
-      var stopping = await client.Events.ReadAsync().ConfigureAwait(false);
+      var stopping = await ClientFlow.WaitEventAsync<StreamStateChanged>(client).ConfigureAwait(false);
       Assert.Equal(ObsOutputState.Stopping, (stopping as StreamStateChanged)!.OutputState);
-      var stopped = await client.Events.ReadAsync().ConfigureAwait(false);
+      var stopped = await ClientFlow.WaitEventAsync<StreamStateChanged>(client).ConfigureAwait(false);
       Assert.Equal(ObsOutputState.Stopped, (stopped as StreamStateChanged)!.OutputState);
     }
 

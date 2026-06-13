@@ -14,9 +14,10 @@ namespace ObsStrawket.Test.Specs {
   }
 
   class SetCurrentSceneTransitionFlow : ITestFlow {
-    public static string TransitionName => "Swipe";
+    // Default transitions only; a fresh OBS has no user-added ones like Swipe.
+    public static string TransitionName => "Fade";
 
-    private static readonly string _spareTransition = "Fade";
+    private static readonly string _spareTransition = "Cut";
 
     public async Task RequestAsync(ObsClientSocket client) {
       await client.SetCurrentSceneTransitionAsync(transitionName: _spareTransition).ConfigureAwait(false);
@@ -39,7 +40,7 @@ namespace ObsStrawket.Test.Specs {
 {
   "d": {
     "requestData": {
-      "transitionName": "Fade"
+      "transitionName": "Cut"
     },
     "requestId": "{guid}",
     "requestType": "SetCurrentSceneTransition"
@@ -65,7 +66,7 @@ namespace ObsStrawket.Test.Specs {
 {
   "d": {
     "requestData": {
-      "transitionName": "Swipe"
+      "transitionName": "Fade"
     },
     "requestId": "{guid}",
     "requestType": "SetCurrentSceneTransition"
@@ -90,7 +91,7 @@ namespace ObsStrawket.Test.Specs {
 {
   "d": {
     "eventData": {
-      "transitionName": "Swipe"
+      "transitionName": "Fade"
     },
     "eventIntent": 16,
     "eventType": "CurrentSceneTransitionChanged"

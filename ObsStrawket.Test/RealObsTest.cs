@@ -75,7 +75,68 @@ namespace ObsStrawket.Test.Real {
       );
     }
 
-    [Fact]
+    [Fact(Timeout = 60 * 1000)]
+    public async Task TestUiAsync() {
+      var client = ClientFlow.GetDebugClient(useChannel: true);
+      try {
+        await client.ConnectAsync(_uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
+        const string sceneName = "UI test scene";
+        const string inputName = "UI test source";
+        await client.CreateSceneAsync(
+          sceneName,
+          cancellation: TestContext.Current.CancellationToken
+        );
+        await client.CreateInputAsync(
+          inputName: inputName,
+          inputKind: "browser_source",
+          sceneName: sceneName,
+          inputSettings: new Dictionary<string, JsonElement?>(),
+          sceneItemEnabled: true,
+          cancellation: TestContext.Current.CancellationToken
+        );
+
+        await _obs.ObserveWindowAsync(
+          "OpenInputPropertiesDialog",
+          () => client.OpenInputPropertiesDialogAsync(
+            inputName: inputName,
+            cancellation: TestContext.Current.CancellationToken
+          )
+        );
+        await _obs.ObserveWindowAsync(
+          "OpenInputFiltersDialog",
+          () => client.OpenInputFiltersDialogAsync(
+            inputName: inputName,
+            cancellation: TestContext.Current.CancellationToken
+          )
+        );
+        await _obs.ObserveWindowAsync(
+          "OpenInputInteractDialog",
+          () => client.OpenInputInteractDialogAsync(
+            inputName: inputName,
+            cancellation: TestContext.Current.CancellationToken
+          )
+        );
+        await _obs.ObserveWindowAsync(
+          "OpenSourceProjector",
+          () => client.OpenSourceProjectorAsync(
+            sourceName: inputName,
+            cancellation: TestContext.Current.CancellationToken
+          )
+        );
+        await _obs.ObserveWindowAsync(
+          "OpenVideoMixProjector",
+          () => client.OpenVideoMixProjectorAsync(
+            VideoMixType.Program,
+            cancellation: TestContext.Current.CancellationToken
+          )
+        );
+      }
+      finally {
+        await _obs.RestartAsync();
+      }
+    }
+
+    [Fact(Timeout = 2 * 60 * 1000)]
     public async Task TestSequenceAsync() {
       // xUnit doesn't support environment variable in visual studio runner.
       // But I want to do it.
@@ -96,161 +157,156 @@ namespace ObsStrawket.Test.Real {
         //new CallVendorRequestFlow(), // test how?
         //new SleepFlow(), // Not implemented
 
-        //new GetVersionFlow(), // General
-        //new GetStatsFlow(),
-        //new BroadcastCustomEventFlow(),
-        //new GetHotkeyListFlow(),
-        //new TriggerHotkeyByNameFlow(),
+        new GetVersionFlow(), // General
+        new GetStatsFlow(),
+        new BroadcastCustomEventFlow(),
+        new GetHotkeyListFlow(),
+        new TriggerHotkeyByNameFlow(),
 
-        //new TriggerHotkeyByKeySequenceFlow(), // Requires manual setup.
-        //new GetSpecialInputsFlow(), // Requires manual setup.
-        //new GetGroupSceneItemListFlow(), // Requires manual setup.
+        new TriggerHotkeyByKeySequenceFlow(), // Requires manual setup.
+        //new GetSpecialInputsFlow(), // Isolated OBS has no global audio sources.
+        //new GetGroupSceneItemListFlow(), // obs-websocket cannot create a group.
 
-        //new CreateProfileFlow(), // setup sandbox profile
+        new CreateProfileFlow(), // setup sandbox profile
 
-        //new SetProfileParameterFlow(), // Config
-        //new GetProfileParameterFlow(),
-        //new GetProfileListFlow(),
-        //new SetCurrentProfileFlow(),
-        //new SetVideoSettingsFlow(),
-        //new GetVideoSettingsFlow(),
-        //new SetPersistentDataFlow(),
-        //new GetPersistentDataFlow(),
-        //new GetRecordDirectoryFlow(),
-        //new SetRecordDirectoryFlow(),
+        new SetProfileParameterFlow(), // Config
+        new GetProfileParameterFlow(),
+        new GetProfileListFlow(),
+        new SetCurrentProfileFlow(),
+        new SetVideoSettingsFlow(),
+        new GetVideoSettingsFlow(),
+        new SetPersistentDataFlow(),
+        new GetPersistentDataFlow(),
+        new GetRecordDirectoryFlow(),
+        new SetRecordDirectoryFlow(),
 
-        //new GetTransitionKindListFlow(),
-        //new SetCurrentSceneTransitionFlow(), // Requires manual scene collection setup
-        //new SetCurrentSceneTransitionDurationFlow(), // Requires manual scene collection setup
-        //new SetCurrentSceneTransitionSettingsFlow(), // Requires manual scene collection setup
-        //new GetSceneTransitionListFlow(),
-        //new GetCurrentSceneTransitionFlow(),
-        //new GetCurrentSceneTransitionCursorFlow(),
+        new GetTransitionKindListFlow(),
+        new SetCurrentSceneTransitionFlow(),
+        new SetCurrentSceneTransitionDurationFlow(),
+        //new SetCurrentSceneTransitionSettingsFlow(), // Default transitions are not configurable.
+        new GetSceneTransitionListFlow(),
+        new GetCurrentSceneTransitionFlow(),
+        new GetCurrentSceneTransitionCursorFlow(),
 
-        //new CreateSceneCollectionFlow(), // setup sandbox scene collection
-        //new GetSceneCollectionListFlow(),
-        //new SetCurrentSceneCollectionFlow(),
+        new CreateSceneCollectionFlow(), // setup sandbox scene collection
+        new GetSceneCollectionListFlow(),
+        new SetCurrentSceneCollectionFlow(),
 
-        //new CreateSceneFlow(), // setup sandbox scene
-        //new GetSceneListFlow(),
+        new CreateSceneFlow(), // setup sandbox scene
+        new GetSceneListFlow(),
 
-        //new CreateInputFlow(), // Setup inputs
-        //new GetInputListFlow(),
-        //new GetInputKindListFlow(),
-        //new SetInputNameFlow(),
-        //new GetInputDefaultSettingsFlow(),
-        //new SetInputSettingsFlow(),
-        //new GetInputSettingsFlow(),
-        //new SetInputMuteFlow(),
-        //new GetInputMuteFlow(),
-        //new ToggleInputMuteFlow(),
-        //new SetInputVolumeFlow(),
-        //new GetInputVolumeFlow(),
-        //new SetInputAudioBalanceFlow(),
-        //new GetInputAudioBalanceFlow(),
-        //new SetInputAudioSyncOffsetFlow(),
-        //new GetInputAudioSyncOffsetFlow(),
-        //new SetInputAudioMonitorTypeFlow(),
-        //new GetInputAudioMonitorTypeFlow(),
-        //new SetInputAudioTracksFlow(),
-        //new GetInputAudioTracksFlow(),
-        //new GetInputPropertiesListPropertyItemsFlow(),
-        //new PressInputPropertiesButtonFlow(),
+        new CreateInputFlow(), // Setup inputs
+        new GetInputListFlow(),
+        new GetInputKindListFlow(),
+        new SetInputNameFlow(),
+        new GetInputDefaultSettingsFlow(),
+        new SetInputSettingsFlow(),
+        new GetInputSettingsFlow(),
+        new SetInputMuteFlow(),
+        new GetInputMuteFlow(),
+        new ToggleInputMuteFlow(),
+        new SetInputVolumeFlow(),
+        new GetInputVolumeFlow(),
+        new SetInputAudioBalanceFlow(),
+        new GetInputAudioBalanceFlow(),
+        new SetInputAudioSyncOffsetFlow(),
+        new GetInputAudioSyncOffsetFlow(),
+        new SetInputAudioMonitorTypeFlow(),
+        new GetInputAudioMonitorTypeFlow(),
+        new SetInputAudioTracksFlow(),
+        new GetInputAudioTracksFlow(),
+        new GetInputPropertiesListPropertyItemsFlow(),
+        new PressInputPropertiesButtonFlow(),
 
-        //new StartRecordFlow(), // Record
-        //new GetRecordStatusFlow(),
-        //new PauseRecordFlow(),
-        //new ResumeRecordFlow(),
-        //new ToggleRecordPauseFlow(),
-        //new StopRecordFlow(),
-        //new ToggleRecordFlow(),
+        new StartRecordFlow(), // Record
+        new GetRecordStatusFlow(),
+        new PauseRecordFlow(),
+        new ResumeRecordFlow(),
+        new ToggleRecordPauseFlow(),
+        new StopRecordFlow(),
+        new ToggleRecordFlow(),
 
-        //new SetStreamServiceSettingsFlow(), // Stream
-        //new GetStreamServiceSettingsFlow(),
-        //new StartStreamFlow(),
-        //new SendStreamCaptionFlow(),
-        //new GetStreamStatusFlow(),
-        //new StopStreamFlow(),
-        //new ToggleStreamFlow(),
+        new SetStreamServiceSettingsFlow(), // Stream
+        new GetStreamServiceSettingsFlow(),
+        //new StartStreamFlow(), // Requires a reachable stream server.
+        //new SendStreamCaptionFlow(), // Requires a reachable stream server.
+        //new GetStreamStatusFlow(), // Requires a reachable stream server.
+        //new StopStreamFlow(), // Requires a reachable stream server.
+        //new ToggleStreamFlow(), // Requires a reachable stream server.
 
-        //new SetStudioModeEnabledFlow(), // setup studio mode
-        //new SetCurrentProgramSceneFlow(),
-        //new GetCurrentProgramSceneFlow(),
-        //new SetCurrentPreviewSceneFlow(),
-        //new GetCurrentPreviewSceneFlow(),
-        //new TriggerStudioModeTransitionFlow(),
-        //new SetTBarPositionFlow(),
-        //new GetStudioModeEnabledFlow(), // reset studio mode to false
+        new SetStudioModeEnabledFlow(), // setup studio mode
+        new SetCurrentProgramSceneFlow(),
+        new GetCurrentProgramSceneFlow(),
+        new SetCurrentPreviewSceneFlow(),
+        new GetCurrentPreviewSceneFlow(),
+        new TriggerStudioModeTransitionFlow(),
+        new SetTBarPositionFlow(),
+        new GetStudioModeEnabledFlow(), // reset studio mode to false
 
-        //new SetMediaInputCursorFlow(), // setup
-        //new OffsetMediaInputCursorFlow(),
-        //new GetMediaInputStatusFlow(),
-        //new TriggerMediaInputActionFlow(), // cleanup
+        new SetMediaInputCursorFlow(), // setup
+        new OffsetMediaInputCursorFlow(),
+        new GetMediaInputStatusFlow(),
+        //new TriggerMediaInputActionFlow(), // Requires a real media source to emit action events.
 
-        //new CreateSourceFilterFlow(), // Filters
-        //new GetSourceFilterDefaultSettingsFlow(),
-        //new SetSourceFilterIndexFlow(),
-        //new GetSourceFilterListFlow(),
-        //new SetSourceFilterSettingsFlow(),
-        //new SetSourceFilterEnabledFlow(),
-        //new SetSourceFilterNameFlow(),
-        //new GetSourceFilterFlow(),
-        //new RemoveSourceFilterFlow(),
+        new CreateSourceFilterFlow(), // Filters
+        new GetSourceFilterDefaultSettingsFlow(),
+        new SetSourceFilterIndexFlow(),
+        new GetSourceFilterListFlow(),
+        new SetSourceFilterSettingsFlow(),
+        new SetSourceFilterEnabledFlow(),
+        new SetSourceFilterNameFlow(),
+        new GetSourceFilterFlow(),
+        new RemoveSourceFilterFlow(),
 
-        //new CreateSceneItemFlow(), // Setup scene item
-        //new DuplicateSceneItemFlow(),
-        //new GetSceneItemIdFlow(),
-        //new GetSceneItemListFlow(),
-        //new SetSceneItemEnabledFlow(),
-        //new GetSceneItemEnabledFlow(),
-        //new SetSceneItemLockedFlow(),
-        //new GetSceneItemLockedFlow(),
-        //new SetSceneItemTransformFlow(),
-        //new GetSceneItemTransformFlow(),
-        //new SetSceneItemBlendModeFlow(),
-        //new GetSceneItemBlendModeFlow(),
-        //new SetSceneItemIndexFlow(),
-        //new GetSceneItemIndexFlow(),
-        //new RemoveSceneItemFlow(),
+        new CreateSceneItemFlow(), // Setup scene item
+        new DuplicateSceneItemFlow(),
+        new GetSceneItemIdFlow(),
+        new GetSceneItemListFlow(),
+        new SetSceneItemEnabledFlow(),
+        new GetSceneItemEnabledFlow(),
+        new SetSceneItemLockedFlow(),
+        new GetSceneItemLockedFlow(),
+        new SetSceneItemTransformFlow(),
+        new GetSceneItemTransformFlow(),
+        new SetSceneItemBlendModeFlow(),
+        new GetSceneItemBlendModeFlow(),
+        new SetSceneItemIndexFlow(),
+        new GetSceneItemIndexFlow(),
+        new RemoveSceneItemFlow(),
 
-        //new GetOutputListFlow(), // Outputs
-        //new SetOutputSettingsFlow(),
-        //new GetOutputSettingsFlow(),
-        //new StartVirtualCamFlow(),
-        //new GetVirtualCamStatusFlow(),
-        //new StopVirtualCamFlow(),
-        //new ToggleVirtualCamFlow(),
-        //new StartReplayBufferFlow(),
-        //new GetReplayBufferStatusFlow(),
-        //new SaveReplayBufferFlow(),
-        //new GetLastReplayBufferReplayFlow(),
-        //new StopReplayBufferFlow(),
-        //new ToggleReplayBufferFlow(),
-        //new StartOutputFlow(),
-        //new GetOutputStatusFlow(),
-        //new StopOutputFlow(),
-        //new ToggleOutputFlow(),
+        new GetOutputListFlow(), // Outputs
+        new SetOutputSettingsFlow(),
+        new GetOutputSettingsFlow(),
+        new StartVirtualCamFlow(),
+        new GetVirtualCamStatusFlow(),
+        new StopVirtualCamFlow(),
+        new ToggleVirtualCamFlow(),
+        new StartReplayBufferFlow(),
+        new GetReplayBufferStatusFlow(),
+        new SaveReplayBufferFlow(),
+        new GetLastReplayBufferReplayFlow(),
+        new StopReplayBufferFlow(),
+        new ToggleReplayBufferFlow(),
+        new StartOutputFlow(),
+        new GetOutputStatusFlow(),
+        new StopOutputFlow(),
+        new ToggleOutputFlow(),
 
 
-        //new GetSourceActiveFlow(), // Sources
-        //new GetSourceScreenshotFlow(),
-        //new SaveSourceScreenshotFlow(),
+        new GetSourceActiveFlow(), // Sources
+        new GetSourceScreenshotFlow(),
+        new SaveSourceScreenshotFlow(),
 
-        //new GetGroupListFlow(),
-        //new SetSceneNameFlow(),
-        //new SetSceneSceneTransitionOverrideFlow(),
-        //new GetSceneSceneTransitionOverrideFlow(),
+        new GetGroupListFlow(),
+        new SetSceneNameFlow(),
+        new SetSceneSceneTransitionOverrideFlow(),
+        new GetSceneSceneTransitionOverrideFlow(),
 
-        //new GetMonitorListFlow(), // UI
-        //new OpenInputPropertiesDialogFlow(),
-        //new OpenInputFiltersDialogFlow(),
-        //new OpenInputInteractDialogFlow(),
-        //new OpenSourceProjectorFlow(),
-        //new OpenVideoMixProjectorFlow(),
+        new GetMonitorListFlow(), // UI
 
-        //new RemoveInputFlow(), // cleanup input
-        //new RemoveSceneFlow(),
-        //new RemoveProfileFlow(),
+        new RemoveInputFlow(), // cleanup input
+        new RemoveSceneFlow(),
+        new RemoveProfileFlow(),
       };
       foreach (var flow in flows) {
         Debug.WriteLine($"Test {flow.GetType().Name}");

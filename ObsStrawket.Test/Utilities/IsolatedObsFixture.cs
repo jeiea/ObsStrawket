@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -17,6 +19,7 @@ namespace ObsStrawket.Test.Utilities {
   /// </summary>
   public sealed class IsolatedObsFixture : IAsyncLifetime {
     private static readonly TimeSpan _bootTimeout = TimeSpan.FromSeconds(60);
+    private static readonly TimeSpan _windowTimeout = TimeSpan.FromSeconds(5);
     private static readonly string[] _junctionNames = ["bin", "data", "obs-plugins"];
 
     public bool IsAvailable => Uri != null;
@@ -48,20 +51,44 @@ namespace ObsStrawket.Test.Utilities {
       Uri = new Uri($"ws://127.0.0.1:{port}");
     }
 
+    public async Task ObserveWindowAsync(string requestName, Func<Task> request) {
+      var existing = GetWindows(visibleOnly: false);
+      await request().ConfigureAwait(false);
+      await WaitForNewWindowsAsync(requestName, existing).ConfigureAwait(false);
+    }
+
+    public async Task RestartAsync() {
+      await StopAsync(force: true).ConfigureAwait(false);
+      await InitializeAsync().ConfigureAwait(false);
+    }
+
     public async ValueTask DisposeAsync() {
+      await StopAsync(force: false).ConfigureAwait(false);
+    }
+
+    private async Task StopAsync(bool force) {
       if (_process is { } process) {
         if (!process.HasExited) {
-          process.CloseMainWindow();
-          if (!process.WaitForExit(10_000)) {
+          if (force) {
             process.Kill(entireProcessTree: true);
             process.WaitForExit(10_000);
           }
+          else {
+            process.CloseMainWindow();
+            if (!process.WaitForExit(10_000)) {
+              process.Kill(entireProcessTree: true);
+              process.WaitForExit(10_000);
+            }
+          }
         }
         process.Dispose();
+        _process = null;
       }
       if (_root != null) {
         await DeletePortableRootAsync(_root).ConfigureAwait(false);
+        _root = null;
       }
+      Uri = null;
     }
 
     private static string? FindInstalledObs() {
@@ -159,6 +186,32 @@ namespace ObsStrawket.Test.Utilities {
       throw new TimeoutException($"obs-websocket did not listen within {_bootTimeout}.{GetLogTail()}");
     }
 
+    private async Task<HashSet<nint>> WaitForNewWindowsAsync(string requestName, HashSet<nint> existing) {
+      var deadline = DateTime.UtcNow + _windowTimeout;
+      while (DateTime.UtcNow < deadline) {
+        var opened = GetWindows(visibleOnly: true);
+        opened.ExceptWith(existing);
+        if (opened.Count > 0) {
+          return opened;
+        }
+        await Task.Delay(100).ConfigureAwait(false);
+      }
+      throw new TimeoutException($"{requestName} did not open an OBS window within {_windowTimeout}.");
+    }
+
+    private HashSet<nint> GetWindows(bool visibleOnly) {
+      var windows = new HashSet<nint>();
+      uint processId = checked((uint)_process!.Id);
+      EnumWindows((window, _) => {
+        GetWindowThreadProcessId(window, out uint windowProcessId);
+        if (windowProcessId == processId && (!visibleOnly || IsWindowVisible(window))) {
+          windows.Add(window);
+        }
+        return true;
+      }, 0);
+      return windows;
+    }
+
     private string GetLogTail() {
       try {
         string logs = Path.Combine(_root!, "config", "obs-studio", "logs");
@@ -207,6 +260,19 @@ namespace ObsStrawket.Test.Utilities {
       listener.Stop();
       return port;
     }
+
+    private delegate bool EnumWindowsCallback(nint window, nint parameter);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool EnumWindows(EnumWindowsCallback callback, nint parameter);
+
+    [DllImport("user32.dll")]
+    private static extern uint GetWindowThreadProcessId(nint window, out uint processId);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool IsWindowVisible(nint window);
   }
 
   [CollectionDefinition("IsolatedObs")]

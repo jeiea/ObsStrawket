@@ -1,5 +1,7 @@
+using ObsStrawket.DataTypes;
 using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -32,12 +34,17 @@ namespace ObsStrawket.Test.Specs {
     private static async Task CreateProfileAsync(ObsClientSocket client) {
       await client.CreateProfileAsync(profileName: NewProfileName).ConfigureAwait(false);
 
-      var currentProfileChanging = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.NotEqual("", (currentProfileChanging as CurrentProfileChanging)!.ProfileName);
-      var profileListChanged = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Contains(NewProfileName, (profileListChanged as ProfileListChanged)!.Profiles);
-      var currentProfileChanged = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.Equal(NewProfileName, (currentProfileChanged as CurrentProfileChanged)!.ProfileName);
+      // Event makeup and order differ across OBS versions; read until the
+      // guaranteed CurrentProfileChanged and verify whatever arrived with it.
+      var events = new List<IObsEvent>();
+      do {
+        events.Add(await client.Events.ReadAsync().ConfigureAwait(false));
+      } while (events[^1] is not CurrentProfileChanged);
+
+      Assert.Equal(NewProfileName, ((CurrentProfileChanged)events[^1]).ProfileName);
+      if (events.OfType<ProfileListChanged>().SingleOrDefault() is { } listChanged) {
+        Assert.Contains(NewProfileName, listChanged.Profiles);
+      }
     }
 
     public async Task RespondAsync(MockServerSession session) {

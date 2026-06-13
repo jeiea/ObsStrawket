@@ -19,7 +19,7 @@ namespace ObsStrawket.Test.Specs {
         filterEnabled: false
       ).ConfigureAwait(false);
 
-      var changed = await client.Events.ReadAsync().ConfigureAwait(false);
+      var changed = await ClientFlow.WaitEventAsync<SourceFilterEnableStateChanged>(client).ConfigureAwait(false);
       Assert.False((changed as SourceFilterEnableStateChanged)!.FilterEnabled);
       Assert.Equal(CreateSourceFilterFlow.FilterName, (changed as SourceFilterEnableStateChanged)!.FilterName);
       Assert.Equal("Browser source", (changed as SourceFilterEnableStateChanged)!.SourceName);

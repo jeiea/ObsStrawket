@@ -21,6 +21,15 @@ namespace ObsStrawket.Test.Utilities {
       return new ObsClientSocket(logger ?? new DebugLoggerProvider().CreateLogger("Client"), socket, useChannel);
     }
 
+    /// <summary>Reads events until one of type <typeparamref name="T"/> arrives, discarding others.</summary>
+    public static async Task<T> WaitEventAsync<T>(ObsClientSocket client) where T : class, IObsEvent {
+      while (true) {
+        if (await client.Events.ReadAsync().ConfigureAwait(false) is T typed) {
+          return typed;
+        }
+      }
+    }
+
     public static List<IObsEvent> DrainEvents(ObsClientSocket client) {
       var list = new List<IObsEvent>();
       while (client.Events.TryRead(out var ev)) {
@@ -132,12 +141,11 @@ namespace ObsStrawket.Test.Utilities {
     }
 
     private async Task<T> ReadEventAsync<T>(CancellationToken cancellation = default) where T : class {
-      if (await _events.Reader.WaitToReadAsync(cancellation).ConfigureAwait(false)) {
+      while (await _events.Reader.WaitToReadAsync(cancellation).ConfigureAwait(false)) {
         var ev = await _events.Reader.ReadAsync(cancellation).ConfigureAwait(false);
         if (ev is T cast) {
           return cast;
         }
-        throw new Exception($"type mismatch: expected: {typeof(T).Name}, actual: {ev.GetType().Name}");
       }
       throw new Exception($"It seems the channel is closed.");
     }

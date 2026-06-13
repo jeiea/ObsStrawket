@@ -22,7 +22,7 @@ namespace ObsStrawket.Test.Specs {
         eventData: new Dictionary<string, JsonElement?> { { "sample", 3.ToJsonElement() } }
       ).ConfigureAwait(false);
 
-      var ev = await client.Events.ReadAsync().ConfigureAwait(false) as CustomEvent;
+      var ev = await ClientFlow.WaitEventAsync<CustomEvent>(client).ConfigureAwait(false);
       Assert.IsType<CustomEvent>(ev);
       Assert.Equal(3, ev.EventData["sample"]?.GetInt32());
     }
