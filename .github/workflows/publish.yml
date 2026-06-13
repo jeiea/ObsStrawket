@@ -8,19 +8,14 @@ env:
   HUSKY: 0
 
 jobs:
-  test:
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-    runs-on: ${{ matrix.os }}
+  ubuntu-test:
+    runs-on: ubuntu-latest
     env:
       DOTNET_NOLOGO: true
     outputs:
       version: ${{ steps.versioning.outputs.version }}
     steps:
       - uses: actions/checkout@main
-        with:
-          fetch-depth: 0
       - uses: actions/setup-dotnet@main
         with:
           dotnet-version: "10.0"
@@ -53,8 +48,6 @@ jobs:
       DOTNET_NOLOGO: true
     steps:
       - uses: actions/checkout@main
-        with:
-          fetch-depth: 0
       - uses: actions/setup-dotnet@main
         with:
           dotnet-version: "10.0"
@@ -85,13 +78,14 @@ jobs:
       - run: dotnet test
 
   publish:
-    needs: [test, windows-test]
-    if: needs.test.outputs.version && github.ref_name == 'main'
+    needs: [ubuntu-test, windows-test]
+    if: needs.ubuntu-test.outputs.version && github.ref_name == 'main'
     runs-on: ubuntu-latest
     environment: release
     permissions:
-      contents: write # tag push
-      id-token: write # nuget.org trusted publishing
+      attestations: write # package provenance
+      contents: write # tag and GitHub Release
+      id-token: write # attestation and nuget.org trusted publishing
     env:
       DOTNET_NOLOGO: true
     steps:
@@ -102,7 +96,49 @@ jobs:
         with:
           dotnet-version: "10.0"
       - name: dotnet pack
-        run: dotnet pack --include-source --configuration Release -p:Version=${{ needs.test.outputs.version }}
+        run: dotnet pack --include-source --configuration Release --output artifacts/package -p:Version=${{ needs.ubuntu-test.outputs.version }} -p:PublicRelease=true
+      - name: Prepare release notes
+        env:
+          VERSION: ${{ needs.ubuntu-test.outputs.version }}
+        run: |
+          awk -v heading="## $VERSION" '
+            { sub(/\r$/, "") }
+            $0 == heading { found = 1; next }
+            found && /^## / { exit }
+            found { print }
+            END { if (!found) exit 1 }
+          ' CHANGELOG.md > release-notes.md
+          test -s release-notes.md
+          cat >> release-notes.md <<EOF
+
+          ### Verify package provenance
+
+          \`\`\`shell
+          gh release verify "v$VERSION" --repo "$GITHUB_REPOSITORY"
+          \`\`\`
+          EOF
+      - name: Attest packages
+        uses: actions/attest@v4
+        with:
+          subject-path: artifacts/package/*.nupkg
+      - name: Create draft GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.ubuntu-test.outputs.version }}
+        run: |
+          tag="v$VERSION"
+          args=(
+            "$tag"
+            artifacts/package/*.nupkg
+            --draft
+            --notes-file release-notes.md
+            --target "$GITHUB_SHA"
+            --title "$tag"
+          )
+          if [[ "$VERSION" == *-* ]]; then
+            args+=(--prerelease --latest=false)
+          fi
+          gh release create "${args[@]}"
       - name: NuGet login (OIDC → temp API key)
         uses: NuGet/login@v1
         id: login
@@ -110,10 +146,11 @@ jobs:
           user: jeiea
       - name: Push package
         run: |
-          dotnet nuget push ObsStrawket/bin/Release/*.symbols.nupkg \
+          dotnet nuget push artifacts/package/*.symbols.nupkg \
             --api-key ${{ steps.login.outputs.NUGET_API_KEY }} \
             --source https://api.nuget.org/v3/index.json
-      - name: Tag release
-        run: |
-          git tag v${{ needs.test.outputs.version }}
-          git push origin v${{ needs.test.outputs.version }}
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.ubuntu-test.outputs.version }}
+        run: gh release edit "v$VERSION" --draft=false
