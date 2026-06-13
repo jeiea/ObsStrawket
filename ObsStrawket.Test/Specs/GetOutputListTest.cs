@@ -6,17 +6,26 @@ namespace ObsStrawket.Test.Specs {
   public class GetOutputListTest {
     [Fact]
     public async Task TestAsync() {
-      await SpecTester.TestAsync(new GetOutputListFlow());
+      await SpecTester.TestAsync(new GetOutputListFlow(uint.MaxValue));
     }
   }
 
   class GetOutputListFlow : ITestFlow {
+    private readonly uint? _expectedThirdOutputHeight;
+
+    public GetOutputListFlow(uint? expectedThirdOutputHeight = null) {
+      _expectedThirdOutputHeight = expectedThirdOutputHeight;
+    }
+
     public static string OutputName => "Replay Buffer";
 
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetOutputListAsync().ConfigureAwait(false);
       Assert.NotEmpty(response.Outputs);
       Assert.True(response.Outputs[0].Flags.HasFlag(DataTypes.OutputFlags.Video));
+      if (_expectedThirdOutputHeight is uint expected) {
+        Assert.Equal(expected, response.Outputs[2].Height);
+      }
     }
 
     public async Task RespondAsync(MockServerSession session) {
@@ -78,7 +87,7 @@ namespace ObsStrawket.Test.Specs {
             "OBS_OUTPUT_SERVICE": false,
             "OBS_OUTPUT_VIDEO": true
           },
-          "outputHeight": 720,
+          "outputHeight": 4294967295,
           "outputKind": "virtualcam_output",
           "outputName": "virtualcam_output",
           "outputWidth": 1280

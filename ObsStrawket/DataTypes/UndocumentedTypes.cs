@@ -76,13 +76,13 @@ namespace ObsStrawket.DataTypes {
     /// Video width.
     /// </summary>
     [JsonPropertyName("outputWidth")]
-    public int Width { get; set; }
+    public uint Width { get; set; }
 
     /// <summary>
     /// Video height.
     /// </summary>
     [JsonPropertyName("outputHeight")]
-    public int Height { get; set; }
+    public uint Height { get; set; }
 
     /// <summary>
     /// Whether it is recorded or streamed.

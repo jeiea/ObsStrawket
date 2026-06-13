@@ -46,6 +46,7 @@ jobs:
     runs-on: windows-latest
     env:
       DOTNET_NOLOGO: true
+      OBSSTRAWKET_TEST_ARTIFACTS: ${{ runner.temp }}/obsstrawket-diagnostics
     steps:
       - uses: actions/checkout@main
       - uses: actions/setup-dotnet@main
@@ -76,6 +77,14 @@ jobs:
           Expand-Archive $archive $pluginRoot
           "OBSSTRAWKET_TEST_PLUGIN_ROOT=$pluginRoot" >> $env:GITHUB_ENV
       - run: dotnet test
+      - name: Upload OBS diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: obs-diagnostics
+          path: ${{ runner.temp }}/obsstrawket-diagnostics
+          if-no-files-found: ignore
+          retention-days: 7
 
   publish:
     needs: [ubuntu-test, windows-test]

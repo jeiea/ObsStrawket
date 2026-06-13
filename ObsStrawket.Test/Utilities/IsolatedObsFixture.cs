@@ -26,6 +26,7 @@ namespace ObsStrawket.Test.Utilities {
     private static readonly string[] _junctionNames = ["bin", "data", "obs-plugins"];
 
     public bool IsAvailable => Uri != null;
+    public bool HasExited => _process?.HasExited == true;
     public bool HasVendorPlugin => GetVendorPluginRoot() != null;
     public Uri? Uri { get; private set; }
     public string Password { get; } = MockServer.Password;
@@ -74,11 +75,30 @@ namespace ObsStrawket.Test.Utilities {
       await InitializeAsync().ConfigureAwait(false);
     }
 
+    public void RecordOperation(string message) {
+      string line = $"{DateTimeOffset.UtcNow:O} {message}";
+      TestContext.Current.TestOutputHelper?.WriteLine(line);
+      if (_root != null) {
+        File.AppendAllText(Path.Combine(_root, "test-operations.log"), line + Environment.NewLine);
+      }
+    }
+
+    public Exception AddProcessDiagnostics(Exception exception) {
+      if (_process is not { HasExited: true } process) {
+        return exception;
+      }
+      return new InvalidOperationException(
+        $"OBS exited with code {FormatExitCode(process.ExitCode)}.{GetLogTail()}",
+        exception
+      );
+    }
+
     public async ValueTask DisposeAsync() {
       await StopAsync(force: false).ConfigureAwait(false);
     }
 
     private async Task StopAsync(bool force) {
+      string processState = "not started";
       if (_process is { } process) {
         if (!process.HasExited) {
           if (force) {
@@ -93,10 +113,20 @@ namespace ObsStrawket.Test.Utilities {
             }
           }
         }
+        processState = $"exited with code {FormatExitCode(process.ExitCode)}";
         process.Dispose();
         _process = null;
       }
       if (_root != null) {
+        try {
+          ArchiveDiagnostics(_root, processState);
+        }
+        catch (IOException ex) {
+          TestContext.Current.TestOutputHelper?.WriteLine($"Failed to archive OBS diagnostics: {ex.Message}");
+        }
+        catch (UnauthorizedAccessException ex) {
+          TestContext.Current.TestOutputHelper?.WriteLine($"Failed to archive OBS diagnostics: {ex.Message}");
+        }
         await DeletePortableRootAsync(_root).ConfigureAwait(false);
         _root = null;
       }
@@ -297,6 +327,55 @@ namespace ObsStrawket.Test.Utilities {
       catch (UnauthorizedAccessException) {
         return "";
       }
+    }
+
+    private static void ArchiveDiagnostics(string root, string processState) {
+      string? artifacts = Environment.GetEnvironmentVariable("OBSSTRAWKET_TEST_ARTIFACTS");
+      if (artifacts == null) {
+        return;
+      }
+
+      string destination = Path.Combine(artifacts, Path.GetFileName(root));
+      Directory.CreateDirectory(destination);
+      File.WriteAllText(
+        Path.Combine(destination, "process.txt"),
+        $"{DateTimeOffset.UtcNow:O} {processState}{Environment.NewLine}"
+      );
+      CopyFileIfExists(
+        Path.Combine(root, "test-operations.log"),
+        Path.Combine(destination, "test-operations.log")
+      );
+      CopyDirectoryIfExists(
+        Path.Combine(root, "config", "obs-studio", "logs"),
+        Path.Combine(destination, "logs")
+      );
+      CopyDirectoryIfExists(
+        Path.Combine(root, "config", "obs-studio", "crashes"),
+        Path.Combine(destination, "crashes")
+      );
+    }
+
+    private static void CopyFileIfExists(string source, string destination) {
+      if (File.Exists(source)) {
+        File.Copy(source, destination, overwrite: true);
+      }
+    }
+
+    private static void CopyDirectoryIfExists(string source, string destination) {
+      if (!Directory.Exists(source)) {
+        return;
+      }
+      Directory.CreateDirectory(destination);
+      foreach (string file in Directory.EnumerateFiles(source)) {
+        File.Copy(file, Path.Combine(destination, Path.GetFileName(file)), overwrite: true);
+      }
+      foreach (string directory in Directory.EnumerateDirectories(source)) {
+        CopyDirectoryIfExists(directory, Path.Combine(destination, Path.GetFileName(directory)));
+      }
+    }
+
+    private static string FormatExitCode(int exitCode) {
+      return $"{exitCode} (0x{unchecked((uint)exitCode):X8})";
     }
 
     private static async Task DeletePortableRootAsync(string root) {

@@ -481,12 +481,30 @@ namespace ObsStrawket.Test {
         new RemoveProfileFlow(),
       };
       foreach (var flow in flows) {
-        Debug.WriteLine($"Test {flow.GetType().Name}");
+        string flowName = flow.GetType().Name;
+        _obs.RecordOperation($"Starting {flowName}");
         while (client.Events.TryPeek(out _)) {
           ClientFlow.DrainEvents(client);
           await Task.Delay(100, TestContext.Current.CancellationToken);
         }
-        await flow.RequestAsync(client);
+        try {
+          await flow.RequestAsync(client);
+          _obs.RecordOperation($"Completed {flowName}");
+        }
+        catch (Exception ex) {
+          _obs.RecordOperation($"Failed {flowName}: {ex.GetType().Name}: {ex.Message}");
+          if (!_obs.HasExited) {
+            throw;
+          }
+          var failure = _obs.AddProcessDiagnostics(ex);
+          try {
+            await _obs.RestartAsync();
+          }
+          catch (Exception restartException) {
+            throw new AggregateException(failure, restartException);
+          }
+          throw failure;
+        }
       }
       await new CanvasUuidRealFlow().RequestAsync(client);
       return;
