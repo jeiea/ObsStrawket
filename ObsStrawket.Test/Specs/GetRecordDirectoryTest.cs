@@ -28,7 +28,7 @@ namespace ObsStrawket.Test.Specs {
 }
 """).ConfigureAwait(false);
 
-    await session.SendAsync($$"""
+      await session.SendAsync($$"""
 {
   "d": {
     "requestId": "{{guid}}",

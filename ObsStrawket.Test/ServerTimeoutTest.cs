@@ -36,15 +36,15 @@ namespace ObsStrawket.Test {
         Assert.Fail("Exception not fired.");
       }
       catch (OperationCanceledException e) {
-      /*
-        System.OperationCanceledException : The operation was canceled.
-        ---- System.IO.IOException : Unable to write data to the transport connection: An existing connection was forcibly closed by the remote host..
-        -------- System.Net.Sockets.SocketException : An existing connection was forcibly closed by the remote host.
+        /*
+          System.OperationCanceledException : The operation was canceled.
+          ---- System.IO.IOException : Unable to write data to the transport connection: An existing connection was forcibly closed by the remote host..
+          -------- System.Net.Sockets.SocketException : An existing connection was forcibly closed by the remote host.
 
-        Stack Trace:
-          System.Net.WebSockets.ManagedWebSocket.SendFrameFallbackAsync(MessageOpcode opcode, Boolean endOfMessage, Boolean disableCompression, ReadOnlyMemory`1 payloadBuffer, Task lockTask, CancellationToken cancellationToken)
-          ObsStrawket.SendPipeline.SendExclusivelyAsync(Deferred`1 item, Int32 messageLength, ReadResult readResult) in ObsStrawket\SendPipeline.cs:line 120
-       */
+          Stack Trace:
+            System.Net.WebSockets.ManagedWebSocket.SendFrameFallbackAsync(MessageOpcode opcode, Boolean endOfMessage, Boolean disableCompression, ReadOnlyMemory`1 payloadBuffer, Task lockTask, CancellationToken cancellationToken)
+            ObsStrawket.SendPipeline.SendExclusivelyAsync(Deferred`1 item, Int32 messageLength, ReadResult readResult) in ObsStrawket\SendPipeline.cs:line 120
+         */
         Debug.WriteLine($"Expected exception: {e.Message}");
       }
       catch (WebSocketException e) {
