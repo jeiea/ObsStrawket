@@ -22,14 +22,15 @@ namespace ObsStrawket.Test.Specs {
       ).ConfigureAwait(false);
       Assert.Equal(CreatedItemId, response.SceneItemId);
 
-      var created = await ClientFlow.WaitEventAsync<SceneItemCreated>(client).ConfigureAwait(false);
-      Assert.Equal(CreateSceneFlow.NewScene, (created as SceneItemCreated)!.SceneName);
-      Assert.Equal(CreateInputFlow.InputName, (created as SceneItemCreated)!.SourceName);
-      Assert.Equal(response.SceneItemId, (created as SceneItemCreated)!.SceneItemId);
-
-      var selected = await ClientFlow.WaitEventAsync<SceneItemSelected>(client).ConfigureAwait(false);
-      Assert.Equal(CreateSceneFlow.NewScene, (selected as SceneItemSelected)!.SceneName);
-      Assert.Equal(response.SceneItemId, (selected as SceneItemSelected)!.SceneItemId);
+      var (created, selected) = await ClientFlow.WaitEventsAsync<SceneItemCreated, SceneItemSelected>(
+        client,
+        e => e.SceneItemId == response.SceneItemId,
+        e => e.SceneItemId == response.SceneItemId).ConfigureAwait(false);
+      Assert.Equal(CreateSceneFlow.NewScene, created.SceneName);
+      Assert.Equal(CreateInputFlow.InputName, created.SourceName);
+      Assert.Equal(response.SceneItemId, created.SceneItemId);
+      Assert.Equal(CreateSceneFlow.NewScene, selected.SceneName);
+      Assert.Equal(response.SceneItemId, selected.SceneItemId);
     }
 
     public async Task RespondAsync(MockServerSession session) {

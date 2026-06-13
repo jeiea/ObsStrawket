@@ -20,23 +20,26 @@ namespace ObsStrawket.Test.Specs {
         mediaAction: MediaInputAction.Stop
       ).ConfigureAwait(false);
 
-      var triggered = await ClientFlow.WaitEventAsync<MediaInputActionTriggered>(client).ConfigureAwait(false);
-      Assert.Equal(MediaInputAction.Stop, (triggered as MediaInputActionTriggered)!.MediaAction);
-      var ended = await ClientFlow.WaitEventAsync<MediaInputPlaybackEnded>(client).ConfigureAwait(false);
-      Assert.Equal(CreateInputFlow.MediaInputName, (ended as MediaInputPlaybackEnded)!.InputName);
+      var (triggered, playbackEnded) = await ClientFlow.WaitEventsAsync<MediaInputActionTriggered, MediaInputPlaybackEnded>(
+        client,
+        e => e.MediaAction == MediaInputAction.Stop,
+        e => e.InputName == CreateInputFlow.MediaInputName).ConfigureAwait(false);
+      Assert.Equal(MediaInputAction.Stop, triggered.MediaAction);
+      Assert.Equal(CreateInputFlow.MediaInputName, playbackEnded.InputName);
 
       await client.TriggerMediaInputActionAsync(
         inputName: CreateInputFlow.MediaInputName,
         mediaAction: MediaInputAction.Play
       ).ConfigureAwait(false);
 
-      var events = await client.Events.ReadAllAsync().Take(2).ToListAsync().ConfigureAwait(false);
-      Assert.Contains(events, x => x is MediaInputActionTriggered triggered && triggered.MediaAction == MediaInputAction.Play);
-      Assert.Contains(events, x => x is MediaInputPlaybackStarted started && started.InputName == CreateInputFlow.MediaInputName);
+      await ClientFlow.WaitEventsAsync<MediaInputActionTriggered, MediaInputPlaybackStarted>(
+        client,
+        e => e.MediaAction == MediaInputAction.Play,
+        e => e.InputName == CreateInputFlow.MediaInputName).ConfigureAwait(false);
 #pragma warning restore CS0612 // Type or member is obsolete
 
       await client.RemoveInputAsync(CreateInputFlow.MediaInputName).ConfigureAwait(false);
-      await client.Events.ReadAllAsync().OfType<InputRemoved>().FirstAsync().ConfigureAwait(false);
+      await ClientFlow.WaitEventAsync<InputRemoved>(client).ConfigureAwait(false);
       await Task.Delay(100).ConfigureAwait(false);
     }
 

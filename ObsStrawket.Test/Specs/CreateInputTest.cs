@@ -2,7 +2,6 @@ using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -27,14 +26,17 @@ namespace ObsStrawket.Test.Specs {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.CreateInputAsync(sceneName: CreateSceneFlow.NewScene, inputName: InputName, inputKind: "browser_source", inputSettings: [], sceneItemEnabled: true).ConfigureAwait(false);
       Assert.NotInRange(response.SceneItemId, int.MinValue, 0);
-      var created = await ClientFlow.WaitEventAsync<InputCreated>(client).ConfigureAwait(false);
-      Assert.Equal(InputName, (created as InputCreated)!.InputName);
-      Assert.Equal(InputKind, (created as InputCreated)!.UnversionedInputKind);
-      Assert.Equal(InputKind, (created as InputCreated)!.InputKind);
-      Assert.NotEqual(0, (created as InputCreated)!.InputKindCaps);
-      var sceneItemCreated = await client.Events.ReadAllAsync().OfType<SceneItemCreated>().FirstAsync().ConfigureAwait(false);
+      var (created, sceneItemCreated, sceneItemSelected) =
+        await ClientFlow.WaitEventsAsync<InputCreated, SceneItemCreated, SceneItemSelected>(
+          client,
+          e => e.InputName == InputName,
+          e => e.SceneItemId == response.SceneItemId,
+          e => e.SceneItemId == response.SceneItemId).ConfigureAwait(false);
+      Assert.Equal(InputName, created.InputName);
+      Assert.Equal(InputKind, created.UnversionedInputKind);
+      Assert.Equal(InputKind, created.InputKind);
+      Assert.NotEqual(0, created.InputKindCaps);
       Assert.Equal(response.SceneItemId, sceneItemCreated.SceneItemId);
-      var sceneItemSelected = await client.Events.ReadAllAsync().OfType<SceneItemSelected>().FirstAsync().ConfigureAwait(false);
       Assert.Equal(response.SceneItemId, sceneItemSelected.SceneItemId);
       Assert.Equal(CreateSceneFlow.NewScene, sceneItemSelected.SceneName);
 
@@ -52,14 +54,17 @@ namespace ObsStrawket.Test.Specs {
       ).ConfigureAwait(false);
 
       Assert.NotInRange(response.SceneItemId, int.MinValue, 0);
-      created = await ClientFlow.WaitEventAsync<InputCreated>(client).ConfigureAwait(false);
-      Assert.Equal(MediaInputName, (created as InputCreated)!.InputName);
-      Assert.Equal(MediaInputKind, (created as InputCreated)!.UnversionedInputKind);
-      Assert.Equal(MediaInputKind, (created as InputCreated)!.InputKind);
-      Assert.NotEqual(0, (created as InputCreated)!.InputKindCaps);
-      sceneItemCreated = await client.Events.ReadAllAsync().OfType<SceneItemCreated>().FirstAsync().ConfigureAwait(false);
+      (created, sceneItemCreated, sceneItemSelected) =
+        await ClientFlow.WaitEventsAsync<InputCreated, SceneItemCreated, SceneItemSelected>(
+          client,
+          e => e.InputName == MediaInputName,
+          e => e.SceneItemId == response.SceneItemId,
+          e => e.SceneItemId == response.SceneItemId).ConfigureAwait(false);
+      Assert.Equal(MediaInputName, created.InputName);
+      Assert.Equal(MediaInputKind, created.UnversionedInputKind);
+      Assert.Equal(MediaInputKind, created.InputKind);
+      Assert.NotEqual(0, created.InputKindCaps);
       Assert.Equal(response.SceneItemId, sceneItemCreated.SceneItemId);
-      sceneItemSelected = await client.Events.ReadAllAsync().OfType<SceneItemSelected>().FirstAsync().ConfigureAwait(false);
       Assert.Equal(response.SceneItemId, sceneItemSelected.SceneItemId);
       Assert.Equal(CreateSceneFlow.NewScene, sceneItemSelected.SceneName);
     }

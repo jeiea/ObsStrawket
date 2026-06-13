@@ -13,6 +13,7 @@ using Xunit;
 namespace ObsStrawket.Test.Utilities {
 
   internal class ClientFlow {
+    private static readonly TimeSpan DefaultEventWaitTimeout = TimeSpan.FromSeconds(30);
     private readonly Channel<IObsEvent> _events = Channel.CreateUnbounded<IObsEvent>();
 
     public static ObsClientSocket GetDebugClient(ClientSocket? socket = null, bool useChannel = false) {
@@ -28,6 +29,99 @@ namespace ObsStrawket.Test.Utilities {
           return typed;
         }
       }
+    }
+
+    /// <summary>
+    /// Collects two correlated events regardless of arrival order. OBS may emit related events
+    /// in a different order, so awaiting them one-by-one can discard an event needed later.
+    /// </summary>
+    public static async Task<(T1, T2)> WaitEventsAsync<T1, T2>(
+        ObsClientSocket client, Func<T1, bool> match1, Func<T2, bool> match2,
+        CancellationToken cancellation = default)
+        where T1 : class, IObsEvent where T2 : class, IObsEvent {
+      var events = await WaitEventsAsync(
+        client,
+        cancellation,
+        DefaultEventWaitTimeout,
+        e => e is T1 first && match1(first),
+        e => e is T2 second && match2(second)
+      ).ConfigureAwait(false);
+      return ((T1)events[0], (T2)events[1]);
+    }
+
+    /// <summary>Collects three correlated events regardless of arrival order.</summary>
+    public static async Task<(T1, T2, T3)> WaitEventsAsync<T1, T2, T3>(
+        ObsClientSocket client, Func<T1, bool> match1, Func<T2, bool> match2, Func<T3, bool> match3,
+        CancellationToken cancellation = default)
+        where T1 : class, IObsEvent where T2 : class, IObsEvent where T3 : class, IObsEvent {
+      var events = await WaitEventsAsync(
+        client,
+        cancellation,
+        DefaultEventWaitTimeout,
+        e => e is T1 first && match1(first),
+        e => e is T2 second && match2(second),
+        e => e is T3 third && match3(third)
+      ).ConfigureAwait(false);
+      return ((T1)events[0], (T2)events[1], (T3)events[2]);
+    }
+
+    /// <summary>Collects one event per matcher, regardless of arrival order, for flows that need
+    /// four or more correlated events. Each matcher consumes the first event it accepts.</summary>
+    public static Task<IReadOnlyList<IObsEvent>> WaitEventsAsync(
+        ObsClientSocket client, params Predicate<IObsEvent>[] matchers
+    ) => WaitEventsAsync(client, default, DefaultEventWaitTimeout, matchers);
+
+    public static Task<IReadOnlyList<IObsEvent>> WaitEventsAsync(
+        ObsClientSocket client,
+        CancellationToken cancellation,
+        params Predicate<IObsEvent>[] matchers
+    ) => WaitEventsAsync(client, cancellation, DefaultEventWaitTimeout, matchers);
+
+    public static async Task<IReadOnlyList<IObsEvent>> WaitEventsAsync(
+        ObsClientSocket client,
+        CancellationToken cancellation,
+        TimeSpan timeout,
+        params Predicate<IObsEvent>[] matchers) {
+      if (timeout <= TimeSpan.Zero) {
+        throw new ArgumentOutOfRangeException(nameof(timeout), timeout, "Timeout must be positive.");
+      }
+      var results = new IObsEvent?[matchers.Length];
+      int remaining = matchers.Length;
+      cancellation = cancellation.CanBeCanceled
+        ? cancellation
+        : TestContext.Current.CancellationToken;
+      using var timeoutCancellation = new CancellationTokenSource(timeout);
+      using var linkedCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+        cancellation,
+        timeoutCancellation.Token
+      );
+      try {
+        while (remaining > 0) {
+          var ev = await client.Events.ReadAsync(linkedCancellation.Token).ConfigureAwait(false);
+          for (int i = 0; i < matchers.Length; i++) {
+            if (results[i] is null && matchers[i](ev)) {
+              results[i] = ev;
+              remaining--;
+              break;
+            }
+          }
+        }
+      }
+      catch (OperationCanceledException exception)
+          when (timeoutCancellation.IsCancellationRequested && !cancellation.IsCancellationRequested) {
+        var unmatched = new List<int>(remaining);
+        for (int i = 0; i < results.Length; i++) {
+          if (results[i] is null) {
+            unmatched.Add(i);
+          }
+        }
+        throw new TimeoutException(
+          $"Timed out after {timeout} waiting for correlated events. "
+            + $"Unmatched matcher indexes: {string.Join(", ", unmatched)}.",
+          exception
+        );
+      }
+      return results!;
     }
 
     public static List<IObsEvent> DrainEvents(ObsClientSocket client) {

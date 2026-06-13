@@ -1,6 +1,5 @@
 using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -15,13 +14,11 @@ namespace ObsStrawket.Test.Specs {
   class SetCurrentProgramSceneFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       await client.SetCurrentProgramSceneAsync(sceneName: CreateSceneFlow.NewScene2).ConfigureAwait(false);
-      var started = await ClientFlow.WaitEventAsync<SceneTransitionStarted>(client).ConfigureAwait(false);
-      Assert.NotEqual("", (started as SceneTransitionStarted)!.TransitionName);
-      var ended = await ClientFlow.WaitEventAsync<SceneTransitionVideoEnded>(client).ConfigureAwait(false);
-      Assert.NotEqual("", (ended as SceneTransitionVideoEnded)!.TransitionName);
-      var events = await client.Events.ReadAllAsync().Take(2).ToListAsync().ConfigureAwait(false);
-      Assert.Contains(events, (x) => x is CurrentProgramSceneChanged changed && changed.SceneName == CreateSceneFlow.NewScene2);
-      Assert.Contains(events, (x) => x is SceneTransitionEnded ended && ended.TransitionName != "");
+      await ClientFlow.WaitEventsAsync(client,
+        e => e is SceneTransitionStarted started && started.TransitionName != "",
+        e => e is SceneTransitionVideoEnded videoEnded && videoEnded.TransitionName != "",
+        e => e is CurrentProgramSceneChanged changed && changed.SceneName == CreateSceneFlow.NewScene2,
+        e => e is SceneTransitionEnded ended && ended.TransitionName != "").ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {

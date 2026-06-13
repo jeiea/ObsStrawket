@@ -16,14 +16,12 @@ namespace ObsStrawket.Test.Specs {
     public async Task RequestAsync(ObsClientSocket client) {
       await client.TriggerStudioModeTransitionAsync().ConfigureAwait(false);
 
-      var started = await ClientFlow.WaitEventAsync<SceneTransitionStarted>(client).ConfigureAwait(false);
-      Assert.Equal("Fade", (started as SceneTransitionStarted)!.TransitionName);
-      var ended = await ClientFlow.WaitEventAsync<SceneTransitionVideoEnded>(client).ConfigureAwait(false);
-      Assert.Equal("Fade", (ended as SceneTransitionVideoEnded)!.TransitionName);
-      var events = await client.Events.ReadAllAsync().Take(3).ToListAsync().ConfigureAwait(false);
-      Assert.Contains(events, (x) => x is CurrentPreviewSceneChanged changed && changed.SceneName == CreateSceneFlow.NewScene2);
-      Assert.Contains(events, (x) => x is CurrentProgramSceneChanged changed && changed.SceneName == CreateSceneFlow.NewScene);
-      Assert.Contains(events, (x) => x is SceneTransitionEnded ended && ended.TransitionName == "Fade");
+      await ClientFlow.WaitEventsAsync(client,
+        e => e is SceneTransitionStarted started && started.TransitionName == "Fade",
+        e => e is SceneTransitionVideoEnded videoEnded && videoEnded.TransitionName == "Fade",
+        e => e is CurrentPreviewSceneChanged preview && preview.SceneName == CreateSceneFlow.NewScene2,
+        e => e is CurrentProgramSceneChanged program && program.SceneName == CreateSceneFlow.NewScene,
+        e => e is SceneTransitionEnded ended && ended.TransitionName == "Fade").ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
