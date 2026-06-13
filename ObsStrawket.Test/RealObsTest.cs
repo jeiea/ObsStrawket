@@ -121,7 +121,11 @@ namespace ObsStrawket.Test {
         );
         client.SceneItemTransformChanged += ev => CompleteWhen(
           transform,
-          ev.SceneItemId == created.SceneItemId,
+          ev.SceneItemId == created.SceneItemId
+            && ev.SceneName == sceneName
+            && ev.SceneItemTransform.TryGetValue("positionX", out var positionX)
+            && positionX is { ValueKind: JsonValueKind.Number } value
+            && value.GetDouble() == 123.0,
           ev
         );
         await client.SetSceneItemTransformAsync(
