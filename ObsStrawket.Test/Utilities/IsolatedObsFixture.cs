@@ -133,8 +133,23 @@ namespace ObsStrawket.Test.Utilities {
       Directory.CreateDirectory(profile);
       // OBS ini values treat backslashes as escapes; use forward slashes.
       File.WriteAllText(Path.Combine(profile, "basic.ini"), $"""
+        [Output]
+        Mode=Advanced
+        FilenameFormatting=%CCYY-%MM-%DD %hh-%mm-%ss
+
+        [AdvOut]
+        RecType=Standard
+        RecEncoder=obs_x264
+        RecAudioEncoder=ffmpeg_aac
+        RecTracks=1
+        RecFilePath={recordings.Replace('\\', '/')}
+        RecFormat2=hybrid_mp4
+        RecSplitFile=true
+        RecSplitFileType=Manual
+
         [SimpleOutput]
         FilePath={recordings.Replace('\\', '/')}
+        RecFormat2=hybrid_mp4
 
         """);
 

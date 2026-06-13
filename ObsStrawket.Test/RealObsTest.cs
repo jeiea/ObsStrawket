@@ -158,6 +158,7 @@ namespace ObsStrawket.Test.Real {
         //new SleepFlow(), // Not implemented
 
         new GetVersionFlow(), // General
+        new GetCanvasListFlow(),
         new GetStatsFlow(),
         new BroadcastCustomEventFlow(),
         new GetHotkeyListFlow(),
@@ -196,6 +197,7 @@ namespace ObsStrawket.Test.Real {
         new GetSceneListFlow(),
 
         new CreateInputFlow(), // Setup inputs
+        new InputDeinterlaceFlow(),
         new GetInputListFlow(),
         new GetInputKindListFlow(),
         new SetInputNameFlow(),
@@ -220,6 +222,7 @@ namespace ObsStrawket.Test.Real {
 
         new StartRecordFlow(), // Record
         new GetRecordStatusFlow(),
+        new RecordFileFlow(),
         new PauseRecordFlow(),
         new ResumeRecordFlow(),
         new ToggleRecordPauseFlow(),
@@ -316,6 +319,7 @@ namespace ObsStrawket.Test.Real {
         }
         await flow.RequestAsync(client);
       }
+      await new CanvasUuidRealFlow().RequestAsync(client);
       return;
     }
   }

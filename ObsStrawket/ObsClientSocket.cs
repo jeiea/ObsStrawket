@@ -2579,6 +2579,10 @@ namespace ObsStrawket {
 
     private void DispatchSpecificEvent(IObsEvent message) {
       switch (message) {
+      case CanvasesEvent canvases:
+        DispatchCanvasesEvent(canvases);
+        break;
+
       case GeneralEvent general:
         DispatchGeneralEvent(general);
         break;
@@ -2621,6 +2625,23 @@ namespace ObsStrawket {
 
       default:
         _logger?.LogWarning("Ignore unclassified event");
+        break;
+      }
+    }
+
+    private void DispatchCanvasesEvent(CanvasesEvent canvases) {
+      CanvasesEvent(canvases);
+      switch (canvases) {
+      case CanvasCreated ev:
+        CanvasCreated(ev);
+        break;
+
+      case CanvasRemoved ev:
+        CanvasRemoved(ev);
+        break;
+
+      case CanvasNameChanged ev:
+        CanvasNameChanged(ev);
         break;
       }
     }
@@ -2845,6 +2866,10 @@ namespace ObsStrawket {
 
       case RecordStateChanged ev:
         RecordStateChanged(ev);
+        break;
+
+      case RecordFileChanged ev:
+        RecordFileChanged(ev);
         break;
 
       case ReplayBufferStateChanged ev:

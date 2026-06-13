@@ -31,6 +31,7 @@ namespace ObsStrawket.Test.Specs {
       Assert.Equal(InputName, (created as InputCreated)!.InputName);
       Assert.Equal(InputKind, (created as InputCreated)!.UnversionedInputKind);
       Assert.Equal(InputKind, (created as InputCreated)!.InputKind);
+      Assert.NotEqual(0, (created as InputCreated)!.InputKindCaps);
       var sceneItemCreated = await client.Events.ReadAllAsync().OfType<SceneItemCreated>().FirstAsync().ConfigureAwait(false);
       Assert.Equal(response.SceneItemId, sceneItemCreated.SceneItemId);
       var sceneItemSelected = await client.Events.ReadAllAsync().OfType<SceneItemSelected>().FirstAsync().ConfigureAwait(false);
@@ -55,6 +56,7 @@ namespace ObsStrawket.Test.Specs {
       Assert.Equal(MediaInputName, (created as InputCreated)!.InputName);
       Assert.Equal(MediaInputKind, (created as InputCreated)!.UnversionedInputKind);
       Assert.Equal(MediaInputKind, (created as InputCreated)!.InputKind);
+      Assert.NotEqual(0, (created as InputCreated)!.InputKindCaps);
       sceneItemCreated = await client.Events.ReadAllAsync().OfType<SceneItemCreated>().FirstAsync().ConfigureAwait(false);
       Assert.Equal(response.SceneItemId, sceneItemCreated.SceneItemId);
       sceneItemSelected = await client.Events.ReadAllAsync().OfType<SceneItemSelected>().FirstAsync().ConfigureAwait(false);
@@ -96,6 +98,7 @@ namespace ObsStrawket.Test.Specs {
         "width": 800
       },
       "inputKind": "browser_source",
+      "inputKindCaps": 65,
       "inputName": "Browser source",
       "inputSettings": {},
       "unversionedInputKind": "browser_source"
@@ -189,6 +192,7 @@ namespace ObsStrawket.Test.Specs {
         "speed_percent": 100
       },
       "inputKind": "ffmpeg_source",
+      "inputKindCaps": 193,
       "inputName": "Media source",
       "inputSettings": {
         "hw_decode": true,

@@ -51,6 +51,60 @@ namespace ObsStrawket.Test.Utilities {
       return guid;
     }
 
+    public Task<string?> ReceiveRequestAsync(string requestType, string? requestData = null) {
+      string data = requestData == null ? "" : $"""
+,
+    "requestData": {requestData}
+""";
+      return ReceiveAsync($$"""
+{
+  "op": 6,
+  "d": {
+    "requestType": "{{requestType}}",
+    "requestId": "{guid}"{{data}}
+  }
+}
+""");
+    }
+
+    public Task SendSuccessResponseAsync(string requestType, string guid, string? responseData = null) {
+      string response = responseData == null ? "" : $"""
+,
+    "responseData": {responseData}
+""";
+      return SendAsync($$"""
+{
+  "op": 7,
+  "d": {
+    "requestType": "{{requestType}}",
+    "requestId": "{{guid}}",
+    "requestStatus": {
+      "code": 100,
+      "result": true
+    }{{response}}
+  }
+}
+""");
+    }
+
+    public async Task ReceiveRequestFieldAndSendSuccessAsync(
+      string requestType,
+      string fieldName,
+      string expectedValue
+    ) {
+      string json = await ReceiveAsync().ConfigureAwait(false);
+      using var document = JsonDocument.Parse(json);
+      var data = document.RootElement.GetProperty("d");
+      Assert.Equal(6, document.RootElement.GetProperty("op").GetInt32());
+      Assert.Equal(requestType, data.GetProperty("requestType").GetString());
+      Assert.Equal(expectedValue, data.GetProperty("requestData").GetProperty(fieldName).GetString());
+      await SendSuccessResponseAsync(
+        requestType,
+        data.GetProperty("requestId").GetString()!,
+        "{}"
+      ).ConfigureAwait(false);
+    }
+
     public Task SendGetStudioModeEnabledResponseAsync(string guid, bool modeEnabled = false) {
       // In real, op follows d.
       return SendAsync($$"""
