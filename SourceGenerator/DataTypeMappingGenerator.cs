@@ -32,7 +32,7 @@ namespace ObsStrawket.DataTypes {
       }
 
       _ = builder.AppendLine("""
-    }.ToDictionary(x => x.Name, x => x);
+    }.ToDictionary(static x => x.Name, static x => x);
 
     internal record RequestMapping(Type Request, Type Response, bool IsRequestEmpty = false);
 
@@ -51,7 +51,7 @@ namespace ObsStrawket.DataTypes {
         _ = builder.AppendLine(CultureInfo.InvariantCulture, $"      new (typeof({request.RequestType}), typeof({response}){isRequestEmpty}),");
       }
       _ = builder.AppendLine("""
-    }.ToDictionary(x => x.Request.Name, x => x);
+    }.ToDictionary(static x => x.Request.Name, static x => x);
   }
 }
 """);

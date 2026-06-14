@@ -108,7 +108,8 @@ namespace SourceGenerator {
     }
 
     public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options) {
-      throw new NotImplementedException();
+      throw new NotSupportedException(
+        $"{nameof(StringToNumberConverter)} only supports reading protocol metadata.");
     }
   }
 }

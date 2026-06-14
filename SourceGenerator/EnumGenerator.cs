@@ -35,8 +35,7 @@ namespace SourceGenerator {
       };
 
       using var file = File.CreateText($"{_directoryHelper.MainProjectDirectory}/DataTypes/Predefineds/Enums.cs");
-      file.Write(@"using ObsStrawket.Serialization;
-using System;
+      file.Write(@"using System;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
@@ -54,7 +53,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
         string sample = $"{en.EnumIdentifiers.Last().EnumValue}";
         bool isStringEnum = sample.Any(static c => c is >= 'A' and <= 'Z');
         if (isStringEnum) {
-          file.WriteLine("  [JsonConverter(typeof(JsonStringEnumMemberConverter))]");
+          file.WriteLine("  [JsonConverter(typeof(JsonStringEnumConverter<{0}>))]", en.EnumType);
         }
         file.WriteLine("  public enum {0} {{", en.EnumType);
         foreach (var identifier in en.EnumIdentifiers) {
@@ -69,7 +68,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
           }
 
           if (isStringEnum) {
-            file.WriteLine("    [EnumMember(Value = \"{0}\")]", identifier.EnumValue);
+            file.WriteLine("    [JsonStringEnumMemberName(\"{0}\")]", identifier.EnumValue);
           }
           else {
             file.WriteLine("    [EnumMember]");

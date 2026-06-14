@@ -25,7 +25,8 @@ namespace ObsStrawket.Serialization {
     }
 
     public override void Write(Utf8JsonWriter writer, List<IRequestResponse> value, JsonSerializerOptions options) {
-      throw new NotImplementedException();
+      throw new NotSupportedException(
+        $"{nameof(BatchResponseConverter)} only supports reading batch responses.");
     }
   }
 
@@ -106,7 +107,8 @@ namespace ObsStrawket.Serialization {
   internal class BatchRequestConverter : JsonConverter<List<IRequest>> {
 
     public override List<IRequest>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
-      throw new NotImplementedException();
+      throw new NotSupportedException(
+        $"{nameof(BatchRequestConverter)} only supports writing batch requests.");
     }
 
     public override void Write(Utf8JsonWriter writer, List<IRequest> value, JsonSerializerOptions options) {
@@ -224,7 +226,7 @@ namespace ObsStrawket.Serialization {
         (int)OpCode.RequestResponse => IRequestResponseConverter.Deserialize(ref dataReader, options),
         (int)OpCode.RequestBatch => JsonSerializer.Deserialize<RequestBatch>(ref dataReader, options),
         (int)OpCode.RequestBatchResponse => JsonSerializer.Deserialize<RequestBatchResponse>(ref dataReader, options),
-        _ => throw new NotImplementedException(),
+        int opCode => throw new UnexpectedResponseException($"Unknown OBS WebSocket opcode: {opCode}."),
       };
     }
 

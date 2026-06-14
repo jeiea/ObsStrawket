@@ -1,4 +1,3 @@
-using ObsStrawket.Serialization;
 using System;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
@@ -494,7 +493,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// <summary>
   /// Represents output sending state.
   /// </summary>
-  [JsonConverter(typeof(JsonStringEnumMemberConverter))]
+  [JsonConverter(typeof(JsonStringEnumConverter<ObsOutputState>))]
   public enum ObsOutputState {
 
     /// <summary>
@@ -502,7 +501,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <para>Latest Supported RPC Version: 1<br />
     /// Added in v5.0.0</para>
     /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_UNKNOWN")]
+    [JsonStringEnumMemberName("OBS_WEBSOCKET_OUTPUT_UNKNOWN")]
     Unknown,
 
     /// <summary>
@@ -510,7 +509,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <para>Latest Supported RPC Version: 1<br />
     /// Added in v5.0.0</para>
     /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_STARTING")]
+    [JsonStringEnumMemberName("OBS_WEBSOCKET_OUTPUT_STARTING")]
     Starting,
 
     /// <summary>
@@ -518,7 +517,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <para>Latest Supported RPC Version: 1<br />
     /// Added in v5.0.0</para>
     /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_STARTED")]
+    [JsonStringEnumMemberName("OBS_WEBSOCKET_OUTPUT_STARTED")]
     Started,
 
     /// <summary>
@@ -526,7 +525,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <para>Latest Supported RPC Version: 1<br />
     /// Added in v5.0.0</para>
     /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_STOPPING")]
+    [JsonStringEnumMemberName("OBS_WEBSOCKET_OUTPUT_STOPPING")]
     Stopping,
 
     /// <summary>
@@ -534,7 +533,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <para>Latest Supported RPC Version: 1<br />
     /// Added in v5.0.0</para>
     /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_STOPPED")]
+    [JsonStringEnumMemberName("OBS_WEBSOCKET_OUTPUT_STOPPED")]
     Stopped,
 
     /// <summary>
@@ -542,7 +541,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <para>Latest Supported RPC Version: 1<br />
     /// Added in v5.0.0</para>
     /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_RECONNECTING")]
+    [JsonStringEnumMemberName("OBS_WEBSOCKET_OUTPUT_RECONNECTING")]
     Reconnecting,
 
     /// <summary>
@@ -550,7 +549,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <para>Latest Supported RPC Version: 1<br />
     /// Added in v5.1.0</para>
     /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_RECONNECTED")]
+    [JsonStringEnumMemberName("OBS_WEBSOCKET_OUTPUT_RECONNECTED")]
     Reconnected,
 
     /// <summary>
@@ -558,7 +557,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <para>Latest Supported RPC Version: 1<br />
     /// Added in v5.1.0</para>
     /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_PAUSED")]
+    [JsonStringEnumMemberName("OBS_WEBSOCKET_OUTPUT_PAUSED")]
     Paused,
 
     /// <summary>
@@ -566,14 +565,14 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <para>Latest Supported RPC Version: 1<br />
     /// Added in v5.0.0</para>
     /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_OUTPUT_RESUMED")]
+    [JsonStringEnumMemberName("OBS_WEBSOCKET_OUTPUT_RESUMED")]
     Resumed,
   }
 
   /// <summary>
   /// Actions used with media source and <c>TriggerMediaInputAction</c>.
   /// </summary>
-  [JsonConverter(typeof(JsonStringEnumMemberConverter))]
+  [JsonConverter(typeof(JsonStringEnumConverter<MediaInputAction>))]
   public enum MediaInputAction {
 
     /// <summary>
@@ -581,7 +580,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <para>Latest Supported RPC Version: 1<br />
     /// Added in v5.0.0</para>
     /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_NONE")]
+    [JsonStringEnumMemberName("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_NONE")]
     None,
 
     /// <summary>
@@ -589,7 +588,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <para>Latest Supported RPC Version: 1<br />
     /// Added in v5.0.0</para>
     /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PLAY")]
+    [JsonStringEnumMemberName("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PLAY")]
     Play,
 
     /// <summary>
@@ -597,7 +596,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <para>Latest Supported RPC Version: 1<br />
     /// Added in v5.0.0</para>
     /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PAUSE")]
+    [JsonStringEnumMemberName("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PAUSE")]
     Pause,
 
     /// <summary>
@@ -605,7 +604,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <para>Latest Supported RPC Version: 1<br />
     /// Added in v5.0.0</para>
     /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP")]
+    [JsonStringEnumMemberName("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP")]
     Stop,
 
     /// <summary>
@@ -613,7 +612,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <para>Latest Supported RPC Version: 1<br />
     /// Added in v5.0.0</para>
     /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART")]
+    [JsonStringEnumMemberName("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART")]
     Restart,
 
     /// <summary>
@@ -621,7 +620,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <para>Latest Supported RPC Version: 1<br />
     /// Added in v5.0.0</para>
     /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_NEXT")]
+    [JsonStringEnumMemberName("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_NEXT")]
     Next,
 
     /// <summary>
@@ -629,7 +628,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     /// <para>Latest Supported RPC Version: 1<br />
     /// Added in v5.0.0</para>
     /// </summary>
-    [EnumMember(Value = "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PREVIOUS")]
+    [JsonStringEnumMemberName("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PREVIOUS")]
     Previous,
   }
 

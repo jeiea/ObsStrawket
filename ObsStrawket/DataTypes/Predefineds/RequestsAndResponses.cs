@@ -407,6 +407,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
+#pragma warning disable CA1711
   public class SetCurrentSceneCollection : Request {
 
     /// <summary>
@@ -415,6 +416,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     [JsonPropertyName("sceneCollectionName")]
     public string SceneCollectionName { get; set; } = "";
   }
+#pragma warning restore CA1711
 
   /// <summary>
   /// Creates a new scene collection, switching to it in the process.<br />
@@ -423,6 +425,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
+#pragma warning disable CA1711
   public class CreateSceneCollection : Request {
 
     /// <summary>
@@ -431,6 +434,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
     [JsonPropertyName("sceneCollectionName")]
     public string SceneCollectionName { get; set; } = "";
   }
+#pragma warning restore CA1711
 
   /// <summary>
   /// Gets an array of all profiles<br />
@@ -4179,7 +4183,9 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
+#pragma warning disable CA1711
   public class ToggleStream : Request { }
+#pragma warning restore CA1711
 
   /// <summary>
   /// Response of ToggleStream
@@ -4198,14 +4204,18 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
+#pragma warning disable CA1711
   public class StartStream : Request { }
+#pragma warning restore CA1711
 
   /// <summary>
   /// Stops the stream output.<br />
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
+#pragma warning disable CA1711
   public class StopStream : Request { }
+#pragma warning restore CA1711
 
   /// <summary>
   /// Sends CEA-608 caption text over the stream output.<br />

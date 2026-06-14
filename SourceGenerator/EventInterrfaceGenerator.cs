@@ -24,7 +24,7 @@ namespace SourceGenerator {
       part.WriteLine("    /// <summary>");
       part.WriteLine("    /// All events.");
       part.WriteLine("    /// </summary>");
-      part.WriteLine("    public event Action<IObsEvent> Event = delegate { };");
+      part.WriteLine("    public event Action<IObsEvent> Event = static delegate { };");
 
       string previousCategory = "";
       foreach (var ev in json.Events) {
@@ -34,14 +34,14 @@ namespace SourceGenerator {
           part.WriteLine("    /// <summary>");
           part.WriteLine("    /// {0}{1} event group.", char.ToUpper(ev.Category[0], CultureInfo.InvariantCulture), ev.Category[1..]);
           part.WriteLine("    /// </summary>");
-          part.WriteLine("    public event Action<{0}Event> {0}Event = delegate {{ }};", TransformHelper.ToPascalCase(ev.Category));
+          part.WriteLine("    public event Action<{0}Event> {0}Event = static delegate {{ }};", TransformHelper.ToPascalCase(ev.Category));
         }
         part.WriteLine("    /// <summary>");
         part.WriteLine("    /// {0}<br />", TransformHelper.EscapeForXml(ev.Description).Replace(Environment.NewLine, $"<br />{Environment.NewLine}    /// "));
         part.WriteLine("    /// Latest supported RPC version: {0}<br />", ev.RpcVersion);
         part.WriteLine("    /// Added in: {0}", ev.InitialVersion);
         part.WriteLine("    /// </summary>");
-        part.WriteLine("    public event Action<{0}> {0} = delegate {{ }};", ev.EventType);
+        part.WriteLine("    public event Action<{0}> {0} = static delegate {{ }};", ev.EventType);
       }
 
       part.WriteLine();

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -8,6 +9,13 @@ using System.Threading.Tasks;
 namespace SourceGenerator {
 
   internal partial class RequestResponseGenerator(IDirectoryHelper directoryHelper, ISourceFetcher fetcher) {
+    private static readonly HashSet<string> _ca1711AllowedRequestTypes = [
+      "CreateSceneCollection",
+      "SetCurrentSceneCollection",
+      "StartStream",
+      "StopStream",
+      "ToggleStream",
+    ];
 
     public async Task GenerateAsync() {
       var json = await fetcher.GetModifiedProtocolJsonAsync().ConfigureAwait(false);
@@ -38,6 +46,10 @@ namespace ObsStrawket.DataTypes.Predefineds {");
       file.WriteLine("  /// Added in: {0}", request.InitialVersion);
       file.WriteLine("  /// </summary>");
 
+      bool suppressCa1711 = _ca1711AllowedRequestTypes.Contains(request.RequestType!);
+      if (suppressCa1711) {
+        file.WriteLine("#pragma warning disable CA1711");
+      }
       file.Write("  public class {0} : Request {{", request.RequestType);
       if (request.RequestFields.Count == 0) {
         file.WriteLine(" }");
@@ -70,6 +82,9 @@ namespace ObsStrawket.DataTypes.Predefineds {");
           ));
         }
         file.WriteLine("  }");
+      }
+      if (suppressCa1711) {
+        file.WriteLine("#pragma warning restore CA1711");
       }
 
       if (request.ResponseFields!.Count > 0) {

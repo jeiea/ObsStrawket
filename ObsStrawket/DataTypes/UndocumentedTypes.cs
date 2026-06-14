@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using ObsStrawket.Serialization;
 using System.Text.Json.Serialization;
 
@@ -11,45 +10,47 @@ namespace ObsStrawket.DataTypes {
   /// Output capability flags
   /// </summary>
   [Flags]
-  [JsonConverter(typeof(JsonStringEnumMemberConverter))]
+  [JsonConverter(typeof(JsonStringEnumConverter<OutputFlags>))]
+#pragma warning disable CA1711 // "Flags" is the OBS protocol domain term for this bit field.
   public enum OutputFlags {
 
     /// <summary>
     /// Output has video.
     /// </summary>
-    [EnumMember(Value = "OBS_OUTPUT_VIDEO")]
+    [JsonStringEnumMemberName("OBS_OUTPUT_VIDEO")]
     Video = 1 << 0,
 
     /// <summary>
     /// Output has audio.
     /// </summary>
-    [EnumMember(Value = "OBS_OUTPUT_AUDIO")]
+    [JsonStringEnumMemberName("OBS_OUTPUT_AUDIO")]
     Audio = 1 << 1,
 
     /// <summary>
     /// Output is encoded.
     /// </summary>
-    [EnumMember(Value = "OBS_OUTPUT_ENCODED")]
+    [JsonStringEnumMemberName("OBS_OUTPUT_ENCODED")]
     Encoded = 1 << 2,
 
     /// <summary>
     /// Output requires a service object.
     /// </summary>
-    [EnumMember(Value = "OBS_OUTPUT_SERVICE")]
+    [JsonStringEnumMemberName("OBS_OUTPUT_SERVICE")]
     Service = 1 << 3,
 
     /// <summary>
     /// Output supports multiple audio tracks.
     /// </summary>
-    [EnumMember(Value = "OBS_OUTPUT_MULTI_TRACK")]
+    [JsonStringEnumMemberName("OBS_OUTPUT_MULTI_TRACK")]
     MultiTrack = 1 << 4,
 
     /// <summary>
     /// Output can be paused.
     /// </summary>
-    [EnumMember(Value = "OBS_OUTPUT_CAN_PAUSE")]
+    [JsonStringEnumMemberName("OBS_OUTPUT_CAN_PAUSE")]
     CanPause = 1 << 5,
   }
+#pragma warning restore CA1711
 
   // https://github.com/obsproject/obs-websocket/blob/5f8a0122bdd0146fdb33968f6bdf6ab624851e7a/src/utils/Obs_ArrayHelper.cpp#L335
   // https://github.com/obsproject/obs-studio/blob/master/docs/sphinx/reference-outputs.rst
