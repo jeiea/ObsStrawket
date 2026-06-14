@@ -11,7 +11,20 @@ namespace ObsStrawket.Test.Specs {
   }
 
   internal class GetGroupSceneItemListFlow : ITestFlow {
+    private readonly bool _expectMissingGroup;
+
+    public GetGroupSceneItemListFlow(bool expectMissingGroup = false) {
+      _expectMissingGroup = expectMissingGroup;
+    }
+
     public async Task RequestAsync(ObsClientSocket client) {
+      if (_expectMissingGroup) {
+        _ = await Assert.ThrowsAsync<FailureResponseException>(
+          () => client.GetGroupSceneItemListAsync(sceneName: "Group")
+        ).ConfigureAwait(false);
+        return;
+      }
+
       var response = await client.GetGroupSceneItemListAsync(sceneName: "Group").ConfigureAwait(false);
       Assert.NotEmpty(response.SceneItems);
     }

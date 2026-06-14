@@ -11,8 +11,14 @@ namespace ObsStrawket.Test.Specs {
   }
 
   internal class OpenInputPropertiesDialogFlow : ITestFlow {
+    private readonly string _inputName;
+
+    public OpenInputPropertiesDialogFlow(string? inputName = null) {
+      _inputName = inputName ?? CreateInputFlow.InputName;
+    }
+
     public async Task RequestAsync(ObsClientSocket client) {
-      _ = await client.OpenInputPropertiesDialogAsync(inputName: CreateInputFlow.InputName).ConfigureAwait(false);
+      _ = await client.OpenInputPropertiesDialogAsync(inputName: _inputName).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {

@@ -12,6 +12,12 @@ namespace ObsStrawket.Test.Specs {
   }
 
   internal class TriggerMediaInputActionFlow : ITestFlow {
+    private readonly bool _expectPlaybackEvents;
+
+    public TriggerMediaInputActionFlow(bool expectPlaybackEvents = true) {
+      _expectPlaybackEvents = expectPlaybackEvents;
+    }
+
     public async Task RequestAsync(ObsClientSocket client) {
 #pragma warning disable CS0612 // Type or member is obsolete
       _ = await client.TriggerMediaInputActionAsync(
@@ -19,22 +25,24 @@ namespace ObsStrawket.Test.Specs {
         mediaAction: MediaInputAction.Stop
       ).ConfigureAwait(false);
 
-      var (triggered, playbackEnded) = await ClientFlow.WaitEventsAsync<MediaInputActionTriggered, MediaInputPlaybackEnded>(
-        client,
-        static e => e.MediaAction == MediaInputAction.Stop,
-        static e => e.InputName == CreateInputFlow.MediaInputName).ConfigureAwait(false);
+      var triggered = await ClientFlow.WaitEventAsync<MediaInputActionTriggered>(client).ConfigureAwait(false);
       Assert.Equal(MediaInputAction.Stop, triggered.MediaAction);
-      Assert.Equal(CreateInputFlow.MediaInputName, playbackEnded.InputName);
+      if (_expectPlaybackEvents) {
+        var playbackEnded = await ClientFlow.WaitEventAsync<MediaInputPlaybackEnded>(client).ConfigureAwait(false);
+        Assert.Equal(CreateInputFlow.MediaInputName, playbackEnded.InputName);
+      }
 
       _ = await client.TriggerMediaInputActionAsync(
         inputName: CreateInputFlow.MediaInputName,
         mediaAction: MediaInputAction.Play
       ).ConfigureAwait(false);
 
-      _ = await ClientFlow.WaitEventsAsync<MediaInputActionTriggered, MediaInputPlaybackStarted>(
-        client,
-        static e => e.MediaAction == MediaInputAction.Play,
-        static e => e.InputName == CreateInputFlow.MediaInputName).ConfigureAwait(false);
+      triggered = await ClientFlow.WaitEventAsync<MediaInputActionTriggered>(client).ConfigureAwait(false);
+      Assert.Equal(MediaInputAction.Play, triggered.MediaAction);
+      if (_expectPlaybackEvents) {
+        var playbackStarted = await ClientFlow.WaitEventAsync<MediaInputPlaybackStarted>(client).ConfigureAwait(false);
+        Assert.Equal(CreateInputFlow.MediaInputName, playbackStarted.InputName);
+      }
 #pragma warning restore CS0612 // Type or member is obsolete
 
       _ = await client.RemoveInputAsync(CreateInputFlow.MediaInputName).ConfigureAwait(false);

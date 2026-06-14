@@ -2,7 +2,7 @@ using ObsStrawket.Test.Utilities;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace ObsStrawket.Test {
+namespace ObsStrawket.Test.Specs {
   public class ProtocolEventTest {
     [Fact]
     public async Task DispatchesNewEventsAsync() {

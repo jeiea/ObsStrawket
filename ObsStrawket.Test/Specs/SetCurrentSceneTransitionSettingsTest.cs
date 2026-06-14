@@ -13,7 +13,24 @@ namespace ObsStrawket.Test.Specs {
   }
 
   internal class SetCurrentSceneTransitionSettingsFlow : ITestFlow {
+    private readonly bool _expectUnsupported;
+
+    public SetCurrentSceneTransitionSettingsFlow(bool expectUnsupported = false) {
+      _expectUnsupported = expectUnsupported;
+    }
+
     public async Task RequestAsync(ObsClientSocket client) {
+      if (_expectUnsupported) {
+        _ = await Assert.ThrowsAsync<FailureResponseException>(
+          () => SetSettingsAsync(client)
+        ).ConfigureAwait(false);
+        return;
+      }
+
+      await SetSettingsAsync(client).ConfigureAwait(false);
+    }
+
+    private static async Task SetSettingsAsync(ObsClientSocket client) {
       _ = await client.SetCurrentSceneTransitionSettingsAsync(transitionSettings: new Dictionary<string, JsonElement?>() {
         { "direction", "up".ToJsonElement() },
       }).ConfigureAwait(false);

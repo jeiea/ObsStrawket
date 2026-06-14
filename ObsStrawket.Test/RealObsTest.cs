@@ -1,4 +1,3 @@
-using ObsStrawket.DataTypes;
 using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Specs;
 using ObsStrawket.Test.Utilities;
@@ -183,11 +182,11 @@ namespace ObsStrawket.Test {
           EventSubscription.All,
           TestContext.Current.CancellationToken
         );
-        var status = await client.CallVendorRequestAsync(
+        var status = await new CallVendorRequestFlow(
           "AdvancedSceneSwitcher",
           "IsAdvancedSceneSwitcherRunning",
-          cancellation: TestContext.Current.CancellationToken
-        );
+          requestData: []
+        ).RequestForResponseAsync(client);
         Assert.Equal("AdvancedSceneSwitcher", status.VendorName);
         Assert.Equal("IsAdvancedSceneSwitcherRunning", status.VendorRequestType);
         if (status.ResponseData["isRunning"]!.Value.GetBoolean()) {
@@ -266,38 +265,23 @@ namespace ObsStrawket.Test {
 
         await _obs.ObserveWindowAsync(
           "OpenInputPropertiesDialog",
-          () => client.OpenInputPropertiesDialogAsync(
-            inputName: inputName,
-            cancellation: TestContext.Current.CancellationToken
-          )
+          () => new OpenInputPropertiesDialogFlow(inputName).RequestAsync(client)
         );
         await _obs.ObserveWindowAsync(
           "OpenInputFiltersDialog",
-          () => client.OpenInputFiltersDialogAsync(
-            inputName: inputName,
-            cancellation: TestContext.Current.CancellationToken
-          )
+          () => new OpenInputFiltersDialogFlow(inputName).RequestAsync(client)
         );
         await _obs.ObserveWindowAsync(
           "OpenInputInteractDialog",
-          () => client.OpenInputInteractDialogAsync(
-            inputName: inputName,
-            cancellation: TestContext.Current.CancellationToken
-          )
+          () => new OpenInputInteractDialogFlow(inputName).RequestAsync(client)
         );
         await _obs.ObserveWindowAsync(
           "OpenSourceProjector",
-          () => client.OpenSourceProjectorAsync(
-            sourceName: inputName,
-            cancellation: TestContext.Current.CancellationToken
-          )
+          () => new OpenSourceProjectorFlow(inputName).RequestAsync(client)
         );
         await _obs.ObserveWindowAsync(
           "OpenVideoMixProjector",
-          () => client.OpenVideoMixProjectorAsync(
-            VideoMixType.Program,
-            cancellation: TestContext.Current.CancellationToken
-          )
+          () => new OpenVideoMixProjectorFlow().RequestAsync(client)
         );
       }
       finally {
@@ -324,7 +308,6 @@ namespace ObsStrawket.Test {
       await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
       var flows = new List<ITestFlow>() {
         //new CallVendorRequestFlow(), // test how?
-        //new SleepFlow(), // Not implemented
 
         new GetVersionFlow(), // General
         new GetCanvasListFlow(),
@@ -333,11 +316,11 @@ namespace ObsStrawket.Test {
         new GetHotkeyListFlow(),
         new TriggerHotkeyByNameFlow(),
 
-        new TriggerHotkeyByKeySequenceFlow(), // Requires manual setup.
-        //new GetSpecialInputsFlow(), // Isolated OBS has no global audio sources.
-        //new GetGroupSceneItemListFlow(), // obs-websocket cannot create a group.
+        new TriggerHotkeyByKeySequenceFlow(),
+        new GetSpecialInputsFlow(desktop1: null, mic1: null),
+        new GetGroupSceneItemListFlow(expectMissingGroup: true),
 
-        new CreateProfileFlow(), // setup sandbox profile
+        new CreateProfileFlow(),
 
         new SetProfileParameterFlow(), // Config
         new GetProfileParameterFlow(),
@@ -353,19 +336,19 @@ namespace ObsStrawket.Test {
         new GetTransitionKindListFlow(),
         new SetCurrentSceneTransitionFlow(),
         new SetCurrentSceneTransitionDurationFlow(),
-        //new SetCurrentSceneTransitionSettingsFlow(), // Default transitions are not configurable.
+        new SetCurrentSceneTransitionSettingsFlow(expectUnsupported: true),
         new GetSceneTransitionListFlow(),
         new GetCurrentSceneTransitionFlow(),
         new GetCurrentSceneTransitionCursorFlow(),
 
-        new CreateSceneCollectionFlow(), // setup sandbox scene collection
+        new CreateSceneCollectionFlow(),
         new GetSceneCollectionListFlow(),
         new SetCurrentSceneCollectionFlow(),
 
-        new CreateSceneFlow(), // setup sandbox scene
+        new CreateSceneFlow(),
         new GetSceneListFlow(),
 
-        new CreateInputFlow(), // Setup inputs
+        new CreateInputFlow(),
         new InputDeinterlaceFlow(),
         new GetInputListFlow(),
         new GetInputKindListFlow(),
@@ -407,18 +390,19 @@ namespace ObsStrawket.Test {
         //new ToggleStreamFlow(), // Requires a reachable stream server.
 
         new SetStudioModeEnabledFlow(), // setup studio mode
+        new SleepFlow(), // RequestBatch
         new SetCurrentProgramSceneFlow(),
         new GetCurrentProgramSceneFlow(),
         new SetCurrentPreviewSceneFlow(),
         new GetCurrentPreviewSceneFlow(),
         new TriggerStudioModeTransitionFlow(),
         new SetTBarPositionFlow(),
-        new GetStudioModeEnabledFlow(), // reset studio mode to false
+        new GetStudioModeEnabledFlow(),
 
         new SetMediaInputCursorFlow(), // setup
         new OffsetMediaInputCursorFlow(),
         new GetMediaInputStatusFlow(),
-        //new TriggerMediaInputActionFlow(), // Requires a real media source to emit action events.
+        new TriggerMediaInputActionFlow(expectPlaybackEvents: false),
 
         new CreateSourceFilterFlow(), // Filters
         new GetSourceFilterDefaultSettingsFlow(),
@@ -506,7 +490,7 @@ namespace ObsStrawket.Test {
           throw failure;
         }
       }
-      await CanvasUuidRealFlow.RequestAsync(client);
+      await new CanvasUuidFlow(useExistingCanvas: true).RequestAsync(client);
       return;
     }
 

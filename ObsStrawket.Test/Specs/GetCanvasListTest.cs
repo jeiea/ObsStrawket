@@ -41,13 +41,4 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  internal class CanvasUuidRealFlow {
-    public static async Task RequestAsync(ObsClientSocket client) {
-      var canvases = await GetCanvasListFlow.GetCanvasListAsync(client).ConfigureAwait(false);
-      var canvas = Assert.Single(canvases.Canvases);
-      string canvasUuid = canvas["canvasUuid"]!.Value.GetString()!;
-      var scenes = await client.GetSceneListAsync(canvasUuid).ConfigureAwait(false);
-      Assert.NotEmpty(scenes.Scenes);
-    }
-  }
 }

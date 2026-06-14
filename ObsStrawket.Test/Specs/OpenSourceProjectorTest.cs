@@ -11,8 +11,14 @@ namespace ObsStrawket.Test.Specs {
   }
 
   internal class OpenSourceProjectorFlow : ITestFlow {
+    private readonly string _sourceName;
+
+    public OpenSourceProjectorFlow(string? sourceName = null) {
+      _sourceName = sourceName ?? CreateInputFlow.InputName;
+    }
+
     public async Task RequestAsync(ObsClientSocket client) {
-      _ = await client.OpenSourceProjectorAsync(sourceName: CreateInputFlow.InputName).ConfigureAwait(false);
+      _ = await client.OpenSourceProjectorAsync(sourceName: _sourceName).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {

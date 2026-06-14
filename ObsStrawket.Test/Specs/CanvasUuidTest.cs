@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace ObsStrawket.Test {
+namespace ObsStrawket.Test.Specs {
   public class CanvasUuidTest {
     [Fact]
     public async Task SendsCanvasUuidForEverySupportedRequestAsync() {
@@ -58,7 +58,22 @@ namespace ObsStrawket.Test {
       "OpenSourceProjector",
     ];
 
+    private readonly bool _useExistingCanvas;
+
+    public CanvasUuidFlow(bool useExistingCanvas = false) {
+      _useExistingCanvas = useExistingCanvas;
+    }
+
     public async Task RequestAsync(ObsClientSocket client) {
+      if (_useExistingCanvas) {
+        var canvases = await client.GetCanvasListAsync().ConfigureAwait(false);
+        var canvas = Assert.Single(canvases.Canvases);
+        string canvasUuid = canvas["canvasUuid"]!.Value.GetString()!;
+        var scenes = await client.GetSceneListAsync(canvasUuid).ConfigureAwait(false);
+        Assert.NotEmpty(scenes.Scenes);
+        return;
+      }
+
       var settings = new Dictionary<string, JsonElement?>();
       const int sceneItemId = 1;
 

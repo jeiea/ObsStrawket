@@ -7,7 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace ObsStrawket.Test {
+namespace ObsStrawket.Test.Specs {
   public class MalformedResponseTest {
     [Fact]
     public async Task TestAsync() {
