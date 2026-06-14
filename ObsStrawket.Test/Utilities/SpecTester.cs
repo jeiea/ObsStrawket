@@ -16,7 +16,7 @@ namespace ObsStrawket.Test.Utilities {
 
     public static async Task TestAsync(ITestFlow flow, bool useChannel = true) {
       var taskSource = new TaskCompletionSource();
-      using var server = new MockServer().Run(default, async (context, cancellation) => {
+      using var server = new MockServer().Run(handler: async (context, cancellation) => {
         try {
           var (webSocketContext, session) = await MockServer.HandshakeAsync(context, cancellation).ConfigureAwait(false);
           await flow.RespondAsync(session).ConfigureAwait(false);

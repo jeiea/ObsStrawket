@@ -9,7 +9,6 @@ namespace ObsStrawket.Test {
     [Fact]
     public async Task WaitEventsAsyncReportsUnmatchedMatcherIndexesAsync() {
       using var server = new MockServer().Run(
-        TestContext.Current.CancellationToken,
         async (context, cancellation) => {
           var (webSocketContext, session) =
             await MockServer.HandshakeAsync(context, cancellation).ConfigureAwait(false);
@@ -27,7 +26,8 @@ namespace ObsStrawket.Test {
 """).ConfigureAwait(false);
           await Task.Delay(TimeSpan.FromSeconds(1), cancellation).ConfigureAwait(false);
           await MockServer.CloseQuietlyAsync(webSocketContext.WebSocket, cancellation).ConfigureAwait(false);
-        }
+        },
+        TestContext.Current.CancellationToken
       );
       var client = ClientFlow.GetDebugClient(useChannel: true);
       await client.ConnectAsync(
@@ -40,8 +40,8 @@ namespace ObsStrawket.Test {
         var exception = await Assert.ThrowsAsync<TimeoutException>(
           () => ClientFlow.WaitEventsAsync(
             client,
-            TestContext.Current.CancellationToken,
             TimeSpan.FromMilliseconds(500),
+            TestContext.Current.CancellationToken,
             e => e is CustomEvent,
             e => e is InputCreated,
             e => e is SceneItemCreated

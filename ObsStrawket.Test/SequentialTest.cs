@@ -8,7 +8,7 @@ namespace ObsStrawket.Test {
     [Fact]
     public async Task TestAsync() {
       var cancellation = new CancellationTokenSource();
-      using var server = new MockServer().Run(cancellation.Token);
+      using var server = new MockServer().Run(token: cancellation.Token);
       var client = ClientFlow.GetDebugClient();
       await new ClientFlow().RunClientAsync(server.Uri, client, cancellation: cancellation.Token);
       await new ClientFlow().RunClientAsync(server.Uri, client, cancellation: cancellation.Token);

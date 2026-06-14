@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SourceGenerator {
@@ -53,9 +52,9 @@ namespace ObsStrawket.DataTypes.Predefineds {
           file.WriteLine("  [Flags]");
         }
         string sample = $"{en.EnumIdentifiers.Last().EnumValue}";
-        bool isStringEnum = Regex.IsMatch(sample, @"[A-Z]");
+        bool isStringEnum = sample.Any(c => c is >= 'A' and <= 'Z');
         if (isStringEnum) {
-          file.WriteLine("  [JsonConverter(typeof(JsonStringEnumMemberConverter))]", en.EnumType);
+          file.WriteLine("  [JsonConverter(typeof(JsonStringEnumMemberConverter))]");
         }
         file.WriteLine("  public enum {0} {{", en.EnumType);
         foreach (var identifier in en.EnumIdentifiers!) {

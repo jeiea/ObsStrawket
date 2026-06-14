@@ -42,7 +42,7 @@ namespace ObsStrawket.Test.Specs {
   }
 
   class CanvasUuidRealFlow {
-    public async Task RequestAsync(ObsClientSocket client) {
+    public static async Task RequestAsync(ObsClientSocket client) {
       var canvases = await GetCanvasListFlow.GetCanvasListAsync(client).ConfigureAwait(false);
       var canvas = Assert.Single(canvases.Canvases);
       string canvasUuid = canvas["canvasUuid"]!.Value.GetString()!;

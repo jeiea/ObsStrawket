@@ -20,14 +20,14 @@ namespace ObsStrawket.Test.Utilities {
   /// temporary config directory, so the user's OBS settings and any running
   /// OBS instance are never touched.
   /// </summary>
-  public sealed class IsolatedObsFixture : IAsyncLifetime {
+  public sealed partial class IsolatedObsFixture : IAsyncLifetime {
     private static readonly TimeSpan _bootTimeout = TimeSpan.FromSeconds(60);
     private static readonly TimeSpan _windowTimeout = TimeSpan.FromSeconds(5);
     private static readonly string[] _junctionNames = ["bin", "data", "obs-plugins"];
 
     public bool IsAvailable => Uri != null;
     public bool HasExited => _process?.HasExited == true;
-    public bool HasVendorPlugin => GetVendorPluginRoot() != null;
+    public static bool HasVendorPlugin => GetVendorPluginRoot() != null;
     public Uri? Uri { get; private set; }
     public string Password { get; } = MockServer.Password;
 
@@ -300,8 +300,8 @@ namespace ObsStrawket.Test.Utilities {
     private HashSet<nint> GetWindows(bool visibleOnly) {
       var windows = new HashSet<nint>();
       uint processId = checked((uint)_process!.Id);
-      EnumWindows((window, _) => {
-        GetWindowThreadProcessId(window, out uint windowProcessId);
+      EnumWindows((window, lParam) => {
+        _ = GetWindowThreadProcessId(window, out uint windowProcessId);
         if (windowProcessId == processId && (!visibleOnly || IsWindowVisible(window))) {
           windows.Add(window);
         }
@@ -410,16 +410,16 @@ namespace ObsStrawket.Test.Utilities {
 
     private delegate bool EnumWindowsCallback(nint window, nint parameter);
 
-    [DllImport("user32.dll")]
+    [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool EnumWindows(EnumWindowsCallback callback, nint parameter);
+    private static partial bool EnumWindows(EnumWindowsCallback callback, nint parameter);
 
-    [DllImport("user32.dll")]
-    private static extern uint GetWindowThreadProcessId(nint window, out uint processId);
+    [LibraryImport("user32.dll")]
+    private static partial uint GetWindowThreadProcessId(nint window, out uint processId);
 
-    [DllImport("user32.dll")]
+    [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool IsWindowVisible(nint window);
+    private static partial bool IsWindowVisible(nint window);
   }
 
   [CollectionDefinition("IsolatedObs")]

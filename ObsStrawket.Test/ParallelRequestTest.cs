@@ -12,14 +12,14 @@ using System.Threading.Tasks;
 using Xunit;
 
 namespace ObsStrawket.Test {
-  public class ParallelRequestTest {
+  public partial class ParallelRequestTest {
     private const int _parallelCount = 30;
     private readonly TaskCompletionSource<int> _serverComplete = new();
 
     [Fact]
     public async Task TestAsync() {
       CancellationTokenSource cancellation = new();
-      using var server = new MockServer().Run(cancellation.Token, ServeEchoAsync);
+      using var server = new MockServer().Run(ServeEchoAsync, cancellation.Token);
       var tasks = new List<Task<IOpCodeMessage>>();
 
       try {
@@ -80,7 +80,7 @@ namespace ObsStrawket.Test {
         var sendTask = Task.Run(async () => {
           int i = 0;
           await foreach (string json in channel.Reader.ReadAllAsync(token)) {
-            string guid = Regex.Match(json, @"[0-9a-f]{8}-[0-9a-f]{4}[^""]*").Value;
+            string guid = _guidPattern().Match(json).Value;
             if (json.Contains(@"""requestType"":""GetVersion"",")) {
               await session.SendGetVersionResponseAsync(guid, largeString).ConfigureAwait(false);
             }
@@ -107,5 +107,8 @@ namespace ObsStrawket.Test {
         throw;
       }
     }
+
+    [GeneratedRegex("[0-9a-f]{8}-[0-9a-f]{4}[^\"]*")]
+    private static partial Regex _guidPattern();
   }
 }

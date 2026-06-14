@@ -237,8 +237,13 @@ namespace ObsStrawket {
     }
 
     private static string ApplySha256Base64(string rawData) {
+      byte[] data = Encoding.UTF8.GetBytes(rawData);
+#if NETSTANDARD2_0
       using var sha256Hash = SHA256.Create();
-      byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+      byte[] bytes = sha256Hash.ComputeHash(data);
+#else
+      byte[] bytes = SHA256.HashData(data);
+#endif
       return Convert.ToBase64String(bytes);
     }
 

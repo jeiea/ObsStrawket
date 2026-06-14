@@ -16,7 +16,7 @@ namespace ObsStrawket.Test {
     [Fact(Timeout = 3 * 60 * 1000)]
     public async Task TestAsync() {
       var cancellation = new CancellationTokenSource();
-      using var server = new MockServer().Run(cancellation.Token, ServeTrollAsync);
+      using var server = new MockServer().Run(ServeTrollAsync, cancellation.Token);
 
       var socket = new ClientSocket {
         SetOptions = (sock) => {

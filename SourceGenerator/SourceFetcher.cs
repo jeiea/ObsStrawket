@@ -40,7 +40,7 @@ namespace SourceGenerator {
     public SourceFetcher(IDirectoryHelper directoryHelper, HttpClient http) {
       _upstreamDirectory = directoryHelper.UpstreamDirectory;
       _http = http;
-      if (!_http.DefaultRequestHeaders.UserAgent.Any()) {
+      if (_http.DefaultRequestHeaders.UserAgent.Count == 0) {
         _http.DefaultRequestHeaders.UserAgent.ParseAdd("ObsStrawket-SourceGenerator");
       }
     }

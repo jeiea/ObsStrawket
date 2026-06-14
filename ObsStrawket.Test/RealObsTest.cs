@@ -158,7 +158,7 @@ namespace ObsStrawket.Test {
 
     [Fact(Timeout = 60 * 1000)]
     public async Task TestVendorPluginAsync() {
-      Assert.SkipWhen(!_obs.HasVendorPlugin, "OBS test vendor plugin is not installed.");
+      Assert.SkipWhen(!IsolatedObsFixture.HasVendorPlugin, "OBS test vendor plugin is not installed.");
       var started = NewCompletionSource<VendorEvent>();
       var stopped = NewCompletionSource<VendorEvent>();
       var client = ClientFlow.GetDebugClient();
@@ -506,7 +506,7 @@ namespace ObsStrawket.Test {
           throw failure;
         }
       }
-      await new CanvasUuidRealFlow().RequestAsync(client);
+      await CanvasUuidRealFlow.RequestAsync(client);
       return;
     }
 

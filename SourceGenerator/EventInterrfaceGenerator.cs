@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SourceGenerator {
-  internal class EventInterfaceGenerator {
+  internal partial class EventInterfaceGenerator {
     private readonly IDirectoryHelper _directoryHelper;
     private readonly ISourceFetcher _fetcher;
 
@@ -49,10 +49,10 @@ namespace SourceGenerator {
       string previous = await File.ReadAllTextAsync(_directoryHelper.ObsClientPath).ConfigureAwait(false);
 
       bool isReplaced = false;
-      string result = Regex.Replace(previous, @"    #region Events\r\n.*?#endregion", (match) => {
+      string result = EventsRegionPattern().Replace(previous, (match) => {
         isReplaced = true;
         return part.ToString();
-      }, RegexOptions.Singleline);
+      });
 
       if (!isReplaced) {
         throw new Exception("Unexpected file");
@@ -60,5 +60,8 @@ namespace SourceGenerator {
 
       await File.WriteAllTextAsync(_directoryHelper.ObsClientPath, result).ConfigureAwait(false);
     }
+
+    [GeneratedRegex(@"    #region Events\r\n.*?#endregion", RegexOptions.Singleline)]
+    private static partial Regex EventsRegionPattern();
   }
 }

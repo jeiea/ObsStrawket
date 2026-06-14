@@ -26,7 +26,7 @@ namespace ObsStrawket.Test.Utilities {
     public Task SendAsync(string json) {
       _cancellation.ThrowIfCancellationRequested();
       var text = WebSocketMessageType.Text;
-      _ = Task.Run(() => Debug.WriteLine($"Mock send {Regex.Replace(json, @"\s+", "")}"));
+      _ = Task.Run(() => Debug.WriteLine($"Mock send {_whitespacePattern().Replace(json, "")}"));
       byte[] bytes = Encoding.UTF8.GetBytes(json);
       return _webSocket.SendAsync(new ArraySegment<byte>(bytes), text, true, _cancellation);
     }
@@ -45,7 +45,7 @@ namespace ObsStrawket.Test.Utilities {
 
     public async Task<string?> ReceiveAsync(string expectedJson) {
       string json = await ReceiveAsync().ConfigureAwait(false);
-      _ = Task.Run(() => Debug.WriteLine($"Mock receive {Regex.Replace(json, @"\s+", "")}"));
+      _ = Task.Run(() => Debug.WriteLine($"Mock receive {_whitespacePattern().Replace(json, "")}"));
       string? guid = _guidPattern().Match(json)?.Value;
       AssertJsonEqual(expectedJson.Replace("{guid}", guid ?? ""), json);
       return guid;
@@ -202,6 +202,9 @@ namespace ObsStrawket.Test.Utilities {
 
     [GeneratedRegex("[0-9a-f]{8}-[0-9a-f]{4}[^\"]*")]
     private static partial Regex _guidPattern();
+
+    [GeneratedRegex(@"\s+")]
+    private static partial Regex _whitespacePattern();
 
     private static void AssertJsonEqual(string expected, string actual) {
       var expectation = JsonDocument.Parse(expected);

@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SourceGenerator {
-  internal class RequestInterfaceGenerator {
+  internal partial class RequestInterfaceGenerator {
     private readonly IDirectoryHelper _directoryHelper;
     private readonly ISourceFetcher _fetcher;
 
@@ -56,16 +56,19 @@ namespace SourceGenerator {
       string previous = await File.ReadAllTextAsync(_directoryHelper.ObsClientPath).ConfigureAwait(false);
 
       bool isReplaced = false;
-      string result = Regex.Replace(previous, @"    #region Requests\r\n.*?#endregion", (match) => {
+      string result = RequestsRegionPattern().Replace(previous, (match) => {
         isReplaced = true;
         return part.ToString();
-      }, RegexOptions.Singleline);
+      });
       if (!isReplaced) {
         throw new Exception("Unexpected file");
       }
 
       await File.WriteAllTextAsync(_directoryHelper.ObsClientPath, result).ConfigureAwait(false);
     }
+
+    [GeneratedRegex(@"    #region Requests\r\n.*?#endregion", RegexOptions.Singleline)]
+    private static partial Regex RequestsRegionPattern();
 
     private static void PatchTriggerHotkeyByKeySequence(List<ObsRequestField> requestFields) {
       int index = requestFields.FindIndex(x => x.ValueName == "keyModifiers");

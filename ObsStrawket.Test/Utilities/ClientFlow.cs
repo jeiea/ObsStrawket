@@ -41,8 +41,8 @@ namespace ObsStrawket.Test.Utilities {
         where T1 : class, IObsEvent where T2 : class, IObsEvent {
       var events = await WaitEventsAsync(
         client,
-        cancellation,
         DefaultEventWaitTimeout,
+        cancellation,
         e => e is T1 first && match1(first),
         e => e is T2 second && match2(second)
       ).ConfigureAwait(false);
@@ -56,8 +56,8 @@ namespace ObsStrawket.Test.Utilities {
         where T1 : class, IObsEvent where T2 : class, IObsEvent where T3 : class, IObsEvent {
       var events = await WaitEventsAsync(
         client,
-        cancellation,
         DefaultEventWaitTimeout,
+        cancellation,
         e => e is T1 first && match1(first),
         e => e is T2 second && match2(second),
         e => e is T3 third && match3(third)
@@ -69,18 +69,18 @@ namespace ObsStrawket.Test.Utilities {
     /// four or more correlated events. Each matcher consumes the first event it accepts.</summary>
     public static Task<IReadOnlyList<IObsEvent>> WaitEventsAsync(
         ObsClientSocket client, params Predicate<IObsEvent>[] matchers
-    ) => WaitEventsAsync(client, default, DefaultEventWaitTimeout, matchers);
+    ) => WaitEventsAsync(client, DefaultEventWaitTimeout, default, matchers);
 
     public static Task<IReadOnlyList<IObsEvent>> WaitEventsAsync(
         ObsClientSocket client,
         CancellationToken cancellation,
         params Predicate<IObsEvent>[] matchers
-    ) => WaitEventsAsync(client, cancellation, DefaultEventWaitTimeout, matchers);
+    ) => WaitEventsAsync(client, DefaultEventWaitTimeout, cancellation, matchers);
 
     public static async Task<IReadOnlyList<IObsEvent>> WaitEventsAsync(
         ObsClientSocket client,
-        CancellationToken cancellation,
         TimeSpan timeout,
+        CancellationToken cancellation,
         params Predicate<IObsEvent>[] matchers) {
       if (timeout <= TimeSpan.Zero) {
         throw new ArgumentOutOfRangeException(nameof(timeout), timeout, "Timeout must be positive.");

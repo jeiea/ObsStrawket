@@ -34,7 +34,7 @@ namespace ObsStrawket.Test {
     public static async Task RunParameterizedAsync(int delay, int division) {
       var traces = new ConcurrentQueue<string>();
       var client = ClientFlow.GetDebugClient();
-      using var server = new MockServer().Run(default);
+      using var server = new MockServer().Run();
       int openCloseDifference = 0;
       var failures = Channel.CreateUnbounded<string>();
 

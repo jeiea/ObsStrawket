@@ -27,7 +27,7 @@ namespace SourceGenerator {
       if (s2.Contains("int") && LargeIntegerLike().IsMatch(description)) {
         s2 = s2.Replace("int", "long");
       }
-      if (!s2.EndsWith("?") && nullPattern.IsMatch(description)) {
+      if (!s2.EndsWith('?') && nullPattern.IsMatch(description)) {
         return $"{s2}?";
       }
       return s2;
@@ -38,7 +38,7 @@ namespace SourceGenerator {
       var node = doc.CreateElement("root");
       node.InnerText = CrossPlatformNewLine().Replace(unescaped, Environment.NewLine);
       string xml = node.InnerXml;
-      xml = Regex.Replace(xml, "`(.*?)`", "<c>$1</c>");
+      xml = CodeQuotePattern().Replace(xml, "<c>$1</c>");
       return xml;
     }
 
@@ -67,6 +67,9 @@ namespace SourceGenerator {
 
     [GeneratedRegex("\\r\\n?|\\n")]
     private static partial Regex CrossPlatformNewLine();
+
+    [GeneratedRegex("`(.*?)`")]
+    private static partial Regex CodeQuotePattern();
 
     [GeneratedRegex("render|bytes|frames|duration|messages", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
     private static partial Regex LargeIntegerLike();
