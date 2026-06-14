@@ -310,6 +310,9 @@ namespace ObsStrawket.Test {
         //new CallVendorRequestFlow(), // test how?
 
         new GetVersionFlow(), // General
+        // OBS 32.1.2 can crash in obs_output_get_width when GetOutputList runs after
+        // recording output lifetime changes. Query before output mutation.
+        new GetOutputListFlow(),
         new GetCanvasListFlow(),
         new GetStatsFlow(),
         new BroadcastCustomEventFlow(),
@@ -430,7 +433,6 @@ namespace ObsStrawket.Test {
         new GetSceneItemIndexFlow(),
         new RemoveSceneItemFlow(),
 
-        new GetOutputListFlow(), // Outputs
         new SetOutputSettingsFlow(),
         new GetOutputSettingsFlow(),
         new StartVirtualCamFlow(),
