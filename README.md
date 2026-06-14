@@ -2,15 +2,13 @@
 
 [![prerelease shield](https://img.shields.io/nuget/vpre/ObsStrawket)](https://www.nuget.org/packages/ObsStrawket) ![Downloads count](https://img.shields.io/nuget/dt/ObsStrawket)
 
-.NET implementation of [obs-websocket](https://github.com/obsproject/obs-websocket) protocol v5.
+.NET client of [obs-websocket](https://github.com/obsproject/obs-websocket) v5.
 
 ## Installation
 
 ```powershell
-dotnet add package ObsStrawket --prerelease
+dotnet add package ObsStrawket
 ```
-
-Targets `netstandard2.0` and `net8.0`.
 
 ## Example
 
@@ -53,19 +51,3 @@ client.Event += (ev) => {
 await client.StartRecordAsync();
 await client.CloseAsync();
 ```
-
-## Updating generated protocol sources
-
-The source generator normally uses the tracked `SourceGenerator/Upstream/protocol.json` and
-`SourceGenerator/Upstream/Obs.h` files without network access. Their obs-websocket commit and
-source paths are recorded in `SourceGenerator/Upstream/upstream-revision.json`.
-
-To update both files from the latest obs-websocket default-branch commit and regenerate the
-client API:
-
-```powershell
-mise update-protocol
-```
-
-Other generator tasks (such as regenerating from the tracked revision) are defined in
-`mise.toml`; run `mise tasks` to list them.
