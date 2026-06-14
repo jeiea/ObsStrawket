@@ -15,7 +15,7 @@ namespace ObsStrawket.Serialization {
       OutputFlags result = 0;
       while (reader.Read() && reader.TokenType != JsonTokenType.EndObject) {
         string name = reader.GetString() ?? throw new JsonException();
-        reader.Read();
+        _ = reader.Read();
         if (reader.GetBoolean()) {
           result |= name switch {
             "OBS_OUTPUT_VIDEO" => OutputFlags.Video,

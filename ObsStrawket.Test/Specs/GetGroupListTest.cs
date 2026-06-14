@@ -10,14 +10,14 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class GetGroupListFlow : ITestFlow {
+  internal class GetGroupListFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetGroupListAsync().ConfigureAwait(false);
       Assert.NotNull(response.Groups);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestId": "{guid}",

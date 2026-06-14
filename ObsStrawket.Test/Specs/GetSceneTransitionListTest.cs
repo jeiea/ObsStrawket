@@ -10,20 +10,20 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class GetSceneTransitionListFlow : ITestFlow {
+  internal class GetSceneTransitionListFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetSceneTransitionListAsync().ConfigureAwait(false);
 
       // Default transitions only: Cut (fixed) and Fade. None is configurable.
       Assert.Equal("fade_transition", response.CurrentSceneTransitionKind);
       Assert.Equal(SetCurrentSceneTransitionFlow.TransitionName, response.CurrentSceneTransitionName);
-      Assert.Contains(response.Transitions, (x) => x.Fixed);
-      Assert.Contains(response.Transitions, (x) => x.Name == SetCurrentSceneTransitionFlow.TransitionName);
-      Assert.Contains(response.Transitions, (x) => x.Kind == "fade_transition");
+      Assert.Contains(response.Transitions, static (x) => x.Fixed);
+      Assert.Contains(response.Transitions, static (x) => x.Name == SetCurrentSceneTransitionFlow.TransitionName);
+      Assert.Contains(response.Transitions, static (x) => x.Kind == "fade_transition");
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestId": "{guid}",

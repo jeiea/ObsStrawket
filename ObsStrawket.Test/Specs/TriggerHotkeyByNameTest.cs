@@ -12,12 +12,12 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class TriggerHotkeyByNameFlow : ITestFlow {
+  internal class TriggerHotkeyByNameFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.TriggerHotkeyByNameAsync(hotkeyName: "OBSBasic.Screenshot").ConfigureAwait(false);
+      _ = await client.TriggerHotkeyByNameAsync(hotkeyName: "OBSBasic.Screenshot").ConfigureAwait(false);
       var saved = await ClientFlow.WaitEventAsync<ScreenshotSaved>(client).ConfigureAwait(false);
 
-      string path = (saved as ScreenshotSaved)!.SavedScreenshotPath;
+      string path = saved.SavedScreenshotPath;
       Assert.NotEmpty(path);
       if (File.Exists(path)) {
         File.Delete(path);
@@ -25,7 +25,7 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

@@ -12,21 +12,21 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetInputAudioMonitorTypeFlow : ITestFlow {
+  internal class SetInputAudioMonitorTypeFlow : ITestFlow {
     public static readonly MonitoringType MonitoringType = MonitoringType.Only;
 
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetInputAudioMonitorTypeAsync(
+      _ = await client.SetInputAudioMonitorTypeAsync(
         inputName: CreateInputFlow.InputName, monitorType: MonitoringType
       ).ConfigureAwait(false);
       var changed = await ClientFlow.WaitEventAsync<InputAudioMonitorTypeChanged>(client).ConfigureAwait(false);
-      Assert.Equal(CreateInputFlow.InputName, (changed as InputAudioMonitorTypeChanged)!.InputName);
-      Assert.Equal(MonitoringType, (changed as InputAudioMonitorTypeChanged)!.MonitorType);
+      Assert.Equal(CreateInputFlow.InputName, changed.InputName);
+      Assert.Equal(MonitoringType, changed.MonitorType);
 
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -39,7 +39,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 6
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

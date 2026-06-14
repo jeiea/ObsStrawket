@@ -12,7 +12,7 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class CallVendorRequestFlow : ITestFlow {
+  internal class CallVendorRequestFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.CallVendorRequestAsync(
         vendorName: "test-vendor",
@@ -27,7 +27,7 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string guid = (await session.ReceiveRequestAsync("CallVendorRequest", """
+      string guid = (await session.ReceiveRequestAsync("CallVendorRequest", /*lang=json,strict*/ """
 {
   "vendorName": "test-vendor",
   "requestType": "echo",
@@ -36,7 +36,7 @@ namespace ObsStrawket.Test.Specs {
   }
 }
 """).ConfigureAwait(false))!;
-      await session.SendSuccessResponseAsync("CallVendorRequest", guid, """
+      await session.SendSuccessResponseAsync("CallVendorRequest", guid, /*lang=json,strict*/ """
 {
   "vendorName": "test-vendor",
   "requestType": "echo",

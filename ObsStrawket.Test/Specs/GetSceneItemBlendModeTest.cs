@@ -1,4 +1,3 @@
-using ObsStrawket.DataTypes;
 using ObsStrawket.Test.Utilities;
 using System.Threading.Tasks;
 using Xunit;
@@ -11,7 +10,7 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class GetSceneItemBlendModeFlow : ITestFlow {
+  internal class GetSceneItemBlendModeFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetSceneItemBlendModeAsync(
         sceneName: CreateSceneFlow.NewScene,
@@ -21,7 +20,7 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

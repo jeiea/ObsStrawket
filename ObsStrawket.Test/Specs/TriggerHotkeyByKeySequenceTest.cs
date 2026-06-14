@@ -10,13 +10,13 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class TriggerHotkeyByKeySequenceFlow : ITestFlow {
+  internal class TriggerHotkeyByKeySequenceFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.TriggerHotkeyByKeySequenceAsync("OBS_KEY_P", shift: true).ConfigureAwait(false);
+      _ = await client.TriggerHotkeyByKeySequenceAsync("OBS_KEY_P", shift: true).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

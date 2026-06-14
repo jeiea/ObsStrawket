@@ -1,4 +1,3 @@
-using ObsStrawket;
 using ObsStrawket.DataTypes.Predefineds;
 using System;
 using System.Collections.Generic;
@@ -56,7 +55,7 @@ namespace ObsStrawket.Test.Utilities {
         startInfo.Environment["OBS_PLUGINS_PATH"] = Path.Combine(pluginRoot, "obs-plugins", "64bit");
         startInfo.Environment["OBS_PLUGINS_DATA_PATH"] = Path.Combine(pluginRoot, "data", "obs-plugins");
       }
-      _process = Process.Start(startInfo)!;
+      _process = Process.Start(startInfo);
 
       var deadline = DateTime.UtcNow + _bootTimeout;
       await WaitUntilListeningAsync(port, deadline).ConfigureAwait(false);
@@ -67,7 +66,7 @@ namespace ObsStrawket.Test.Utilities {
     public async Task ObserveWindowAsync(string requestName, Func<Task> request) {
       var existing = GetWindows(visibleOnly: false);
       await request().ConfigureAwait(false);
-      await WaitForNewWindowsAsync(requestName, existing).ConfigureAwait(false);
+      _ = await WaitForNewWindowsAsync(requestName, existing).ConfigureAwait(false);
     }
 
     public async Task RestartAsync() {
@@ -84,10 +83,9 @@ namespace ObsStrawket.Test.Utilities {
     }
 
     public Exception AddProcessDiagnostics(Exception exception) {
-      if (_process is not { HasExited: true } process) {
-        return exception;
-      }
-      return new InvalidOperationException(
+      return _process is not { HasExited: true } process
+        ? exception
+        : new InvalidOperationException(
         $"OBS exited with code {FormatExitCode(process.ExitCode)}.{GetLogTail()}",
         exception
       );
@@ -103,13 +101,13 @@ namespace ObsStrawket.Test.Utilities {
         if (!process.HasExited) {
           if (force) {
             process.Kill(entireProcessTree: true);
-            process.WaitForExit(10_000);
+            _ = process.WaitForExit(10_000);
           }
           else {
-            process.CloseMainWindow();
+            _ = process.CloseMainWindow();
             if (!process.WaitForExit(10_000)) {
               process.Kill(entireProcessTree: true);
-              process.WaitForExit(10_000);
+              _ = process.WaitForExit(10_000);
             }
           }
         }
@@ -159,7 +157,7 @@ namespace ObsStrawket.Test.Utilities {
     }
 
     private static void SeedPortableRoot(string root, string installation, int port) {
-      Directory.CreateDirectory(root);
+      _ = Directory.CreateDirectory(root);
       foreach (string name in _junctionNames) {
         CreateJunction(Path.Combine(root, name), Path.Combine(installation, name));
       }
@@ -173,15 +171,15 @@ namespace ObsStrawket.Test.Utilities {
         Pre31Migrated=true
 
         """;
-      Directory.CreateDirectory(config);
+      _ = Directory.CreateDirectory(config);
       File.WriteAllText(Path.Combine(config, "global.ini"), generalIni);
       File.WriteAllText(Path.Combine(config, "user.ini"), generalIni);
 
       // Keep recordings from tests inside the disposable root.
       string recordings = Path.Combine(root, "recordings");
-      Directory.CreateDirectory(recordings);
+      _ = Directory.CreateDirectory(recordings);
       string profile = Path.Combine(config, "basic", "profiles", "Untitled");
-      Directory.CreateDirectory(profile);
+      _ = Directory.CreateDirectory(profile);
       // OBS ini values treat backslashes as escapes; use forward slashes.
       File.WriteAllText(Path.Combine(profile, "basic.ini"), $"""
         [Output]
@@ -206,7 +204,7 @@ namespace ObsStrawket.Test.Utilities {
 
       // CLI --websocket_port cannot enable the server, only the config can.
       string websocket = Path.Combine(config, "plugin_config", "obs-websocket");
-      Directory.CreateDirectory(websocket);
+      _ = Directory.CreateDirectory(websocket);
       File.WriteAllText(Path.Combine(websocket, "config.json"), $$"""
         {
           "alerts_enabled": false,
@@ -267,7 +265,7 @@ namespace ObsStrawket.Test.Utilities {
             throw new InvalidOperationException($"OBS exited with code {_process.ExitCode}.{GetLogTail()}");
           }
           try {
-            await client.GetSceneListAsync(cancellation: token).ConfigureAwait(false);
+            _ = await client.GetSceneListAsync(cancellation: token).ConfigureAwait(false);
             return;
           }
           catch (FailureResponseException ex)
@@ -300,10 +298,10 @@ namespace ObsStrawket.Test.Utilities {
     private HashSet<nint> GetWindows(bool visibleOnly) {
       var windows = new HashSet<nint>();
       uint processId = checked((uint)_process!.Id);
-      EnumWindows((window, lParam) => {
+      _ = EnumWindows((window, lParam) => {
         _ = GetWindowThreadProcessId(window, out uint windowProcessId);
         if (windowProcessId == processId && (!visibleOnly || IsWindowVisible(window))) {
-          windows.Add(window);
+          _ = windows.Add(window);
         }
         return true;
       }, 0);
@@ -313,7 +311,7 @@ namespace ObsStrawket.Test.Utilities {
     private string GetLogTail() {
       try {
         string logs = Path.Combine(_root!, "config", "obs-studio", "logs");
-        var newest = new DirectoryInfo(logs).GetFiles().MaxBy(file => file.LastWriteTimeUtc);
+        var newest = new DirectoryInfo(logs).GetFiles().MaxBy(static file => file.LastWriteTimeUtc);
         if (newest == null) {
           return "";
         }
@@ -336,7 +334,7 @@ namespace ObsStrawket.Test.Utilities {
       }
 
       string destination = Path.Combine(artifacts, Path.GetFileName(root));
-      Directory.CreateDirectory(destination);
+      _ = Directory.CreateDirectory(destination);
       File.WriteAllText(
         Path.Combine(destination, "process.txt"),
         $"{DateTimeOffset.UtcNow:O} {processState}{Environment.NewLine}"
@@ -365,7 +363,7 @@ namespace ObsStrawket.Test.Utilities {
       if (!Directory.Exists(source)) {
         return;
       }
-      Directory.CreateDirectory(destination);
+      _ = Directory.CreateDirectory(destination);
       foreach (string file in Directory.EnumerateFiles(source)) {
         File.Copy(file, Path.Combine(destination, Path.GetFileName(file)), overwrite: true);
       }
@@ -423,5 +421,5 @@ namespace ObsStrawket.Test.Utilities {
   }
 
   [CollectionDefinition("IsolatedObs")]
-  public class IsolatedObsCollection : ICollectionFixture<IsolatedObsFixture> { }
+  public class IsolatedObsCollectionDefinition : ICollectionFixture<IsolatedObsFixture> { }
 }

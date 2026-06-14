@@ -14,17 +14,17 @@ namespace ObsStrawket.Test.Specs {
   /// <summary>
   /// Precondition: ToggleReplayBufferFlow
   /// </summary>
-  class StartOutputFlow : ITestFlow {
+  internal class StartOutputFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       await Task.Delay(100).ConfigureAwait(false);
-      await client.StartOutputAsync(outputName: GetOutputListFlow.OutputName).ConfigureAwait(false);
+      _ = await client.StartOutputAsync(outputName: GetOutputListFlow.OutputName).ConfigureAwait(false);
 
       var changed = await ClientFlow.WaitEventAsync<ReplayBufferStateChanged>(client).ConfigureAwait(false);
-      Assert.Equal(ObsOutputState.Started, (changed as ReplayBufferStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Started, changed.OutputState);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -49,7 +49,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

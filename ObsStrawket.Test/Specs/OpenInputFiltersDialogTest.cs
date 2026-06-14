@@ -10,13 +10,13 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class OpenInputFiltersDialogFlow : ITestFlow {
+  internal class OpenInputFiltersDialogFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.OpenInputFiltersDialogAsync(inputName: CreateInputFlow.InputName).ConfigureAwait(false);
+      _ = await client.OpenInputFiltersDialogAsync(inputName: CreateInputFlow.InputName).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

@@ -12,14 +12,14 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SaveSourceScreenshotFlow : ITestFlow {
+  internal class SaveSourceScreenshotFlow : ITestFlow {
     private static readonly string _fileName = "screenshot.png";
 
     public async Task RequestAsync(ObsClientSocket client) {
       var list = await client.GetSceneListAsync().ConfigureAwait(false);
       string path = Path.Combine(Directory.GetCurrentDirectory(), _fileName);
       File.Delete(path);
-      await client.SaveSourceScreenshotAsync(
+      _ = await client.SaveSourceScreenshotAsync(
         imageFormat: "png",
         imageFilePath: path,
         sourceName: list.CurrentProgramSceneName,

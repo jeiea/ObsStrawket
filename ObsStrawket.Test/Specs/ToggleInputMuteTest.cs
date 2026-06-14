@@ -11,7 +11,7 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class ToggleInputMuteFlow : ITestFlow {
+  internal class ToggleInputMuteFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.ToggleInputMuteAsync(inputName: CreateInputFlow.InputName).ConfigureAwait(false);
       Assert.False(response.InputMuted);
@@ -22,7 +22,7 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -50,7 +50,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

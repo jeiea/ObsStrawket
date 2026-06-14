@@ -11,7 +11,7 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetProfileParameterFlow : ITestFlow {
+  internal class SetProfileParameterFlow : ITestFlow {
     public static List<(string Category, string Name, string Value, string? Default)> AppliedParameters = [
       ("Output", "Mode", "Advanced", "Simple"),
       ("AdvOut", "RecRB", "true", "false"),
@@ -23,7 +23,7 @@ namespace ObsStrawket.Test.Specs {
 
     public async Task RequestAsync(ObsClientSocket client) {
       foreach (var (category, name, value, _) in AppliedParameters) {
-        await client.SetProfileParameterAsync(
+        _ = await client.SetProfileParameterAsync(
           parameterCategory: category,
           parameterName: name,
           parameterValue: value

@@ -1,6 +1,5 @@
 using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -12,39 +11,39 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class TriggerMediaInputActionFlow : ITestFlow {
+  internal class TriggerMediaInputActionFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
 #pragma warning disable CS0612 // Type or member is obsolete
-      await client.TriggerMediaInputActionAsync(
+      _ = await client.TriggerMediaInputActionAsync(
         inputName: CreateInputFlow.MediaInputName,
         mediaAction: MediaInputAction.Stop
       ).ConfigureAwait(false);
 
       var (triggered, playbackEnded) = await ClientFlow.WaitEventsAsync<MediaInputActionTriggered, MediaInputPlaybackEnded>(
         client,
-        e => e.MediaAction == MediaInputAction.Stop,
-        e => e.InputName == CreateInputFlow.MediaInputName).ConfigureAwait(false);
+        static e => e.MediaAction == MediaInputAction.Stop,
+        static e => e.InputName == CreateInputFlow.MediaInputName).ConfigureAwait(false);
       Assert.Equal(MediaInputAction.Stop, triggered.MediaAction);
       Assert.Equal(CreateInputFlow.MediaInputName, playbackEnded.InputName);
 
-      await client.TriggerMediaInputActionAsync(
+      _ = await client.TriggerMediaInputActionAsync(
         inputName: CreateInputFlow.MediaInputName,
         mediaAction: MediaInputAction.Play
       ).ConfigureAwait(false);
 
-      await ClientFlow.WaitEventsAsync<MediaInputActionTriggered, MediaInputPlaybackStarted>(
+      _ = await ClientFlow.WaitEventsAsync<MediaInputActionTriggered, MediaInputPlaybackStarted>(
         client,
-        e => e.MediaAction == MediaInputAction.Play,
-        e => e.InputName == CreateInputFlow.MediaInputName).ConfigureAwait(false);
+        static e => e.MediaAction == MediaInputAction.Play,
+        static e => e.InputName == CreateInputFlow.MediaInputName).ConfigureAwait(false);
 #pragma warning restore CS0612 // Type or member is obsolete
 
-      await client.RemoveInputAsync(CreateInputFlow.MediaInputName).ConfigureAwait(false);
-      await ClientFlow.WaitEventAsync<InputRemoved>(client).ConfigureAwait(false);
+      _ = await client.RemoveInputAsync(CreateInputFlow.MediaInputName).ConfigureAwait(false);
+      _ = await ClientFlow.WaitEventAsync<InputRemoved>(client).ConfigureAwait(false);
       await Task.Delay(100).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -57,7 +56,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 6
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -83,7 +82,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -96,7 +95,7 @@ namespace ObsStrawket.Test.Specs {
 }
 """).ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync("""
+      guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -109,7 +108,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 6
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -122,7 +121,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 5
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -148,7 +147,7 @@ namespace ObsStrawket.Test.Specs {
 }
 """).ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync("""
+      guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -160,7 +159,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 6
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

@@ -10,14 +10,14 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class GetHotkeyListFlow : ITestFlow {
+  internal class GetHotkeyListFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetHotkeyListAsync().ConfigureAwait(false);
       Assert.Contains("OBSBasic.Screenshot", response.Hotkeys);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestId": "{guid}",

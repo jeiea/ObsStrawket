@@ -11,24 +11,24 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetSceneItemEnabledFlow : ITestFlow {
+  internal class SetSceneItemEnabledFlow : ITestFlow {
     public static int DisablingItemId => CreateSceneItemFlow.CreatedItemId;
 
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetSceneItemEnabledAsync(
+      _ = await client.SetSceneItemEnabledAsync(
         sceneName: CreateSceneFlow.NewScene,
         sceneItemId: DisablingItemId,
         sceneItemEnabled: false
       ).ConfigureAwait(false);
 
       var changed = await ClientFlow.WaitEventAsync<SceneItemEnableStateChanged>(client).ConfigureAwait(false);
-      Assert.Equal(CreateSceneFlow.NewScene, (changed as SceneItemEnableStateChanged)!.SceneName);
-      Assert.Equal(DisablingItemId, (changed as SceneItemEnableStateChanged)!.SceneItemId);
-      Assert.False((changed as SceneItemEnableStateChanged)!.SceneItemEnabled);
+      Assert.Equal(CreateSceneFlow.NewScene, changed.SceneName);
+      Assert.Equal(DisablingItemId, changed.SceneItemId);
+      Assert.False(changed.SceneItemEnabled);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -55,7 +55,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

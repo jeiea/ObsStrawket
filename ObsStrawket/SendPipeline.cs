@@ -32,7 +32,7 @@ namespace ObsStrawket {
     }
 
     public void Stop() {
-      _sendQueue.Writer.TryComplete();
+      _ = _sendQueue.Writer.TryComplete();
     }
 
     public async Task SendAsync(IOpCodeMessage value, CancellationToken token = default) {
@@ -47,7 +47,7 @@ namespace ObsStrawket {
       await _sendQueue.Writer.WriteAsync(new(bytes, output, token), token).ConfigureAwait(false);
 
       _emit?.Invoke(new PipelineTrace(PipelineLevel.Debug, $"Await sending {value.GetType().Name}"));
-      await output.Task.ConfigureAwait(false);
+      _ = await output.Task.ConfigureAwait(false);
       _emit?.Invoke(new PipelineTrace(PipelineLevel.Debug, $"Sent {value.GetType().Name}"));
     }
 
@@ -76,7 +76,7 @@ namespace ObsStrawket {
       }
       catch (Exception fault) {
         _emit?.Invoke(new PipelineTrace(PipelineLevel.Debug, "Quit", fault));
-        _sendQueue.Writer.TryComplete(fault);
+        _ = _sendQueue.Writer.TryComplete(fault);
         while (!queue.Completion.IsCompleted) {
           var item = await queue.ReadAsync(default).ConfigureAwait(false);
           item.Output.SetException(fault);

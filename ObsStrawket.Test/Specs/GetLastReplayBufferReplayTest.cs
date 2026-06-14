@@ -11,14 +11,14 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class GetLastReplayBufferReplayFlow : ITestFlow {
+  internal class GetLastReplayBufferReplayFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetLastReplayBufferReplayAsync().ConfigureAwait(false);
       Assert.True(File.Exists(response.SavedReplayPath));
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestId": "{guid}",

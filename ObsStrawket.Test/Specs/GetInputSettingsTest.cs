@@ -10,7 +10,7 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class GetInputSettingsFlow : ITestFlow {
+  internal class GetInputSettingsFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetInputSettingsAsync(inputName: CreateInputFlow.InputName).ConfigureAwait(false);
       Assert.Equal("about:blank", response.InputSettings["url"]?.GetString());
@@ -18,7 +18,7 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

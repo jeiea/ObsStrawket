@@ -10,13 +10,13 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetTBarPositionFlow : ITestFlow {
+  internal class SetTBarPositionFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetTBarPositionAsync(position: 0.5, release: true).ConfigureAwait(false);
+      _ = await client.SetTBarPositionAsync(position: 0.5, release: true).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

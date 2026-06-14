@@ -11,21 +11,21 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetInputAudioBalanceFlow : ITestFlow {
+  internal class SetInputAudioBalanceFlow : ITestFlow {
     public static readonly double InputAudioBalance = 0.6;
 
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetInputAudioBalanceAsync(
+      _ = await client.SetInputAudioBalanceAsync(
         inputName: CreateInputFlow.InputName,
         inputAudioBalance: InputAudioBalance
       ).ConfigureAwait(false);
       var changed = await ClientFlow.WaitEventAsync<InputAudioBalanceChanged>(client).ConfigureAwait(false);
-      Assert.Equal(CreateInputFlow.InputName, (changed as InputAudioBalanceChanged)!.InputName);
-      Assert.Equal(InputAudioBalance, (changed as InputAudioBalanceChanged)!.InputAudioBalance, TestUtil.Epsilon);
+      Assert.Equal(CreateInputFlow.InputName, changed.InputName);
+      Assert.Equal(InputAudioBalance, changed.InputAudioBalance, TestUtil.Epsilon);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -51,7 +51,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

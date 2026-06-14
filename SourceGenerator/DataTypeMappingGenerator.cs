@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace SourceGenerator {
     public static string GetDataTypeMapping(ProtocolJson protocol) {
       var builder = new StringBuilder();
 
-      builder.AppendLine("""
+      _ = builder.AppendLine("""
 using ObsStrawket.DataTypes.Predefineds;
 using System;
 using System.Collections.Generic;
@@ -23,14 +24,14 @@ namespace ObsStrawket.DataTypes {
       string? previousCategory = null;
       foreach (var @event in protocol.Events) {
         if (@event.Category != previousCategory) {
-          builder.AppendLine();
-          builder.AppendLine($"      // {TransformHelper.ToPascalCase(@event.Category)} Events");
+          _ = builder.AppendLine();
+          _ = builder.AppendLine(CultureInfo.InvariantCulture, $"      // {TransformHelper.ToPascalCase(@event.Category)} Events");
           previousCategory = @event.Category;
         }
-        builder.AppendLine($"      typeof({@event.EventType}),");
+        _ = builder.AppendLine(CultureInfo.InvariantCulture, $"      typeof({@event.EventType}),");
       }
 
-      builder.AppendLine("""
+      _ = builder.AppendLine("""
     }.ToDictionary(x => x.Name, x => x);
 
     internal record RequestMapping(Type Request, Type Response, bool IsRequestEmpty = false);
@@ -41,15 +42,15 @@ namespace ObsStrawket.DataTypes {
       previousCategory = null;
       foreach (var request in protocol.Requests) {
         if (request.Category != previousCategory) {
-          builder.AppendLine();
-          builder.AppendLine($"      // {TransformHelper.ToPascalCase(request.Category!)} Requests");
+          _ = builder.AppendLine();
+          _ = builder.AppendLine(CultureInfo.InvariantCulture, $"      // {TransformHelper.ToPascalCase(request.Category!)} Requests");
           previousCategory = request.Category;
         }
         string response = request.ResponseFields.Count > 0 ? $"{request.RequestType}Response" : "RequestResponse";
         string isRequestEmpty = request.RequestFields.Count == 0 ? ", true" : "";
-        builder.AppendLine($"      new (typeof({request.RequestType}), typeof({response}){isRequestEmpty}),");
+        _ = builder.AppendLine(CultureInfo.InvariantCulture, $"      new (typeof({request.RequestType}), typeof({response}){isRequestEmpty}),");
       }
-      builder.AppendLine("""
+      _ = builder.AppendLine("""
     }.ToDictionary(x => x.Request.Name, x => x);
   }
 }

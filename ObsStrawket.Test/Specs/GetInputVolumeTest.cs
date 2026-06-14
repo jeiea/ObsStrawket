@@ -1,4 +1,3 @@
-using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
 using System.Threading.Tasks;
 using Xunit;
@@ -11,7 +10,7 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class GetInputVolumeFlow : ITestFlow {
+  internal class GetInputVolumeFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetInputVolumeAsync(inputName: CreateInputFlow.InputName).ConfigureAwait(false);
       Assert.Equal(20.0, response.InputVolumeDb);
@@ -19,7 +18,7 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

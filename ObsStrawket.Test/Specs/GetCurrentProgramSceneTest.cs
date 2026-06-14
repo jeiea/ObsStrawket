@@ -10,14 +10,14 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class GetCurrentProgramSceneFlow : ITestFlow {
+  internal class GetCurrentProgramSceneFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetCurrentProgramSceneAsync().ConfigureAwait(false);
       Assert.Equal(CreateSceneFlow.NewScene2, response.CurrentProgramSceneName);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestId": "{guid}",

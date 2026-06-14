@@ -21,7 +21,7 @@ namespace ObsStrawket {
       _emit = emit;
     }
 
-    public ChannelReader<Task<IOpCodeMessage>> Messages { get => _messages.Reader; }
+    public ChannelReader<Task<IOpCodeMessage>> Messages => _messages.Reader;
 
     public Task? ReceiveTask { get; private set; }
 
@@ -48,15 +48,10 @@ namespace ObsStrawket {
 
           if (_socket.State == WebSocketState.CloseReceived && readResult.MessageType == WebSocketMessageType.Close) {
             _emit?.Invoke(new PipelineTrace(PipelineLevel.Debug, "Exit by websocket close"));
-            switch ((int?)_socket.CloseStatus) {
-            case (int?)WebSocketCloseCode.AuthenticationFailed:
-              _messages.Writer.TryComplete(new AuthenticationFailureException());
-              break;
-
-            default:
-              _messages.Writer.TryComplete(new WebsocketCloseReceivedException(code: (int?)_socket.CloseStatus));
-              break;
-            }
+            _ = (int?)_socket.CloseStatus switch {
+              (int?)WebSocketCloseCode.AuthenticationFailed => _messages.Writer.TryComplete(new AuthenticationFailureException()),
+              _ => _messages.Writer.TryComplete(new WebsocketCloseReceivedException(code: (int?)_socket.CloseStatus)),
+            };
             break;
           }
 
@@ -70,27 +65,26 @@ namespace ObsStrawket {
           }
         }
 
-        _messages.Writer.TryComplete();
+        _ = _messages.Writer.TryComplete();
         _emit?.Invoke(new PipelineTrace(PipelineLevel.Debug, $"Complete. IsCancellationRequested: {token.IsCancellationRequested}"));
       }
       catch (Exception exception) {
         _emit?.Invoke(new PipelineTrace(PipelineLevel.Debug, $"Complete with exception: {exception.Message}", exception));
-        _messages.Writer.TryComplete(exception);
+        _ = _messages.Writer.TryComplete(exception);
       }
     }
   }
 
   internal class LazyString {
-    private Func<string> _builder = () => "";
     private string? _evaluated;
 
     public Func<string> Builder {
-      get => _builder;
+      get;
       set {
         _evaluated = null;
-        _builder = value;
+        field = value;
       }
-    }
+    } = static () => "";
 
     public override string ToString() {
       return _evaluated ??= Builder();

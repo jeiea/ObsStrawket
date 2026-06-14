@@ -12,25 +12,25 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetSourceFilterIndexFlow : ITestFlow {
+  internal class SetSourceFilterIndexFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetSourceFilterIndexAsync(
+      _ = await client.SetSourceFilterIndexAsync(
         sourceName: CreateInputFlow.InputName,
         filterName: CreateSourceFilterFlow.FilterName,
         filterIndex: 1
       ).ConfigureAwait(false);
 
       var reindexed = await ClientFlow.WaitEventAsync<SourceFilterListReindexed>(client).ConfigureAwait(false);
-      Assert.Equal(CreateSourceFilterFlow.FilterName, (reindexed as SourceFilterListReindexed)!.Filters[1].Name);
-      Assert.Equal(1, (reindexed as SourceFilterListReindexed)!.Filters[1].Index);
-      Assert.Equal("color_key_filter_v2", (reindexed as SourceFilterListReindexed)!.Filters[1].Kind);
-      Assert.True((reindexed as SourceFilterListReindexed)!.Filters[1].Enabled);
-      var brightness = Assert.IsType<JsonElement>((reindexed as SourceFilterListReindexed)!.Filters[1].Settings["brightness"]);
+      Assert.Equal(CreateSourceFilterFlow.FilterName, reindexed.Filters[1].Name);
+      Assert.Equal(1, reindexed.Filters[1].Index);
+      Assert.Equal("color_key_filter_v2", reindexed.Filters[1].Kind);
+      Assert.True(reindexed.Filters[1].Enabled);
+      var brightness = Assert.IsType<JsonElement>(reindexed.Filters[1].Settings["brightness"]);
       Assert.Equal(1.0, brightness.GetDouble());
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -44,7 +44,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 6
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

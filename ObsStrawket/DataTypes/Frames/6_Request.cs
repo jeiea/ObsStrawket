@@ -13,12 +13,12 @@ namespace ObsStrawket.DataTypes {
     /// <summary>
     /// The string identifying request type.
     /// </summary>
-    public string RequestType { get; }
+    string RequestType { get; }
 
     /// <summary>
     /// Unique identifier for response matching.
     /// </summary>
-    public string RequestId { get; set; }
+    string RequestId { get; set; }
   }
 
   /// <summary>
@@ -38,7 +38,7 @@ namespace ObsStrawket.DataTypes {
     /// The string identifying request type.
     /// </summary>
     [JsonIgnore]
-    public string RequestType { get => GetType().Name; }
+    public string RequestType => GetType().Name;
 
     /// <summary>
     /// Unique identifier for response matching.

@@ -12,7 +12,7 @@ namespace ObsStrawket.DataTypes {
     /// <summary>
     /// <c>WebSocketOpCode</c> OpCode.
     /// </summary>
-    public OpCode Op { get; }
+    OpCode Op { get; }
   }
 
   /// <summary>

@@ -11,7 +11,7 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class GetProfileListFlow : ITestFlow {
+  internal class GetProfileListFlow : ITestFlow {
     public static async Task<GetProfileListResponse> GetProfileList(ObsClientSocket client) {
       var response = await client.GetProfileListAsync().ConfigureAwait(false);
       Assert.Equal(CreateProfileFlow.NewProfileName, response.CurrentProfileName);
@@ -20,11 +20,11 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RequestAsync(ObsClientSocket client) {
-      await GetProfileList(client).ConfigureAwait(false);
+      _ = await GetProfileList(client).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestId": "{guid}",

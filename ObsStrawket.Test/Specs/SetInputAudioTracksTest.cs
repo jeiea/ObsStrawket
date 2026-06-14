@@ -12,9 +12,9 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetInputAudioTracksFlow : ITestFlow {
+  internal class SetInputAudioTracksFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetInputAudioTracksAsync(
+      _ = await client.SetInputAudioTracksAsync(
         inputName: CreateInputFlow.InputName,
         inputAudioTracks: new Dictionary<string, bool> {
           { "2", false },
@@ -22,12 +22,12 @@ namespace ObsStrawket.Test.Specs {
       ).ConfigureAwait(false);
 
       var changed = await ClientFlow.WaitEventAsync<InputAudioTracksChanged>(client).ConfigureAwait(false);
-      Assert.True((changed as InputAudioTracksChanged)!.InputAudioTracks["1"]);
-      Assert.False((changed as InputAudioTracksChanged)!.InputAudioTracks["2"]);
+      Assert.True(changed.InputAudioTracks["1"]);
+      Assert.False(changed.InputAudioTracks["2"]);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -55,7 +55,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

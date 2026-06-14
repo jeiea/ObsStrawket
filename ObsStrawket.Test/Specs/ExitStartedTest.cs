@@ -11,14 +11,14 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class ExitStartedFlow : ITestFlow {
+  internal class ExitStartedFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var exitStarted = await client.Events.ReadAsync().ConfigureAwait(false);
-      Assert.IsType<ExitStarted>(exitStarted);
+      _ = Assert.IsType<ExitStarted>(exitStarted);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventIntent": 1,

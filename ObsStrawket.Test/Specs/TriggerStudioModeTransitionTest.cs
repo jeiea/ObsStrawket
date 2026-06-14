@@ -1,6 +1,5 @@
 using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -12,20 +11,20 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class TriggerStudioModeTransitionFlow : ITestFlow {
+  internal class TriggerStudioModeTransitionFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.TriggerStudioModeTransitionAsync().ConfigureAwait(false);
+      _ = await client.TriggerStudioModeTransitionAsync().ConfigureAwait(false);
 
-      await ClientFlow.WaitEventsAsync(client,
-        e => e is SceneTransitionStarted started && started.TransitionName == "Fade",
-        e => e is SceneTransitionVideoEnded videoEnded && videoEnded.TransitionName == "Fade",
-        e => e is CurrentPreviewSceneChanged preview && preview.SceneName == CreateSceneFlow.NewScene2,
-        e => e is CurrentProgramSceneChanged program && program.SceneName == CreateSceneFlow.NewScene,
-        e => e is SceneTransitionEnded ended && ended.TransitionName == "Fade").ConfigureAwait(false);
+      _ = await ClientFlow.WaitEventsAsync(client,
+        static e => e is SceneTransitionStarted started && started.TransitionName == "Fade",
+        static e => e is SceneTransitionVideoEnded videoEnded && videoEnded.TransitionName == "Fade",
+        static e => e is CurrentPreviewSceneChanged preview && preview.SceneName == CreateSceneFlow.NewScene2,
+        static e => e is CurrentProgramSceneChanged program && program.SceneName == CreateSceneFlow.NewScene,
+        static e => e is SceneTransitionEnded ended && ended.TransitionName == "Fade").ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestId": "{guid}",
@@ -34,7 +33,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 6
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -59,7 +58,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -71,7 +70,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 5
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -83,7 +82,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 5
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -95,7 +94,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 5
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

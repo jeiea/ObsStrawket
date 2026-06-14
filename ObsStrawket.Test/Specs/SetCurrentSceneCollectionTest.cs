@@ -10,13 +10,13 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetCurrentSceneCollectionFlow : ITestFlow {
+  internal class SetCurrentSceneCollectionFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetCurrentSceneCollectionAsync(sceneCollectionName: CreateSceneCollectionFlow.NewSceneCollection).ConfigureAwait(false);
+      _ = await client.SetCurrentSceneCollectionAsync(sceneCollectionName: CreateSceneCollectionFlow.NewSceneCollection).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

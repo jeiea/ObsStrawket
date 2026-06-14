@@ -10,13 +10,13 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class GetCurrentSceneTransitionFlow : ITestFlow {
+  internal class GetCurrentSceneTransitionFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       _ = await client.GetCurrentSceneTransitionAsync().ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestId": "{guid}",

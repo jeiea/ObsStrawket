@@ -18,17 +18,17 @@ namespace ObsStrawket.Test.Specs {
   internal class BroadcastCustomEventFlow : ITestFlow {
 
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.BroadcastCustomEventAsync(
+      _ = await client.BroadcastCustomEventAsync(
         eventData: new Dictionary<string, JsonElement?> { { "sample", 3.ToJsonElement() } }
       ).ConfigureAwait(false);
 
       var ev = await ClientFlow.WaitEventAsync<CustomEvent>(client).ConfigureAwait(false);
-      Assert.IsType<CustomEvent>(ev);
+      _ = Assert.IsType<CustomEvent>(ev);
       Assert.Equal(3, ev.EventData["sample"]?.GetInt32());
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -55,7 +55,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

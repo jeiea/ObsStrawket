@@ -12,15 +12,15 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetCurrentSceneTransitionSettingsFlow : ITestFlow {
+  internal class SetCurrentSceneTransitionSettingsFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetCurrentSceneTransitionSettingsAsync(transitionSettings: new Dictionary<string, JsonElement?>() {
+      _ = await client.SetCurrentSceneTransitionSettingsAsync(transitionSettings: new Dictionary<string, JsonElement?>() {
         { "direction", "up".ToJsonElement() },
       }).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

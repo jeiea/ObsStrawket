@@ -12,9 +12,9 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetInputSettingsFlow : ITestFlow {
+  internal class SetInputSettingsFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetInputSettingsAsync(
+      _ = await client.SetInputSettingsAsync(
         inputName: CreateInputFlow.InputName,
         inputSettings: new Dictionary<string, JsonElement?> {
           { "width", 1000.ToJsonElement() },
@@ -24,7 +24,7 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

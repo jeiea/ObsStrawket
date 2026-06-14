@@ -10,14 +10,14 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class GetInputAudioMonitorTypeFlow : ITestFlow {
+  internal class GetInputAudioMonitorTypeFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetInputAudioMonitorTypeAsync(inputName: CreateInputFlow.InputName).ConfigureAwait(false);
       Assert.Equal(SetInputAudioMonitorTypeFlow.MonitoringType, response.MonitorType);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

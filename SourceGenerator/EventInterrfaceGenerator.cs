@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -31,12 +32,12 @@ namespace SourceGenerator {
           previousCategory = ev.Category;
           part.WriteLine();
           part.WriteLine("    /// <summary>");
-          part.WriteLine("    /// {0}{1} event group.", char.ToUpper(ev.Category[0]), ev.Category[1..]);
+          part.WriteLine("    /// {0}{1} event group.", char.ToUpper(ev.Category[0], CultureInfo.InvariantCulture), ev.Category[1..]);
           part.WriteLine("    /// </summary>");
           part.WriteLine("    public event Action<{0}Event> {0}Event = delegate {{ }};", TransformHelper.ToPascalCase(ev.Category));
         }
         part.WriteLine("    /// <summary>");
-        part.WriteLine("    /// {0}<br />", TransformHelper.EscapeForXml(ev.Description!).Replace(Environment.NewLine, $"<br />{Environment.NewLine}    /// "));
+        part.WriteLine("    /// {0}<br />", TransformHelper.EscapeForXml(ev.Description).Replace(Environment.NewLine, $"<br />{Environment.NewLine}    /// "));
         part.WriteLine("    /// Latest supported RPC version: {0}<br />", ev.RpcVersion);
         part.WriteLine("    /// Added in: {0}", ev.InitialVersion);
         part.WriteLine("    /// </summary>");
@@ -55,7 +56,7 @@ namespace SourceGenerator {
       });
 
       if (!isReplaced) {
-        throw new Exception("Unexpected file");
+        throw new InvalidOperationException("Unexpected file");
       }
 
       await File.WriteAllTextAsync(_directoryHelper.ObsClientPath, result).ConfigureAwait(false);

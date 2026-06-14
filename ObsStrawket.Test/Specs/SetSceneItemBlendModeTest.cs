@@ -11,11 +11,11 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetSceneItemBlendModeFlow : ITestFlow {
+  internal class SetSceneItemBlendModeFlow : ITestFlow {
     public static BlendingType NewBlendingMode = BlendingType.Screen;
 
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetSceneItemBlendModeAsync(
+      _ = await client.SetSceneItemBlendModeAsync(
         sceneName: CreateSceneFlow.NewScene,
         sceneItemId: CreateSceneItemFlow.CreatedItemId,
         sceneItemBlendMode: NewBlendingMode
@@ -23,7 +23,7 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

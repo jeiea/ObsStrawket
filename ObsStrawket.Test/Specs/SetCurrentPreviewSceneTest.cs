@@ -11,15 +11,15 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetCurrentPreviewSceneFlow : ITestFlow {
+  internal class SetCurrentPreviewSceneFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetCurrentPreviewSceneAsync(sceneName: CreateSceneFlow.NewScene).ConfigureAwait(false);
+      _ = await client.SetCurrentPreviewSceneAsync(sceneName: CreateSceneFlow.NewScene).ConfigureAwait(false);
       var changed = await ClientFlow.WaitEventAsync<CurrentPreviewSceneChanged>(client).ConfigureAwait(false);
-      Assert.Equal(CreateSceneFlow.NewScene, (changed as CurrentPreviewSceneChanged)!.SceneName);
+      Assert.Equal(CreateSceneFlow.NewScene, changed.SceneName);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -44,7 +44,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

@@ -12,13 +12,13 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetOutputSettingsFlow : ITestFlow {
+  internal class SetOutputSettingsFlow : ITestFlow {
     public static string OutputName => GetOutputListFlow.OutputName;
     public static string PropName => "test_prop";
     public static string PropValue => "unused";
 
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetOutputSettingsAsync(
+      _ = await client.SetOutputSettingsAsync(
         outputName: OutputName,
         outputSettings: new Dictionary<string, JsonElement?> {
           { PropName, PropValue.ToJsonElement() }
@@ -27,7 +27,7 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

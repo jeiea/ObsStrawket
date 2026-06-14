@@ -13,13 +13,13 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetCurrentSceneTransitionDurationFlow : ITestFlow {
+  internal class SetCurrentSceneTransitionDurationFlow : ITestFlow {
     public static int TransitionDuration => 300;
 
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetCurrentSceneTransitionDurationAsync(transitionDuration: 200).ConfigureAwait(false);
+      _ = await client.SetCurrentSceneTransitionDurationAsync(transitionDuration: 200).ConfigureAwait(false);
 
-      await client.SetCurrentSceneTransitionDurationAsync(transitionDuration: TransitionDuration).ConfigureAwait(false);
+      _ = await client.SetCurrentSceneTransitionDurationAsync(transitionDuration: TransitionDuration).ConfigureAwait(false);
 
       using var cts = new CancellationTokenSource();
       cts.CancelAfter(2000);
@@ -33,7 +33,7 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -45,7 +45,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 6
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -71,7 +71,7 @@ namespace ObsStrawket.Test.Specs {
 }
 """).ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync("""
+      guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -96,7 +96,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

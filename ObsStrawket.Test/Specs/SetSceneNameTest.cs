@@ -11,22 +11,22 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetSceneNameFlow : ITestFlow {
+  internal class SetSceneNameFlow : ITestFlow {
     private static string ChangedName => "test scene 3";
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetSceneNameAsync(sceneName: CreateSceneFlow.NewScene2, newSceneName: ChangedName).ConfigureAwait(false);
+      _ = await client.SetSceneNameAsync(sceneName: CreateSceneFlow.NewScene2, newSceneName: ChangedName).ConfigureAwait(false);
 
       var changed = await ClientFlow.WaitEventAsync<SceneNameChanged>(client).ConfigureAwait(false);
-      Assert.Equal(ChangedName, (changed as SceneNameChanged)!.SceneName);
+      Assert.Equal(ChangedName, changed.SceneName);
 
-      await client.SetSceneNameAsync(sceneName: ChangedName, newSceneName: CreateSceneFlow.NewScene2).ConfigureAwait(false);
+      _ = await client.SetSceneNameAsync(sceneName: ChangedName, newSceneName: CreateSceneFlow.NewScene2).ConfigureAwait(false);
 
       changed = await ClientFlow.WaitEventAsync<SceneNameChanged>(client).ConfigureAwait(false);
-      Assert.Equal(CreateSceneFlow.NewScene2, (changed as SceneNameChanged)!.SceneName);
+      Assert.Equal(CreateSceneFlow.NewScene2, changed.SceneName);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -39,7 +39,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 6
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -66,7 +66,7 @@ namespace ObsStrawket.Test.Specs {
 }
 """).ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync("""
+      guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -79,7 +79,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 6
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

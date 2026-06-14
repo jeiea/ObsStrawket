@@ -13,7 +13,7 @@ namespace ObsStrawket.Test {
     }
   }
 
-  class CanvasUuidFlow : ITestFlow {
+  internal class CanvasUuidFlow : ITestFlow {
     private const string _canvasUuid = "6f9619ff-8b86-d011-b42d-00cf4fc964ff";
     private const string _scene = "Scene";
     private const string _source = "Source";
@@ -62,28 +62,28 @@ namespace ObsStrawket.Test {
       var settings = new Dictionary<string, JsonElement?>();
       const int sceneItemId = 1;
 
-      await client.GetSourceActiveAsync(sourceName: _source, canvasUuid: _canvasUuid).ConfigureAwait(false);
-      await client.GetSourceScreenshotAsync("png", sourceName: _source, canvasUuid: _canvasUuid).ConfigureAwait(false);
-      await client.SaveSourceScreenshotAsync(
+      _ = await client.GetSourceActiveAsync(sourceName: _source, canvasUuid: _canvasUuid).ConfigureAwait(false);
+      _ = await client.GetSourceScreenshotAsync("png", sourceName: _source, canvasUuid: _canvasUuid).ConfigureAwait(false);
+      _ = await client.SaveSourceScreenshotAsync(
         "png",
         "screenshot.png",
         sourceName: _source,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.GetSceneListAsync(_canvasUuid).ConfigureAwait(false);
-      await client.CreateSceneAsync(_scene, _canvasUuid).ConfigureAwait(false);
-      await client.RemoveSceneAsync(sceneName: _scene, canvasUuid: _canvasUuid).ConfigureAwait(false);
-      await client.SetSceneNameAsync("Renamed", sceneName: _scene, canvasUuid: _canvasUuid).ConfigureAwait(false);
-      await client.GetSceneSceneTransitionOverrideAsync(
+      _ = await client.GetSceneListAsync(_canvasUuid).ConfigureAwait(false);
+      _ = await client.CreateSceneAsync(_scene, _canvasUuid).ConfigureAwait(false);
+      _ = await client.RemoveSceneAsync(sceneName: _scene, canvasUuid: _canvasUuid).ConfigureAwait(false);
+      _ = await client.SetSceneNameAsync("Renamed", sceneName: _scene, canvasUuid: _canvasUuid).ConfigureAwait(false);
+      _ = await client.GetSceneSceneTransitionOverrideAsync(
         sceneName: _scene,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.SetSceneSceneTransitionOverrideAsync(
+      _ = await client.SetSceneSceneTransitionOverrideAsync(
         sceneName: _scene,
         transitionName: "Fade",
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.CreateInputAsync(
+      _ = await client.CreateInputAsync(
         "Input",
         "browser_source",
         sceneName: _scene,
@@ -91,132 +91,132 @@ namespace ObsStrawket.Test {
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
 
-      await client.GetSourceFilterListAsync(sourceName: _source, canvasUuid: _canvasUuid).ConfigureAwait(false);
-      await client.CreateSourceFilterAsync(
+      _ = await client.GetSourceFilterListAsync(sourceName: _source, canvasUuid: _canvasUuid).ConfigureAwait(false);
+      _ = await client.CreateSourceFilterAsync(
         _filter,
         "color_filter",
         sourceName: _source,
         filterSettings: settings,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.RemoveSourceFilterAsync(
+      _ = await client.RemoveSourceFilterAsync(
         _filter,
         sourceName: _source,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.SetSourceFilterNameAsync(
+      _ = await client.SetSourceFilterNameAsync(
         _filter,
         "Renamed filter",
         sourceName: _source,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.GetSourceFilterAsync(
+      _ = await client.GetSourceFilterAsync(
         _filter,
         sourceName: _source,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.SetSourceFilterIndexAsync(
+      _ = await client.SetSourceFilterIndexAsync(
         _filter,
         0,
         sourceName: _source,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.SetSourceFilterSettingsAsync(
+      _ = await client.SetSourceFilterSettingsAsync(
         _filter,
         settings,
         sourceName: _source,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.SetSourceFilterEnabledAsync(
+      _ = await client.SetSourceFilterEnabledAsync(
         _filter,
         true,
         sourceName: _source,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
 
-      await client.GetSceneItemListAsync(sceneName: _scene, canvasUuid: _canvasUuid).ConfigureAwait(false);
-      await client.GetGroupSceneItemListAsync(sceneName: _scene, canvasUuid: _canvasUuid).ConfigureAwait(false);
-      await client.GetSceneItemIdAsync(
+      _ = await client.GetSceneItemListAsync(sceneName: _scene, canvasUuid: _canvasUuid).ConfigureAwait(false);
+      _ = await client.GetGroupSceneItemListAsync(sceneName: _scene, canvasUuid: _canvasUuid).ConfigureAwait(false);
+      _ = await client.GetSceneItemIdAsync(
         _source,
         sceneName: _scene,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.GetSceneItemSourceAsync(
+      _ = await client.GetSceneItemSourceAsync(
         sceneItemId,
         sceneName: _scene,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.CreateSceneItemAsync(
+      _ = await client.CreateSceneItemAsync(
         sceneName: _scene,
         sourceName: _source,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.RemoveSceneItemAsync(
+      _ = await client.RemoveSceneItemAsync(
         sceneItemId,
         sceneName: _scene,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.DuplicateSceneItemAsync(
+      _ = await client.DuplicateSceneItemAsync(
         sceneItemId,
         sceneName: _scene,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.GetSceneItemTransformAsync(
+      _ = await client.GetSceneItemTransformAsync(
         sceneItemId,
         sceneName: _scene,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.SetSceneItemTransformAsync(
+      _ = await client.SetSceneItemTransformAsync(
         sceneItemId,
         settings,
         sceneName: _scene,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.GetSceneItemEnabledAsync(
+      _ = await client.GetSceneItemEnabledAsync(
         sceneItemId,
         sceneName: _scene,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.SetSceneItemEnabledAsync(
-        sceneItemId,
-        true,
-        sceneName: _scene,
-        canvasUuid: _canvasUuid
-      ).ConfigureAwait(false);
-      await client.GetSceneItemLockedAsync(
-        sceneItemId,
-        sceneName: _scene,
-        canvasUuid: _canvasUuid
-      ).ConfigureAwait(false);
-      await client.SetSceneItemLockedAsync(
+      _ = await client.SetSceneItemEnabledAsync(
         sceneItemId,
         true,
         sceneName: _scene,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.GetSceneItemIndexAsync(
+      _ = await client.GetSceneItemLockedAsync(
         sceneItemId,
         sceneName: _scene,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.SetSceneItemIndexAsync(
+      _ = await client.SetSceneItemLockedAsync(
+        sceneItemId,
+        true,
+        sceneName: _scene,
+        canvasUuid: _canvasUuid
+      ).ConfigureAwait(false);
+      _ = await client.GetSceneItemIndexAsync(
+        sceneItemId,
+        sceneName: _scene,
+        canvasUuid: _canvasUuid
+      ).ConfigureAwait(false);
+      _ = await client.SetSceneItemIndexAsync(
         sceneItemId,
         0,
         sceneName: _scene,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.GetSceneItemBlendModeAsync(
+      _ = await client.GetSceneItemBlendModeAsync(
         sceneItemId,
         sceneName: _scene,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.SetSceneItemBlendModeAsync(
+      _ = await client.SetSceneItemBlendModeAsync(
         sceneItemId,
         BlendingType.Normal,
         sceneName: _scene,
         canvasUuid: _canvasUuid
       ).ConfigureAwait(false);
-      await client.OpenSourceProjectorAsync(sourceName: _source, canvasUuid: _canvasUuid).ConfigureAwait(false);
+      _ = await client.OpenSourceProjectorAsync(sourceName: _source, canvasUuid: _canvasUuid).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {

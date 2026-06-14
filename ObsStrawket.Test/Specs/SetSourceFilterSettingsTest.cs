@@ -12,7 +12,7 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetSourceFilterSettingsFlow : ITestFlow {
+  internal class SetSourceFilterSettingsFlow : ITestFlow {
     public static Dictionary<string, JsonElement?> FilterSettings => new() {
       { "gamma", 1.0.ToJsonElement() },
       { "key_color", 23000.ToJsonElement() },
@@ -20,7 +20,7 @@ namespace ObsStrawket.Test.Specs {
     };
 
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetSourceFilterSettingsAsync(
+      _ = await client.SetSourceFilterSettingsAsync(
         sourceName: CreateInputFlow.InputName,
         filterName: "test filter name",
         filterSettings: FilterSettings
@@ -28,7 +28,7 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

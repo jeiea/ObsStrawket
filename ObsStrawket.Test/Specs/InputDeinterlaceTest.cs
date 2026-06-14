@@ -10,12 +10,12 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class InputDeinterlaceFlow : ITestFlow {
+  internal class InputDeinterlaceFlow : ITestFlow {
     public const string Mode = "OBS_DEINTERLACE_MODE_YADIF_2X";
     public const string FieldOrder = "OBS_DEINTERLACE_FIELD_ORDER_BOTTOM";
 
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetInputDeinterlaceModeAsync(
+      _ = await client.SetInputDeinterlaceModeAsync(
         Mode,
         inputName: CreateInputFlow.MediaInputName
       ).ConfigureAwait(false);
@@ -24,7 +24,7 @@ namespace ObsStrawket.Test.Specs {
       ).ConfigureAwait(false);
       Assert.Equal(Mode, mode.InputDeinterlaceMode);
 
-      await client.SetInputDeinterlaceFieldOrderAsync(
+      _ = await client.SetInputDeinterlaceFieldOrderAsync(
         FieldOrder,
         inputName: CreateInputFlow.MediaInputName
       ).ConfigureAwait(false);

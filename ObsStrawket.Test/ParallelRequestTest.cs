@@ -32,7 +32,7 @@ namespace ObsStrawket.Test {
         }
 
         async Task<IOpCodeMessage> SetStudioModeEnabledAsync() {
-          await client.SetStudioModeEnabledAsync(false, cancellation.Token).ConfigureAwait(false);
+          _ = await client.SetStudioModeEnabledAsync(false, cancellation.Token).ConfigureAwait(false);
           var changed = await client.Events.ReadAsync(cancellation.Token).ConfigureAwait(false);
           return changed;
         }
@@ -52,7 +52,7 @@ namespace ObsStrawket.Test {
 
         await TestUtil.WhenAnyThrowsAsync(tasks);
         Assert.All(tasks, t => Assert.True(t.IsCompletedSuccessfully));
-        await _serverComplete.Task;
+        _ = await _serverComplete.Task;
       }
       catch (Exception ex) {
         Debug.WriteLine(ex);
@@ -91,7 +91,7 @@ namespace ObsStrawket.Test {
               await session.SendStudioModeStateChangedAsync().ConfigureAwait(false);
             }
             else {
-              throw new Exception("Unexpected request");
+              throw new InvalidOperationException("Unexpected request");
             }
             Debug.WriteLine($"Served {++i} message");
           }

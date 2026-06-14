@@ -23,11 +23,10 @@ namespace ObsStrawket {
     private readonly SemaphoreSlim _connectSemaphore = new(1);
     private ClientWebSocket _clientWebSocket = new();
     private CancellationTokenSource? _cancellation;
-    private bool _isOpen = false;
+    private bool _isOpen;
     private SendPipeline _sender;
     private ReceivePipeline _receiver;
     private Channel<IObsEvent> _events = Channel.CreateUnbounded<IObsEvent>();
-    private Task? _receiveLoop;
 
     /// <summary>
     /// Create low level OBS websocket client.
@@ -59,7 +58,7 @@ namespace ObsStrawket {
     /// <summary>
     /// Set addition websocket options.
     /// </summary>
-    public Action<ClientWebSocket> SetOptions { get; set; } = delegate { };
+    public Action<ClientWebSocket> SetOptions { get; set; } = static delegate { };
 
     internal static Uri DefaultUri => new("ws://127.0.0.1:4455");
 
@@ -122,7 +121,7 @@ namespace ObsStrawket {
           throw new UnexpectedResponseException($"Identified message expected, but received {identified}");
         }
 
-        _receiveLoop = LoopReceiveAsync(messages, _cancellation.Token);
+        _ = LoopReceiveAsync(messages, _cancellation.Token);
         _isOpen = true;
         Emit(new PipelineTrace(PipelineLevel.Info, $"ConnectAsync to {url} complete."));
       }
@@ -130,7 +129,7 @@ namespace ObsStrawket {
         throw new AuthenticationFailureException(innerException: closed);
       }
       finally {
-        _connectSemaphore.Release();
+        _ = _connectSemaphore.Release();
       }
     }
 
@@ -205,7 +204,7 @@ namespace ObsStrawket {
         Emit(new PipelineTrace(PipelineLevel.Info, "CloseAsync complete."));
       }
       finally {
-        _connectSemaphore.Release();
+        _ = _connectSemaphore.Release();
       }
     }
 
@@ -222,7 +221,7 @@ namespace ObsStrawket {
       ChannelReader<Task<IOpCodeMessage>> receiver, CancellationToken cancellation
     ) {
       var deserialization = await receiver.ReadAsync(cancellation).ConfigureAwait(false);
-      return await deserialization.ConfigureAwait(false)!;
+      return await deserialization.ConfigureAwait(false);
     }
 
     private static string? MakeOneTimePass(string? password, HelloAuthentication? auth) {
@@ -259,7 +258,7 @@ namespace ObsStrawket {
 
       try {
         var socket = _clientWebSocket;
-        if (socket.State == WebSocketState.Open || socket.State == WebSocketState.CloseReceived) {
+        if (socket.State is WebSocketState.Open or WebSocketState.CloseReceived) {
           await socket.CloseOutputAsync(status, description, default).ConfigureAwait(false);
         }
       }
@@ -357,32 +356,29 @@ namespace ObsStrawket {
 
       if (exception != null) {
         foreach (var request in _requests.Values) {
-          request.TrySetException(exception);
+          _ = request.TrySetException(exception);
         }
         foreach (var request in _batchRequests.Values) {
-          request.TrySetException(exception);
+          _ = request.TrySetException(exception);
         }
       }
       else {
         foreach (var request in _requests.Values) {
-          request.TrySetCanceled();
+          _ = request.TrySetCanceled();
         }
         foreach (var request in _batchRequests.Values) {
-          request.TrySetCanceled();
+          _ = request.TrySetCanceled();
         }
       }
       _requests.Clear();
       _batchRequests.Clear();
-      _events.Writer.TryComplete(exception);
+      _ = _events.Writer.TryComplete(exception);
 
       _clientWebSocket.Dispose();
     }
 
     private string? GetCloseMessage() {
-      if (_clientWebSocket.CloseStatus == null) {
-        return null;
-      }
-      return $"{_clientWebSocket.CloseStatus}: {_clientWebSocket.CloseStatusDescription}";
+      return _clientWebSocket.CloseStatus == null ? null : $"{_clientWebSocket.CloseStatus}: {_clientWebSocket.CloseStatusDescription}";
     }
 
     private void Emit(PipelineEvent diagnostic) {

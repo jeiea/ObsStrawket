@@ -88,7 +88,7 @@ namespace ObsStrawket.DataTypes {
       // Ui Events
       typeof(StudioModeStateChanged),
       typeof(ScreenshotSaved),
-    }.ToDictionary(x => x.Name, x => x);
+    }.ToDictionary(static x => x.Name, static x => x);
 
     internal record RequestMapping(Type Request, Type Response, bool IsRequestEmpty = false);
 
@@ -268,6 +268,6 @@ namespace ObsStrawket.DataTypes {
       new (typeof(GetMonitorList), typeof(GetMonitorListResponse), true),
       new (typeof(OpenVideoMixProjector), typeof(RequestResponse)),
       new (typeof(OpenSourceProjector), typeof(RequestResponse)),
-    }.ToDictionary(x => x.Request.Name, x => x);
+    }.ToDictionary(static x => x.Request.Name, static x => x);
   }
 }

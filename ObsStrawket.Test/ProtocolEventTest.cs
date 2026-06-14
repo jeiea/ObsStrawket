@@ -1,4 +1,3 @@
-using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
 using System.Threading.Tasks;
 using Xunit;
@@ -23,7 +22,7 @@ namespace ObsStrawket.Test {
     }
   }
 
-  class ProtocolEventFlow : ITestFlow {
+  internal class ProtocolEventFlow : ITestFlow {
     private readonly TaskCompletionSource _canvasGroup = NewCompletionSource();
     private readonly TaskCompletionSource _canvasCreated = NewCompletionSource();
     private readonly TaskCompletionSource _canvasRemoved = NewCompletionSource();
@@ -104,7 +103,7 @@ namespace ObsStrawket.Test {
         VendorEventDispatched = true;
       });
 
-      await client.GetCanvasListAsync().ConfigureAwait(false);
+      _ = await client.GetCanvasListAsync().ConfigureAwait(false);
       await Task.WhenAll(
         _canvasGroup.Task,
         _canvasCreated.Task,
@@ -122,8 +121,8 @@ namespace ObsStrawket.Test {
 
     public async Task RespondAsync(MockServerSession session) {
       string guid = (await session.ReceiveRequestAsync("GetCanvasList").ConfigureAwait(false))!;
-      await session.SendSuccessResponseAsync("GetCanvasList", guid, """{ "canvases": [] }""").ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendSuccessResponseAsync("GetCanvasList", guid, /*lang=json,strict*/ """{ "canvases": [] }""").ConfigureAwait(false);
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "op": 5,
   "d": {
@@ -136,7 +135,7 @@ namespace ObsStrawket.Test {
   }
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "op": 5,
   "d": {
@@ -150,7 +149,7 @@ namespace ObsStrawket.Test {
   }
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "op": 5,
   "d": {
@@ -164,7 +163,7 @@ namespace ObsStrawket.Test {
   }
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "op": 5,
   "d": {
@@ -182,7 +181,7 @@ namespace ObsStrawket.Test {
   }
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "op": 5,
   "d": {
@@ -199,7 +198,7 @@ namespace ObsStrawket.Test {
   }
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "op": 5,
   "d": {
@@ -215,7 +214,7 @@ namespace ObsStrawket.Test {
   }
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "op": 5,
   "d": {
@@ -228,7 +227,7 @@ namespace ObsStrawket.Test {
   }
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "op": 5,
   "d": {
@@ -242,7 +241,7 @@ namespace ObsStrawket.Test {
   }
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "op": 5,
   "d": {
@@ -263,10 +262,10 @@ namespace ObsStrawket.Test {
     private static void Complete(TaskCompletionSource source, System.Action setDispatched) {
       try {
         setDispatched();
-        source.TrySetResult();
+        _ = source.TrySetResult();
       }
       catch (System.Exception exception) {
-        source.TrySetException(exception);
+        _ = source.TrySetException(exception);
       }
     }
   }

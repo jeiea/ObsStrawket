@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -61,7 +62,7 @@ namespace SourceGenerator {
         return part.ToString();
       });
       if (!isReplaced) {
-        throw new Exception("Unexpected file");
+        throw new InvalidOperationException("Unexpected file");
       }
 
       await File.WriteAllTextAsync(_directoryHelper.ObsClientPath, result).ConfigureAwait(false);
@@ -71,34 +72,34 @@ namespace SourceGenerator {
     private static partial Regex RequestsRegionPattern();
 
     private static void PatchTriggerHotkeyByKeySequence(List<ObsRequestField> requestFields) {
-      int index = requestFields.FindIndex(x => x.ValueName == "keyModifiers");
+      int index = requestFields.FindIndex(static x => x.ValueName == "keyModifiers");
       requestFields.RemoveAt(index);
       foreach (var field in requestFields) {
-        if (field.ValueName!.StartsWith("keyModifiers.")) {
+        if (field.ValueName!.StartsWith("keyModifiers.", StringComparison.Ordinal)) {
           field.ValueName = field.ValueName.Replace("keyModifiers.", "");
         }
       }
     }
 
     private static string GetAssignments(IEnumerable<ObsRequestField> parameters) {
-      if (parameters.Any(x => x.ValueName == "shift")) {
+      if (parameters.Any(static x => x.ValueName == "shift")) {
         return "{ KeyId = keyId, KeyModifiers = new KeyModifiers() { Shift = shift, Control = control, Alt = alt, Command = command } }";
       }
 
       var stringifieds = new List<string>();
       var builder = new StringBuilder();
       foreach (var parameter in parameters) {
-        builder.Clear();
+        _ = builder.Clear();
         if (parameter.ValueName == "requestType") {
-          builder.Append("VendorRequestType");
+          _ = builder.Append("VendorRequestType");
         }
         else {
-          builder.Append(char.ToUpper(parameter.ValueName![0]));
-          builder.Append(parameter.ValueName[1..]);
+          _ = builder.Append(char.ToUpper(parameter.ValueName![0], CultureInfo.InvariantCulture));
+          _ = builder.Append(parameter.ValueName[1..]);
         }
-        builder.Append(" = ");
+        _ = builder.Append(" = ");
 
-        builder.Append(parameter.ValueName);
+        _ = builder.Append(parameter.ValueName);
         stringifieds.Add(builder.ToString());
       }
 
@@ -110,17 +111,17 @@ namespace SourceGenerator {
       var builder = new StringBuilder();
 
       foreach (var parameter in parameters) {
-        builder.Clear();
+        _ = builder.Clear();
 
         string type = TransformHelper.ToCSharpType(parameter.ValueType!, parameter.ValueDescription!);
-        builder.Append(type);
+        _ = builder.Append(type);
         if (parameter.ValueOptional && !type.EndsWith('?')) {
-          builder.Append('?');
+          _ = builder.Append('?');
         }
-        builder.Append(' ');
-        builder.Append(parameter.ValueName);
+        _ = builder.Append(' ');
+        _ = builder.Append(parameter.ValueName);
         if (parameter.ValueOptional) {
-          builder.Append(" = default");
+          _ = builder.Append(" = default");
         }
         stringifieds.Add(builder.ToString());
       }

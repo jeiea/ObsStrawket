@@ -11,23 +11,23 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class ToggleRecordPauseFlow : ITestFlow {
+  internal class ToggleRecordPauseFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       await Task.Delay(100).ConfigureAwait(false);
       var response = await client.ToggleRecordPauseAsync().ConfigureAwait(false);
       Assert.True(response.OutputPaused);
       var changed = await ClientFlow.WaitEventAsync<RecordStateChanged>(client).ConfigureAwait(false);
-      Assert.Equal(ObsOutputState.Paused, (changed as RecordStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Paused, changed.OutputState);
 
       await Task.Delay(100).ConfigureAwait(false);
       response = await client.ToggleRecordPauseAsync().ConfigureAwait(false);
       Assert.False(response.OutputPaused);
       changed = await ClientFlow.WaitEventAsync<RecordStateChanged>(client).ConfigureAwait(false);
-      Assert.Equal(ObsOutputState.Resumed, (changed as RecordStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Resumed, changed.OutputState);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestId": "{guid}",
@@ -52,7 +52,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -67,7 +67,7 @@ namespace ObsStrawket.Test.Specs {
 }
 """).ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync("""
+      guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestId": "{guid}",
@@ -92,7 +92,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

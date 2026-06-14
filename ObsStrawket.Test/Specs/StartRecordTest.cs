@@ -11,20 +11,20 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class StartRecordFlow : ITestFlow {
-    static public string EscapedFileName => MockServer.EscapedFilePath;
+  internal class StartRecordFlow : ITestFlow {
+    public static string EscapedFileName => MockServer.EscapedFilePath;
 
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.StartRecordAsync().ConfigureAwait(false);
+      _ = await client.StartRecordAsync().ConfigureAwait(false);
 
       var changed = await ClientFlow.WaitEventAsync<RecordStateChanged>(client).ConfigureAwait(false);
-      Assert.Equal(ObsOutputState.Starting, (changed as RecordStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Starting, changed.OutputState);
       changed = await ClientFlow.WaitEventAsync<RecordStateChanged>(client).ConfigureAwait(false);
-      Assert.Equal(ObsOutputState.Started, (changed as RecordStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Started, changed.OutputState);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestId": "{guid}",
@@ -47,7 +47,7 @@ namespace ObsStrawket.Test.Specs {
   }
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

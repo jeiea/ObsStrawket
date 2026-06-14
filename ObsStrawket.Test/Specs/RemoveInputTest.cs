@@ -11,18 +11,18 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class RemoveInputFlow : ITestFlow {
+  internal class RemoveInputFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.RemoveInputAsync(inputName: CreateInputFlow.InputName).ConfigureAwait(false);
+      _ = await client.RemoveInputAsync(inputName: CreateInputFlow.InputName).ConfigureAwait(false);
       var removed = await ClientFlow.WaitEventAsync<InputRemoved>(client).ConfigureAwait(false);
-      Assert.Equal(CreateInputFlow.InputName, (removed as InputRemoved)!.InputName);
+      Assert.Equal(CreateInputFlow.InputName, removed.InputName);
       //var itemRemoved = await client.Events.ReadAsync().ConfigureAwait(false);
       //Assert.Equal(CreateSceneFlow.NewScene, (itemRemoved as SceneItemRemoved)!.SceneName);
       //Assert.Equal(CreateInputFlow.InputName, (itemRemoved as SceneItemRemoved)!.SourceName);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -34,7 +34,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 6
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

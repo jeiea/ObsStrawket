@@ -11,11 +11,11 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetStudioModeEnabledFlow : ITestFlow {
+  internal class SetStudioModeEnabledFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetStudioModeEnabledAsync(studioModeEnabled: false).ConfigureAwait(false);
-      ClientFlow.DrainEvents(client);
-      await client.SetStudioModeEnabledAsync(studioModeEnabled: true).ConfigureAwait(false);
+      _ = await client.SetStudioModeEnabledAsync(studioModeEnabled: false).ConfigureAwait(false);
+      _ = ClientFlow.DrainEvents(client);
+      _ = await client.SetStudioModeEnabledAsync(studioModeEnabled: true).ConfigureAwait(false);
       while (true) {
         var ev = await client.Events.ReadAsync().ConfigureAwait(false);
         if (ev is StudioModeStateChanged modeChanged) {
@@ -26,7 +26,7 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -53,7 +53,7 @@ namespace ObsStrawket.Test.Specs {
 }
 """).ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync("""
+      guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -66,7 +66,7 @@ namespace ObsStrawket.Test.Specs {
 }
 """).ConfigureAwait(false);
 
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

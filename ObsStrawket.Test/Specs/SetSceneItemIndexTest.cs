@@ -11,26 +11,26 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetSceneItemIndexFlow : ITestFlow {
+  internal class SetSceneItemIndexFlow : ITestFlow {
     public static int NewIndex => 2;
 
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetSceneItemIndexAsync(
+      _ = await client.SetSceneItemIndexAsync(
         sceneName: CreateSceneFlow.NewScene,
         sceneItemId: CreateSceneItemFlow.CreatedItemId,
         sceneItemIndex: NewIndex
       ).ConfigureAwait(false);
 
       var reindexed = await ClientFlow.WaitEventAsync<SceneItemListReindexed>(client).ConfigureAwait(false);
-      Assert.Equal(CreateSceneFlow.NewScene, (reindexed as SceneItemListReindexed)!.SceneName);
+      Assert.Equal(CreateSceneFlow.NewScene, reindexed.SceneName);
       Assert.Contains(
-        (reindexed as SceneItemListReindexed)!.SceneItems,
-        (x) => x.Index == NewIndex && x.Id == CreateSceneItemFlow.CreatedItemId
+        reindexed.SceneItems,
+        static (x) => x.Index == NewIndex && x.Id == CreateSceneItemFlow.CreatedItemId
       );
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -57,7 +57,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

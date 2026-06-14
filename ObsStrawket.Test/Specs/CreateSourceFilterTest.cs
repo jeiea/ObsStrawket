@@ -13,12 +13,12 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class CreateSourceFilterFlow : ITestFlow {
+  internal class CreateSourceFilterFlow : ITestFlow {
     public static string FilterName => "test filter name";
     public static string FilterName2 => "test filter name 2";
 
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.CreateSourceFilterAsync(
+      _ = await client.CreateSourceFilterAsync(
         sourceName: CreateInputFlow.InputName,
         filterName: FilterName,
         filterKind: "color_key_filter_v2",
@@ -28,22 +28,22 @@ namespace ObsStrawket.Test.Specs {
       ).ConfigureAwait(false);
 
       var created = await ClientFlow.WaitEventAsync<SourceFilterCreated>(client).ConfigureAwait(false);
-      Assert.Equal(FilterName, (created as SourceFilterCreated)!.FilterName);
-      Assert.Equal(1.0, (created as SourceFilterCreated)!.FilterSettings["brightness"]?.GetDouble());
+      Assert.Equal(FilterName, created.FilterName);
+      Assert.Equal(1.0, created.FilterSettings["brightness"]?.GetDouble());
 
-      await client.CreateSourceFilterAsync(
+      _ = await client.CreateSourceFilterAsync(
         sourceName: CreateInputFlow.InputName,
         filterName: FilterName2,
         filterKind: "color_key_filter_v2"
       ).ConfigureAwait(false);
 
       created = await ClientFlow.WaitEventAsync<SourceFilterCreated>(client).ConfigureAwait(false);
-      Assert.Equal(FilterName2, (created as SourceFilterCreated)!.FilterName);
-      Assert.Empty((created as SourceFilterCreated)!.FilterSettings);
+      Assert.Equal(FilterName2, created.FilterName);
+      Assert.Empty(created.FilterSettings);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -60,7 +60,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 6
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -102,7 +102,7 @@ namespace ObsStrawket.Test.Specs {
 }
 """).ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync("""
+      guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -116,7 +116,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 6
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

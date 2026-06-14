@@ -15,7 +15,7 @@ namespace ObsStrawket.Test.Utilities {
       while (runnings.Count > 0) {
         var finished = await Task.WhenAny(runnings).ConfigureAwait(false);
         await finished.ConfigureAwait(false);
-        runnings.Remove(finished);
+        _ = runnings.Remove(finished);
       }
     }
 

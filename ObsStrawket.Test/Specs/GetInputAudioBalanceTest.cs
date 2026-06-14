@@ -10,14 +10,14 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class GetInputAudioBalanceFlow : ITestFlow {
+  internal class GetInputAudioBalanceFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetInputAudioBalanceAsync(inputName: CreateInputFlow.InputName).ConfigureAwait(false);
       Assert.Equal(SetInputAudioBalanceFlow.InputAudioBalance, response.InputAudioBalance, TestUtil.Epsilon);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

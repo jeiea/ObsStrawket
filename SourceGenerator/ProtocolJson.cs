@@ -1,18 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace SourceGenerator {
   public record class ProtocolJson {
-    public List<ObsEnum> Enums { get; set; } = [];
+    public List<ObsEnumDefinition> Enums { get; set; } = [];
 
     public List<ObsEvent> Events { get; set; } = [];
 
     public List<ObsRequest> Requests { get; set; } = [];
   }
 
-  public record class ObsEnum {
+  public record class ObsEnumDefinition {
     public string EnumType { get; set; } = "";
 
     public List<ObsEnumIdentifier> EnumIdentifiers { get; set; } = [];
@@ -101,10 +102,9 @@ namespace SourceGenerator {
     }
 
     public override string Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
-      if (reader.TokenType == JsonTokenType.Number) {
-        return reader.GetInt32().ToString();
-      }
-      return reader.GetString()!;
+      return reader.TokenType == JsonTokenType.Number
+        ? reader.GetInt32().ToString(CultureInfo.InvariantCulture)
+        : reader.GetString()!;
     }
 
     public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options) {

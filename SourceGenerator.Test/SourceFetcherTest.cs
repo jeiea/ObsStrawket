@@ -15,7 +15,8 @@ namespace SourceGenerator.Test {
   public sealed class SourceFetcherTest : IDisposable {
     private const string Revision = "0123456789abcdef0123456789abcdef01234567";
     private static readonly byte[] _protocol = Encoding.UTF8.GetBytes(
-      """
+                           /*lang=json,strict*/
+                           """
       {
         "enums": [{ "enumType": "ObsOutputState", "enumIdentifiers": [] }],
         "events": [{ "eventType": "Test", "category": "General" }],
@@ -30,7 +31,7 @@ namespace SourceGenerator.Test {
     private readonly string _upstreamDirectory;
 
     public SourceFetcherTest() {
-      Directory.CreateDirectory(_directory);
+      _ = Directory.CreateDirectory(_directory);
       _upstreamDirectory = new FakeDirectoryHelper(_directory).UpstreamDirectory;
     }
 
@@ -55,8 +56,8 @@ namespace SourceGenerator.Test {
       Assert.Equal(_protocol, File.ReadAllBytes(Path.Combine(_upstreamDirectory, "protocol.json")));
       Assert.Equal(_obsHeader, File.ReadAllBytes(Path.Combine(_upstreamDirectory, "Obs.h")));
       Assert.Equal(3, handler.Requests.Count);
-      Assert.Single(handler.Requests, uri => uri.Host == "api.github.com");
-      Assert.Equal(2, handler.Requests.Count(uri => uri.AbsoluteUri.Contains(Revision)));
+      _ = Assert.Single(handler.Requests, static uri => uri.Host == "api.github.com");
+      Assert.Equal(2, handler.Requests.Count(static uri => uri.AbsoluteUri.Contains(Revision)));
       using var document = JsonDocument.Parse(
         File.ReadAllBytes(Path.Combine(_upstreamDirectory, "upstream-revision.json")));
       Assert.Equal(Revision, document.RootElement.GetProperty("revision").GetString());
@@ -64,8 +65,8 @@ namespace SourceGenerator.Test {
 
     [Fact]
     public async Task PrepareAsyncPreservesTrackedSourcesWhenDownloadFails() {
-      byte[] oldProtocol = [.. _protocol, (byte)0x20];
-      byte[] oldObsHeader = [.. _obsHeader, (byte)0x20];
+      byte[] oldProtocol = [.. _protocol, 0x20];
+      byte[] oldObsHeader = [.. _obsHeader, 0x20];
       WriteTrackedSources(oldProtocol, oldObsHeader);
       byte[] oldRevision = File.ReadAllBytes(Path.Combine(_upstreamDirectory, "upstream-revision.json"));
       var handler = new FakeHttpMessageHandler([
@@ -75,7 +76,7 @@ namespace SourceGenerator.Test {
       ]);
       var fetcher = CreateFetcher(handler);
 
-      await Assert.ThrowsAsync<HttpRequestException>(() => fetcher.PrepareAsync(true));
+      _ = await Assert.ThrowsAsync<HttpRequestException>(() => fetcher.PrepareAsync(true));
 
       Assert.Equal(oldProtocol, File.ReadAllBytes(Path.Combine(_upstreamDirectory, "protocol.json")));
       Assert.Equal(oldObsHeader, File.ReadAllBytes(Path.Combine(_upstreamDirectory, "Obs.h")));
@@ -93,7 +94,7 @@ namespace SourceGenerator.Test {
       ]);
       var fetcher = CreateFetcher(handler);
 
-      await Assert.ThrowsAsync<InvalidDataException>(() => fetcher.PrepareAsync(true));
+      _ = await Assert.ThrowsAsync<InvalidDataException>(() => fetcher.PrepareAsync(true));
 
       Assert.Equal(_protocol, File.ReadAllBytes(Path.Combine(_upstreamDirectory, "protocol.json")));
       Assert.Equal(_obsHeader, File.ReadAllBytes(Path.Combine(_upstreamDirectory, "Obs.h")));
@@ -140,7 +141,7 @@ namespace SourceGenerator.Test {
     [InlineData("--unknown")]
     [InlineData("--update-upstream", "--unknown")]
     public void ParseUpdateUpstreamRejectsUnknownArguments(params string[] args) {
-      Assert.Throws<ArgumentException>(() => Program.ParseUpdateUpstream(args));
+      _ = Assert.Throws<ArgumentException>(() => Program.ParseUpdateUpstream(args));
     }
 
     [Fact]
@@ -166,7 +167,7 @@ namespace SourceGenerator.Test {
     }
 
     private void WriteTrackedSources(byte[] protocol, byte[] obsHeader) {
-      Directory.CreateDirectory(_upstreamDirectory);
+      _ = Directory.CreateDirectory(_upstreamDirectory);
       File.WriteAllBytes(Path.Combine(_upstreamDirectory, "protocol.json"), protocol);
       File.WriteAllBytes(Path.Combine(_upstreamDirectory, "Obs.h"), obsHeader);
       var revision = new {
@@ -214,10 +215,9 @@ namespace SourceGenerator.Test {
         HttpRequestMessage request,
         CancellationToken cancellationToken) {
         Requests.Add(request.RequestUri!);
-        if (_responses.Count == 0) {
-          throw new InvalidOperationException($"Unexpected HTTP request: {request.RequestUri}");
-        }
-        return Task.FromResult(_responses.Dequeue());
+        return _responses.Count == 0
+          ? throw new InvalidOperationException($"Unexpected HTTP request: {request.RequestUri}")
+          : Task.FromResult(_responses.Dequeue());
       }
     }
   }

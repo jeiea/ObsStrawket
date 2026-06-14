@@ -16,10 +16,10 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class CreateSceneFlow : ITestFlow {
-    public static string NewScene { get => "test scene"; }
+  internal class CreateSceneFlow : ITestFlow {
+    public static string NewScene => "test scene";
 
-    public static string NewScene2 { get => "test scene 2"; }
+    public static string NewScene2 => "test scene 2";
 
     public async Task RequestAsync(ObsClientSocket client) {
       await CreateScene(client, NewScene2).ConfigureAwait(false);
@@ -27,7 +27,7 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -52,7 +52,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -73,7 +73,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 5
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -87,7 +87,7 @@ namespace ObsStrawket.Test.Specs {
 }
 """).ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync("""
+      guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -99,7 +99,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 6
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -124,7 +124,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 5
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -154,20 +154,20 @@ namespace ObsStrawket.Test.Specs {
 
     private static async Task CreateScene(ObsClientSocket client, string name) {
       try {
-        await client.CreateSceneAsync(sceneName: name).ConfigureAwait(false);
+        _ = await client.CreateSceneAsync(sceneName: name).ConfigureAwait(false);
       }
       catch (FailureResponseException failure)
       when (failure.Response.RequestStatus.Code == RequestStatus.ResourceAlreadyExists) {
         // Studio program scene can holds removed input, so reset.
-        await client.SetStudioModeEnabledAsync(false).ConfigureAwait(false);
-        await client.RemoveSceneAsync(sceneName: name).ConfigureAwait(false);
+        _ = await client.SetStudioModeEnabledAsync(false).ConfigureAwait(false);
+        _ = await client.RemoveSceneAsync(sceneName: name).ConfigureAwait(false);
         try {
           using var cts = new CancellationTokenSource(100);
-          await client.Events.ReadAllAsync(cts.Token).FirstAsync(x => x is SceneTransitionStarted).ConfigureAwait(false);
-          await client.Events.ReadAllAsync().FirstAsync(x => x is SceneTransitionEnded).ConfigureAwait(false);
+          _ = await client.Events.ReadAllAsync(cts.Token).FirstAsync(x => x is SceneTransitionStarted).ConfigureAwait(false);
+          _ = await client.Events.ReadAllAsync().FirstAsync(x => x is SceneTransitionEnded).ConfigureAwait(false);
         }
         catch (OperationCanceledException) { }
-        await client.CreateSceneAsync(sceneName: name).ConfigureAwait(false);
+        _ = await client.CreateSceneAsync(sceneName: name).ConfigureAwait(false);
       }
 
       // SceneListChanged emission and timing differ across OBS versions;

@@ -1,24 +1,20 @@
 using ObsStrawket.Test.Specs;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.WebSockets;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using ContextHandler = System.Func<System.Net.HttpListenerContext, System.Threading.CancellationToken, System.Threading.Tasks.Task>;
 
 namespace ObsStrawket.Test.Utilities {
-  using ContextHandler = Func<HttpListenerContext, CancellationToken, Task>;
-
-  class MockServer : IDisposable {
+  internal class MockServer : IDisposable {
     public static readonly string Password = "ahrEYXzXKytCIlpI";
     public static string EscapedFilePath => Assembly.GetExecutingAssembly().Location.Replace(@"\", @"\\");
 
     public int Port { get; private set; }
-    public Uri Uri { get => new($"ws://127.0.0.1:{Port}/"); }
+    public Uri Uri => new($"ws://127.0.0.1:{Port}/");
 
     private HttpListener? _httpListener;
     private bool _isDisposed;
@@ -72,7 +68,7 @@ namespace ObsStrawket.Test.Utilities {
       token.ThrowIfCancellationRequested();
 
       var session = new MockServerSession(webSocketContext.WebSocket, token);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "op": 0,
   "d": {
@@ -86,7 +82,7 @@ namespace ObsStrawket.Test.Utilities {
 }
 """).ConfigureAwait(false);
 
-      await session.ReceiveAsync("""
+      _ = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "op": 1,
   "d": {
@@ -97,7 +93,7 @@ namespace ObsStrawket.Test.Utilities {
 }
 """).ConfigureAwait(false);
 
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "op": 2,
   "d": {
@@ -116,7 +112,7 @@ namespace ObsStrawket.Test.Utilities {
 
       await new GetVersionFlow().RespondAsync(session).ConfigureAwait(false);
 
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "op": 6,
   "d": {
@@ -128,7 +124,7 @@ namespace ObsStrawket.Test.Utilities {
 
       await session.SendGetStudioModeEnabledResponseAsync(guid!).ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync("""
+      guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "op": 6,
   "d": {
@@ -157,7 +153,7 @@ namespace ObsStrawket.Test.Utilities {
 
       await session.SendStudioModeStateChangedAsync(true).ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync("""
+      guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "op": 6,
   "d": {
@@ -189,7 +185,7 @@ namespace ObsStrawket.Test.Utilities {
 }
 """).ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync("""
+      guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "op": 6,
   "d": {
@@ -225,7 +221,7 @@ namespace ObsStrawket.Test.Utilities {
 
       await new GetRecordDirectoryFlow().RespondAsync(session).ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync("""
+      guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "op": 6,
   "d": {

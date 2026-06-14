@@ -20,17 +20,14 @@ namespace SourceGenerator {
         .Replace("Boolean", "bool")
         .Replace("Object", "Dictionary<string, JsonElement?>");
       bool seemsInteger = IntegerLikeWords().IsMatch(description);
-      if (description.StartsWith("Average time in milliseconds")) {
+      if (description.StartsWith("Average time in milliseconds", StringComparison.Ordinal)) {
         seemsInteger = false;
       }
       string s2 = s1.Replace("Number", seemsInteger ? "int" : "double");
       if (s2.Contains("int") && LargeIntegerLike().IsMatch(description)) {
         s2 = s2.Replace("int", "long");
       }
-      if (!s2.EndsWith('?') && nullPattern.IsMatch(description)) {
-        return $"{s2}?";
-      }
-      return s2;
+      return !s2.EndsWith('?') && nullPattern.IsMatch(description) ? $"{s2}?" : s2;
     }
 
     public static string EscapeForXml(string unescaped) {
@@ -50,7 +47,7 @@ namespace SourceGenerator {
           yield return char.ToUpperInvariant(c);
           isStart = false;
         }
-        else if (c == ' ' || c == '_') {
+        else if (c is ' ' or '_') {
           isStart = true;
         }
         else {

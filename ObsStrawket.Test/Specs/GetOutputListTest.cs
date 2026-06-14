@@ -10,7 +10,7 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class GetOutputListFlow : ITestFlow {
+  internal class GetOutputListFlow : ITestFlow {
     private readonly uint? _expectedThirdOutputHeight;
 
     public GetOutputListFlow(uint? expectedThirdOutputHeight = null) {
@@ -29,7 +29,7 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestId": "{guid}",

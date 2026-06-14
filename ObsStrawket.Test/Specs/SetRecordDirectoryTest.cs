@@ -12,11 +12,11 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetRecordDirectoryFlow : ITestFlow {
-    static string Directory => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+  internal class SetRecordDirectoryFlow : ITestFlow {
+    private static string Directory => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
 
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetRecordDirectoryAsync(Directory).ConfigureAwait(false);
+      _ = await client.SetRecordDirectoryAsync(Directory).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {

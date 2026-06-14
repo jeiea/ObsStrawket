@@ -11,29 +11,29 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class ToggleRecordFlow : ITestFlow {
+  internal class ToggleRecordFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       await Task.Delay(100).ConfigureAwait(false);
       var response = await client.ToggleRecordAsync().ConfigureAwait(false);
       Assert.True(response.OutputActive, "outputActive is not true.");
 
       var changed = await ClientFlow.WaitEventAsync<RecordStateChanged>(client).ConfigureAwait(false);
-      Assert.Equal(ObsOutputState.Starting, (changed as RecordStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Starting, changed.OutputState);
       changed = await ClientFlow.WaitEventAsync<RecordStateChanged>(client).ConfigureAwait(false);
-      Assert.Equal(ObsOutputState.Started, (changed as RecordStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Started, changed.OutputState);
 
       await Task.Delay(100).ConfigureAwait(false);
       response = await client.ToggleRecordAsync().ConfigureAwait(false);
       Assert.False(response.OutputActive, "outputActive is not false.");
 
       changed = await ClientFlow.WaitEventAsync<RecordStateChanged>(client).ConfigureAwait(false);
-      Assert.Equal(ObsOutputState.Stopping, (changed as RecordStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Stopping, changed.OutputState);
       changed = await ClientFlow.WaitEventAsync<RecordStateChanged>(client).ConfigureAwait(false);
-      Assert.Equal(ObsOutputState.Stopped, (changed as RecordStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Stopped, changed.OutputState);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestId": "{guid}",
@@ -59,7 +59,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -88,7 +88,7 @@ namespace ObsStrawket.Test.Specs {
 }
 """).ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync("""
+      guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestId": "{guid}",
@@ -114,7 +114,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

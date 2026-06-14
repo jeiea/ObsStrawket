@@ -11,7 +11,7 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class GetMediaInputStatusFlow : ITestFlow {
+  internal class GetMediaInputStatusFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetMediaInputStatusAsync(inputName: CreateInputFlow.MediaInputName).ConfigureAwait(false);
 
@@ -21,7 +21,7 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

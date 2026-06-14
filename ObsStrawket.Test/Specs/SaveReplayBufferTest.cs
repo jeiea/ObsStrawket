@@ -12,17 +12,17 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SaveReplayBufferFlow : ITestFlow {
+  internal class SaveReplayBufferFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       await Task.Delay(100).ConfigureAwait(false);
-      await client.SaveReplayBufferAsync().ConfigureAwait(false);
+      _ = await client.SaveReplayBufferAsync().ConfigureAwait(false);
 
       var saved = await ClientFlow.WaitEventAsync<ReplayBufferSaved>(client).ConfigureAwait(false);
-      Assert.True(File.Exists((saved as ReplayBufferSaved)!.SavedReplayPath));
+      Assert.True(File.Exists(saved.SavedReplayPath));
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestId": "{guid}",

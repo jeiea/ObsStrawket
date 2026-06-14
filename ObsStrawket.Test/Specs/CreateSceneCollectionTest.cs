@@ -13,11 +13,11 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class CreateSceneCollectionFlow : ITestFlow {
+  internal class CreateSceneCollectionFlow : ITestFlow {
     public static string NewSceneCollection = "test scene collection";
 
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.CreateSceneCollectionAsync(sceneCollectionName: NewSceneCollection).ConfigureAwait(false);
+      _ = await client.CreateSceneCollectionAsync(sceneCollectionName: NewSceneCollection).ConfigureAwait(false);
       // Event makeup and order differ across OBS versions; read until the
       // guaranteed CurrentSceneCollectionChanged and verify what came with it.
       var events = new List<IObsEvent>();
@@ -25,12 +25,12 @@ namespace ObsStrawket.Test.Specs {
         events.Add(await client.Events.ReadAsync().ConfigureAwait(false));
       } while (events[^1] is not CurrentSceneCollectionChanged);
 
-      Assert.Contains(events, (x) => x is CurrentSceneCollectionChanging);
+      Assert.Contains(events, static (x) => x is CurrentSceneCollectionChanging);
       Assert.Equal(NewSceneCollection, ((CurrentSceneCollectionChanged)events[^1]).SceneCollectionName);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -42,7 +42,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 6
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -54,7 +54,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 5
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -66,7 +66,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 5
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -79,7 +79,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 5
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -94,7 +94,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 5
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

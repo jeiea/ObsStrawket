@@ -1,7 +1,7 @@
 using System.IO;
 
 namespace SourceGenerator {
-  interface IDirectoryHelper {
+  internal interface IDirectoryHelper {
     string SolutionDirectory { get; }
     string UpstreamDirectory { get; }
     string MainProjectDirectory { get; }
@@ -15,7 +15,7 @@ namespace SourceGenerator {
     public string MainProjectDirectory => Path.Combine(SolutionDirectory, "ObsStrawket");
     public string ObsClientPath => $"{MainProjectDirectory}/ObsClientSocket.cs";
 
-    static string GetSolutionDirectory() {
+    private static string GetSolutionDirectory() {
       string? current = Directory.GetCurrentDirectory();
       while (current != null) {
         if (File.Exists(Path.Combine(current, "ObsStrawket.sln"))) {

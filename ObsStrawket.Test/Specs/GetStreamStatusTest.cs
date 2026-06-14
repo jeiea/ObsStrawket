@@ -10,7 +10,7 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class GetStreamStatusFlow : ITestFlow {
+  internal class GetStreamStatusFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       await Task.Delay(1000).ConfigureAwait(false);
       var response = await client.GetStreamStatusAsync().ConfigureAwait(false);
@@ -22,7 +22,7 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestId": "{guid}",

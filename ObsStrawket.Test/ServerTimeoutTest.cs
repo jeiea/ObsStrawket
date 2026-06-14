@@ -19,7 +19,7 @@ namespace ObsStrawket.Test {
       using var server = new MockServer().Run(ServeTrollAsync, cancellation.Token);
 
       var socket = new ClientSocket {
-        SetOptions = (sock) => {
+        SetOptions = static (sock) => {
           sock.Options.KeepAliveInterval = TimeSpan.FromMilliseconds(1000);
         }
       };
@@ -70,7 +70,7 @@ namespace ObsStrawket.Test {
 
       var guids = new List<string>();
       for (int i = 0; i < 20; i++) {
-        string? guid = await session.ReceiveAsync("""
+        string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "op": 6,
   "d": {

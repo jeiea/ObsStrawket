@@ -14,9 +14,9 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  record class StreamSettings(string Key, string Server, string Service);
+  internal record class StreamSettings(string Key, string Server, string Service);
 
-  class SetStreamServiceSettingsFlow : ITestFlow {
+  internal class SetStreamServiceSettingsFlow : ITestFlow {
     public static StreamSettings GetTestSettings() {
       string? environment = Environment.GetEnvironmentVariable("STREAM_SETTINGS");
       if (environment == null) {
@@ -33,7 +33,7 @@ namespace ObsStrawket.Test.Specs {
         return;
       }
 
-      await client.SetStreamServiceSettingsAsync(
+      _ = await client.SetStreamServiceSettingsAsync(
         streamServiceType: StreamServiceType.RtmpCommon,
         streamServiceSettings: new Dictionary<string, JsonElement?>() {
           { "bwtest", true.ToJsonElement() },

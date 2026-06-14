@@ -48,7 +48,7 @@ namespace ObsStrawket {
     /// <summary>
     /// Websocket close code. See <see cref="WebSocketCloseCode"/>
     /// </summary>
-    public readonly int? Code = null;
+    public readonly int? Code;
 
     internal WebsocketCloseReceivedException(string? message = null, int? code = null, Exception? innerException = null)
       : base(message ?? $"OBS closed connection: {code}", innerException) {

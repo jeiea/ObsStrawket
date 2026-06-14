@@ -1,6 +1,5 @@
 using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -12,14 +11,14 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class RemoveSceneFlow : ITestFlow {
+  internal class RemoveSceneFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       await RemoveSceneAsync(client, CreateSceneFlow.NewScene2).ConfigureAwait(false);
       await RemoveSceneAsync(client, CreateSceneFlow.NewScene).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -31,7 +30,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 6
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -57,7 +56,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -79,7 +78,7 @@ namespace ObsStrawket.Test.Specs {
 }
 """).ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync("""
+      guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -91,7 +90,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 6
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -118,7 +117,7 @@ namespace ObsStrawket.Test.Specs {
 }
 """).ConfigureAwait(false);
 
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -130,7 +129,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 5
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -147,7 +146,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 5
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -159,7 +158,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 5
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -171,7 +170,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 5
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -186,7 +185,7 @@ namespace ObsStrawket.Test.Specs {
     }
 
     private static async Task RemoveSceneAsync(ObsClientSocket client, string name) {
-      await client.RemoveSceneAsync(sceneName: name).ConfigureAwait(false);
+      _ = await client.RemoveSceneAsync(sceneName: name).ConfigureAwait(false);
       var (removed, changed) = await ClientFlow.WaitEventsAsync<SceneRemoved, SceneListChanged>(
         client,
         e => e.SceneName == name,

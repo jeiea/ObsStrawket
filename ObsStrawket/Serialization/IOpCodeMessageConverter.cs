@@ -14,11 +14,11 @@ namespace ObsStrawket.Serialization {
         throw new JsonException();
       }
 
-      reader.Read();
+      _ = reader.Read();
       var list = new List<IRequestResponse>();
       while (reader.TokenType != JsonTokenType.EndArray) {
         list.Add(IRequestResponseConverter.Deserialize(ref reader, options));
-        reader.Read();
+        _ = reader.Read();
       }
 
       return list;
@@ -241,6 +241,8 @@ namespace ObsStrawket.Serialization {
       case RawEvent:
         JsonSerializer.Serialize(writer, value, value.GetType(), options);
         return;
+      default:
+        break;
       }
 
       writer.WriteStartObject();
@@ -288,17 +290,13 @@ namespace ObsStrawket.Serialization {
         try {
           var dataReader = reader;
           bool hasEventData = JsonConverterHelper.SeekByKey(ref dataReader, "eventData");
-          IObsEvent ev;
-          if (eventType == typeof(CustomEvent) && hasEventData) {
-            ev = new CustomEvent {
+          var ev = eventType == typeof(CustomEvent) && hasEventData
+            ? new CustomEvent {
               EventData = JsonSerializer.Deserialize<Dictionary<string, JsonElement?>>(ref dataReader, options) ?? [],
-            };
-          }
-          else {
-            ev = hasEventData
+            }
+            : hasEventData
               ? (JsonSerializer.Deserialize(ref dataReader, eventType, options) as IObsEvent ?? JsonConverterHelper.CreateInstance<IObsEvent>(eventType))
               : JsonConverterHelper.CreateInstance<IObsEvent>(eventType);
-          }
           var intentReader = reader;
           if (JsonConverterHelper.SeekByKey(ref intentReader, "eventIntent")
               && intentReader.TokenType == JsonTokenType.Number

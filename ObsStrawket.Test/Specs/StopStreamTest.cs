@@ -11,17 +11,17 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class StopStreamFlow : ITestFlow {
+  internal class StopStreamFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.StopStreamAsync().ConfigureAwait(false);
+      _ = await client.StopStreamAsync().ConfigureAwait(false);
       var stopping = await ClientFlow.WaitEventAsync<StreamStateChanged>(client).ConfigureAwait(false);
-      Assert.Equal(ObsOutputState.Stopping, (stopping as StreamStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Stopping, stopping.OutputState);
       var stopped = await ClientFlow.WaitEventAsync<StreamStateChanged>(client).ConfigureAwait(false);
-      Assert.Equal(ObsOutputState.Stopped, (stopped as StreamStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Stopped, stopped.OutputState);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestId": "{guid}",
@@ -44,7 +44,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -57,7 +57,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 5
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

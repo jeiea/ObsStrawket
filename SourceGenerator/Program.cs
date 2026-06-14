@@ -13,15 +13,15 @@ namespace SourceGenerator {
       var builder = Host.CreateApplicationBuilder();
 
       var services = builder.Services;
-      services.AddSingleton<IDirectoryHelper, DirectoryHelper>();
-      services.AddSingleton<HttpClient>();
-      services.AddSingleton<ISourceFetcher, SourceFetcher>();
-      services.AddSingleton<EnumGenerator>();
-      services.AddSingleton<EventGenerator>();
-      services.AddSingleton<EventInterfaceGenerator>();
-      services.AddSingleton<RequestInterfaceGenerator>();
-      services.AddSingleton<RequestResponseGenerator>();
-      services.AddSingleton<DataTypeMappingGenerator>();
+      _ = services.AddSingleton<IDirectoryHelper, DirectoryHelper>();
+      _ = services.AddSingleton<HttpClient>();
+      _ = services.AddSingleton<ISourceFetcher, SourceFetcher>();
+      _ = services.AddSingleton<EnumGenerator>();
+      _ = services.AddSingleton<EventGenerator>();
+      _ = services.AddSingleton<EventInterfaceGenerator>();
+      _ = services.AddSingleton<RequestInterfaceGenerator>();
+      _ = services.AddSingleton<RequestResponseGenerator>();
+      _ = services.AddSingleton<DataTypeMappingGenerator>();
 
       using var host = builder.Build();
       var provider = host.Services;
@@ -39,15 +39,10 @@ namespace SourceGenerator {
     }
 
     internal static bool ParseUpdateUpstream(string[] args) {
-      if (args.Length == 0) {
-        return false;
-      }
-      if (args.Length == 1 && args[0] == "--update-upstream") {
-        return true;
-      }
-
-      throw new ArgumentException(
-        $"Unknown arguments: {string.Join(" ", args)}. Only --update-upstream is supported.");
+      return args.Length != 0 && (args.Length == 1 && args[0] == "--update-upstream"
+        ? true
+        : throw new ArgumentException(
+        $"Unknown arguments: {string.Join(" ", args)}. Only --update-upstream is supported."));
     }
   }
 }

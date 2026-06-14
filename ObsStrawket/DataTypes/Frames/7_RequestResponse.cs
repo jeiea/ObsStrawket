@@ -14,17 +14,17 @@ namespace ObsStrawket.DataTypes {
     /// <summary>
     /// Same as the request's one.
     /// </summary>
-    public string RequestType { get; }
+    string RequestType { get; }
 
     /// <summary>
     /// Same as the request's one.
     /// </summary>
-    public string RequestId { get; }
+    string RequestId { get; }
 
     /// <summary>
     /// Result of the request processing.
     /// </summary>
-    public RequestStatusObject RequestStatus { get; }
+    RequestStatusObject RequestStatus { get; }
   }
 
   /// <summary>
@@ -44,7 +44,7 @@ namespace ObsStrawket.DataTypes {
     /// Same as the request's one.
     /// </summary>
     [JsonIgnore]
-    public string RequestType { get => GetType().Name; }
+    public string RequestType => GetType().Name;
 
     /// <summary>
     /// Same as the request's one.

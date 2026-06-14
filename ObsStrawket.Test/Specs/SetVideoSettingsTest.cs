@@ -10,9 +10,9 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetVideoSettingsFlow : ITestFlow {
+  internal class SetVideoSettingsFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetVideoSettingsAsync(
+      _ = await client.SetVideoSettingsAsync(
         fpsNumerator: 60000,
         fpsDenominator: 1001,
         baseWidth: 1920,
@@ -23,7 +23,7 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

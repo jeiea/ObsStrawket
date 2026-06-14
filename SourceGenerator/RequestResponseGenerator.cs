@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -93,32 +94,32 @@ namespace ObsStrawket.DataTypes.Predefineds {");
 
     private static string MakeFieldDeclaration(string name, string type, string description, bool isOptional) {
       var builder = new StringBuilder();
-      builder.Append("public ");
+      _ = builder.Append("public ");
 
       string valueType = TransformHelper.ToCSharpType(type, description);
-      builder.Append(valueType);
+      _ = builder.Append(valueType);
       if (isOptional && !valueType.EndsWith('?')) {
-        builder.Append('?');
+        _ = builder.Append('?');
       }
-      builder.Append(' ');
+      _ = builder.Append(' ');
 
       if (name == "requestType") {
-        builder.Append("VendorRequestType");
+        _ = builder.Append("VendorRequestType");
       }
       else {
-        builder.Append(char.ToUpper(name[0]));
-        builder.Append(name[1..]);
+        _ = builder.Append(char.ToUpper(name[0], CultureInfo.InvariantCulture));
+        _ = builder.Append(name[1..]);
       }
-      builder.Append(" { get; set; }");
+      _ = builder.Append(" { get; set; }");
       if (!isOptional) {
         if (valueType == "string") {
-          builder.Append(" = \"\";");
+          _ = builder.Append(" = \"\";");
         }
         else if (IsListOrDictionary().IsMatch(valueType)) {
-          builder.Append(" = [];");
+          _ = builder.Append(" = [];");
         }
         else if (char.IsUpper(valueType[0])) {
-          builder.Append(" = new();");
+          _ = builder.Append(" = new();");
         }
       }
 

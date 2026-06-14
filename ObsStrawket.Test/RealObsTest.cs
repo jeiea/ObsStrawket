@@ -37,13 +37,13 @@ namespace ObsStrawket.Test {
       var client = ClientFlow.GetDebugClient(useChannel: true);
       await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
 
-      await Assert.ThrowsAsync<FailureResponseException>(async () => {
+      _ = await Assert.ThrowsAsync<FailureResponseException>(async () => {
         var response = await client.StopRecordAsync(TestContext.Current.CancellationToken);
         response = await client.StopRecordAsync(TestContext.Current.CancellationToken);
       });
 
       var exception = await Assert.ThrowsAsync<FailureResponseException>(async () => {
-        await client.BroadcastCustomEventAsync([], TestContext.Current.CancellationToken);
+        _ = await client.BroadcastCustomEventAsync([], TestContext.Current.CancellationToken);
       });
 
       return;
@@ -102,8 +102,8 @@ namespace ObsStrawket.Test {
           subscriptions,
           TestContext.Current.CancellationToken
         );
-        await client.CreateSceneAsync(sceneName, cancellation: TestContext.Current.CancellationToken);
-        await client.SetCurrentProgramSceneAsync(
+        _ = await client.CreateSceneAsync(sceneName, cancellation: TestContext.Current.CancellationToken);
+        _ = await client.SetCurrentProgramSceneAsync(
           sceneName,
           cancellation: TestContext.Current.CancellationToken
         );
@@ -128,7 +128,7 @@ namespace ObsStrawket.Test {
             && value.GetDouble() == 123.0,
           ev
         );
-        await client.SetSceneItemTransformAsync(
+        _ = await client.SetSceneItemTransformAsync(
           created.SceneItemId,
           new Dictionary<string, JsonElement?> {
             ["positionX"] = 123.0.ToJsonElement(),
@@ -191,21 +191,21 @@ namespace ObsStrawket.Test {
         Assert.Equal("AdvancedSceneSwitcher", status.VendorName);
         Assert.Equal("IsAdvancedSceneSwitcherRunning", status.VendorRequestType);
         if (status.ResponseData["isRunning"]!.Value.GetBoolean()) {
-          await client.CallVendorRequestAsync(
+          _ = await client.CallVendorRequestAsync(
             "AdvancedSceneSwitcher",
             "AdvancedSceneSwitcherStop",
             cancellation: TestContext.Current.CancellationToken
           );
-          await stopped.Task.WaitAsync(TestContext.Current.CancellationToken);
+          _ = await stopped.Task.WaitAsync(TestContext.Current.CancellationToken);
           stopped = NewCompletionSource<VendorEvent>();
         }
-        await client.CallVendorRequestAsync(
+        _ = await client.CallVendorRequestAsync(
           "AdvancedSceneSwitcher",
           "AdvancedSceneSwitcherStart",
           cancellation: TestContext.Current.CancellationToken
         );
         Assert.Empty((await started.Task.WaitAsync(TestContext.Current.CancellationToken)).EventData);
-        await client.CallVendorRequestAsync(
+        _ = await client.CallVendorRequestAsync(
           "AdvancedSceneSwitcher",
           "AdvancedSceneSwitcherStop",
           cancellation: TestContext.Current.CancellationToken
@@ -223,7 +223,7 @@ namespace ObsStrawket.Test {
       var source = new TaskCompletionSource<object?>();
       var client = ClientFlow.GetDebugClient();
       client.Disconnected += (e) => {
-        source.TrySetResult(e);
+        _ = source.TrySetResult(e);
       };
 
       await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
@@ -239,7 +239,7 @@ namespace ObsStrawket.Test {
     [Fact]
     public async Task TestbedAsync() {
       var client = ClientFlow.GetDebugClient(useChannel: true);
-      await Assert.ThrowsAsync<AuthenticationFailureException>(
+      _ = await Assert.ThrowsAsync<AuthenticationFailureException>(
         () => client.ConnectAsync(Uri, "a", cancellation: TestContext.Current.CancellationToken)
       );
     }
@@ -251,11 +251,11 @@ namespace ObsStrawket.Test {
         await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
         const string sceneName = "UI test scene";
         const string inputName = "UI test source";
-        await client.CreateSceneAsync(
+        _ = await client.CreateSceneAsync(
           sceneName,
           cancellation: TestContext.Current.CancellationToken
         );
-        await client.CreateInputAsync(
+        _ = await client.CreateInputAsync(
           inputName: inputName,
           inputKind: "browser_source",
           sceneName: sceneName,
@@ -484,7 +484,7 @@ namespace ObsStrawket.Test {
         string flowName = flow.GetType().Name;
         _obs.RecordOperation($"Starting {flowName}");
         while (client.Events.TryPeek(out _)) {
-          ClientFlow.DrainEvents(client);
+          _ = ClientFlow.DrainEvents(client);
           await Task.Delay(100, TestContext.Current.CancellationToken);
         }
         try {
@@ -516,7 +516,7 @@ namespace ObsStrawket.Test {
 
     private static void CompleteWhen<T>(TaskCompletionSource<T> source, bool condition, T value) {
       if (condition) {
-        source.TrySetResult(value);
+        _ = source.TrySetResult(value);
       }
     }
 

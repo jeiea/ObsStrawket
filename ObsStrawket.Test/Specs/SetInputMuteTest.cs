@@ -11,16 +11,16 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetInputMuteFlow : ITestFlow {
+  internal class SetInputMuteFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetInputMuteAsync(inputName: CreateInputFlow.InputName, inputMuted: true).ConfigureAwait(false);
+      _ = await client.SetInputMuteAsync(inputName: CreateInputFlow.InputName, inputMuted: true).ConfigureAwait(false);
       var changed = await ClientFlow.WaitEventAsync<InputMuteStateChanged>(client).ConfigureAwait(false);
-      Assert.True((changed as InputMuteStateChanged)!.InputMuted);
-      Assert.Equal(CreateInputFlow.InputName, (changed as InputMuteStateChanged)!.InputName);
+      Assert.True(changed.InputMuted);
+      Assert.Equal(CreateInputFlow.InputName, changed.InputName);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -46,7 +46,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

@@ -11,13 +11,13 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class OpenVideoMixProjectorFlow : ITestFlow {
+  internal class OpenVideoMixProjectorFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.OpenVideoMixProjectorAsync(videoMixType: VideoMixType.Program).ConfigureAwait(false);
+      _ = await client.OpenVideoMixProjectorAsync(videoMixType: VideoMixType.Program).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

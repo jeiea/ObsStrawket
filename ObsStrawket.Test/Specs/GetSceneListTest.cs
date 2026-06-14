@@ -11,7 +11,7 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class GetSceneListFlow : ITestFlow {
+  internal class GetSceneListFlow : ITestFlow {
     public static async Task<GetSceneListResponse> GetSceneListAsync(ObsClientSocket client) {
       var response = await client.GetSceneListAsync().ConfigureAwait(false);
       Assert.NotEmpty(response.Scenes);
@@ -19,11 +19,11 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RequestAsync(ObsClientSocket client) {
-      await GetSceneListAsync(client).ConfigureAwait(false);
+      _ = await GetSceneListAsync(client).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestId": "{guid}",

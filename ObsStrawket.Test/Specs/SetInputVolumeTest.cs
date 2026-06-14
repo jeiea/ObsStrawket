@@ -11,17 +11,17 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetInputVolumeFlow : ITestFlow {
+  internal class SetInputVolumeFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetInputVolumeAsync(inputName: CreateInputFlow.InputName, inputVolumeMul: 10).ConfigureAwait(false);
+      _ = await client.SetInputVolumeAsync(inputName: CreateInputFlow.InputName, inputVolumeMul: 10).ConfigureAwait(false);
       var changed = await ClientFlow.WaitEventAsync<InputVolumeChanged>(client).ConfigureAwait(false);
-      Assert.Equal(CreateInputFlow.InputName, (changed as InputVolumeChanged)!.InputName);
-      Assert.Equal(20.0, (changed as InputVolumeChanged)!.InputVolumeDb);
-      Assert.Equal(10.0, (changed as InputVolumeChanged)!.InputVolumeMul);
+      Assert.Equal(CreateInputFlow.InputName, changed.InputName);
+      Assert.Equal(20.0, changed.InputVolumeDb);
+      Assert.Equal(10.0, changed.InputVolumeMul);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

@@ -10,9 +10,9 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class OffsetMediaInputCursorFlow : ITestFlow {
+  internal class OffsetMediaInputCursorFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.OffsetMediaInputCursorAsync(
+      _ = await client.OffsetMediaInputCursorAsync(
         inputName: CreateInputFlow.MediaInputName,
         mediaCursorOffset: 10 * 1000
       ).ConfigureAwait(false);
@@ -20,7 +20,7 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

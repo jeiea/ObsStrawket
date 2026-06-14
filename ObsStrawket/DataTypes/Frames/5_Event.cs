@@ -14,12 +14,12 @@ namespace ObsStrawket.DataTypes {
     /// <summary>
     /// Event (OpCode 5)
     /// </summary>
-    public string EventType { get; }
+    string EventType { get; }
 
     /// <summary>
     /// The original intent required to be subscribed to in order to receive the event.
     /// </summary>
-    public EventSubscription EventIntent { get; set; }
+    EventSubscription EventIntent { get; set; }
   }
 
   /// <summary>
@@ -39,7 +39,7 @@ namespace ObsStrawket.DataTypes {
     /// The string identifying event type.
     /// </summary>
     [JsonIgnore]
-    public string EventType { get => GetType().Name; }
+    public string EventType => GetType().Name;
 
     /// <summary>
     /// The original intent required to be subscribed to in order to receive the event.

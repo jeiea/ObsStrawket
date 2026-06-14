@@ -18,7 +18,7 @@ namespace ObsStrawket.Test.Utilities {
 
     public static ObsClientSocket GetDebugClient(ClientSocket? socket = null, bool useChannel = false) {
       var client = new ObsClientSocket(socket, useChannel);
-      client.PipelineEvent += e => Debug.WriteLine(e);
+      client.PipelineEvent += static e => Debug.WriteLine(e);
       return client;
     }
 
@@ -69,13 +69,17 @@ namespace ObsStrawket.Test.Utilities {
     /// four or more correlated events. Each matcher consumes the first event it accepts.</summary>
     public static Task<IReadOnlyList<IObsEvent>> WaitEventsAsync(
         ObsClientSocket client, params Predicate<IObsEvent>[] matchers
-    ) => WaitEventsAsync(client, DefaultEventWaitTimeout, default, matchers);
+    ) {
+      return WaitEventsAsync(client, DefaultEventWaitTimeout, default, matchers);
+    }
 
     public static Task<IReadOnlyList<IObsEvent>> WaitEventsAsync(
         ObsClientSocket client,
         CancellationToken cancellation,
         params Predicate<IObsEvent>[] matchers
-    ) => WaitEventsAsync(client, DefaultEventWaitTimeout, cancellation, matchers);
+    ) {
+      return WaitEventsAsync(client, DefaultEventWaitTimeout, cancellation, matchers);
+    }
 
     public static async Task<IReadOnlyList<IObsEvent>> WaitEventsAsync(
         ObsClientSocket client,
@@ -143,8 +147,8 @@ namespace ObsStrawket.Test.Utilities {
         }
       };
       try {
-        await client.StopRecordAsync(cancellation).ConfigureAwait(false);
-        await taskSource.Task.ConfigureAwait(false);
+        _ = await client.StopRecordAsync(cancellation).ConfigureAwait(false);
+        _ = await taskSource.Task.ConfigureAwait(false);
         var response = await client.StopRecordAsync(cancellation).ConfigureAwait(false);
         Assert.Fail("Unexpected response");
       }
@@ -152,7 +156,7 @@ namespace ObsStrawket.Test.Utilities {
         Debug.WriteLine(ex);
       }
       finally {
-        await client.StopRecordAsync(cancellation).ConfigureAwait(false);
+        _ = await client.StopRecordAsync(cancellation).ConfigureAwait(false);
       }
     }
 
@@ -184,10 +188,10 @@ namespace ObsStrawket.Test.Utilities {
       if (response is not GetStudioModeEnabledResponse studioMode
           || studioMode.RequestStatus.Code != RequestStatus.Success) {
         Assert.Fail("Cannot read the response");
-        throw new Exception();
+        throw new InvalidOperationException();
       }
 
-      await client.SetStudioModeEnabledAsync(!studioMode.StudioModeEnabled, cancellation).ConfigureAwait(false);
+      _ = await client.SetStudioModeEnabledAsync(!studioMode.StudioModeEnabled, cancellation).ConfigureAwait(false);
 
       var studio = await ReadEventAsync<StudioModeStateChanged>(cancellation).ConfigureAwait(false);
       Assert.Equal(!studioMode.StudioModeEnabled, studio.StudioModeEnabled);
@@ -211,18 +215,18 @@ namespace ObsStrawket.Test.Utilities {
 
       var startRecord = await client.StartRecordAsync(cancellation).ConfigureAwait(false);
       Assert.NotNull(startRecord);
-      await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
-      await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
+      _ = await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
+      _ = await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
       var recording = await client.StopRecordAsync(cancellation).ConfigureAwait(false);
-      await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
-      await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
+      _ = await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
+      _ = await ReadEventAsync<RecordStateChanged>(cancellation).ConfigureAwait(false);
       Assert.True(File.Exists(recording.OutputPath), $"{recording.OutputPath} is not exists.");
 
       await client.CloseAsync().ConfigureAwait(false);
     }
 
     private void TryComplete(Exception? exception) {
-      _events.Writer.TryComplete(exception);
+      _ = _events.Writer.TryComplete(exception);
     }
 
     private async void QueueEvent(IObsEvent @event) {
@@ -241,7 +245,7 @@ namespace ObsStrawket.Test.Utilities {
           return cast;
         }
       }
-      throw new Exception($"It seems the channel is closed.");
+      throw new InvalidOperationException("It seems the channel is closed.");
     }
   }
 }

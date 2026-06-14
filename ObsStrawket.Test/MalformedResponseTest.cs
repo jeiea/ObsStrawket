@@ -27,7 +27,7 @@ namespace ObsStrawket.Test {
     }
   }
 
-  class MalformedResponseFlow : ITestFlow {
+  internal class MalformedResponseFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var ev = await client.Events.ReadAsync().ConfigureAwait(false);
       var monitorType = Assert.IsType<JsonElement>((ev as RawEvent)!.EventData!["monitorType"]);
@@ -41,11 +41,11 @@ namespace ObsStrawket.Test {
       Assert.StartsWith("00:00:0", response.OutputTimecode);
       Assert.True(response.OutputPaused);
 
-      await Assert.ThrowsAsync<QueueCancelledException>(() => client.GetRecordStatusAsync()).ConfigureAwait(false);
+      _ = await Assert.ThrowsAsync<QueueCancelledException>(() => client.GetRecordStatusAsync()).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
@@ -59,7 +59,7 @@ namespace ObsStrawket.Test {
 }
 """).ConfigureAwait(false);
 
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestId": "{guid}",
@@ -89,7 +89,7 @@ namespace ObsStrawket.Test {
 }
 """).ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync("""
+      guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestId": "{guid}",

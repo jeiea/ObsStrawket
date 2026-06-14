@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -25,10 +26,10 @@ using System.Text.Json;
 
 namespace ObsStrawket.DataTypes.Predefineds {");
 
-      foreach (string category in json.Events.Select(x => x.Category).Distinct()) {
+      foreach (string category in json.Events.Select(static x => x.Category).Distinct()) {
         file.WriteLine();
         file.WriteLine("  /// <summary>");
-        file.WriteLine("  /// {0}{1} event.", char.ToUpper(category[0]), category[1..]);
+        file.WriteLine("  /// {0}{1} event.", char.ToUpper(category[0], CultureInfo.InvariantCulture), category[1..]);
         file.WriteLine("  /// </summary>");
         string pascalCategory = TransformHelper.ToPascalCase(category);
         file.WriteLine("  public class {0}Event : ObsEvent {{ }}", pascalCategory);
@@ -69,30 +70,30 @@ namespace ObsStrawket.DataTypes.Predefineds {");
 
     private static string MakeFieldDeclaration(string name, string type, string description) {
       var builder = new StringBuilder();
-      builder.Append("public ");
+      _ = builder.Append("public ");
 
       string valueType = TransformHelper.ToCSharpType(type, description);
-      builder.Append(valueType);
-      builder.Append(' ');
+      _ = builder.Append(valueType);
+      _ = builder.Append(' ');
 
       if (name == "eventType") {
-        builder.Append("VendorEventType");
+        _ = builder.Append("VendorEventType");
       }
       else {
-        builder.Append(char.ToUpper(name[0]));
-        builder.Append(name[1..]);
+        _ = builder.Append(char.ToUpper(name[0], CultureInfo.InvariantCulture));
+        _ = builder.Append(name[1..]);
       }
-      builder.Append(" { get; set; }");
+      _ = builder.Append(" { get; set; }");
       if (valueType == "string") {
-        builder.Append(" = \"\";");
+        _ = builder.Append(" = \"\";");
       }
       else if (valueType.StartsWith("List<", StringComparison.Ordinal)
           || valueType.StartsWith("Dictionary<", StringComparison.Ordinal)
           || valueType.EndsWith("[]", StringComparison.Ordinal)) {
-        builder.Append(" = [];");
+        _ = builder.Append(" = [];");
       }
       else if (char.IsUpper(valueType[0])) {
-        builder.Append(" = new();");
+        _ = builder.Append(" = new();");
       }
 
       return builder.ToString();

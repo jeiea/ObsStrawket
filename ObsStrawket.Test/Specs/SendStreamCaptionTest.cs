@@ -10,13 +10,13 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SendStreamCaptionFlow : ITestFlow {
+  internal class SendStreamCaptionFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       _ = await client.SendStreamCaptionAsync(captionText: "test caption text").ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

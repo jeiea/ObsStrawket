@@ -12,6 +12,7 @@ csharp_style_var_for_built_in_types = false:suggestion
 csharp_style_var_when_type_is_apparent = true:suggestion
 insert_final_newline = true
 
+dotnet_diagnostic.CA1852.severity = none
 dotnet_diagnostic.IDE0290.severity = none
 
 [ObsStrawket/DataTypes/**.cs]

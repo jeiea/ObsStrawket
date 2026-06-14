@@ -13,17 +13,17 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetCurrentSceneTransitionFlow : ITestFlow {
+  internal class SetCurrentSceneTransitionFlow : ITestFlow {
     // Default transitions only; a fresh OBS has no user-added ones like Swipe.
     public static string TransitionName => "Fade";
 
     private static readonly string _spareTransition = "Cut";
 
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetCurrentSceneTransitionAsync(transitionName: _spareTransition).ConfigureAwait(false);
-      ClientFlow.DrainEvents(client);
+      _ = await client.SetCurrentSceneTransitionAsync(transitionName: _spareTransition).ConfigureAwait(false);
+      _ = ClientFlow.DrainEvents(client);
 
-      await client.SetCurrentSceneTransitionAsync(transitionName: TransitionName).ConfigureAwait(false);
+      _ = await client.SetCurrentSceneTransitionAsync(transitionName: TransitionName).ConfigureAwait(false);
       using var cts = new CancellationTokenSource();
       cts.CancelAfter(2000);
       await foreach (var changed in client.Events.ReadAllAsync(cts.Token).OfType<CurrentSceneTransitionChanged>().ConfigureAwait(false)) {
@@ -36,7 +36,7 @@ namespace ObsStrawket.Test.Specs {
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -62,7 +62,7 @@ namespace ObsStrawket.Test.Specs {
 }
 """).ConfigureAwait(false);
 
-      guid = await session.ReceiveAsync("""
+      guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -87,7 +87,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

@@ -1,5 +1,4 @@
 using System;
-using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,7 +29,7 @@ namespace ObsStrawket.Test.Utilities {
 
       async Task RunClientAsync() {
         var client = ClientFlow.GetDebugClient(useChannel: useChannel);
-        await client.ConnectAsync(server!.Uri, MockServer.Password).ConfigureAwait(false);
+        await client.ConnectAsync(server.Uri, MockServer.Password).ConfigureAwait(false);
         await flow.RequestAsync(client).ConfigureAwait(false);
         await client.CloseAsync().ConfigureAwait(false);
       }
@@ -61,14 +60,14 @@ namespace ObsStrawket.Test.Utilities {
         try {
           await task.ConfigureAwait(false);
           if (Interlocked.Decrement(ref remaining) == 0) {
-            tcs.TrySetResult();
+            _ = tcs.TrySetResult();
           }
         }
         catch (OperationCanceledException) {
-          tcs.TrySetCanceled();
+          _ = tcs.TrySetCanceled();
         }
         catch (Exception ex) {
-          tcs.TrySetException(ex);
+          _ = tcs.TrySetException(ex);
         }
       }
     }

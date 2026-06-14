@@ -11,14 +11,14 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class GetRecordDirectoryFlow : ITestFlow {
+  internal class GetRecordDirectoryFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var response = await client.GetRecordDirectoryAsync().ConfigureAwait(false);
       Assert.True(Directory.Exists(response.RecordDirectory), "Record directory does not exist.");
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "op": 6,
   "d": {

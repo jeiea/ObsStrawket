@@ -26,7 +26,7 @@ namespace ObsStrawket.Test.Specs {
     public async Task RespondAsync(MockServerSession session) {
       await new GetSceneListFlow().RespondAsync(session).ConfigureAwait(false);
 
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

@@ -11,24 +11,24 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetSourceFilterNameFlow : ITestFlow {
+  internal class SetSourceFilterNameFlow : ITestFlow {
     public static string NewFilterName => "test filter name 3";
 
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetSourceFilterNameAsync(
+      _ = await client.SetSourceFilterNameAsync(
         sourceName: CreateInputFlow.InputName,
         filterName: CreateSourceFilterFlow.FilterName2,
         newFilterName: NewFilterName
       ).ConfigureAwait(false);
 
       var changed = await ClientFlow.WaitEventAsync<SourceFilterNameChanged>(client).ConfigureAwait(false);
-      Assert.Equal(CreateSourceFilterFlow.FilterName2, (changed as SourceFilterNameChanged)!.OldFilterName);
-      Assert.Equal(NewFilterName, (changed as SourceFilterNameChanged)!.FilterName);
-      Assert.Equal("Browser source", (changed as SourceFilterNameChanged)!.SourceName);
+      Assert.Equal(CreateSourceFilterFlow.FilterName2, changed.OldFilterName);
+      Assert.Equal(NewFilterName, changed.FilterName);
+      Assert.Equal("Browser source", changed.SourceName);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {
@@ -42,7 +42,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 6
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

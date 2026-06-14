@@ -10,7 +10,7 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class GetProfileParameterFlow : ITestFlow {
+  internal class GetProfileParameterFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       foreach (var (category, name, value, def) in SetProfileParameterFlow.AppliedParameters) {
         var response = await client.GetProfileParameterAsync(

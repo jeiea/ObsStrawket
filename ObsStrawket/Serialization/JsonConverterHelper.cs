@@ -15,21 +15,18 @@ namespace ObsStrawket.Serialization {
     }
 
     public static Utf8JsonReader SeekByKey(Utf8JsonReader reader, string key) {
-      if (!SeekByKey(ref reader, key)) {
-        throw new UnexpectedResponseException($"Cannot find {key} key.");
-      }
-      return reader;
+      return !SeekByKey(ref reader, key) ? throw new UnexpectedResponseException($"Cannot find {key} key.") : reader;
     }
 
     public static bool SeekByKey(ref Utf8JsonReader reader, string key) {
       while (true) {
-        reader.Read();
+        _ = reader.Read();
         if (reader.TokenType == JsonTokenType.EndObject) {
           return false;
         }
 
         string? cursor = reader.GetString();
-        reader.Read();
+        _ = reader.Read();
 
         if (cursor == key) {
           return true;

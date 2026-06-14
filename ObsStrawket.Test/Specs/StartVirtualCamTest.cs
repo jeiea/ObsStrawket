@@ -11,16 +11,16 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class StartVirtualCamFlow : ITestFlow {
+  internal class StartVirtualCamFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.StartVirtualCamAsync().ConfigureAwait(false);
+      _ = await client.StartVirtualCamAsync().ConfigureAwait(false);
 
       var changed = await ClientFlow.WaitEventAsync<VirtualcamStateChanged>(client).ConfigureAwait(false);
-      Assert.Equal(ObsOutputState.Started, (changed as VirtualcamStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Started, changed.OutputState);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestId": "{guid}",
@@ -42,7 +42,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

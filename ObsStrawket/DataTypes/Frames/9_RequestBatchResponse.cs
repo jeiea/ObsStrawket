@@ -14,12 +14,12 @@ namespace ObsStrawket.DataTypes {
     /// <summary>
     /// Unique identifier for response matching.
     /// </summary>
-    public string RequestId { get; set; }
+    string RequestId { get; set; }
 
     /// <summary>
     /// Responses in same order.
     /// </summary>
-    public List<IRequestResponse> Results { get; }
+    List<IRequestResponse> Results { get; }
   }
 
   /// <summary>

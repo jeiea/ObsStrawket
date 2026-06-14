@@ -67,7 +67,7 @@ namespace SourceGenerator {
       string revision = await GetLatestRevisionAsync().ConfigureAwait(false);
       var protocolBytesTask = _http.GetByteArrayAsync(GetRawUrl(revision, ProtocolSourcePath));
       var obsHeaderBytesTask = _http.GetByteArrayAsync(GetRawUrl(revision, ObsHeaderSourcePath));
-      await Task.WhenAll(protocolBytesTask, obsHeaderBytesTask).ConfigureAwait(false);
+      _ = await Task.WhenAll(protocolBytesTask, obsHeaderBytesTask).ConfigureAwait(false);
 
       byte[] protocolBytes = await protocolBytesTask.ConfigureAwait(false);
       byte[] obsHeaderBytes = await obsHeaderBytesTask.ConfigureAwait(false);
@@ -89,7 +89,7 @@ namespace SourceGenerator {
       };
       byte[] revisionBytes = JsonSerializer.SerializeToUtf8Bytes(revisionInfo, _revisionJsonOptions);
 
-      Directory.CreateDirectory(_upstreamDirectory);
+      _ = Directory.CreateDirectory(_upstreamDirectory);
       ReplaceFiles([
         new PendingFile(GetPath(ProtocolFileName), protocolBytes),
         new PendingFile(GetPath(ObsHeaderFileName), obsHeaderBytes),
@@ -136,10 +136,9 @@ namespace SourceGenerator {
         "https://api.github.com/repos/obsproject/obs-websocket/commits?per_page=1").ConfigureAwait(false);
       var commits = JsonSerializer.Deserialize<List<GitHubCommit>>(response, _jsonOptions);
       string? revision = commits?.FirstOrDefault()?.Sha;
-      if (revision == null || revision.Length != 40 || !revision.All(Uri.IsHexDigit)) {
-        throw new InvalidDataException("GitHub returned an invalid obs-websocket revision.");
-      }
-      return revision.ToLowerInvariant();
+      return revision == null || revision.Length != 40 || !revision.All(Uri.IsHexDigit)
+        ? throw new InvalidDataException("GitHub returned an invalid obs-websocket revision.")
+        : revision.ToLowerInvariant();
     }
 
     private static void ValidateRevision(UpstreamRevision revision) {
@@ -262,7 +261,7 @@ namespace SourceGenerator {
       var categoryOrder = new List<string>() {
         "Canvases", "General", "Config", "Sources", "Scenes", "Inputs", "Transitions", "Filters",
         "Scene Items", "Outputs", "Stream", "Record", "Media Inputs", "Ui", "High-Volume",
-      }.Select(x => x.ToLower()).ToList();
+      }.Select(x => x.ToLower(System.Globalization.CultureInfo.CurrentCulture)).ToList();
 
       protocol.Events = [.. protocol.Events.OrderBy(x => categoryOrder.IndexOf(x.Category!))];
       foreach (var ev in protocol.Events) {
@@ -297,8 +296,8 @@ namespace SourceGenerator {
 
     private static void FixDeprecateEnums(ProtocolJson protocol) {
       // There is no alternative, it seems to be a mistake.
-      var obsMediaInputAction = protocol.Enums.First((en) => en.EnumType == "ObsMediaInputAction").EnumIdentifiers;
-      var obsOutputState = protocol.Enums.First((en) => en.EnumType == "ObsOutputState").EnumIdentifiers;
+      var obsMediaInputAction = protocol.Enums.First(static (en) => en.EnumType == "ObsMediaInputAction").EnumIdentifiers;
+      var obsOutputState = protocol.Enums.First(static (en) => en.EnumType == "ObsOutputState").EnumIdentifiers;
       foreach (var identifier in obsMediaInputAction.Concat(obsOutputState)) {
         identifier.Deprecated = false;
       }
@@ -313,12 +312,14 @@ namespace SourceGenerator {
       case "SaveSourceScreenshot":
         request.ResponseFields.Clear();
         break;
+      default:
+        break;
       }
 
       request.RequestFields = [
         .. request.RequestFields
-          .OrderBy(field => field.ValueOptional)
-          .ThenBy(field => field.ValueName == "canvasUuid"),
+          .OrderBy(static field => field.ValueOptional)
+          .ThenBy(static field => field.ValueName == "canvasUuid"),
       ];
       foreach (var field in request.RequestFields) {
         if (GetCustomType(field.ValueName!, out string? type)) {

@@ -12,19 +12,19 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class StopRecordFlow : ITestFlow {
+  internal class StopRecordFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
       var recording = await client.StopRecordAsync().ConfigureAwait(false);
       Assert.True(File.Exists(recording.OutputPath), $"{recording.OutputPath} is not exists.");
 
       var changed = await ClientFlow.WaitEventAsync<RecordStateChanged>(client).ConfigureAwait(false);
-      Assert.Equal(ObsOutputState.Stopping, (changed as RecordStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Stopping, changed.OutputState);
       changed = await ClientFlow.WaitEventAsync<RecordStateChanged>(client).ConfigureAwait(false);
-      Assert.Equal(ObsOutputState.Stopped, (changed as RecordStateChanged)!.OutputState);
+      Assert.Equal(ObsOutputState.Stopped, changed.OutputState);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "op": 6,
   "d": {
@@ -50,7 +50,7 @@ namespace ObsStrawket.Test.Specs {
   "op": 7
 }
 """).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {

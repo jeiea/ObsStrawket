@@ -11,13 +11,13 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class RecordFileFlow : ITestFlow {
+  internal class RecordFileFlow : ITestFlow {
     public const string ChapterName = "Test chapter";
 
     public async Task RequestAsync(ObsClientSocket client) {
       await Task.Delay(100).ConfigureAwait(false);
-      await client.CreateRecordChapterAsync(ChapterName).ConfigureAwait(false);
-      await client.SplitRecordFileAsync().ConfigureAwait(false);
+      _ = await client.CreateRecordChapterAsync(ChapterName).ConfigureAwait(false);
+      _ = await client.SplitRecordFileAsync().ConfigureAwait(false);
       var changed = await ClientFlow.WaitEventAsync<RecordFileChanged>(client).ConfigureAwait(false);
       Assert.NotEmpty(changed.NewOutputPath);
     }
@@ -32,7 +32,7 @@ namespace ObsStrawket.Test.Specs {
 
       guid = (await session.ReceiveRequestAsync("SplitRecordFile").ConfigureAwait(false))!;
       await session.SendSuccessResponseAsync("SplitRecordFile", guid).ConfigureAwait(false);
-      await session.SendAsync("""
+      await session.SendAsync(/*lang=json,strict*/ """
 {
   "op": 5,
   "d": {

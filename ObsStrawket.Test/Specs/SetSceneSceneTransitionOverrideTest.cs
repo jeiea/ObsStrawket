@@ -10,13 +10,13 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetSceneSceneTransitionOverrideFlow : ITestFlow {
+  internal class SetSceneSceneTransitionOverrideFlow : ITestFlow {
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetSceneSceneTransitionOverrideAsync(sceneName: CreateSceneFlow.NewScene, transitionName: "Fade", transitionDuration: 200).ConfigureAwait(false);
+      _ = await client.SetSceneSceneTransitionOverrideAsync(sceneName: CreateSceneFlow.NewScene, transitionName: "Fade", transitionDuration: 200).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

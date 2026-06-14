@@ -16,24 +16,24 @@ namespace ObsStrawket.DataTypes {
     /// <summary>
     /// Unique identifier for response matching.
     /// </summary>
-    public string RequestId { get; set; }
+    string RequestId { get; set; }
 
     /// <summary>
     /// When <c>haltOnFailure</c> is true, the processing of requests will be halted on first failure.
     /// Returns only the processed requests in RequestBatchResponse
     /// </summary>
-    public bool? HaltOnFailure { get; }
+    bool? HaltOnFailure { get; }
 
     /// <summary>
     /// Default: <see cref="RequestBatchExecutionType.SerialRealtime"/>
     /// </summary>
-    public RequestBatchExecutionType ExecutionType { get; }
+    RequestBatchExecutionType ExecutionType { get; }
 
     /// <summary>
     /// Requests in the requests array follow the same structure as the Request payload data format,
     /// however requestId is an optional field.
     /// </summary>
-    public List<IRequest> Requests { get; }
+    List<IRequest> Requests { get; }
   }
 
   /// <summary>

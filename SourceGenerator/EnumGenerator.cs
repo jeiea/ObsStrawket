@@ -18,10 +18,10 @@ namespace SourceGenerator {
     public async Task GenerateAsync() {
       var json = await _fetcher.GetModifiedProtocolJsonAsync().ConfigureAwait(false);
 
-      var obsMediaInputAction = json.Enums.First((en) => en.EnumType == "ObsMediaInputAction");
+      var obsMediaInputAction = json.Enums.First(static (en) => en.EnumType == "ObsMediaInputAction");
       obsMediaInputAction.EnumType = "MediaInputAction";
       foreach (var identifier in obsMediaInputAction.EnumIdentifiers) {
-        identifier.EnumIdentifier = $"{identifier.EnumIdentifier[33]}{identifier.EnumIdentifier[34..].ToLower()}";
+        identifier.EnumIdentifier = $"{identifier.EnumIdentifier[33]}{identifier.EnumIdentifier[34..].ToLower(System.Globalization.CultureInfo.CurrentCulture)}";
       }
 
       var descriptions = new Dictionary<string, string> {
@@ -52,12 +52,12 @@ namespace ObsStrawket.DataTypes.Predefineds {
           file.WriteLine("  [Flags]");
         }
         string sample = $"{en.EnumIdentifiers.Last().EnumValue}";
-        bool isStringEnum = sample.Any(c => c is >= 'A' and <= 'Z');
+        bool isStringEnum = sample.Any(static c => c is >= 'A' and <= 'Z');
         if (isStringEnum) {
           file.WriteLine("  [JsonConverter(typeof(JsonStringEnumMemberConverter))]");
         }
         file.WriteLine("  public enum {0} {{", en.EnumType);
-        foreach (var identifier in en.EnumIdentifiers!) {
+        foreach (var identifier in en.EnumIdentifiers) {
           file.WriteLine();
           file.WriteLine("    /// <summary>");
           file.WriteLine("    /// <para>{0}</para>", TransformHelper.EscapeForXml(identifier.Description).Replace(Environment.NewLine, $"<br />{Environment.NewLine}    /// "));

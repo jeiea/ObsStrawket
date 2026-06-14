@@ -11,7 +11,7 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class GetCanvasListFlow : ITestFlow {
+  internal class GetCanvasListFlow : ITestFlow {
     public const string CanvasName = "Main";
     public const string CanvasUuid = "6f9619ff-8b86-d011-b42d-00cf4fc964ff";
 
@@ -41,7 +41,7 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class CanvasUuidRealFlow {
+  internal class CanvasUuidRealFlow {
     public static async Task RequestAsync(ObsClientSocket client) {
       var canvases = await GetCanvasListFlow.GetCanvasListAsync(client).ConfigureAwait(false);
       var canvas = Assert.Single(canvases.Canvases);

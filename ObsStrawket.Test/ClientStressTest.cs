@@ -41,14 +41,14 @@ namespace ObsStrawket.Test {
       client.Connected += (uri) => {
         int difference = Interlocked.Increment(ref openCloseDifference);
         traces.Enqueue($"Connected: {difference}");
-        if (difference < 0 || 1 < difference) {
+        if (difference is < 0 or > 1) {
           Assert.True(failures.Writer.TryWrite($"open close difference {difference}"));
         }
       };
       client.Disconnected += (o) => {
         int difference = Interlocked.Decrement(ref openCloseDifference);
         traces.Enqueue($"Disconnected: {difference}");
-        if (difference < 0 || 1 < difference) {
+        if (difference is < 0 or > 1) {
           Assert.True(failures.Writer.TryWrite($"open close difference {difference}"));
         }
       };
@@ -56,7 +56,7 @@ namespace ObsStrawket.Test {
       var monitor = Task.Run(async () => {
         while (await failures.Reader.WaitToReadAsync().ConfigureAwait(false)) {
           string failure = await failures.Reader.ReadAsync().ConfigureAwait(false);
-          throw new Exception(failure);
+          throw new InvalidOperationException(failure);
         }
       });
 
@@ -99,13 +99,13 @@ namespace ObsStrawket.Test {
       await TestUtil.WhenAnyThrowsAsync(tasks).ConfigureAwait(false);
 
       try {
-        failures.Writer.TryComplete();
+        _ = failures.Writer.TryComplete();
         await monitor.ConfigureAwait(false);
       }
       catch (Exception ex) {
         Debug.WriteLine(ex);
         string error = string.Join(Environment.NewLine, traces);
-        throw new Exception(error, ex);
+        throw new InvalidOperationException(error, ex);
       }
 
       Assert.InRange(openCloseDifference, 0, 1);

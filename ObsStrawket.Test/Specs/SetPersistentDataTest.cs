@@ -10,16 +10,16 @@ namespace ObsStrawket.Test.Specs {
     }
   }
 
-  class SetPersistentDataFlow : ITestFlow {
-    public static string TestSlot { get => "test slot"; }
-    public static string TestSlotValue { get => "test slot value"; }
+  internal class SetPersistentDataFlow : ITestFlow {
+    public static string TestSlot => "test slot";
+    public static string TestSlotValue => "test slot value";
 
     public async Task RequestAsync(ObsClientSocket client) {
-      await client.SetPersistentDataAsync(realm: DataTypes.DataRealm.Profile, slotName: TestSlot, slotValue: TestSlotValue).ConfigureAwait(false);
+      _ = await client.SetPersistentDataAsync(realm: DataTypes.DataRealm.Profile, slotName: TestSlot, slotValue: TestSlotValue).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
-      string? guid = await session.ReceiveAsync("""
+      string? guid = await session.ReceiveAsync(/*lang=json,strict*/ """
 {
   "d": {
     "requestData": {

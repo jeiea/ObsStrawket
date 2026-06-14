@@ -20,41 +20,41 @@ namespace ObsStrawket {
     /// <summary>
     /// All events.
     /// </summary>
-    public event Action<IObsEvent> Event = delegate { };
+    public event Action<IObsEvent> Event = static delegate { };
 
     /// <summary>
     /// Canvases event group.
     /// </summary>
-    public event Action<CanvasesEvent> CanvasesEvent = delegate { };
+    public event Action<CanvasesEvent> CanvasesEvent = static delegate { };
     /// <summary>
     /// A new canvas has been created.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.7.0
     /// </summary>
-    public event Action<CanvasCreated> CanvasCreated = delegate { };
+    public event Action<CanvasCreated> CanvasCreated = static delegate { };
     /// <summary>
     /// A canvas has been removed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.7.0
     /// </summary>
-    public event Action<CanvasRemoved> CanvasRemoved = delegate { };
+    public event Action<CanvasRemoved> CanvasRemoved = static delegate { };
     /// <summary>
     /// The name of a canvas has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.7.0
     /// </summary>
-    public event Action<CanvasNameChanged> CanvasNameChanged = delegate { };
+    public event Action<CanvasNameChanged> CanvasNameChanged = static delegate { };
 
     /// <summary>
     /// General event group.
     /// </summary>
-    public event Action<GeneralEvent> GeneralEvent = delegate { };
+    public event Action<GeneralEvent> GeneralEvent = static delegate { };
     /// <summary>
     /// OBS has begun the shutdown process.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<ExitStarted> ExitStarted = delegate { };
+    public event Action<ExitStarted> ExitStarted = static delegate { };
     /// <summary>
     /// An event has been emitted from a vendor.<br />
     /// <br />
@@ -63,18 +63,18 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<VendorEvent> VendorEvent = delegate { };
+    public event Action<VendorEvent> VendorEvent = static delegate { };
     /// <summary>
     /// Custom event emitted by <c>BroadcastCustomEvent</c>.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<CustomEvent> CustomEvent = delegate { };
+    public event Action<CustomEvent> CustomEvent = static delegate { };
 
     /// <summary>
     /// Config event group.
     /// </summary>
-    public event Action<ConfigEvent> ConfigEvent = delegate { };
+    public event Action<ConfigEvent> ConfigEvent = static delegate { };
     /// <summary>
     /// The current scene collection has begun changing.<br />
     /// <br />
@@ -83,7 +83,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<CurrentSceneCollectionChanging> CurrentSceneCollectionChanging = delegate { };
+    public event Action<CurrentSceneCollectionChanging> CurrentSceneCollectionChanging = static delegate { };
     /// <summary>
     /// The current scene collection has changed.<br />
     /// <br />
@@ -91,66 +91,66 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<CurrentSceneCollectionChanged> CurrentSceneCollectionChanged = delegate { };
+    public event Action<CurrentSceneCollectionChanged> CurrentSceneCollectionChanged = static delegate { };
     /// <summary>
     /// The scene collection list has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<SceneCollectionListChanged> SceneCollectionListChanged = delegate { };
+    public event Action<SceneCollectionListChanged> SceneCollectionListChanged = static delegate { };
     /// <summary>
     /// The current profile has begun changing.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<CurrentProfileChanging> CurrentProfileChanging = delegate { };
+    public event Action<CurrentProfileChanging> CurrentProfileChanging = static delegate { };
     /// <summary>
     /// The current profile has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<CurrentProfileChanged> CurrentProfileChanged = delegate { };
+    public event Action<CurrentProfileChanged> CurrentProfileChanged = static delegate { };
     /// <summary>
     /// The profile list has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<ProfileListChanged> ProfileListChanged = delegate { };
+    public event Action<ProfileListChanged> ProfileListChanged = static delegate { };
 
     /// <summary>
     /// Scenes event group.
     /// </summary>
-    public event Action<ScenesEvent> ScenesEvent = delegate { };
+    public event Action<ScenesEvent> ScenesEvent = static delegate { };
     /// <summary>
     /// A new scene has been created.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<SceneCreated> SceneCreated = delegate { };
+    public event Action<SceneCreated> SceneCreated = static delegate { };
     /// <summary>
     /// A scene has been removed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<SceneRemoved> SceneRemoved = delegate { };
+    public event Action<SceneRemoved> SceneRemoved = static delegate { };
     /// <summary>
     /// The name of a scene has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<SceneNameChanged> SceneNameChanged = delegate { };
+    public event Action<SceneNameChanged> SceneNameChanged = static delegate { };
     /// <summary>
     /// The current program scene has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<CurrentProgramSceneChanged> CurrentProgramSceneChanged = delegate { };
+    public event Action<CurrentProgramSceneChanged> CurrentProgramSceneChanged = static delegate { };
     /// <summary>
     /// The current preview scene has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<CurrentPreviewSceneChanged> CurrentPreviewSceneChanged = delegate { };
+    public event Action<CurrentPreviewSceneChanged> CurrentPreviewSceneChanged = static delegate { };
     /// <summary>
     /// The list of scenes has changed.<br />
     /// <br />
@@ -158,30 +158,30 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<SceneListChanged> SceneListChanged = delegate { };
+    public event Action<SceneListChanged> SceneListChanged = static delegate { };
 
     /// <summary>
     /// Inputs event group.
     /// </summary>
-    public event Action<InputsEvent> InputsEvent = delegate { };
+    public event Action<InputsEvent> InputsEvent = static delegate { };
     /// <summary>
     /// An input has been created.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<InputCreated> InputCreated = delegate { };
+    public event Action<InputCreated> InputCreated = static delegate { };
     /// <summary>
     /// An input has been removed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<InputRemoved> InputRemoved = delegate { };
+    public event Action<InputRemoved> InputRemoved = static delegate { };
     /// <summary>
     /// The name of an input has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<InputNameChanged> InputNameChanged = delegate { };
+    public event Action<InputNameChanged> InputNameChanged = static delegate { };
     /// <summary>
     /// An input's settings have changed (been updated).<br />
     /// <br />
@@ -189,7 +189,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.4.0
     /// </summary>
-    public event Action<InputSettingsChanged> InputSettingsChanged = delegate { };
+    public event Action<InputSettingsChanged> InputSettingsChanged = static delegate { };
     /// <summary>
     /// An input's active state has changed.<br />
     /// <br />
@@ -197,7 +197,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<InputActiveStateChanged> InputActiveStateChanged = delegate { };
+    public event Action<InputActiveStateChanged> InputActiveStateChanged = static delegate { };
     /// <summary>
     /// An input's show state has changed.<br />
     /// <br />
@@ -205,37 +205,37 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<InputShowStateChanged> InputShowStateChanged = delegate { };
+    public event Action<InputShowStateChanged> InputShowStateChanged = static delegate { };
     /// <summary>
     /// An input's mute state has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<InputMuteStateChanged> InputMuteStateChanged = delegate { };
+    public event Action<InputMuteStateChanged> InputMuteStateChanged = static delegate { };
     /// <summary>
     /// An input's volume level has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<InputVolumeChanged> InputVolumeChanged = delegate { };
+    public event Action<InputVolumeChanged> InputVolumeChanged = static delegate { };
     /// <summary>
     /// The audio balance value of an input has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<InputAudioBalanceChanged> InputAudioBalanceChanged = delegate { };
+    public event Action<InputAudioBalanceChanged> InputAudioBalanceChanged = static delegate { };
     /// <summary>
     /// The sync offset of an input has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<InputAudioSyncOffsetChanged> InputAudioSyncOffsetChanged = delegate { };
+    public event Action<InputAudioSyncOffsetChanged> InputAudioSyncOffsetChanged = static delegate { };
     /// <summary>
     /// The audio tracks of an input have changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<InputAudioTracksChanged> InputAudioTracksChanged = delegate { };
+    public event Action<InputAudioTracksChanged> InputAudioTracksChanged = static delegate { };
     /// <summary>
     /// The monitor type of an input has changed.<br />
     /// <br />
@@ -247,36 +247,36 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<InputAudioMonitorTypeChanged> InputAudioMonitorTypeChanged = delegate { };
+    public event Action<InputAudioMonitorTypeChanged> InputAudioMonitorTypeChanged = static delegate { };
     /// <summary>
     /// A high-volume event providing volume levels of all active inputs every 50 milliseconds.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<InputVolumeMeters> InputVolumeMeters = delegate { };
+    public event Action<InputVolumeMeters> InputVolumeMeters = static delegate { };
 
     /// <summary>
     /// Transitions event group.
     /// </summary>
-    public event Action<TransitionsEvent> TransitionsEvent = delegate { };
+    public event Action<TransitionsEvent> TransitionsEvent = static delegate { };
     /// <summary>
     /// The current scene transition has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<CurrentSceneTransitionChanged> CurrentSceneTransitionChanged = delegate { };
+    public event Action<CurrentSceneTransitionChanged> CurrentSceneTransitionChanged = static delegate { };
     /// <summary>
     /// The current scene transition duration has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<CurrentSceneTransitionDurationChanged> CurrentSceneTransitionDurationChanged = delegate { };
+    public event Action<CurrentSceneTransitionDurationChanged> CurrentSceneTransitionDurationChanged = static delegate { };
     /// <summary>
     /// A scene transition has started.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<SceneTransitionStarted> SceneTransitionStarted = delegate { };
+    public event Action<SceneTransitionStarted> SceneTransitionStarted = static delegate { };
     /// <summary>
     /// A scene transition has completed fully.<br />
     /// <br />
@@ -284,7 +284,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<SceneTransitionEnded> SceneTransitionEnded = delegate { };
+    public event Action<SceneTransitionEnded> SceneTransitionEnded = static delegate { };
     /// <summary>
     /// A scene transition's video has completed fully.<br />
     /// <br />
@@ -295,59 +295,59 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<SceneTransitionVideoEnded> SceneTransitionVideoEnded = delegate { };
+    public event Action<SceneTransitionVideoEnded> SceneTransitionVideoEnded = static delegate { };
 
     /// <summary>
     /// Filters event group.
     /// </summary>
-    public event Action<FiltersEvent> FiltersEvent = delegate { };
+    public event Action<FiltersEvent> FiltersEvent = static delegate { };
     /// <summary>
     /// A source's filter list has been reindexed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<SourceFilterListReindexed> SourceFilterListReindexed = delegate { };
+    public event Action<SourceFilterListReindexed> SourceFilterListReindexed = static delegate { };
     /// <summary>
     /// A filter has been added to a source.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<SourceFilterCreated> SourceFilterCreated = delegate { };
+    public event Action<SourceFilterCreated> SourceFilterCreated = static delegate { };
     /// <summary>
     /// A filter has been removed from a source.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<SourceFilterRemoved> SourceFilterRemoved = delegate { };
+    public event Action<SourceFilterRemoved> SourceFilterRemoved = static delegate { };
     /// <summary>
     /// The name of a source filter has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<SourceFilterNameChanged> SourceFilterNameChanged = delegate { };
+    public event Action<SourceFilterNameChanged> SourceFilterNameChanged = static delegate { };
     /// <summary>
     /// An source filter's settings have changed (been updated).<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.4.0
     /// </summary>
-    public event Action<SourceFilterSettingsChanged> SourceFilterSettingsChanged = delegate { };
+    public event Action<SourceFilterSettingsChanged> SourceFilterSettingsChanged = static delegate { };
     /// <summary>
     /// A source filter's enable state has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<SourceFilterEnableStateChanged> SourceFilterEnableStateChanged = delegate { };
+    public event Action<SourceFilterEnableStateChanged> SourceFilterEnableStateChanged = static delegate { };
 
     /// <summary>
     /// Scene items event group.
     /// </summary>
-    public event Action<SceneItemsEvent> SceneItemsEvent = delegate { };
+    public event Action<SceneItemsEvent> SceneItemsEvent = static delegate { };
     /// <summary>
     /// A scene item has been created.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<SceneItemCreated> SceneItemCreated = delegate { };
+    public event Action<SceneItemCreated> SceneItemCreated = static delegate { };
     /// <summary>
     /// A scene item has been removed.<br />
     /// <br />
@@ -355,112 +355,112 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<SceneItemRemoved> SceneItemRemoved = delegate { };
+    public event Action<SceneItemRemoved> SceneItemRemoved = static delegate { };
     /// <summary>
     /// A scene's item list has been reindexed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<SceneItemListReindexed> SceneItemListReindexed = delegate { };
+    public event Action<SceneItemListReindexed> SceneItemListReindexed = static delegate { };
     /// <summary>
     /// A scene item's enable state has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<SceneItemEnableStateChanged> SceneItemEnableStateChanged = delegate { };
+    public event Action<SceneItemEnableStateChanged> SceneItemEnableStateChanged = static delegate { };
     /// <summary>
     /// A scene item's lock state has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<SceneItemLockStateChanged> SceneItemLockStateChanged = delegate { };
+    public event Action<SceneItemLockStateChanged> SceneItemLockStateChanged = static delegate { };
     /// <summary>
     /// A scene item has been selected in the Ui.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<SceneItemSelected> SceneItemSelected = delegate { };
+    public event Action<SceneItemSelected> SceneItemSelected = static delegate { };
     /// <summary>
     /// The transform/crop of a scene item has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<SceneItemTransformChanged> SceneItemTransformChanged = delegate { };
+    public event Action<SceneItemTransformChanged> SceneItemTransformChanged = static delegate { };
 
     /// <summary>
     /// Outputs event group.
     /// </summary>
-    public event Action<OutputsEvent> OutputsEvent = delegate { };
+    public event Action<OutputsEvent> OutputsEvent = static delegate { };
     /// <summary>
     /// The state of the stream output has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<StreamStateChanged> StreamStateChanged = delegate { };
+    public event Action<StreamStateChanged> StreamStateChanged = static delegate { };
     /// <summary>
     /// The state of the record output has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<RecordStateChanged> RecordStateChanged = delegate { };
+    public event Action<RecordStateChanged> RecordStateChanged = static delegate { };
     /// <summary>
     /// The record output has started writing to a new file. For example, when a file split happens.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.5.0
     /// </summary>
-    public event Action<RecordFileChanged> RecordFileChanged = delegate { };
+    public event Action<RecordFileChanged> RecordFileChanged = static delegate { };
     /// <summary>
     /// The state of the replay buffer output has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<ReplayBufferStateChanged> ReplayBufferStateChanged = delegate { };
+    public event Action<ReplayBufferStateChanged> ReplayBufferStateChanged = static delegate { };
     /// <summary>
     /// The state of the virtualcam output has changed.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<VirtualcamStateChanged> VirtualcamStateChanged = delegate { };
+    public event Action<VirtualcamStateChanged> VirtualcamStateChanged = static delegate { };
     /// <summary>
     /// The replay buffer has been saved.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<ReplayBufferSaved> ReplayBufferSaved = delegate { };
+    public event Action<ReplayBufferSaved> ReplayBufferSaved = static delegate { };
 
     /// <summary>
     /// Media inputs event group.
     /// </summary>
-    public event Action<MediaInputsEvent> MediaInputsEvent = delegate { };
+    public event Action<MediaInputsEvent> MediaInputsEvent = static delegate { };
     /// <summary>
     /// A media input has started playing.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<MediaInputPlaybackStarted> MediaInputPlaybackStarted = delegate { };
+    public event Action<MediaInputPlaybackStarted> MediaInputPlaybackStarted = static delegate { };
     /// <summary>
     /// A media input has finished playing.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<MediaInputPlaybackEnded> MediaInputPlaybackEnded = delegate { };
+    public event Action<MediaInputPlaybackEnded> MediaInputPlaybackEnded = static delegate { };
     /// <summary>
     /// An action has been performed on an input.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<MediaInputActionTriggered> MediaInputActionTriggered = delegate { };
+    public event Action<MediaInputActionTriggered> MediaInputActionTriggered = static delegate { };
 
     /// <summary>
     /// Ui event group.
     /// </summary>
-    public event Action<UiEvent> UiEvent = delegate { };
+    public event Action<UiEvent> UiEvent = static delegate { };
     /// <summary>
     /// Studio mode has been enabled or disabled.<br />
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.0.0
     /// </summary>
-    public event Action<StudioModeStateChanged> StudioModeStateChanged = delegate { };
+    public event Action<StudioModeStateChanged> StudioModeStateChanged = static delegate { };
     /// <summary>
     /// A screenshot has been saved.<br />
     /// <br />
@@ -470,7 +470,7 @@ namespace ObsStrawket {
     /// Latest supported RPC version: 1<br />
     /// Added in: 5.1.0
     /// </summary>
-    public event Action<ScreenshotSaved> ScreenshotSaved = delegate { };
+    public event Action<ScreenshotSaved> ScreenshotSaved = static delegate { };
 
     #endregion Events
 
@@ -508,29 +508,24 @@ namespace ObsStrawket {
     /// <summary>
     /// Fired when it is connected to OBS
     /// </summary>
-    public event Action<Uri> Connected = delegate { };
+    public event Action<Uri> Connected = static delegate { };
 
     /// <summary>
     /// Fired when it is disconnected to OBS
     /// </summary>
-    public event Action<Exception?> Disconnected = delegate { };
+    public event Action<Exception?> Disconnected = static delegate { };
 
     /// <summary>
     /// Whether it is connected to OBS
     /// </summary>
-    public bool IsConnected { get => _clientSocket.IsConnected; }
+    public bool IsConnected => _clientSocket.IsConnected;
 
     /// <summary>
     /// It emits all of received OBS events. It can be used only when <see cref="ObsClientSocket"/> is created with <c>useChannel</c>.
     /// </summary>
-    public ChannelReader<IObsEvent> Events {
-      get {
-        if (_dispatch != null) {
-          throw new InvalidOperationException("Create first ObsClientSocket with useChannel: true");
-        }
-        return _clientSocket.Events;
-      }
-    }
+    public ChannelReader<IObsEvent> Events => _dispatch != null
+          ? throw new InvalidOperationException("Create first ObsClientSocket with useChannel: true")
+          : _clientSocket.Events;
 
     /// <summary>
     /// Connect to OBS websocket server.
@@ -554,7 +549,7 @@ namespace ObsStrawket {
         }
       }
       finally {
-        _connectSemaphore.Release();
+        _ = _connectSemaphore.Release();
       }
     }
 
@@ -574,8 +569,9 @@ namespace ObsStrawket {
     /// <param name="request">Request data.</param>
     /// <param name="cancellation">Token for cancellation</param>
     /// <returns>Response from websocket server.</returns>
-    public Task<IRequestResponse> RequestAsync(IRequest request, CancellationToken cancellation = default)
-      => _clientSocket.RequestAsync(request, cancellation);
+    public Task<IRequestResponse> RequestAsync(IRequest request, CancellationToken cancellation = default) {
+      return _clientSocket.RequestAsync(request, cancellation);
+    }
 
     /// <summary>
     /// Batch request method. It can send <see cref="RequestBatch"/>.
@@ -584,8 +580,9 @@ namespace ObsStrawket {
     /// <param name="cancellation">Token for cancellation.</param>
     /// <returns>Response from websocket server.</returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public Task<IRequestBatchResponse> RequestAsync(IRequestBatch batchRequest, CancellationToken cancellation = default)
-      => _clientSocket.RequestAsync(batchRequest, cancellation);
+    public Task<IRequestBatchResponse> RequestAsync(IRequestBatch batchRequest, CancellationToken cancellation = default) {
+      return _clientSocket.RequestAsync(batchRequest, cancellation);
+    }
 
     /// <summary>
     /// Dispose this forever.
@@ -2663,6 +2660,8 @@ namespace ObsStrawket {
       case CanvasNameChanged ev:
         CanvasNameChanged(ev);
         break;
+      default:
+        break;
       }
     }
 
@@ -2679,6 +2678,8 @@ namespace ObsStrawket {
 
       case VendorEvent vendor:
         VendorEvent(vendor);
+        break;
+      default:
         break;
       }
     }
@@ -2709,6 +2710,8 @@ namespace ObsStrawket {
       case ProfileListChanged ev:
         ProfileListChanged(ev);
         break;
+      default:
+        break;
       }
     }
 
@@ -2737,6 +2740,8 @@ namespace ObsStrawket {
 
       case SceneListChanged ev:
         SceneListChanged(ev);
+        break;
+      default:
         break;
       }
     }
@@ -2791,6 +2796,8 @@ namespace ObsStrawket {
       case InputVolumeMeters ev:
         InputVolumeMeters(ev);
         break;
+      default:
+        break;
       }
     }
 
@@ -2816,6 +2823,8 @@ namespace ObsStrawket {
       case SceneTransitionVideoEnded ev:
         SceneTransitionVideoEnded(ev);
         break;
+      default:
+        break;
       }
     }
 
@@ -2840,6 +2849,8 @@ namespace ObsStrawket {
 
       case SourceFilterEnableStateChanged ev:
         SourceFilterEnableStateChanged(ev);
+        break;
+      default:
         break;
       }
     }
@@ -2874,6 +2885,8 @@ namespace ObsStrawket {
       case SceneItemTransformChanged ev:
         SceneItemTransformChanged(ev);
         break;
+      default:
+        break;
       }
     }
 
@@ -2903,6 +2916,8 @@ namespace ObsStrawket {
       case ReplayBufferSaved ev:
         ReplayBufferSaved(ev);
         break;
+      default:
+        break;
       }
     }
 
@@ -2920,6 +2935,8 @@ namespace ObsStrawket {
       case MediaInputActionTriggered ev:
         MediaInputActionTriggered(ev);
         break;
+      default:
+        break;
       }
     }
 
@@ -2932,6 +2949,8 @@ namespace ObsStrawket {
 
       case ScreenshotSaved ev:
         ScreenshotSaved(ev);
+        break;
+      default:
         break;
       }
     }

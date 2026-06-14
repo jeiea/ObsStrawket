@@ -12,7 +12,7 @@ namespace ObsStrawket.Test {
         async (context, cancellation) => {
           var (webSocketContext, session) =
             await MockServer.HandshakeAsync(context, cancellation).ConfigureAwait(false);
-          await session.SendAsync("""
+          await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
     "eventData": {
