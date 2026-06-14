@@ -9,17 +9,12 @@ namespace ObsStrawket.DataTypes {
   /// Sent to: Identified client which made the request<br />
   /// Description: obs-websocket is responding to a request coming from a client.
   /// </summary>
-  public interface IRequestResponse : IOpCodeMessage {
+  public interface IRequestResponse : IHasRequestId {
 
     /// <summary>
-    /// Same as the request's one.
+    /// The string identifying request type.
     /// </summary>
     string RequestType { get; }
-
-    /// <summary>
-    /// Same as the request's one.
-    /// </summary>
-    string RequestId { get; }
 
     /// <summary>
     /// Result of the request processing.

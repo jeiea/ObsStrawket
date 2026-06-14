@@ -2,23 +2,26 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace ObsStrawket.DataTypes {
+  /// <summary>
+  /// An internal interface for treating regular requests and batch requests as equivalent.
+  /// </summary>
+  public interface IHasRequestId : IOpCodeMessage {
+    /// <summary>
+    /// Unique identifier for response matching.
+    /// </summary>
+    string RequestId { get; set; }
+  }
 
   /// <summary>
   /// Sent from: Identified client<br />
   /// Sent to: obs-websocket<br />
   /// Description: Client is making a request to obs-websocket.Eg get current scene, create source.
   /// </summary>
-  public interface IRequest : IOpCodeMessage {
-
+  public interface IRequest : IHasRequestId {
     /// <summary>
     /// The string identifying request type.
     /// </summary>
     string RequestType { get; }
-
-    /// <summary>
-    /// Unique identifier for response matching.
-    /// </summary>
-    string RequestId { get; set; }
   }
 
   /// <summary>

@@ -18,8 +18,7 @@ namespace ObsStrawket {
   /// </summary>
   public class ClientSocket : IDisposable {
     private const int _supportedRpcVersion = 1;
-    private readonly ConcurrentDictionary<string, TaskCompletionSource<IRequestResponse>> _requests = new();
-    private readonly ConcurrentDictionary<string, TaskCompletionSource<IRequestBatchResponse>> _batchRequests = new();
+    private readonly ConcurrentDictionary<string, TaskCompletionSource<IHasRequestId>> _pendingRequests = new();
     private readonly SemaphoreSlim _connectSemaphore = new(1);
     private ClientWebSocket _clientWebSocket = new();
     private CancellationTokenSource? _cancellation;
@@ -140,27 +139,8 @@ namespace ObsStrawket {
     /// <param name="cancellation">Token for cancellation</param>
     /// <returns>Response from websocket server.</returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public async Task<IRequestResponse> RequestAsync(IRequest request, CancellationToken cancellation = default) {
-      if (!IsConnected) {
-        throw new InvalidOperationException("WebSocket is not connected");
-      }
-
-      using var source = LinkInstanceCancellation(cancellation);
-      var token = source.Token;
-      token.ThrowIfCancellationRequested();
-
-      string guid = $"{Guid.NewGuid()}";
-      request.RequestId = guid;
-      Emit(new PipelineTrace(PipelineLevel.Info, $"RequestAsync {request.GetType().Name} start."));
-
-      var waiter = new TaskCompletionSource<IRequestResponse>();
-      _requests[guid] = waiter;
-
-      await _sender.SendAsync(request, token).ConfigureAwait(false);
-      var response = await waiter.Task.ConfigureAwait(false);
-
-      Emit(new PipelineTrace(PipelineLevel.Info, $"RequestAsync {request.GetType().Name} finished."));
-      return response;
+    public Task<IRequestResponse> RequestAsync(IRequest request, CancellationToken cancellation = default) {
+      return RequestAsync<IRequestResponse>(request, cancellation);
     }
 
     /// <summary>
@@ -170,27 +150,58 @@ namespace ObsStrawket {
     /// <param name="cancellation">Token for cancellation.</param>
     /// <returns>Response from websocket server.</returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public async Task<IRequestBatchResponse> RequestAsync(IRequestBatch batchRequest, CancellationToken cancellation = default) {
+    public Task<IRequestBatchResponse> RequestAsync(IRequestBatch batchRequest, CancellationToken cancellation = default) {
+      return RequestAsync<IRequestBatchResponse>(batchRequest, cancellation);
+    }
+
+    private async Task<TResponse> RequestAsync<TResponse>(
+      IHasRequestId request,
+      CancellationToken cancellation
+    ) where TResponse : class, IHasRequestId {
       if (!IsConnected) {
         throw new InvalidOperationException("WebSocket is not connected");
       }
 
-      using var source = LinkInstanceCancellation(cancellation);
-      var token = source.Token;
-      token.ThrowIfCancellationRequested();
+      using var operationCancellation = LinkInstanceCancellation(cancellation);
+      operationCancellation.Token.ThrowIfCancellationRequested();
+      request.RequestId = $"{Guid.NewGuid()}";
+      string traceName = request is IRequestBatch ? "batch" : request.GetType().Name;
+      Emit(new PipelineTrace(PipelineLevel.Info, $"RequestAsync {traceName} start."));
 
-      string guid = $"{Guid.NewGuid()}";
-      batchRequest.RequestId = guid;
-      Emit(new PipelineTrace(PipelineLevel.Info, "RequestAsync batch start."));
+      var waiter = new TaskCompletionSource<IHasRequestId>(
+        TaskCreationOptions.RunContinuationsAsynchronously
+      );
+      if (!_pendingRequests.TryAdd(request.RequestId, waiter)) {
+        throw new InvalidOperationException($"Duplicate request id: {request.RequestId}");
+      }
 
-      var waiter = new TaskCompletionSource<IRequestBatchResponse>();
-      _batchRequests[guid] = waiter;
+      using var registration = cancellation.Register(() => {
+        _ = TryCompletePendingRequest(
+          request.RequestId,
+          pendingRequest => pendingRequest.TrySetCanceled(cancellation)
+        );
+      });
 
-      await _sender.SendAsync(batchRequest, token).ConfigureAwait(false);
-      var response = await waiter.Task.ConfigureAwait(false);
-
-      Emit(new PipelineTrace(PipelineLevel.Info, "RequestAsync batch finished."));
-      return response;
+      try {
+        try {
+          await _sender.SendAsync(request, operationCancellation.Token).ConfigureAwait(false);
+        }
+        catch (Exception exception) {
+          _ = TryCompletePendingRequest(
+            request.RequestId,
+            pendingRequest => pendingRequest.TrySetException(exception)
+          );
+        }
+        var response = await waiter.Task.ConfigureAwait(false);
+        Emit(new PipelineTrace(PipelineLevel.Info, $"RequestAsync {traceName} finished."));
+        return response as TResponse
+          ?? throw new UnexpectedResponseException(
+            $"Expected {typeof(TResponse).Name}, but received {response.GetType().Name}."
+          );
+      }
+      finally {
+        _ = _pendingRequests.TryRemove(request.RequestId, out _);
+      }
     }
 
     /// <summary>
@@ -315,29 +326,20 @@ namespace ObsStrawket {
         await events.WriteAsync(ev, token).ConfigureAwait(false);
         break;
 
-      case IRequestResponse response:
+      case IHasRequestId response:
         if (response is RawRequestResponse rawResponse && PipelineEvent != null) {
           Emit(new RawResponseReceived(JsonSerializer.Serialize(rawResponse)));
         }
-        if (_requests.TryRemove(response.RequestId, out var request)) {
-          if (response.RequestStatus.Result) {
-            request.SetResult(response);
-          }
-          else {
-            request.SetException(new FailureResponseException(response));
-          }
-        }
-        else {
-          Emit(new OrphanResponse(response.RequestId));
-        }
-        break;
-
-      case IRequestBatchResponse batchResponse:
-        if (_batchRequests.TryRemove(batchResponse.RequestId, out var batchRequest)) {
-          batchRequest.SetResult(batchResponse);
-        }
-        else {
-          Emit(new OrphanBatchResponse(batchResponse.RequestId));
+        bool responseMatched = TryCompletePendingRequest(
+          response.RequestId,
+          request => response is IRequestResponse { RequestStatus.Result: false } failed
+            ? request.TrySetException(new FailureResponseException(failed))
+            : request.TrySetResult(response)
+        );
+        if (!responseMatched) {
+          Emit(response is IRequestBatchResponse
+            ? new OrphanBatchResponse(response.RequestId)
+            : new OrphanResponse(response.RequestId));
         }
         break;
 
@@ -354,27 +356,29 @@ namespace ObsStrawket {
       _cancellation?.Dispose();
       _cancellation = null;
 
-      if (exception != null) {
-        foreach (var request in _requests.Values) {
-          _ = request.TrySetException(exception);
-        }
-        foreach (var request in _batchRequests.Values) {
-          _ = request.TrySetException(exception);
-        }
-      }
-      else {
-        foreach (var request in _requests.Values) {
-          _ = request.TrySetCanceled();
-        }
-        foreach (var request in _batchRequests.Values) {
-          _ = request.TrySetCanceled();
-        }
-      }
-      _requests.Clear();
-      _batchRequests.Clear();
+      CompletePendingRequests(exception);
       _ = _events.Writer.TryComplete(exception);
 
       _clientWebSocket.Dispose();
+    }
+
+    private bool TryCompletePendingRequest(
+      string requestId,
+      Func<TaskCompletionSource<IHasRequestId>, bool> complete
+    ) {
+      return _pendingRequests.TryRemove(requestId, out var pendingRequest)
+        && complete(pendingRequest);
+    }
+
+    private void CompletePendingRequests(Exception? exception) {
+      foreach (string requestId in _pendingRequests.Keys) {
+        _ = TryCompletePendingRequest(
+          requestId,
+          request => exception == null
+            ? request.TrySetCanceled()
+            : request.TrySetException(exception)
+        );
+      }
     }
 
     private string? GetCloseMessage() {

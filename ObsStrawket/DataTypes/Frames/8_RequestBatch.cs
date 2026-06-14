@@ -11,12 +11,7 @@ namespace ObsStrawket.DataTypes {
   /// Description: Client is making a batch of requests for obs-websocket.
   /// Requests are processed serially (in order) by the server.
   /// </summary>
-  public interface IRequestBatch : IOpCodeMessage {
-
-    /// <summary>
-    /// Unique identifier for response matching.
-    /// </summary>
-    string RequestId { get; set; }
+  public interface IRequestBatch : IHasRequestId {
 
     /// <summary>
     /// When <c>haltOnFailure</c> is true, the processing of requests will be halted on first failure.

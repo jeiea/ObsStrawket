@@ -9,12 +9,7 @@ namespace ObsStrawket.DataTypes {
   /// Sent to: Identified client which made the request<br />
   /// Description: obs-websocket is responding to a request batch coming from the client.
   /// </summary>
-  public interface IRequestBatchResponse : IOpCodeMessage {
-
-    /// <summary>
-    /// Unique identifier for response matching.
-    /// </summary>
-    string RequestId { get; set; }
+  public interface IRequestBatchResponse : IHasRequestId {
 
     /// <summary>
     /// Responses in same order.
