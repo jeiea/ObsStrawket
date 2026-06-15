@@ -26,12 +26,16 @@ namespace ObsStrawket.Test.Utilities {
 
     public bool IsAvailable => Uri != null;
     public bool HasExited => _process?.HasExited == true;
+    public int? ExitCode => _process is { HasExited: true } process
+      ? process.ExitCode
+      : null;
     public static bool HasVendorPlugin => GetVendorPluginRoot() != null;
     public Uri? Uri { get; private set; }
     public string Password { get; } = MockServer.Password;
 
     private string? _root;
     private Process? _process;
+    private string? _termination;
 
     public async ValueTask InitializeAsync() {
       if (FindInstalledObs() is not string installation) {
@@ -40,6 +44,7 @@ namespace ObsStrawket.Test.Utilities {
 
       int port = GetFreeTcpPort();
       _root = Path.Combine(Path.GetTempPath(), "obsstrawket-test", $"{Guid.NewGuid():N}");
+      _termination = null;
       SeedPortableRoot(_root, installation, port);
       string? pluginRoot = GetVendorPluginRoot();
 
@@ -78,7 +83,10 @@ namespace ObsStrawket.Test.Utilities {
       string line = $"{DateTimeOffset.UtcNow:O} {message}";
       TestContext.Current.TestOutputHelper?.WriteLine(line);
       if (_root != null) {
-        File.AppendAllText(Path.Combine(_root, "test-operations.log"), line + Environment.NewLine);
+        File.AppendAllText(
+          Path.Combine(_root, "test-operations.log"),
+          line + Environment.NewLine
+        );
       }
     }
 
@@ -96,28 +104,55 @@ namespace ObsStrawket.Test.Utilities {
     }
 
     private async Task StopAsync(bool force) {
-      string processState = "not started";
+      int? exitCode = null;
       if (_process is { } process) {
         if (!process.HasExited) {
           if (force) {
-            process.Kill(entireProcessTree: true);
-            _ = process.WaitForExit(10_000);
+            if (ReadLatestCrashReport() != null) {
+              if (await DismissCrashDialogAndWaitForExitAsync(
+                TimeSpan.FromSeconds(2)
+              ).ConfigureAwait(false)) {
+                _termination = "crash-dialog-dismissed";
+              }
+            }
+            if (!process.HasExited) {
+              process.Kill(entireProcessTree: true);
+              _ = process.WaitForExit(10_000);
+              _termination = "forced-kill";
+            }
           }
           else {
             _ = process.CloseMainWindow();
             if (!process.WaitForExit(10_000)) {
               process.Kill(entireProcessTree: true);
               _ = process.WaitForExit(10_000);
+              _termination = "forced-kill";
+            }
+            else {
+              _termination = "normal-exit";
             }
           }
         }
-        processState = $"exited with code {FormatExitCode(process.ExitCode)}";
+        _termination ??= ReadLatestCrashReport() == null
+          ? "normal-exit"
+          : "crash-exit";
+        exitCode = process.ExitCode;
         process.Dispose();
         _process = null;
       }
       if (_root != null) {
         try {
-          ArchiveDiagnostics(_root, processState);
+          string? artifacts = Environment.GetEnvironmentVariable(
+            "OBSSTRAWKET_TEST_ARTIFACTS"
+          );
+          if (artifacts != null) {
+            ArchiveDiagnostics(
+              _root,
+              artifacts,
+              _termination ?? "not-started",
+              exitCode
+            );
+          }
         }
         catch (IOException ex) {
           TestContext.Current.TestOutputHelper?.WriteLine($"Failed to archive OBS diagnostics: {ex.Message}");
@@ -128,6 +163,7 @@ namespace ObsStrawket.Test.Utilities {
         await DeletePortableRootAsync(_root).ConfigureAwait(false);
         _root = null;
       }
+      _termination = null;
       Uri = null;
     }
 
@@ -282,7 +318,36 @@ namespace ObsStrawket.Test.Utilities {
       }
     }
 
-    private async Task<HashSet<nint>> WaitForNewWindowsAsync(string requestName, HashSet<nint> existing) {
+    public async Task<string?> WaitForCrashAsync(
+      TimeSpan timeout,
+      CancellationToken cancellation = default
+    ) {
+      var deadline = DateTime.UtcNow + timeout;
+      while (DateTime.UtcNow < deadline) {
+        if (ReadLatestCrashReport() is string report) {
+          return !await DismissCrashDialogAndWaitForExitAsync(
+            deadline - DateTime.UtcNow,
+            cancellation
+          ).ConfigureAwait(false)
+            ? throw new TimeoutException(
+              "OBS wrote a crash report but did not exit after dismissing its crash dialog."
+            )
+            : SetCrashTermination(report);
+        }
+        await Task.Delay(100, cancellation).ConfigureAwait(false);
+      }
+      return null;
+    }
+
+    private string SetCrashTermination(string report) {
+      _termination = "crash-dialog-dismissed";
+      return report;
+    }
+
+    private async Task<HashSet<nint>> WaitForNewWindowsAsync(
+      string requestName,
+      HashSet<nint> existing
+    ) {
       var deadline = DateTime.UtcNow + _windowTimeout;
       while (DateTime.UtcNow < deadline) {
         var opened = GetWindows(visibleOnly: true);
@@ -292,7 +357,8 @@ namespace ObsStrawket.Test.Utilities {
         }
         await Task.Delay(100).ConfigureAwait(false);
       }
-      throw new TimeoutException($"{requestName} did not open an OBS window within {_windowTimeout}.");
+      throw new TimeoutException(
+        $"{requestName} did not open a new OBS window within {_windowTimeout}.");
     }
 
     private HashSet<nint> GetWindows(bool visibleOnly) {
@@ -309,13 +375,22 @@ namespace ObsStrawket.Test.Utilities {
     }
 
     private string GetLogTail() {
+      if (_root == null) {
+        return "";
+      }
       try {
-        string logs = Path.Combine(_root!, "config", "obs-studio", "logs");
+        string logs = Path.Combine(_root, "config", "obs-studio", "logs");
         var newest = new DirectoryInfo(logs).GetFiles().MaxBy(static file => file.LastWriteTimeUtc);
         if (newest == null) {
           return "";
         }
-        using var reader = new StreamReader(newest.OpenRead());
+        using var stream = new FileStream(
+          newest.FullName,
+          FileMode.Open,
+          FileAccess.Read,
+          FileShare.ReadWrite | FileShare.Delete
+        );
+        using var reader = new StreamReader(stream);
         string[] lines = reader.ReadToEnd().Split('\n');
         return $"\nOBS log tail:\n{string.Join('\n', lines[Math.Max(0, lines.Length - 20)..])}";
       }
@@ -327,17 +402,100 @@ namespace ObsStrawket.Test.Utilities {
       }
     }
 
-    private static void ArchiveDiagnostics(string root, string processState) {
-      string? artifacts = Environment.GetEnvironmentVariable("OBSSTRAWKET_TEST_ARTIFACTS");
-      if (artifacts == null) {
-        return;
+    private string? ReadLatestCrashReport() {
+      if (_root == null) {
+        return null;
       }
+      try {
+        string crashes = Path.Combine(_root, "config", "obs-studio", "crashes");
+        var newest = new DirectoryInfo(crashes)
+          .GetFiles("Crash *.txt")
+          .MaxBy(static file => file.LastWriteTimeUtc);
+        if (newest == null) {
+          return null;
+        }
+        using var stream = new FileStream(
+          newest.FullName,
+          FileMode.Open,
+          FileAccess.Read,
+          FileShare.ReadWrite | FileShare.Delete
+        );
+        using var reader = new StreamReader(stream);
+        return reader.ReadToEnd();
+      }
+      catch (DirectoryNotFoundException) {
+        return null;
+      }
+      catch (IOException) {
+        return null;
+      }
+      catch (UnauthorizedAccessException) {
+        return null;
+      }
+    }
 
+    private async Task<bool> DismissCrashDialogAndWaitForExitAsync(
+      TimeSpan timeout,
+      CancellationToken cancellation = default
+    ) {
+      if (_process is not { } process) {
+        return false;
+      }
+      if (process.HasExited) {
+        return true;
+      }
+      var deadline = DateTime.UtcNow + timeout;
+      while (DateTime.UtcNow < deadline) {
+        _ = DismissCrashDialog();
+        if (process.HasExited) {
+          return true;
+        }
+        await Task.Delay(100, cancellation).ConfigureAwait(false);
+      }
+      return process.HasExited;
+    }
+
+    private bool DismissCrashDialog() {
+      if (_process is not { HasExited: false } process) {
+        return false;
+      }
+      bool dismissed = false;
+      uint processId = checked((uint)process.Id);
+      _ = EnumWindows((window, lParam) => {
+        _ = GetWindowThreadProcessId(window, out uint windowProcessId);
+        if (windowProcessId != processId || GetWindowTitle(window) != "OBS has crashed!") {
+          return true;
+        }
+        nint noButton = GetDlgItem(window, IdNo);
+        dismissed |= noButton != 0 && PostMessage(noButton, BmClick, 0, 0);
+        return true;
+      }, 0);
+      return dismissed;
+    }
+
+    private static string GetWindowTitle(nint window) {
+      int length = GetWindowTextLength(window);
+      if (length == 0) {
+        return "";
+      }
+      Span<char> title = stackalloc char[length + 1];
+      int copied = GetWindowText(window, title, title.Length);
+      return new string(title[..copied]);
+    }
+
+    internal static void ArchiveDiagnostics(
+      string root,
+      string artifacts,
+      string termination,
+      int? exitCode
+    ) {
       string destination = Path.Combine(artifacts, Path.GetFileName(root));
       _ = Directory.CreateDirectory(destination);
       File.WriteAllText(
         Path.Combine(destination, "process.txt"),
-        $"{DateTimeOffset.UtcNow:O} {processState}{Environment.NewLine}"
+        $"timestamp={DateTimeOffset.UtcNow:O}{Environment.NewLine}"
+          + $"termination={termination}{Environment.NewLine}"
+          + $"exitCode={FormatExitCode(exitCode)}{Environment.NewLine}"
       );
       CopyFileIfExists(
         Path.Combine(root, "test-operations.log"),
@@ -372,8 +530,10 @@ namespace ObsStrawket.Test.Utilities {
       }
     }
 
-    private static string FormatExitCode(int exitCode) {
-      return $"{exitCode} (0x{unchecked((uint)exitCode):X8})";
+    private static string FormatExitCode(int? exitCode) {
+      return exitCode is int value
+        ? $"{value} (0x{unchecked((uint)value):X8})"
+        : "n/a";
     }
 
     private static async Task DeletePortableRootAsync(string root) {
@@ -407,6 +567,8 @@ namespace ObsStrawket.Test.Utilities {
     }
 
     private delegate bool EnumWindowsCallback(nint window, nint parameter);
+    private const uint BmClick = 0x00F5;
+    private const int IdNo = 7;
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -418,6 +580,33 @@ namespace ObsStrawket.Test.Utilities {
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool IsWindowVisible(nint window);
+
+    [LibraryImport("user32.dll")]
+    private static partial nint GetDlgItem(nint dialog, int itemId);
+
+    [LibraryImport("user32.dll", EntryPoint = "GetWindowTextLengthW")]
+    private static partial int GetWindowTextLength(nint window);
+
+    [LibraryImport(
+      "user32.dll",
+      EntryPoint = "GetWindowTextW",
+      StringMarshalling = StringMarshalling.Utf16
+    )]
+    private static partial int GetWindowText(
+      nint window,
+      Span<char> text,
+      int maxCount
+    );
+
+    [LibraryImport("user32.dll", EntryPoint = "PostMessageW")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool PostMessage(
+      nint window,
+      uint message,
+      nuint wParam,
+      nint lParam
+    );
+
   }
 
   [CollectionDefinition("IsolatedObs")]

