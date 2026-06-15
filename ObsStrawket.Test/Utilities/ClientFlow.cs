@@ -138,7 +138,7 @@ namespace ObsStrawket.Test.Utilities {
 
     public static async Task RequestBadAsync(Uri uri, ObsClientSocket? socket = null, CancellationToken cancellation = default) {
       var client = socket ?? GetDebugClient();
-      await client.ConnectAsync(uri, MockServer.Password, cancellation: cancellation).ConfigureAwait(false);
+      _ = await client.ConnectAsync(uri, MockServer.Password, cancellation: cancellation).ConfigureAwait(false);
 
       var taskSource = new TaskCompletionSource<object?>();
       client.RecordStateChanged += (ev) => {
@@ -152,7 +152,7 @@ namespace ObsStrawket.Test.Utilities {
         var response = await client.StopRecordAsync(cancellation).ConfigureAwait(false);
         Assert.Fail("Unexpected response");
       }
-      catch (FailureResponseException ex) {
+      catch (ObsRequestException ex) {
         Debug.WriteLine(ex);
       }
       finally {
@@ -177,7 +177,7 @@ namespace ObsStrawket.Test.Utilities {
       client.StudioModeStateChanged += QueueEvent;
       client.Disconnected += TryComplete;
 
-      await client.ConnectAsync(uri, MockServer.Password, cancellation: cancellation).ConfigureAwait(false);
+      _ = await client.ConnectAsync(uri, MockServer.Password, cancellation: cancellation).ConfigureAwait(false);
 
       await new GetVersionFlow().RequestAsync(client).ConfigureAwait(false);
 

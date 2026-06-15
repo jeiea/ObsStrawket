@@ -21,7 +21,7 @@ namespace ObsStrawket.Test.Specs {
 
     public async Task RequestAsync(ObsClientSocket client) {
       if (_expectUnsupported) {
-        _ = await Assert.ThrowsAsync<FailureResponseException>(
+        _ = await Assert.ThrowsAsync<ObsRequestException>(
           () => SetSettingsAsync(client)
         ).ConfigureAwait(false);
         return;

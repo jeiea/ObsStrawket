@@ -24,7 +24,7 @@ namespace ObsStrawket.Test {
 
       try {
         var client = ClientFlow.GetDebugClient(useChannel: true);
-        await client.ConnectAsync(server.Uri, MockServer.Password, cancellation: cancellation.Token);
+        _ = await client.ConnectAsync(server.Uri, MockServer.Password, cancellation: cancellation.Token);
 
         async Task<IOpCodeMessage> GetStudioModeEnabledAsync() {
           var result = await client.GetStudioModeEnabledAsync(cancellation.Token).ConfigureAwait(false);

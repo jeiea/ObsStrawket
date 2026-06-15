@@ -30,10 +30,20 @@ namespace ObsStrawket {
     }
 
     private static IOpCodeMessage DeserializeAsync(MemoryStream ms) {
-      var span = new ReadOnlySpan<byte>(ms.GetBuffer(), 0, (int)ms.Length);
-      var result = JsonSerializer.Deserialize<IOpCodeMessage>(span, (JsonSerializerOptions?)null) ?? throw new InvalidOperationException("Deserialization failed");
-      ms.Dispose();
-      return result;
+      try {
+        var span = new ReadOnlySpan<byte>(ms.GetBuffer(), 0, (int)ms.Length);
+        return JsonSerializer.Deserialize<IOpCodeMessage>(span, (JsonSerializerOptions?)null)
+          ?? throw new ObsProtocolException("OBS message deserialization returned null.");
+      }
+      catch (ObsProtocolException) {
+        throw;
+      }
+      catch (Exception exception) when (exception is JsonException or NotSupportedException or InvalidOperationException) {
+        throw new ObsProtocolException("OBS sent a malformed protocol message.", exception);
+      }
+      finally {
+        ms.Dispose();
+      }
     }
 
     private async Task LoopWebSocketReceiveAsync(CancellationToken token = default) {
@@ -49,8 +59,12 @@ namespace ObsStrawket {
           if (_socket.State == WebSocketState.CloseReceived && readResult.MessageType == WebSocketMessageType.Close) {
             _emit?.Invoke(new PipelineTrace(PipelineLevel.Debug, "Exit by websocket close"));
             _ = (int?)_socket.CloseStatus switch {
-              (int?)WebSocketCloseCode.AuthenticationFailed => _messages.Writer.TryComplete(new AuthenticationFailureException()),
-              _ => _messages.Writer.TryComplete(new WebsocketCloseReceivedException(code: (int?)_socket.CloseStatus)),
+              (int?)WebSocketCloseCode.AuthenticationFailed => _messages.Writer.TryComplete(
+                new ObsAuthenticationException(_socket.CloseStatusDescription ?? "OBS authentication failed.")),
+              _ => _messages.Writer.TryComplete(new ObsConnectionClosedException(
+                "OBS closed the websocket connection.",
+                (int?)_socket.CloseStatus,
+                _socket.CloseStatusDescription)),
             };
             break;
           }
@@ -68,9 +82,15 @@ namespace ObsStrawket {
         _ = _messages.Writer.TryComplete();
         _emit?.Invoke(new PipelineTrace(PipelineLevel.Debug, $"Complete. IsCancellationRequested: {token.IsCancellationRequested}"));
       }
+      catch (OperationCanceledException) when (token.IsCancellationRequested) {
+        _ = _messages.Writer.TryComplete();
+      }
       catch (Exception exception) {
+        var failure = exception is ObsWebSocketException
+          ? exception
+          : new ObsConnectionException("Failed to receive an OBS websocket message.", exception);
         _emit?.Invoke(new PipelineTrace(PipelineLevel.Debug, $"Complete with exception: {exception.Message}", exception));
-        _ = _messages.Writer.TryComplete(exception);
+        _ = _messages.Writer.TryComplete(failure);
       }
     }
   }

@@ -259,7 +259,7 @@ namespace ObsStrawket.Test.Utilities {
       var token = timeout.Token;
       using var client = new ObsClientSocket();
       try {
-        await client.ConnectAsync(uri, Password, cancellation: token).ConfigureAwait(false);
+        _ = await client.ConnectAsync(uri, Password, cancellation: token).ConfigureAwait(false);
         while (true) {
           if (_process!.HasExited) {
             throw new InvalidOperationException($"OBS exited with code {_process.ExitCode}.{GetLogTail()}");
@@ -268,7 +268,7 @@ namespace ObsStrawket.Test.Utilities {
             _ = await client.GetSceneListAsync(cancellation: token).ConfigureAwait(false);
             return;
           }
-          catch (FailureResponseException ex)
+          catch (ObsRequestException ex)
               when (ex.Response.RequestStatus.Code == RequestStatus.NotReady) {
             await Task.Delay(500, token).ConfigureAwait(false);
           }

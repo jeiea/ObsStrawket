@@ -69,7 +69,7 @@ namespace ObsStrawket.Test {
         tasks.Add(Task.Run(async () => {
           try {
             await Task.Delay(connectDelayMs).ConfigureAwait(false);
-            await client.ConnectAsync(server.Uri, MockServer.Password).ConfigureAwait(false);
+            _ = await client.ConnectAsync(server.Uri, MockServer.Password).ConfigureAwait(false);
           }
           catch (Exception ex) {
             Debug.WriteLine(ex);

@@ -30,11 +30,12 @@ namespace ObsStrawket.Test {
         TestContext.Current.CancellationToken
       );
       var client = ClientFlow.GetDebugClient(useChannel: true);
-      await client.ConnectAsync(
+      bool connected = await client.ConnectAsync(
         server.Uri,
         MockServer.Password,
         cancellation: TestContext.Current.CancellationToken
       );
+      Assert.True(connected);
 
       try {
         var exception = await Assert.ThrowsAsync<TimeoutException>(

@@ -24,7 +24,7 @@ namespace ObsStrawket.Test {
         }
       };
       var client = ClientFlow.GetDebugClient(socket);
-      await client.ConnectAsync(server.Uri, MockServer.Password, cancellation: cancellation.Token);
+      _ = await client.ConnectAsync(server.Uri, MockServer.Password, cancellation: cancellation.Token);
 
       var recordTasks = new List<Task<GetRecordDirectoryResponse>>();
       for (int i = 0; i < 30; i++) {
@@ -59,7 +59,10 @@ namespace ObsStrawket.Test {
          */
         Debug.WriteLine($"Expected exception: {e.Message}");
       }
-      catch (QueueCancelledException e) {
+      catch (ObsConnectionException e) {
+        Debug.WriteLine($"Expected exception: {e.Message}");
+      }
+      catch (ObsProtocolException e) {
         Debug.WriteLine($"Expected exception: {e.Message}");
       }
     }

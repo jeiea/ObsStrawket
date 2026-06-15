@@ -68,7 +68,10 @@ namespace ObsStrawket {
     /// <param name="password">Password for handshake.</param>
     /// <param name="events">Event categories to subscribe.</param>
     /// <param name="cancellation">Token for cancellation.</param>
-    /// <returns><see langword="true"/> when connected; <see langword="false"/> when authentication fails.</returns>
+    /// <returns><see langword="true"/> when connected; <see langword="false"/> when OBS rejects authentication.</returns>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsConnectionException">The connection cannot be established.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid handshake response.</exception>
     public async Task<bool> ConnectAsync(
       Uri? uri = null,
       string? password = null,
@@ -103,7 +106,8 @@ namespace ObsStrawket {
 
         _receiver.Run(_cancellation.Token);
         _sender.Start();
-        var hello = (Hello)await ReceiveMessageAsync(messages, cancellation).ConfigureAwait(false) ?? throw new ObsWebSocketException(GetCloseMessage() ?? "Handshake failure");
+        var hello = await ReceiveMessageAsync(messages, cancellation).ConfigureAwait(false) as Hello
+          ?? throw new ObsProtocolException("OBS did not send a Hello message during handshake.");
         if (hello.RpcVersion > _supportedRpcVersion) {
           Emit(new UnsupportedRpcVersion(hello.RpcVersion, _supportedRpcVersion));
         }
@@ -117,7 +121,7 @@ namespace ObsStrawket {
 
         var identified = await ReceiveMessageAsync(messages, cancellation).ConfigureAwait(false);
         if (identified is not Identified) {
-          throw new UnexpectedResponseException($"Identified message expected, but received {identified}");
+          throw new ObsProtocolException($"Identified message expected, but received {identified}.");
         }
 
         _ = LoopReceiveAsync(messages, _cancellation.Token);
@@ -125,13 +129,20 @@ namespace ObsStrawket {
         Emit(new PipelineTrace(PipelineLevel.Info, $"ConnectAsync to {url} complete."));
         return true;
       }
-      catch (ChannelClosedException closed) when (closed.InnerException is AuthenticationFailureException) {
+      catch (Exception exception) when (GetChannelFailure(exception) is ObsAuthenticationException) {
         Reset();
         return false;
       }
-      catch (AuthenticationFailureException) {
+      catch (OperationCanceledException) when (cancellation.IsCancellationRequested) {
         Reset();
-        return false;
+        throw;
+      }
+      catch (Exception exception) {
+        var failure = NormalizeConnectionFailure(
+          exception,
+          "Failed to connect to the OBS websocket server.");
+        Reset(eventException: failure);
+        throw failure;
       }
       finally {
         _ = _connectSemaphore.Release();
@@ -144,7 +155,12 @@ namespace ObsStrawket {
     /// <param name="request">Request data.</param>
     /// <param name="cancellation">Token for cancellation</param>
     /// <returns>Response from websocket server.</returns>
-    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="ArgumentNullException"><paramref name="request"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public Task<IRequestResponse> RequestAsync(IRequest request, CancellationToken cancellation = default) {
       return RequestAsync<IRequestResponse>(request, cancellation);
     }
@@ -155,7 +171,11 @@ namespace ObsStrawket {
     /// <param name="batchRequest">Requests to batch.</param>
     /// <param name="cancellation">Token for cancellation.</param>
     /// <returns>Response from websocket server.</returns>
-    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="ArgumentNullException"><paramref name="batchRequest"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public Task<IRequestBatchResponse> RequestAsync(IRequestBatch batchRequest, CancellationToken cancellation = default) {
       return RequestAsync<IRequestBatchResponse>(batchRequest, cancellation);
     }
@@ -164,6 +184,11 @@ namespace ObsStrawket {
       IHasRequestId request,
       CancellationToken cancellation
     ) where TResponse : class, IHasRequestId {
+#pragma warning disable CA1510 // ArgumentNullException.ThrowIfNull is unavailable on netstandard2.0.
+      if (request == null) {
+        throw new ArgumentNullException(nameof(request));
+      }
+#pragma warning restore CA1510
       if (!IsConnected) {
         throw new InvalidOperationException("WebSocket is not connected");
       }
@@ -193,15 +218,22 @@ namespace ObsStrawket {
           await _sender.SendAsync(request, operationCancellation.Token).ConfigureAwait(false);
         }
         catch (Exception exception) {
+          Exception failure = cancellation.IsCancellationRequested
+            ? new OperationCanceledException(cancellation)
+            : NormalizeConnectionFailure(
+              exception,
+              "Failed to send an OBS websocket request.");
           _ = TryCompletePendingRequest(
             request.RequestId,
-            pendingRequest => pendingRequest.TrySetException(exception)
+            pendingRequest => failure is OperationCanceledException
+              ? pendingRequest.TrySetCanceled(cancellation)
+              : pendingRequest.TrySetException(failure)
           );
         }
         var response = await waiter.Task.ConfigureAwait(false);
         Emit(new PipelineTrace(PipelineLevel.Info, $"RequestAsync {traceName} finished."));
         return response as TResponse
-          ?? throw new UnexpectedResponseException(
+          ?? throw new ObsProtocolException(
             $"Expected {typeof(TResponse).Name}, but received {response.GetType().Name}."
           );
       }
@@ -211,7 +243,8 @@ namespace ObsStrawket {
     }
 
     /// <summary>
-    /// Close this connection. Pending requests will be cancelled.
+    /// Close this connection. Pending requests fail with
+    /// <see cref="ObsConnectionClosedException"/>.
     /// </summary>
     public async Task CloseAsync(WebSocketCloseStatus status = WebSocketCloseStatus.NormalClosure, string? description = "Client closed websocket", Exception? exception = null) {
       Emit(new PipelineTrace(PipelineLevel.Info, $"CloseAsync exception: {exception?.Message}"));
@@ -229,7 +262,8 @@ namespace ObsStrawket {
     /// Dispose this forever.
     /// </summary>
     public void Dispose() {
-      Reset(new ObsWebSocketException("Socket disposed"));
+      var exception = new ObsConnectionClosedException("Socket disposed.");
+      Reset(exception, exception);
       _connectSemaphore.Dispose();
       GC.SuppressFinalize(this);
     }
@@ -246,7 +280,7 @@ namespace ObsStrawket {
         return null;
       }
       if (password == null) {
-        throw new AuthenticationFailureException("Password requested.");
+        throw new ObsAuthenticationException("OBS requested a password.");
       }
       string base64Secret = ApplySha256Base64($"{password}{auth.Salt}");
       return ApplySha256Base64($"{base64Secret}{auth.Challenge}");
@@ -285,7 +319,9 @@ namespace ObsStrawket {
       }
       finally {
         // Without this, pending requests outlive the connection and their awaiters hang.
-        Reset(exception);
+        var pendingException = exception
+          ?? new ObsConnectionClosedException(description ?? "Client closed the websocket connection.");
+        Reset(pendingException, exception);
         _isOpen = false;
       }
     }
@@ -312,10 +348,16 @@ namespace ObsStrawket {
         }
         Emit(new PipelineTrace(PipelineLevel.Debug,
           $"Close. webSocket.State: {_clientWebSocket.State}, cancellation: {token.IsCancellationRequested}"));
-        await CloseAsync(exception: new QueueCancelledException("Server closed socket"));
+        if (!token.IsCancellationRequested) {
+          await CloseAsync(exception: new ObsConnectionClosedException(
+            "OBS closed the websocket connection.")).ConfigureAwait(false);
+        }
       }
       catch (Exception exception) {
-        await CloseAsync(exception: new QueueCancelledException(innerException: exception)).ConfigureAwait(false);
+        var failure = NormalizeConnectionFailure(
+          exception,
+          "The OBS websocket connection terminated.");
+        await CloseAsync(exception: failure).ConfigureAwait(false);
         Emit(new PipelineTrace(PipelineLevel.Debug, $"Queue cancelled: {exception.Message}", exception));
       }
       Emit(new PipelineTrace(PipelineLevel.Debug, $"Exit. IsCancellationRequested: {token.IsCancellationRequested}"));
@@ -339,7 +381,7 @@ namespace ObsStrawket {
         bool responseMatched = TryCompletePendingRequest(
           response.RequestId,
           request => response is IRequestResponse { RequestStatus.Result: false } failed
-            ? request.TrySetException(new FailureResponseException(failed))
+            ? request.TrySetException(new ObsRequestException(failed))
             : request.TrySetResult(response)
         );
         if (!responseMatched) {
@@ -355,15 +397,15 @@ namespace ObsStrawket {
       }
     }
 
-    private void Reset(Exception? exception = null) {
+    private void Reset(Exception? pendingException = null, Exception? eventException = null) {
       _sender.Stop();
 
       _cancellation?.Cancel();
       _cancellation?.Dispose();
       _cancellation = null;
 
-      CompletePendingRequests(exception);
-      _ = _events.Writer.TryComplete(exception);
+      CompletePendingRequests(pendingException);
+      _ = _events.Writer.TryComplete(eventException);
 
       _clientWebSocket.Dispose();
     }
@@ -387,8 +429,21 @@ namespace ObsStrawket {
       }
     }
 
-    private string? GetCloseMessage() {
-      return _clientWebSocket.CloseStatus == null ? null : $"{_clientWebSocket.CloseStatus}: {_clientWebSocket.CloseStatusDescription}";
+    private static Exception? GetChannelFailure(Exception exception) {
+      return exception is ChannelClosedException { InnerException: { } inner }
+        ? inner
+        : exception;
+    }
+
+    private static ObsWebSocketException NormalizeConnectionFailure(
+      Exception exception,
+      string message
+    ) {
+      var failure = GetChannelFailure(exception);
+      return failure switch {
+        ObsWebSocketException obsException => obsException,
+        _ => new ObsConnectionException(message, failure),
+      };
     }
 
     private void Emit(PipelineEvent diagnostic) {

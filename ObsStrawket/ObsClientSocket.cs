@@ -511,7 +511,8 @@ namespace ObsStrawket {
     public event Action<Uri> Connected = static delegate { };
 
     /// <summary>
-    /// Fired when it is disconnected to OBS
+    /// Fired when disconnected from OBS. The argument is null after a local graceful close,
+    /// otherwise it is the normalized connection or protocol failure.
     /// </summary>
     public event Action<Exception?> Disconnected = static delegate { };
 
@@ -521,7 +522,9 @@ namespace ObsStrawket {
     public bool IsConnected => _clientSocket.IsConnected;
 
     /// <summary>
-    /// It emits all of received OBS events. It can be used only when <see cref="ObsClientSocket"/> is created with <c>useChannel</c>.
+    /// It emits all received OBS events. It can be used only when <see cref="ObsClientSocket"/>
+    /// is created with <c>useChannel</c>. Abnormal completion throws a
+    /// <see cref="ChannelClosedException"/> whose inner exception contains the normalized cause.
     /// </summary>
     public ChannelReader<IObsEvent> Events => _dispatch != null
           ? throw new InvalidOperationException("Create first ObsClientSocket with useChannel: true")
@@ -534,7 +537,10 @@ namespace ObsStrawket {
     /// <param name="password">Password for handshake.</param>
     /// <param name="events">Event categories to subscribe.</param>
     /// <param name="cancellation">Token for cancellation.</param>
-    /// <returns><see langword="true"/> when connected; <see langword="false"/> when authentication fails.</returns>
+    /// <returns><see langword="true"/> when connected; <see langword="false"/> when OBS rejects authentication.</returns>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsConnectionException">The connection cannot be established.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid handshake response.</exception>
     public async Task<bool> ConnectAsync(
       Uri? uri = null,
       string? password = null,
@@ -544,7 +550,12 @@ namespace ObsStrawket {
       var target = uri ?? ClientSocket.DefaultUri;
       await _connectSemaphore.WaitAsync(cancellation).ConfigureAwait(false);
       try {
-        bool connected = await _clientSocket.ConnectAsync(target, password, events, cancellation).ConfigureAwait(false);
+        bool connected = await _clientSocket.ConnectAsync(
+          target,
+          password,
+          events,
+          cancellation
+        ).ConfigureAwait(false);
         if (connected && _dispatch != null) {
           _dispatch = DispatchEventAsync(_dispatch, _clientSocket.Events, target);
         }
@@ -556,7 +567,8 @@ namespace ObsStrawket {
     }
 
     /// <summary>
-    /// Close this connection. Pending requests will be cancelled.
+    /// Close this connection. Pending requests fail with
+    /// <see cref="ObsConnectionClosedException"/>.
     /// </summary>
     public async Task CloseAsync() {
       await _clientSocket.CloseAsync().ConfigureAwait(false);
@@ -571,6 +583,12 @@ namespace ObsStrawket {
     /// <param name="request">Request data.</param>
     /// <param name="cancellation">Token for cancellation</param>
     /// <returns>Response from websocket server.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="request"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public Task<IRequestResponse> RequestAsync(IRequest request, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(request, cancellation);
     }
@@ -581,7 +599,11 @@ namespace ObsStrawket {
     /// <param name="batchRequest">Requests to batch.</param>
     /// <param name="cancellation">Token for cancellation.</param>
     /// <returns>Response from websocket server.</returns>
-    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="ArgumentNullException"><paramref name="batchRequest"/> is null.</exception>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public Task<IRequestBatchResponse> RequestAsync(IRequestBatch batchRequest, CancellationToken cancellation = default) {
       return _clientSocket.RequestAsync(batchRequest, cancellation);
     }
@@ -616,8 +638,11 @@ namespace ObsStrawket {
         InvokeCloseSafe(null);
       }
       catch (Exception exception) {
-        Emit(new PipelineTrace(PipelineLevel.Debug, $"Terminated with exception: {exception.Message}", exception));
-        InvokeCloseSafe(exception);
+        var failure = exception is ChannelClosedException { InnerException: { } inner }
+          ? inner
+          : exception;
+        Emit(new PipelineTrace(PipelineLevel.Debug, $"Terminated with exception: {failure.Message}", failure));
+        InvokeCloseSafe(failure);
       }
     }
 
@@ -651,6 +676,11 @@ namespace ObsStrawket {
     /// Added in: 5.7.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetCanvasListResponse> GetCanvasListAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetCanvasList() { }, cancellation).ConfigureAwait(false) as GetCanvasListResponse)!;
     }
@@ -661,6 +691,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetVersionResponse> GetVersionAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetVersion() { }, cancellation).ConfigureAwait(false) as GetVersionResponse)!;
     }
@@ -671,6 +706,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetStatsResponse> GetStatsAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetStats() { }, cancellation).ConfigureAwait(false) as GetStatsResponse)!;
     }
@@ -682,6 +722,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="eventData">Data payload to emit to all receivers</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> BroadcastCustomEventAsync(Dictionary<string, JsonElement?> eventData, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new BroadcastCustomEvent() { EventData = eventData }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -698,6 +743,11 @@ namespace ObsStrawket {
     /// <param name="requestType">The request type to call</param>
     /// <param name="requestData">Object containing appropriate request data<br />If null, {}</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<CallVendorRequestResponse> CallVendorRequestAsync(string vendorName, string requestType, Dictionary<string, JsonElement?>? requestData = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new CallVendorRequest() { VendorName = vendorName, VendorRequestType = requestType, RequestData = requestData }, cancellation).ConfigureAwait(false) as CallVendorRequestResponse)!;
     }
@@ -710,6 +760,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetHotkeyListResponse> GetHotkeyListAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetHotkeyList() { }, cancellation).ConfigureAwait(false) as GetHotkeyListResponse)!;
     }
@@ -724,6 +779,11 @@ namespace ObsStrawket {
     /// <param name="hotkeyName">Name of the hotkey to trigger</param>
     /// <param name="contextName">Name of context of the hotkey to trigger<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> TriggerHotkeyByNameAsync(string hotkeyName, string? contextName = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new TriggerHotkeyByName() { HotkeyName = hotkeyName, ContextName = contextName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -741,6 +801,11 @@ namespace ObsStrawket {
     /// <param name="alt">Press ALT<br />If null, Not pressed</param>
     /// <param name="command">Press CMD (Mac)<br />If null, Not pressed</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> TriggerHotkeyByKeySequenceAsync(string? keyId = default, bool? shift = default, bool? control = default, bool? alt = default, bool? command = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new TriggerHotkeyByKeySequence() { KeyId = keyId, KeyModifiers = new KeyModifiers() { Shift = shift, Control = control, Alt = alt, Command = command } }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -753,6 +818,11 @@ namespace ObsStrawket {
     /// <param name="realm">The data realm to select. <c>OBS_WEBSOCKET_DATA_REALM_GLOBAL</c> or <c>OBS_WEBSOCKET_DATA_REALM_PROFILE</c></param>
     /// <param name="slotName">The name of the slot to retrieve data from</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetPersistentDataResponse> GetPersistentDataAsync(DataRealm realm, string slotName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetPersistentData() { Realm = realm, SlotName = slotName }, cancellation).ConfigureAwait(false) as GetPersistentDataResponse)!;
     }
@@ -766,6 +836,11 @@ namespace ObsStrawket {
     /// <param name="slotName">The name of the slot to retrieve data from</param>
     /// <param name="slotValue">The value to apply to the slot</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetPersistentDataAsync(DataRealm realm, string slotName, object? slotValue, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetPersistentData() { Realm = realm, SlotName = slotName, SlotValue = slotValue }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -776,6 +851,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneCollectionListResponse> GetSceneCollectionListAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSceneCollectionList() { }, cancellation).ConfigureAwait(false) as GetSceneCollectionListResponse)!;
     }
@@ -789,6 +869,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="sceneCollectionName">Name of the scene collection to switch to</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetCurrentSceneCollectionAsync(string sceneCollectionName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetCurrentSceneCollection() { SceneCollectionName = sceneCollectionName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -802,6 +887,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="sceneCollectionName">Name for the new scene collection</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> CreateSceneCollectionAsync(string sceneCollectionName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new CreateSceneCollection() { SceneCollectionName = sceneCollectionName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -812,6 +902,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetProfileListResponse> GetProfileListAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetProfileList() { }, cancellation).ConfigureAwait(false) as GetProfileListResponse)!;
     }
@@ -823,6 +918,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="profileName">Name of the profile to switch to</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetCurrentProfileAsync(string profileName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetCurrentProfile() { ProfileName = profileName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -834,6 +934,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="profileName">Name for the new profile</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> CreateProfileAsync(string profileName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new CreateProfile() { ProfileName = profileName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -845,6 +950,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="profileName">Name of the profile to remove</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> RemoveProfileAsync(string profileName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new RemoveProfile() { ProfileName = profileName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -857,6 +967,11 @@ namespace ObsStrawket {
     /// <param name="parameterCategory">Category of the parameter to get</param>
     /// <param name="parameterName">Name of the parameter to get</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetProfileParameterResponse> GetProfileParameterAsync(string parameterCategory, string parameterName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetProfileParameter() { ParameterCategory = parameterCategory, ParameterName = parameterName }, cancellation).ConfigureAwait(false) as GetProfileParameterResponse)!;
     }
@@ -870,6 +985,11 @@ namespace ObsStrawket {
     /// <param name="parameterName">Name of the parameter to set</param>
     /// <param name="parameterValue">Value of the parameter to set. Use <c>null</c> to delete</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetProfileParameterAsync(string parameterCategory, string parameterName, string? parameterValue, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetProfileParameter() { ParameterCategory = parameterCategory, ParameterName = parameterName, ParameterValue = parameterValue }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -882,6 +1002,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetVideoSettingsResponse> GetVideoSettingsAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetVideoSettings() { }, cancellation).ConfigureAwait(false) as GetVideoSettingsResponse)!;
     }
@@ -900,6 +1025,11 @@ namespace ObsStrawket {
     /// <param name="outputWidth">Width of the output resolution in pixels<br />If null, Not changed</param>
     /// <param name="outputHeight">Height of the output resolution in pixels<br />If null, Not changed</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetVideoSettingsAsync(int? fpsNumerator = default, int? fpsDenominator = default, int? baseWidth = default, int? baseHeight = default, int? outputWidth = default, int? outputHeight = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetVideoSettings() { FpsNumerator = fpsNumerator, FpsDenominator = fpsDenominator, BaseWidth = baseWidth, BaseHeight = baseHeight, OutputWidth = outputWidth, OutputHeight = outputHeight }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -910,6 +1040,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetStreamServiceSettingsResponse> GetStreamServiceSettingsAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetStreamServiceSettings() { }, cancellation).ConfigureAwait(false) as GetStreamServiceSettingsResponse)!;
     }
@@ -924,6 +1059,11 @@ namespace ObsStrawket {
     /// <param name="streamServiceType">Type of stream service to apply. Example: <c>rtmp_common</c> or <c>rtmp_custom</c></param>
     /// <param name="streamServiceSettings">Settings to apply to the service</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetStreamServiceSettingsAsync(StreamServiceType streamServiceType, Dictionary<string, JsonElement?> streamServiceSettings, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetStreamServiceSettings() { StreamServiceType = streamServiceType, StreamServiceSettings = streamServiceSettings }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -934,6 +1074,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetRecordDirectoryResponse> GetRecordDirectoryAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetRecordDirectory() { }, cancellation).ConfigureAwait(false) as GetRecordDirectoryResponse)!;
     }
@@ -945,6 +1090,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="recordDirectory">Output directory</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetRecordDirectoryAsync(string recordDirectory, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetRecordDirectory() { RecordDirectory = recordDirectory }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -960,6 +1110,11 @@ namespace ObsStrawket {
     /// <param name="sourceUuid">UUID of the source to get the active state of<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the source is in, if using sourceName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSourceActiveResponse> GetSourceActiveAsync(string? sourceName = default, string? sourceUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSourceActive() { SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSourceActiveResponse)!;
     }
@@ -982,6 +1137,11 @@ namespace ObsStrawket {
     /// <param name="imageCompressionQuality">Compression quality to use. 0 for high compression, 100 for uncompressed. -1 to use "default" (whatever that means, idk)<br />If null, -1</param>
     /// <param name="canvasUuid">UUID of the canvas the source is in, if using sourceName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSourceScreenshotResponse> GetSourceScreenshotAsync(string imageFormat, string? sourceName = default, string? sourceUuid = default, int? imageWidth = default, int? imageHeight = default, int? imageCompressionQuality = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSourceScreenshot() { ImageFormat = imageFormat, SourceName = sourceName, SourceUuid = sourceUuid, ImageWidth = imageWidth, ImageHeight = imageHeight, ImageCompressionQuality = imageCompressionQuality, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSourceScreenshotResponse)!;
     }
@@ -1005,6 +1165,11 @@ namespace ObsStrawket {
     /// <param name="imageCompressionQuality">Compression quality to use. 0 for high compression, 100 for uncompressed. -1 to use "default" (whatever that means, idk)<br />If null, -1</param>
     /// <param name="canvasUuid">UUID of the canvas the source is in, if using sourceName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SaveSourceScreenshotAsync(string imageFormat, string imageFilePath, string? sourceName = default, string? sourceUuid = default, int? imageWidth = default, int? imageHeight = default, int? imageCompressionQuality = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SaveSourceScreenshot() { ImageFormat = imageFormat, ImageFilePath = imageFilePath, SourceName = sourceName, SourceUuid = sourceUuid, ImageWidth = imageWidth, ImageHeight = imageHeight, ImageCompressionQuality = imageCompressionQuality, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1016,6 +1181,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="canvasUuid">UUID of the canvas the scenes are in<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneListResponse> GetSceneListAsync(string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSceneList() { CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSceneListResponse)!;
     }
@@ -1028,6 +1198,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetGroupListResponse> GetGroupListAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetGroupList() { }, cancellation).ConfigureAwait(false) as GetGroupListResponse)!;
     }
@@ -1042,6 +1217,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetCurrentProgramSceneResponse> GetCurrentProgramSceneAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetCurrentProgramScene() { }, cancellation).ConfigureAwait(false) as GetCurrentProgramSceneResponse)!;
     }
@@ -1054,6 +1234,11 @@ namespace ObsStrawket {
     /// <param name="sceneName">Scene name to set as the current program scene<br />If null, Unknown</param>
     /// <param name="sceneUuid">Scene UUID to set as the current program scene<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetCurrentProgramSceneAsync(string? sceneName = default, string? sceneUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetCurrentProgramScene() { SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1068,6 +1253,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetCurrentPreviewSceneResponse> GetCurrentPreviewSceneAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetCurrentPreviewScene() { }, cancellation).ConfigureAwait(false) as GetCurrentPreviewSceneResponse)!;
     }
@@ -1082,6 +1272,11 @@ namespace ObsStrawket {
     /// <param name="sceneName">Scene name to set as the current preview scene<br />If null, Unknown</param>
     /// <param name="sceneUuid">Scene UUID to set as the current preview scene<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetCurrentPreviewSceneAsync(string? sceneName = default, string? sceneUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetCurrentPreviewScene() { SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1094,6 +1289,11 @@ namespace ObsStrawket {
     /// <param name="sceneName">Name for the new scene</param>
     /// <param name="canvasUuid">UUID of the canvas to create the new scene in. Leave default to assume main canvas<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<CreateSceneResponse> CreateSceneAsync(string sceneName, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new CreateScene() { SceneName = sceneName, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as CreateSceneResponse)!;
     }
@@ -1107,6 +1307,11 @@ namespace ObsStrawket {
     /// <param name="sceneUuid">UUID of the scene to remove<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> RemoveSceneAsync(string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new RemoveScene() { SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1121,6 +1326,11 @@ namespace ObsStrawket {
     /// <param name="sceneUuid">UUID of the scene to be renamed<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSceneNameAsync(string newSceneName, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetSceneName() { NewSceneName = newSceneName, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1136,6 +1346,11 @@ namespace ObsStrawket {
     /// <param name="sceneUuid">UUID of the scene<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneSceneTransitionOverrideResponse> GetSceneSceneTransitionOverrideAsync(string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSceneSceneTransitionOverride() { SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSceneSceneTransitionOverrideResponse)!;
     }
@@ -1151,6 +1366,11 @@ namespace ObsStrawket {
     /// <param name="transitionDuration">Duration to use for any overridden transition. Specify <c>null</c> to remove<br />If null, Unchanged</param>
     /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSceneSceneTransitionOverrideAsync(string? sceneName = default, string? sceneUuid = default, string? transitionName = default, long? transitionDuration = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetSceneSceneTransitionOverride() { SceneName = sceneName, SceneUuid = sceneUuid, TransitionName = transitionName, TransitionDuration = transitionDuration, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1162,6 +1382,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="inputKind">Restrict the array to only inputs of the specified kind<br />If null, All kinds included</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputListResponse> GetInputListAsync(string? inputKind = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputList() { InputKind = inputKind }, cancellation).ConfigureAwait(false) as GetInputListResponse)!;
     }
@@ -1173,6 +1398,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="unversioned">True == Return all kinds as unversioned, False == Return with version suffixes (if available)<br />If null, false</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputKindListResponse> GetInputKindListAsync(bool? unversioned = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputKindList() { Unversioned = unversioned }, cancellation).ConfigureAwait(false) as GetInputKindListResponse)!;
     }
@@ -1183,6 +1413,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSpecialInputsResponse> GetSpecialInputsAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSpecialInputs() { }, cancellation).ConfigureAwait(false) as GetSpecialInputsResponse)!;
     }
@@ -1200,6 +1435,11 @@ namespace ObsStrawket {
     /// <param name="sceneItemEnabled">Whether to set the created scene item to enabled or disabled<br />If null, True</param>
     /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<CreateInputResponse> CreateInputAsync(string inputName, string inputKind, string? sceneName = default, string? sceneUuid = default, Dictionary<string, JsonElement?>? inputSettings = default, bool? sceneItemEnabled = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new CreateInput() { InputName = inputName, InputKind = inputKind, SceneName = sceneName, SceneUuid = sceneUuid, InputSettings = inputSettings, SceneItemEnabled = sceneItemEnabled, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as CreateInputResponse)!;
     }
@@ -1214,6 +1454,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input to remove<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input to remove<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> RemoveInputAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new RemoveInput() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1227,6 +1472,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Current input name<br />If null, Unknown</param>
     /// <param name="inputUuid">Current input UUID<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetInputNameAsync(string newInputName, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetInputName() { NewInputName = newInputName, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1238,6 +1488,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="inputKind">Input kind to get the default settings for</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputDefaultSettingsResponse> GetInputDefaultSettingsAsync(string inputKind, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputDefaultSettings() { InputKind = inputKind }, cancellation).ConfigureAwait(false) as GetInputDefaultSettingsResponse)!;
     }
@@ -1252,6 +1507,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input to get the settings of<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input to get the settings of<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputSettingsResponse> GetInputSettingsAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputSettings() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetInputSettingsResponse)!;
     }
@@ -1266,6 +1526,11 @@ namespace ObsStrawket {
     /// <param name="inputUuid">UUID of the input to set the settings of<br />If null, Unknown</param>
     /// <param name="overlay">True == apply the settings on top of existing ones, False == reset the input to its defaults, then apply settings.<br />If null, true</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetInputSettingsAsync(Dictionary<string, JsonElement?> inputSettings, string? inputName = default, string? inputUuid = default, bool? overlay = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetInputSettings() { InputSettings = inputSettings, InputName = inputName, InputUuid = inputUuid, Overlay = overlay }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1278,6 +1543,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of input to get the mute state of<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of input to get the mute state of<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputMuteResponse> GetInputMuteAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputMute() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetInputMuteResponse)!;
     }
@@ -1291,6 +1561,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input to set the mute state of<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input to set the mute state of<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetInputMuteAsync(bool inputMuted, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetInputMute() { InputMuted = inputMuted, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1303,6 +1578,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input to toggle the mute state of<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input to toggle the mute state of<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<ToggleInputMuteResponse> ToggleInputMuteAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new ToggleInputMute() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as ToggleInputMuteResponse)!;
     }
@@ -1315,6 +1595,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input to get the volume of<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input to get the volume of<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputVolumeResponse> GetInputVolumeAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputVolume() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetInputVolumeResponse)!;
     }
@@ -1329,6 +1614,11 @@ namespace ObsStrawket {
     /// <param name="inputVolumeMul">Volume setting in mul<br />If null, <c>inputVolumeDb</c> should be specified</param>
     /// <param name="inputVolumeDb">Volume setting in dB<br />If null, <c>inputVolumeMul</c> should be specified</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetInputVolumeAsync(string? inputName = default, string? inputUuid = default, double? inputVolumeMul = default, double? inputVolumeDb = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetInputVolume() { InputName = inputName, InputUuid = inputUuid, InputVolumeMul = inputVolumeMul, InputVolumeDb = inputVolumeDb }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1341,6 +1631,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input to get the audio balance of<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input to get the audio balance of<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputAudioBalanceResponse> GetInputAudioBalanceAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputAudioBalance() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetInputAudioBalanceResponse)!;
     }
@@ -1354,6 +1649,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input to set the audio balance of<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input to set the audio balance of<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetInputAudioBalanceAsync(double inputAudioBalance, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetInputAudioBalance() { InputAudioBalance = inputAudioBalance, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1368,6 +1668,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input to get the audio sync offset of<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input to get the audio sync offset of<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputAudioSyncOffsetResponse> GetInputAudioSyncOffsetAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputAudioSyncOffset() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetInputAudioSyncOffsetResponse)!;
     }
@@ -1381,6 +1686,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input to set the audio sync offset of<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input to set the audio sync offset of<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetInputAudioSyncOffsetAsync(int inputAudioSyncOffset, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetInputAudioSyncOffset() { InputAudioSyncOffset = inputAudioSyncOffset, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1399,6 +1709,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input to get the audio monitor type of<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input to get the audio monitor type of<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputAudioMonitorTypeResponse> GetInputAudioMonitorTypeAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputAudioMonitorType() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetInputAudioMonitorTypeResponse)!;
     }
@@ -1412,6 +1727,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input to set the audio monitor type of<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input to set the audio monitor type of<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetInputAudioMonitorTypeAsync(MonitoringType monitorType, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetInputAudioMonitorType() { MonitorType = monitorType, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1424,6 +1744,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputAudioTracksResponse> GetInputAudioTracksAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputAudioTracks() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetInputAudioTracksResponse)!;
     }
@@ -1437,6 +1762,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetInputAudioTracksAsync(Dictionary<string, bool> inputAudioTracks, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetInputAudioTracks() { InputAudioTracks = inputAudioTracks, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1463,6 +1793,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputDeinterlaceModeResponse> GetInputDeinterlaceModeAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputDeinterlaceMode() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetInputDeinterlaceModeResponse)!;
     }
@@ -1478,6 +1813,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetInputDeinterlaceModeAsync(string inputDeinterlaceMode, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetInputDeinterlaceMode() { InputDeinterlaceMode = inputDeinterlaceMode, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1497,6 +1837,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputDeinterlaceFieldOrderResponse> GetInputDeinterlaceFieldOrderAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputDeinterlaceFieldOrder() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetInputDeinterlaceFieldOrderResponse)!;
     }
@@ -1512,6 +1857,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetInputDeinterlaceFieldOrderAsync(string inputDeinterlaceFieldOrder, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetInputDeinterlaceFieldOrder() { InputDeinterlaceFieldOrder = inputDeinterlaceFieldOrder, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1527,6 +1877,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputPropertiesListPropertyItemsResponse> GetInputPropertiesListPropertyItemsAsync(string propertyName, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetInputPropertiesListPropertyItems() { PropertyName = propertyName, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetInputPropertiesListPropertyItemsResponse)!;
     }
@@ -1546,6 +1901,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> PressInputPropertiesButtonAsync(string propertyName, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new PressInputPropertiesButton() { PropertyName = propertyName, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1558,6 +1918,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetTransitionKindListResponse> GetTransitionKindListAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetTransitionKindList() { }, cancellation).ConfigureAwait(false) as GetTransitionKindListResponse)!;
     }
@@ -1568,6 +1933,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneTransitionListResponse> GetSceneTransitionListAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSceneTransitionList() { }, cancellation).ConfigureAwait(false) as GetSceneTransitionListResponse)!;
     }
@@ -1578,6 +1948,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetCurrentSceneTransitionResponse> GetCurrentSceneTransitionAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetCurrentSceneTransition() { }, cancellation).ConfigureAwait(false) as GetCurrentSceneTransitionResponse)!;
     }
@@ -1591,6 +1966,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="transitionName">Name of the transition to make active</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetCurrentSceneTransitionAsync(string transitionName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetCurrentSceneTransition() { TransitionName = transitionName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1602,6 +1982,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="transitionDuration">Duration in milliseconds</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetCurrentSceneTransitionDurationAsync(long transitionDuration, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetCurrentSceneTransitionDuration() { TransitionDuration = transitionDuration }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1614,6 +1999,11 @@ namespace ObsStrawket {
     /// <param name="transitionSettings">Settings object to apply to the transition. Can be <c>{}</c></param>
     /// <param name="overlay">Whether to overlay over the current settings or replace them<br />If null, true</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetCurrentSceneTransitionSettingsAsync(Dictionary<string, JsonElement?> transitionSettings, bool? overlay = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetCurrentSceneTransitionSettings() { TransitionSettings = transitionSettings, Overlay = overlay }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1626,6 +2016,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetCurrentSceneTransitionCursorResponse> GetCurrentSceneTransitionCursorAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetCurrentSceneTransitionCursor() { }, cancellation).ConfigureAwait(false) as GetCurrentSceneTransitionCursorResponse)!;
     }
@@ -1636,6 +2031,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> TriggerStudioModeTransitionAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new TriggerStudioModeTransition() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1650,6 +2050,11 @@ namespace ObsStrawket {
     /// <param name="position">New position</param>
     /// <param name="release">Whether to release the TBar. Only set <c>false</c> if you know that you will be sending another position update<br />If null, <c>true</c></param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetTBarPositionAsync(double position, bool? release = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetTBarPosition() { Position = position, Release = release }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1662,6 +2067,11 @@ namespace ObsStrawket {
     /// Added in: 5.4.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSourceFilterKindListResponse> GetSourceFilterKindListAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSourceFilterKindList() { }, cancellation).ConfigureAwait(false) as GetSourceFilterKindListResponse)!;
     }
@@ -1675,6 +2085,11 @@ namespace ObsStrawket {
     /// <param name="sourceUuid">UUID of the source<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the source is in, if using the sourceName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSourceFilterListResponse> GetSourceFilterListAsync(string? sourceName = default, string? sourceUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSourceFilterList() { SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSourceFilterListResponse)!;
     }
@@ -1686,6 +2101,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="filterKind">Filter kind to get the default settings for</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSourceFilterDefaultSettingsResponse> GetSourceFilterDefaultSettingsAsync(string filterKind, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSourceFilterDefaultSettings() { FilterKind = filterKind }, cancellation).ConfigureAwait(false) as GetSourceFilterDefaultSettingsResponse)!;
     }
@@ -1702,6 +2122,11 @@ namespace ObsStrawket {
     /// <param name="filterSettings">Settings object to initialize the filter with<br />If null, Default settings used</param>
     /// <param name="canvasUuid">UUID of the canvas the source is in, if using the sourceName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> CreateSourceFilterAsync(string filterName, string filterKind, string? sourceName = default, string? sourceUuid = default, Dictionary<string, JsonElement?>? filterSettings = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new CreateSourceFilter() { FilterName = filterName, FilterKind = filterKind, SourceName = sourceName, SourceUuid = sourceUuid, FilterSettings = filterSettings, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1716,6 +2141,11 @@ namespace ObsStrawket {
     /// <param name="sourceUuid">UUID of the source the filter is on<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the source is in, if using the sourceName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> RemoveSourceFilterAsync(string filterName, string? sourceName = default, string? sourceUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new RemoveSourceFilter() { FilterName = filterName, SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1731,6 +2161,11 @@ namespace ObsStrawket {
     /// <param name="sourceUuid">UUID of the source the filter is on<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the source is in, if using the sourceName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSourceFilterNameAsync(string filterName, string newFilterName, string? sourceName = default, string? sourceUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetSourceFilterName() { FilterName = filterName, NewFilterName = newFilterName, SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1745,6 +2180,11 @@ namespace ObsStrawket {
     /// <param name="sourceUuid">UUID of the source<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the source is in, if using the sourceName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSourceFilterResponse> GetSourceFilterAsync(string filterName, string? sourceName = default, string? sourceUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSourceFilter() { FilterName = filterName, SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSourceFilterResponse)!;
     }
@@ -1760,6 +2200,11 @@ namespace ObsStrawket {
     /// <param name="sourceUuid">UUID of the source the filter is on<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the source is in, if using the sourceName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSourceFilterIndexAsync(string filterName, int filterIndex, string? sourceName = default, string? sourceUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetSourceFilterIndex() { FilterName = filterName, FilterIndex = filterIndex, SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1776,6 +2221,11 @@ namespace ObsStrawket {
     /// <param name="overlay">True == apply the settings on top of existing ones, False == reset the input to its defaults, then apply settings.<br />If null, true</param>
     /// <param name="canvasUuid">UUID of the canvas the source is in, if using the sourceName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSourceFilterSettingsAsync(string filterName, Dictionary<string, JsonElement?> filterSettings, string? sourceName = default, string? sourceUuid = default, bool? overlay = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetSourceFilterSettings() { FilterName = filterName, FilterSettings = filterSettings, SourceName = sourceName, SourceUuid = sourceUuid, Overlay = overlay, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1791,6 +2241,11 @@ namespace ObsStrawket {
     /// <param name="sourceUuid">UUID of the source the filter is on<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the source is in, if using the sourceName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSourceFilterEnabledAsync(string filterName, bool filterEnabled, string? sourceName = default, string? sourceUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetSourceFilterEnabled() { FilterName = filterName, FilterEnabled = filterEnabled, SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1806,6 +2261,11 @@ namespace ObsStrawket {
     /// <param name="sceneUuid">UUID of the scene to get the items of<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneItemListResponse> GetSceneItemListAsync(string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSceneItemList() { SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSceneItemListResponse)!;
     }
@@ -1823,6 +2283,11 @@ namespace ObsStrawket {
     /// <param name="sceneUuid">UUID of the group to get the items of<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the group is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetGroupSceneItemListResponse> GetGroupSceneItemListAsync(string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetGroupSceneItemList() { SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetGroupSceneItemListResponse)!;
     }
@@ -1840,6 +2305,11 @@ namespace ObsStrawket {
     /// <param name="searchOffset">Number of matches to skip during search. &gt;= 0 means first forward. -1 means last (top) item<br />If null, 0</param>
     /// <param name="canvasUuid">UUID of the canvas the scene or group is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneItemIdResponse> GetSceneItemIdAsync(string sourceName, string? sceneName = default, string? sceneUuid = default, int? searchOffset = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSceneItemId() { SourceName = sourceName, SceneName = sceneName, SceneUuid = sceneUuid, SearchOffset = searchOffset, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSceneItemIdResponse)!;
     }
@@ -1854,6 +2324,11 @@ namespace ObsStrawket {
     /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneItemSourceResponse> GetSceneItemSourceAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSceneItemSource() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSceneItemSourceResponse)!;
     }
@@ -1872,6 +2347,11 @@ namespace ObsStrawket {
     /// <param name="sceneItemEnabled">Enable state to apply to the scene item on creation<br />If null, True</param>
     /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<CreateSceneItemResponse> CreateSceneItemAsync(string? sceneName = default, string? sceneUuid = default, string? sourceName = default, string? sourceUuid = default, bool? sceneItemEnabled = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new CreateSceneItem() { SceneName = sceneName, SceneUuid = sceneUuid, SourceName = sourceName, SourceUuid = sourceUuid, SceneItemEnabled = sceneItemEnabled, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as CreateSceneItemResponse)!;
     }
@@ -1888,6 +2368,11 @@ namespace ObsStrawket {
     /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> RemoveSceneItemAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new RemoveSceneItem() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1906,6 +2391,11 @@ namespace ObsStrawket {
     /// <param name="destinationSceneUuid">UUID of the scene to create the duplicated item in<br />If null, From scene is assumed</param>
     /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<DuplicateSceneItemResponse> DuplicateSceneItemAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? destinationSceneName = default, string? destinationSceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new DuplicateSceneItem() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, DestinationSceneName = destinationSceneName, DestinationSceneUuid = destinationSceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as DuplicateSceneItemResponse)!;
     }
@@ -1922,6 +2412,11 @@ namespace ObsStrawket {
     /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneItemTransformResponse> GetSceneItemTransformAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSceneItemTransform() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSceneItemTransformResponse)!;
     }
@@ -1937,6 +2432,11 @@ namespace ObsStrawket {
     /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSceneItemTransformAsync(int sceneItemId, Dictionary<string, JsonElement?> sceneItemTransform, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetSceneItemTransform() { SceneItemId = sceneItemId, SceneItemTransform = sceneItemTransform, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1953,6 +2453,11 @@ namespace ObsStrawket {
     /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneItemEnabledResponse> GetSceneItemEnabledAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSceneItemEnabled() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSceneItemEnabledResponse)!;
     }
@@ -1970,6 +2475,11 @@ namespace ObsStrawket {
     /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSceneItemEnabledAsync(int sceneItemId, bool sceneItemEnabled, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetSceneItemEnabled() { SceneItemId = sceneItemId, SceneItemEnabled = sceneItemEnabled, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -1986,6 +2496,11 @@ namespace ObsStrawket {
     /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneItemLockedResponse> GetSceneItemLockedAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSceneItemLocked() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSceneItemLockedResponse)!;
     }
@@ -2003,6 +2518,11 @@ namespace ObsStrawket {
     /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSceneItemLockedAsync(int sceneItemId, bool sceneItemLocked, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetSceneItemLocked() { SceneItemId = sceneItemId, SceneItemLocked = sceneItemLocked, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2021,6 +2541,11 @@ namespace ObsStrawket {
     /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneItemIndexResponse> GetSceneItemIndexAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSceneItemIndex() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSceneItemIndexResponse)!;
     }
@@ -2038,6 +2563,11 @@ namespace ObsStrawket {
     /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSceneItemIndexAsync(int sceneItemId, int sceneItemIndex, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetSceneItemIndex() { SceneItemId = sceneItemId, SceneItemIndex = sceneItemIndex, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2064,6 +2594,11 @@ namespace ObsStrawket {
     /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneItemBlendModeResponse> GetSceneItemBlendModeAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetSceneItemBlendMode() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSceneItemBlendModeResponse)!;
     }
@@ -2081,6 +2616,11 @@ namespace ObsStrawket {
     /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
     /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSceneItemBlendModeAsync(int sceneItemId, BlendingType sceneItemBlendMode, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetSceneItemBlendMode() { SceneItemId = sceneItemId, SceneItemBlendMode = sceneItemBlendMode, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2091,6 +2631,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetVirtualCamStatusResponse> GetVirtualCamStatusAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetVirtualCamStatus() { }, cancellation).ConfigureAwait(false) as GetVirtualCamStatusResponse)!;
     }
@@ -2101,6 +2646,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<ToggleVirtualCamResponse> ToggleVirtualCamAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new ToggleVirtualCam() { }, cancellation).ConfigureAwait(false) as ToggleVirtualCamResponse)!;
     }
@@ -2111,6 +2661,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> StartVirtualCamAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new StartVirtualCam() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2121,6 +2676,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> StopVirtualCamAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new StopVirtualCam() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2131,6 +2691,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetReplayBufferStatusResponse> GetReplayBufferStatusAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetReplayBufferStatus() { }, cancellation).ConfigureAwait(false) as GetReplayBufferStatusResponse)!;
     }
@@ -2141,6 +2706,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<ToggleReplayBufferResponse> ToggleReplayBufferAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new ToggleReplayBuffer() { }, cancellation).ConfigureAwait(false) as ToggleReplayBufferResponse)!;
     }
@@ -2151,6 +2721,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> StartReplayBufferAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new StartReplayBuffer() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2161,6 +2736,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> StopReplayBufferAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new StopReplayBuffer() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2171,6 +2751,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SaveReplayBufferAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SaveReplayBuffer() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2181,6 +2766,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetLastReplayBufferReplayResponse> GetLastReplayBufferReplayAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetLastReplayBufferReplay() { }, cancellation).ConfigureAwait(false) as GetLastReplayBufferReplayResponse)!;
     }
@@ -2191,6 +2781,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetOutputListResponse> GetOutputListAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetOutputList() { }, cancellation).ConfigureAwait(false) as GetOutputListResponse)!;
     }
@@ -2202,6 +2797,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="outputName">Output name</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetOutputStatusResponse> GetOutputStatusAsync(string outputName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetOutputStatus() { OutputName = outputName }, cancellation).ConfigureAwait(false) as GetOutputStatusResponse)!;
     }
@@ -2213,6 +2813,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="outputName">Output name</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<ToggleOutputResponse> ToggleOutputAsync(string outputName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new ToggleOutput() { OutputName = outputName }, cancellation).ConfigureAwait(false) as ToggleOutputResponse)!;
     }
@@ -2224,6 +2829,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="outputName">Output name</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> StartOutputAsync(string outputName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new StartOutput() { OutputName = outputName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2235,6 +2845,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="outputName">Output name</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> StopOutputAsync(string outputName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new StopOutput() { OutputName = outputName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2246,6 +2861,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="outputName">Output name</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetOutputSettingsResponse> GetOutputSettingsAsync(string outputName, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetOutputSettings() { OutputName = outputName }, cancellation).ConfigureAwait(false) as GetOutputSettingsResponse)!;
     }
@@ -2258,6 +2878,11 @@ namespace ObsStrawket {
     /// <param name="outputName">Output name</param>
     /// <param name="outputSettings">Output settings</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetOutputSettingsAsync(string outputName, Dictionary<string, JsonElement?> outputSettings, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetOutputSettings() { OutputName = outputName, OutputSettings = outputSettings }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2268,6 +2893,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetStreamStatusResponse> GetStreamStatusAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetStreamStatus() { }, cancellation).ConfigureAwait(false) as GetStreamStatusResponse)!;
     }
@@ -2278,6 +2908,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<ToggleStreamResponse> ToggleStreamAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new ToggleStream() { }, cancellation).ConfigureAwait(false) as ToggleStreamResponse)!;
     }
@@ -2288,6 +2923,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> StartStreamAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new StartStream() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2298,6 +2938,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> StopStreamAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new StopStream() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2309,6 +2954,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="captionText">Caption text</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SendStreamCaptionAsync(string captionText, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SendStreamCaption() { CaptionText = captionText }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2319,6 +2969,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetRecordStatusResponse> GetRecordStatusAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetRecordStatus() { }, cancellation).ConfigureAwait(false) as GetRecordStatusResponse)!;
     }
@@ -2329,6 +2984,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<ToggleRecordResponse> ToggleRecordAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new ToggleRecord() { }, cancellation).ConfigureAwait(false) as ToggleRecordResponse)!;
     }
@@ -2339,6 +2999,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> StartRecordAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new StartRecord() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2349,6 +3014,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<StopRecordResponse> StopRecordAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new StopRecord() { }, cancellation).ConfigureAwait(false) as StopRecordResponse)!;
     }
@@ -2359,6 +3029,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<ToggleRecordPauseResponse> ToggleRecordPauseAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new ToggleRecordPause() { }, cancellation).ConfigureAwait(false) as ToggleRecordPauseResponse)!;
     }
@@ -2369,6 +3044,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> PauseRecordAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new PauseRecord() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2379,6 +3059,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> ResumeRecordAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new ResumeRecord() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2389,6 +3074,11 @@ namespace ObsStrawket {
     /// Added in: 5.5.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SplitRecordFileAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SplitRecordFile() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2402,6 +3092,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="chapterName">Name of the new chapter<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> CreateRecordChapterAsync(string? chapterName = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new CreateRecordChapter() { ChapterName = chapterName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2425,6 +3120,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the media input<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the media input<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetMediaInputStatusResponse> GetMediaInputStatusAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetMediaInputStatus() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetMediaInputStatusResponse)!;
     }
@@ -2440,6 +3140,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the media input<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the media input<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetMediaInputCursorAsync(double mediaCursor, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetMediaInputCursor() { MediaCursor = mediaCursor, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2455,6 +3160,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the media input<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the media input<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> OffsetMediaInputCursorAsync(int mediaCursorOffset, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new OffsetMediaInputCursor() { MediaCursorOffset = mediaCursorOffset, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2468,6 +3178,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the media input<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the media input<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> TriggerMediaInputActionAsync(MediaInputAction mediaAction, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new TriggerMediaInputAction() { MediaAction = mediaAction, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2478,6 +3193,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetStudioModeEnabledResponse> GetStudioModeEnabledAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetStudioModeEnabled() { }, cancellation).ConfigureAwait(false) as GetStudioModeEnabledResponse)!;
     }
@@ -2489,6 +3209,11 @@ namespace ObsStrawket {
     /// </summary>
     /// <param name="studioModeEnabled">True == Enabled, False == Disabled</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetStudioModeEnabledAsync(bool studioModeEnabled, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new SetStudioModeEnabled() { StudioModeEnabled = studioModeEnabled }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2501,6 +3226,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input to open the dialog of<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input to open the dialog of<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> OpenInputPropertiesDialogAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new OpenInputPropertiesDialog() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2513,6 +3243,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input to open the dialog of<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input to open the dialog of<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> OpenInputFiltersDialogAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new OpenInputFiltersDialog() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2525,6 +3260,11 @@ namespace ObsStrawket {
     /// <param name="inputName">Name of the input to open the dialog of<br />If null, Unknown</param>
     /// <param name="inputUuid">UUID of the input to open the dialog of<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> OpenInputInteractDialogAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new OpenInputInteractDialog() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2535,6 +3275,11 @@ namespace ObsStrawket {
     /// Added in: 5.0.0
     /// </summary>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetMonitorListResponse> GetMonitorListAsync(CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new GetMonitorList() { }, cancellation).ConfigureAwait(false) as GetMonitorListResponse)!;
     }
@@ -2556,6 +3301,11 @@ namespace ObsStrawket {
     /// <param name="monitorIndex">Monitor index, use <c>GetMonitorList</c> to obtain index<br />If null, -1: Opens projector in windowed mode</param>
     /// <param name="projectorGeometry">Size/Position data for a windowed projector, in Qt Base64 encoded format. Mutually exclusive with <c>monitorIndex</c><br />If null, N/A</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> OpenVideoMixProjectorAsync(VideoMixType videoMixType, int? monitorIndex = default, string? projectorGeometry = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new OpenVideoMixProjector() { VideoMixType = videoMixType, MonitorIndex = monitorIndex, ProjectorGeometry = projectorGeometry }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
@@ -2573,6 +3323,11 @@ namespace ObsStrawket {
     /// <param name="projectorGeometry">Size/Position data for a windowed projector, in Qt Base64 encoded format. Mutually exclusive with <c>monitorIndex</c><br />If null, N/A</param>
     /// <param name="canvasUuid">UUID of the canvas the source is in, if using the sourceName field<br />If null, Unknown</param>
     /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> OpenSourceProjectorAsync(string? sourceName = default, string? sourceUuid = default, int? monitorIndex = default, string? projectorGeometry = default, string? canvasUuid = default, CancellationToken cancellation = default) {
       return (await _clientSocket.RequestAsync(new OpenSourceProjector() { SourceName = sourceName, SourceUuid = sourceUuid, MonitorIndex = monitorIndex, ProjectorGeometry = projectorGeometry, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
     }
