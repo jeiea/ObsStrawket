@@ -12,8 +12,11 @@ csharp_style_var_for_built_in_types = false:suggestion
 csharp_style_var_when_type_is_apparent = true:suggestion
 insert_final_newline = true
 
+# CA1852(Seal internal types): Trade between boilerplate and micro performance.
 dotnet_diagnostic.CA1852.severity = none
+# IDE0290(Use primary constructor): Parameter can't be readonly.
 dotnet_diagnostic.IDE0290.severity = none
 
-[ObsStrawket/DataTypes/**.cs]
+[ObsStrawket/DataTypes/*/*.cs]
+# IDE0130(Namespace does not match folder structure): Maybe later.
 dotnet_diagnostic.IDE0130.severity = none
