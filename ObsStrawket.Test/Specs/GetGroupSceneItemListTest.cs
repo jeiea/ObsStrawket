@@ -19,7 +19,7 @@ namespace ObsStrawket.Test.Specs {
 
     public async Task RequestAsync(ObsClientSocket client) {
       if (_expectMissingGroup) {
-        _ = await Assert.ThrowsAsync<FailureResponseException>(
+        _ = await Assert.ThrowsAsync<ObsRequestException>(
           () => client.GetGroupSceneItemListAsync(sceneName: "Group")
         ).ConfigureAwait(false);
         return;

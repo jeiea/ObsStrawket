@@ -34,14 +34,14 @@ namespace ObsStrawket.Test {
     [Fact]
     public async Task TestBadRequestAsync() {
       var client = ClientFlow.GetDebugClient(useChannel: true);
-      await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
+      _ = await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
 
-      _ = await Assert.ThrowsAsync<FailureResponseException>(async () => {
+      _ = await Assert.ThrowsAsync<ObsRequestException>(async () => {
         var response = await client.StopRecordAsync(TestContext.Current.CancellationToken);
         response = await client.StopRecordAsync(TestContext.Current.CancellationToken);
       });
 
-      var exception = await Assert.ThrowsAsync<FailureResponseException>(async () => {
+      var exception = await Assert.ThrowsAsync<ObsRequestException>(async () => {
         _ = await client.BroadcastCustomEventAsync([], TestContext.Current.CancellationToken);
       });
 
@@ -51,8 +51,8 @@ namespace ObsStrawket.Test {
     [Fact]
     public async Task TestMissingVendorRequestAsync() {
       var client = ClientFlow.GetDebugClient(useChannel: true);
-      await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
-      var exception = await Assert.ThrowsAsync<FailureResponseException>(
+      _ = await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
+      var exception = await Assert.ThrowsAsync<ObsRequestException>(
         () => client.CallVendorRequestAsync(
           "ObsStrawket.MissingVendor",
           "echo",
@@ -95,7 +95,7 @@ namespace ObsStrawket.Test {
           | EventSubscription.InputShowStateChanged
           | EventSubscription.InputVolumeMeters
           | EventSubscription.SceneItemTransformChanged;
-        await client.ConnectAsync(
+        _ = await client.ConnectAsync(
           Uri,
           MockServer.Password,
           subscriptions,
@@ -176,7 +176,7 @@ namespace ObsStrawket.Test {
         );
       };
       try {
-        await client.ConnectAsync(
+        _ = await client.ConnectAsync(
           Uri,
           MockServer.Password,
           EventSubscription.All,
@@ -225,7 +225,7 @@ namespace ObsStrawket.Test {
         _ = source.TrySetResult(e);
       };
 
-      await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
+      _ = await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
       //while (await client.Events.WaitToReadAsync().ConfigureAwait(false)) {
       //  var ev = await client.Events.ReadAsync().ConfigureAwait(false);
       //  Debug.WriteLine(ev);
@@ -238,16 +238,19 @@ namespace ObsStrawket.Test {
     [Fact]
     public async Task TestbedAsync() {
       var client = ClientFlow.GetDebugClient(useChannel: true);
-      _ = await Assert.ThrowsAsync<AuthenticationFailureException>(
-        () => client.ConnectAsync(Uri, "a", cancellation: TestContext.Current.CancellationToken)
+      bool connected = await client.ConnectAsync(
+        Uri,
+        "a",
+        cancellation: TestContext.Current.CancellationToken
       );
+      Assert.False(connected);
     }
 
     [Fact(Timeout = 60 * 1000)]
     public async Task TestUiAsync() {
       var client = ClientFlow.GetDebugClient(useChannel: true);
       try {
-        await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
+        _ = await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
         const string sceneName = "UI test scene";
         const string inputName = "UI test source";
         _ = await client.CreateSceneAsync(
@@ -305,7 +308,7 @@ namespace ObsStrawket.Test {
       }
 
       var client = ClientFlow.GetDebugClient(useChannel: true);
-      await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
+      _ = await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
       var flows = new List<ITestFlow>() {
         //new CallVendorRequestFlow(), // test how?
 

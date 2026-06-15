@@ -6,7 +6,7 @@ namespace ObsStrawket.Serialization {
 
     public static void CheckObjectStart(ref Utf8JsonReader reader) {
       if (reader.TokenType != JsonTokenType.StartObject) {
-        throw new UnexpectedResponseException($"Expected object start, but found {reader.TokenType}.");
+        throw new ObsProtocolException($"Expected object start, but found {reader.TokenType}.");
       }
     }
 
@@ -15,7 +15,7 @@ namespace ObsStrawket.Serialization {
     }
 
     public static Utf8JsonReader SeekByKey(Utf8JsonReader reader, string key) {
-      return !SeekByKey(ref reader, key) ? throw new UnexpectedResponseException($"Cannot find {key} key.") : reader;
+      return !SeekByKey(ref reader, key) ? throw new ObsProtocolException($"Cannot find {key} key.") : reader;
     }
 
     public static bool SeekByKey(ref Utf8JsonReader reader, string key) {

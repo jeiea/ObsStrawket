@@ -65,7 +65,7 @@ namespace ObsStrawket.Serialization {
 
       var typeReader = JsonConverterHelper.SeekByKey(reader, "requestType");
       if (typeReader.GetString() is not string typeName) {
-        throw new UnexpectedResponseException("Request type is null.");
+        throw new ObsProtocolException("Request type is null.");
       }
 
       if (DataTypeMapping.RequestToTypes.TryGetValue(typeName, out var mapping)) {
@@ -77,14 +77,14 @@ namespace ObsStrawket.Serialization {
           : JsonConverterHelper.CreateInstance<RequestResponse>(responseType);
         response.RequestId = JsonConverterHelper.SeekByKey(reader, "requestId").GetString() ?? "(null)";
         dataReader = JsonConverterHelper.SeekByKey(reader, "requestStatus");
-        response.RequestStatus = JsonSerializer.Deserialize<RequestStatusObject>(ref dataReader, options) ?? throw new UnexpectedResponseException("Request status is null.");
+        response.RequestStatus = JsonSerializer.Deserialize<RequestStatusObject>(ref dataReader, options) ?? throw new ObsProtocolException("Request status is null.");
 
         reader.Skip();
         return response;
       }
       else {
         reader.Skip();
-        return JsonSerializer.Deserialize<RawRequestResponse>(ref rawReader, options) ?? throw new UnexpectedResponseException("");
+        return JsonSerializer.Deserialize<RawRequestResponse>(ref rawReader, options) ?? throw new ObsProtocolException("Request response is null.");
       }
     }
 
@@ -146,7 +146,7 @@ namespace ObsStrawket.Serialization {
 
       var subReader = JsonConverterHelper.SeekByKey(reader, "requestType");
       if (subReader.GetString() is not string typeName) {
-        throw new UnexpectedResponseException("Request type is null.");
+        throw new ObsProtocolException("Request type is null.");
       }
       subReader = JsonConverterHelper.SeekByKey(reader, "requestId");
       string? requestId = subReader.GetString();
@@ -163,7 +163,7 @@ namespace ObsStrawket.Serialization {
         return request;
       }
       else {
-        var request = JsonSerializer.Deserialize<RawRequest>(ref rawReader, options) ?? throw new UnexpectedResponseException("");
+        var request = JsonSerializer.Deserialize<RawRequest>(ref rawReader, options) ?? throw new ObsProtocolException("Request is null.");
         reader.Skip();
         request.RequestId = requestId ?? "(null)";
         return request;
@@ -226,7 +226,7 @@ namespace ObsStrawket.Serialization {
         (int)OpCode.RequestResponse => IRequestResponseConverter.Deserialize(ref dataReader, options),
         (int)OpCode.RequestBatch => JsonSerializer.Deserialize<RequestBatch>(ref dataReader, options),
         (int)OpCode.RequestBatchResponse => JsonSerializer.Deserialize<RequestBatchResponse>(ref dataReader, options),
-        int opCode => throw new UnexpectedResponseException($"Unknown OBS WebSocket opcode: {opCode}."),
+        int opCode => throw new ObsProtocolException($"Unknown OBS WebSocket opcode: {opCode}."),
       };
     }
 
@@ -285,7 +285,7 @@ namespace ObsStrawket.Serialization {
 
       var typeReader = JsonConverterHelper.SeekByKey(reader, "eventType");
       if (typeReader.GetString() is not string typeName) {
-        throw new UnexpectedResponseException("Event type is null.");
+        throw new ObsProtocolException("Event type is null.");
       }
 
       if (DataTypeMapping.EventToTypes.TryGetValue(typeName, out var eventType)) {
@@ -313,7 +313,7 @@ namespace ObsStrawket.Serialization {
       }
 
       reader.Skip();
-      return JsonSerializer.Deserialize<RawEvent>(ref rawReader, options) ?? throw new UnexpectedResponseException("");
+      return JsonSerializer.Deserialize<RawEvent>(ref rawReader, options) ?? throw new ObsProtocolException("Event is null.");
     }
   }
 }

@@ -42,6 +42,11 @@ namespace SourceGenerator {
           part.WriteLine("</param>");
         }
         part.WriteLine("    /// <param name=\"cancellation\">Token for cancellation</param>");
+        part.WriteLine("    /// <exception cref=\"InvalidOperationException\">The client is not connected.</exception>");
+        part.WriteLine("    /// <exception cref=\"OperationCanceledException\">The caller cancels the operation.</exception>");
+        part.WriteLine("    /// <exception cref=\"ObsRequestException\">OBS rejects the request.</exception>");
+        part.WriteLine("    /// <exception cref=\"ObsConnectionException\">The connection fails before a response is received.</exception>");
+        part.WriteLine("    /// <exception cref=\"ObsProtocolException\">OBS sends an invalid response.</exception>");
 
         string returnType = request.ResponseFields!.Count > 0 ? $"{request.RequestType}Response" : "RequestResponse";
         string parameters = GetParameters(request.RequestFields);

@@ -41,7 +41,8 @@ namespace ObsStrawket.Test.Specs {
       Assert.StartsWith("00:00:0", response.OutputTimecode);
       Assert.True(response.OutputPaused);
 
-      _ = await Assert.ThrowsAsync<QueueCancelledException>(() => client.GetRecordStatusAsync()).ConfigureAwait(false);
+      _ = await Assert.ThrowsAsync<ObsProtocolException>(
+        () => client.GetRecordStatusAsync()).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {

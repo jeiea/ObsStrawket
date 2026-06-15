@@ -21,7 +21,7 @@ namespace ObsStrawket.Test.Specs {
       try {
         await CreateProfileAsync(client).ConfigureAwait(false);
       }
-      catch (FailureResponseException failure)
+      catch (ObsRequestException failure)
       when (failure.Response.RequestStatus.Code == RequestStatus.ResourceAlreadyExists) {
         _ = await client.RemoveProfileAsync(NewProfileName).ConfigureAwait(false);
         _ = await client.Events.ReadAllAsync()

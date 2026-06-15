@@ -20,7 +20,7 @@ namespace ObsStrawket.Test {
 
     [Fact]
     public void UnknownOpCodeReportsProtocolValue() {
-      var exception = Assert.Throws<UnexpectedResponseException>(
+      var exception = Assert.Throws<ObsProtocolException>(
         static () => JsonSerializer.Deserialize<IOpCodeMessage>(UnknownOpCodeJson));
 
       Assert.Contains("4", exception.Message);

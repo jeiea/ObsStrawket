@@ -83,6 +83,55 @@ namespace SourceGenerator.Test {
       Assert.DoesNotContain("JsonStringEnumMemberConverter", output);
     }
 
+    [Fact]
+    public async Task RequestInterfaceGeneratorDocumentsPublicFailureContract() {
+      var protocol = new ProtocolJson {
+        Requests = [
+          new ObsRequest {
+            RequestType = "TriggerHotkeyByKeySequence",
+            Description = "Trigger a hotkey.",
+            RpcVersion = "1",
+            InitialVersion = "5.0.0",
+            RequestFields = [
+              new ObsRequestField {
+                ValueName = "keyModifiers",
+                ValueType = "Object",
+                ValueDescription = "Key modifiers.",
+              },
+            ],
+          },
+          Request("OrdinaryRequest"),
+          Request("Sleep"),
+        ],
+      };
+      File.WriteAllText(
+        _directoryHelper.ObsClientPath,
+        """
+namespace ObsStrawket {
+  public class ObsClientSocket {
+    #region Requests
+    #endregion
+  }
+}
+""".ReplaceLineEndings("\r\n"));
+      var generator = new RequestInterfaceGenerator(
+        _directoryHelper,
+        new FakeSourceFetcher(protocol));
+
+      await generator.GenerateAsync();
+
+      string output = File.ReadAllText(_directoryHelper.ObsClientPath);
+      Assert.Contains(
+        """<exception cref="ObsRequestException">OBS rejects the request.</exception>""",
+        output);
+      Assert.Contains(
+        """<exception cref="ObsConnectionException">The connection fails before a response is received.</exception>""",
+        output);
+      Assert.Contains(
+        """<exception cref="ObsProtocolException">OBS sends an invalid response.</exception>""",
+        output);
+    }
+
     public void Dispose() {
       Directory.Delete(_directory, true);
     }

@@ -29,7 +29,7 @@ namespace ObsStrawket.Test.Utilities {
 
       async Task RunClientAsync() {
         var client = ClientFlow.GetDebugClient(useChannel: useChannel);
-        await client.ConnectAsync(server.Uri, MockServer.Password).ConfigureAwait(false);
+        _ = await client.ConnectAsync(server.Uri, MockServer.Password).ConfigureAwait(false);
         await flow.RequestAsync(client).ConfigureAwait(false);
         await client.CloseAsync().ConfigureAwait(false);
       }

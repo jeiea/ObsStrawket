@@ -22,7 +22,13 @@ client.PipelineEvent += (e) => {
   }
 };
 
-await client.ConnectAsync(new Uri("ws://localhost:4455"), "ahrEYXzXKytCIlpI");
+bool connected = await client.ConnectAsync(
+  new Uri("ws://localhost:4455"),
+  "ahrEYXzXKytCIlpI"
+);
+if (!connected) {
+  return;
+}
 
 var version = await client.GetVersionAsync();
 Assert.Contains("bmp", version.SupportedImageFormats);

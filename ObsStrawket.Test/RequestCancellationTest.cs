@@ -22,7 +22,7 @@ namespace ObsStrawket.Test {
       using var client = ClientFlow.GetDebugClient();
       var diagnostics = new ConcurrentQueue<PipelineEvent>();
       client.PipelineEvent += diagnostics.Enqueue;
-      await client.ConnectAsync(
+      _ = await client.ConnectAsync(
         server.Uri,
         MockServer.Password,
         cancellation: TestContext.Current.CancellationToken
@@ -75,7 +75,7 @@ namespace ObsStrawket.Test {
       using var client = ClientFlow.GetDebugClient();
       var diagnostics = new ConcurrentQueue<PipelineEvent>();
       client.PipelineEvent += diagnostics.Enqueue;
-      await client.ConnectAsync(
+      _ = await client.ConnectAsync(
         server.Uri,
         MockServer.Password,
         cancellation: TestContext.Current.CancellationToken
