@@ -3,7 +3,6 @@ using ObsStrawket.Test.Specs;
 using ObsStrawket.Test.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -33,7 +32,7 @@ namespace ObsStrawket.Test {
 
     [Fact]
     public async Task TestBadRequestAsync() {
-      var client = ClientFlow.GetDebugClient(useChannel: true);
+      var client = GetDebugClient(useChannel: true);
       _ = await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
 
       _ = await Assert.ThrowsAsync<ObsRequestException>(async () => {
@@ -50,7 +49,7 @@ namespace ObsStrawket.Test {
 
     [Fact]
     public async Task TestMissingVendorRequestAsync() {
-      var client = ClientFlow.GetDebugClient(useChannel: true);
+      var client = GetDebugClient(useChannel: true);
       _ = await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
       var exception = await Assert.ThrowsAsync<ObsRequestException>(
         () => client.CallVendorRequestAsync(
@@ -72,7 +71,7 @@ namespace ObsStrawket.Test {
       var showing = NewCompletionSource<InputShowStateChanged>();
       var meters = NewCompletionSource<InputVolumeMeters>();
       var transform = NewCompletionSource<SceneItemTransformChanged>();
-      var client = ClientFlow.GetDebugClient();
+      var client = GetDebugClient();
       client.InputActiveStateChanged += ev => CompleteWhen(
         active,
         ev.InputName == inputName && ev.VideoActive,
@@ -160,7 +159,7 @@ namespace ObsStrawket.Test {
       Assert.SkipWhen(!IsolatedObsFixture.HasVendorPlugin, "OBS test vendor plugin is not installed.");
       var started = NewCompletionSource<VendorEvent>();
       var stopped = NewCompletionSource<VendorEvent>();
-      var client = ClientFlow.GetDebugClient();
+      var client = GetDebugClient();
       client.VendorEvent += ev => {
         CompleteWhen(
           started,
@@ -216,28 +215,9 @@ namespace ObsStrawket.Test {
       }
     }
 
-    // Manual monitoring testbed. It never ends until OBS quits, so opt-in only.
-    [Fact(Explicit = true)]
-    public async Task JustMonitorObsEventAsync() {
-      var source = new TaskCompletionSource<object?>();
-      var client = ClientFlow.GetDebugClient();
-      client.Disconnected += (e) => {
-        _ = source.TrySetResult(e);
-      };
-
-      _ = await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
-      //while (await client.Events.WaitToReadAsync().ConfigureAwait(false)) {
-      //  var ev = await client.Events.ReadAsync().ConfigureAwait(false);
-      //  Debug.WriteLine(ev);
-      //}
-      object? result = await source.Task;
-      Debug.WriteLine(result);
-      return;
-    }
-
     [Fact]
     public async Task TestbedAsync() {
-      var client = ClientFlow.GetDebugClient(useChannel: true);
+      var client = GetDebugClient(useChannel: true);
       bool connected = await client.ConnectAsync(
         Uri,
         "a",
@@ -248,9 +228,13 @@ namespace ObsStrawket.Test {
 
     [Fact(Timeout = 60 * 1000)]
     public async Task TestUiAsync() {
-      var client = ClientFlow.GetDebugClient(useChannel: true);
+      var client = GetDebugClient(useChannel: true);
       try {
-        _ = await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
+        _ = await client.ConnectAsync(
+          Uri,
+          MockServer.Password,
+          cancellation: TestContext.Current.CancellationToken
+        );
         const string sceneName = "UI test scene";
         const string inputName = "UI test source";
         _ = await client.CreateSceneAsync(
@@ -307,14 +291,12 @@ namespace ObsStrawket.Test {
         }
       }
 
-      var client = ClientFlow.GetDebugClient(useChannel: true);
+      var client = GetDebugClient(useChannel: true);
       _ = await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
       var flows = new List<ITestFlow>() {
         //new CallVendorRequestFlow(), // test how?
 
         new GetVersionFlow(), // General
-        // OBS 32.1.2 can crash in obs_output_get_width when GetOutputList runs after
-        // recording output lifetime changes. Query before output mutation.
         new GetOutputListFlow(),
         new GetCanvasListFlow(),
         new GetStatsFlow(),
@@ -333,11 +315,14 @@ namespace ObsStrawket.Test {
         new GetProfileListFlow(),
         new SetCurrentProfileFlow(),
         new SetVideoSettingsFlow(),
-        new GetVideoSettingsFlow(),
         new SetPersistentDataFlow(),
+        new SetRecordDirectoryFlow(),
+
+        // It seems that GetVideoSettings needs to be called some time after SetVideoSettings
+        // See https://github.com/obsproject/obs-websocket/issues/1344 
+        new GetVideoSettingsFlow(),
         new GetPersistentDataFlow(),
         new GetRecordDirectoryFlow(),
-        new SetRecordDirectoryFlow(),
 
         new GetTransitionKindListFlow(),
         new SetCurrentSceneTransitionFlow(),
@@ -497,6 +482,12 @@ namespace ObsStrawket.Test {
       }
       await new CanvasUuidFlow(useExistingCanvas: true).RequestAsync(client);
       return;
+    }
+
+    private ObsClientSocket GetDebugClient(bool useChannel = false) {
+      var client = ClientFlow.GetDebugClient(useChannel: useChannel);
+      client.PipelineEvent += e => _obs.RecordOperation($"Pipeline {e}");
+      return client;
     }
 
     private static TaskCompletionSource<T> NewCompletionSource<T>() {

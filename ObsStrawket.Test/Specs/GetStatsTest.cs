@@ -22,7 +22,7 @@ namespace ObsStrawket.Test.Specs {
       Assert.NotInRange(response.ActiveFps, double.NegativeInfinity, 0);
       Assert.NotInRange(response.AvailableDiskSpace, double.NegativeInfinity, 0);
       Assert.NotInRange(response.AverageFrameRenderTime, double.NegativeInfinity, 0);
-      Assert.NotInRange(response.CpuUsage, double.NegativeInfinity, 0);
+      Assert.InRange(response.CpuUsage, 0, 100);
       Assert.NotInRange(response.MemoryUsage, double.NegativeInfinity, 0);
       Assert.InRange(response.RenderSkippedFrames, 0, int.MaxValue);
       Assert.NotInRange(response.RenderTotalFrames, int.MinValue, 0);
