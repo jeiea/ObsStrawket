@@ -238,9 +238,12 @@ namespace ObsStrawket.Test {
     [Fact]
     public async Task TestbedAsync() {
       var client = ClientFlow.GetDebugClient(useChannel: true);
-      _ = await Assert.ThrowsAsync<AuthenticationFailureException>(
-        () => client.ConnectAsync(Uri, "a", cancellation: TestContext.Current.CancellationToken)
+      bool connected = await client.ConnectAsync(
+        Uri,
+        "a",
+        cancellation: TestContext.Current.CancellationToken
       );
+      Assert.False(connected);
     }
 
     [Fact(Timeout = 60 * 1000)]

@@ -1,5 +1,7 @@
 ## 0.15.0-alpha
 
+- ! Change `ConnectAsync` to return `false` when authentication fails.
+  Successful connections return `true`; cancellation and other failures still throw.
 - ! Replace MessagePack serialization with System.Text.Json.
   Generated data types now carry `System.Text.Json.Serialization` attributes
   and the MessagePack dependency is gone.

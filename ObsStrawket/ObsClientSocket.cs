@@ -534,7 +534,8 @@ namespace ObsStrawket {
     /// <param name="password">Password for handshake.</param>
     /// <param name="events">Event categories to subscribe.</param>
     /// <param name="cancellation">Token for cancellation.</param>
-    public async Task ConnectAsync(
+    /// <returns><see langword="true"/> when connected; <see langword="false"/> when authentication fails.</returns>
+    public async Task<bool> ConnectAsync(
       Uri? uri = null,
       string? password = null,
       EventSubscription events = EventSubscription.All,
@@ -543,10 +544,11 @@ namespace ObsStrawket {
       var target = uri ?? ClientSocket.DefaultUri;
       await _connectSemaphore.WaitAsync(cancellation).ConfigureAwait(false);
       try {
-        await _clientSocket.ConnectAsync(target, password, events, cancellation).ConfigureAwait(false);
-        if (_dispatch != null) {
+        bool connected = await _clientSocket.ConnectAsync(target, password, events, cancellation).ConfigureAwait(false);
+        if (connected && _dispatch != null) {
           _dispatch = DispatchEventAsync(_dispatch, _clientSocket.Events, target);
         }
+        return connected;
       }
       finally {
         _ = _connectSemaphore.Release();

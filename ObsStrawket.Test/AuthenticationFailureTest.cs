@@ -11,12 +11,33 @@ namespace ObsStrawket.Test {
   public class AuthenticationFailureTest {
 
     [Fact]
-    public async Task TestAsync() {
+    public async Task ConnectAsyncReturnsFalseWhenAuthenticationFails() {
       using var server = new MockServer().Run(AlwaysRejectAuth, TestContext.Current.CancellationToken);
       var client = ClientFlow.GetDebugClient(useChannel: true);
-      _ = await Assert.ThrowsAsync<AuthenticationFailureException>(
-        () => client.ConnectAsync(server.Uri, "a", cancellation: TestContext.Current.CancellationToken)
+
+      bool connected = await client.ConnectAsync(
+        server.Uri,
+        "a",
+        cancellation: TestContext.Current.CancellationToken
       );
+
+      Assert.False(connected);
+      Assert.False(client.IsConnected);
+    }
+
+    [Fact]
+    public async Task LowLevelConnectAsyncReturnsFalseWhenAuthenticationFails() {
+      using var server = new MockServer().Run(AlwaysRejectAuth, TestContext.Current.CancellationToken);
+      using var client = new ClientSocket();
+
+      bool connected = await client.ConnectAsync(
+        server.Uri,
+        "a",
+        cancellation: TestContext.Current.CancellationToken
+      );
+
+      Assert.False(connected);
+      Assert.False(client.IsConnected);
     }
 
     private static async Task AlwaysRejectAuth(HttpListenerContext context, CancellationToken token) {

@@ -68,8 +68,8 @@ namespace ObsStrawket {
     /// <param name="password">Password for handshake.</param>
     /// <param name="events">Event categories to subscribe.</param>
     /// <param name="cancellation">Token for cancellation.</param>
-    /// <exception cref="AuthenticationFailureException"></exception>
-    public async Task ConnectAsync(
+    /// <returns><see langword="true"/> when connected; <see langword="false"/> when authentication fails.</returns>
+    public async Task<bool> ConnectAsync(
       Uri? uri = null,
       string? password = null,
       EventSubscription events = EventSubscription.All,
@@ -123,9 +123,15 @@ namespace ObsStrawket {
         _ = LoopReceiveAsync(messages, _cancellation.Token);
         _isOpen = true;
         Emit(new PipelineTrace(PipelineLevel.Info, $"ConnectAsync to {url} complete."));
+        return true;
       }
       catch (ChannelClosedException closed) when (closed.InnerException is AuthenticationFailureException) {
-        throw new AuthenticationFailureException(innerException: closed);
+        Reset();
+        return false;
+      }
+      catch (AuthenticationFailureException) {
+        Reset();
+        return false;
       }
       finally {
         _ = _connectSemaphore.Release();
