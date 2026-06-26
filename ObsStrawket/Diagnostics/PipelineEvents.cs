@@ -46,6 +46,44 @@ namespace ObsStrawket.Diagnostics {
   }
 
   /// <summary>
+  /// A websocket text payload was sent to OBS.
+  /// </summary>
+  public sealed class WebSocketPayloadSent : PipelineEvent {
+    /// <summary>Creates the event.</summary>
+    public WebSocketPayloadSent(string payload) {
+      Payload = payload;
+    }
+
+    /// <summary>Raw JSON payload sent over the websocket.</summary>
+    public string Payload { get; }
+
+    /// <inheritdoc/>
+    public override PipelineLevel Level => PipelineLevel.Info;
+
+    /// <inheritdoc/>
+    public override string Message => $"Sent websocket payload: {Payload}";
+  }
+
+  /// <summary>
+  /// A websocket text payload was received from OBS.
+  /// </summary>
+  public sealed class WebSocketPayloadReceived : PipelineEvent {
+    /// <summary>Creates the event.</summary>
+    public WebSocketPayloadReceived(string payload) {
+      Payload = payload;
+    }
+
+    /// <summary>Raw JSON payload received over the websocket.</summary>
+    public string Payload { get; }
+
+    /// <inheritdoc/>
+    public override PipelineLevel Level => PipelineLevel.Info;
+
+    /// <inheritdoc/>
+    public override string Message => $"Received websocket payload: {Payload}";
+  }
+
+  /// <summary>
   /// An event arrived that could not be matched to a known type.
   /// </summary>
   public sealed class RawEventReceived : PipelineEvent {

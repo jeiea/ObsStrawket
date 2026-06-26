@@ -24,6 +24,8 @@ namespace ObsStrawket {
     private ClientWebSocket _clientWebSocket = new();
     private CancellationTokenSource? _cancellation;
     private ObsConnectionState _connectionState = new(ObsConnectionPhase.Disconnected, null, null);
+    private int _pipelineEventLevel = (int)PipelineLevel.Warning;
+    private Action<PipelineEvent>? _pipelineEvent;
     private SendPipeline _sender;
     private ReceivePipeline _receiver;
     private Channel<IObsEvent> _events = Channel.CreateUnbounded<IObsEvent>();
@@ -43,7 +45,27 @@ namespace ObsStrawket {
     /// Handlers may run concurrently from several threads and the emission order is not
     /// guaranteed; write them to be thread-safe. See <see cref="PipelineEvent"/>.
     /// </remarks>
-    public event Action<PipelineEvent>? PipelineEvent;
+    public event Action<PipelineEvent>? PipelineEvent {
+      add {
+        AddPipelineEventHandler(value);
+        UpdatePipelineEmitter();
+      }
+      remove {
+        RemovePipelineEventHandler(value);
+        UpdatePipelineEmitter();
+      }
+    }
+
+    /// <summary>
+    /// Minimum severity emitted through <see cref="PipelineEvent"/>.
+    /// </summary>
+    public PipelineLevel PipelineEventLevel {
+      get => (PipelineLevel)Volatile.Read(ref _pipelineEventLevel);
+      set {
+        Volatile.Write(ref _pipelineEventLevel, (int)value);
+        UpdatePipelineEmitter();
+      }
+    }
 
     /// <summary>
     /// Fired whenever <see cref="ConnectionState"/> changes. Handler exceptions are reported
@@ -77,6 +99,14 @@ namespace ObsStrawket {
 
     internal static Uri DefaultUri => new("ws://127.0.0.1:4455");
 
+    private Task MessageLoop { get; set; } = Task.CompletedTask;
+
+    internal Task PipelineCompletion => Task.WhenAll(
+      _receiver.ReceiveTask ?? Task.CompletedTask,
+      _sender.SendTask ?? Task.CompletedTask,
+      MessageLoop
+    );
+
     /// <summary>
     ///  Connect to OBS websocket server.
     /// </summary>
@@ -97,7 +127,6 @@ namespace ObsStrawket {
       cancellation.ThrowIfCancellationRequested();
 
       var url = uri ?? DefaultUri;
-      PipelineEvent?.Invoke(new PipelineTrace(PipelineLevel.Info, $"ConnectAsync to {url}."));
       await _connectSemaphore.WaitAsync(cancellation).ConfigureAwait(false);
       try {
         if (ConnectionState.Phase == ObsConnectionPhase.Connected) {
@@ -105,7 +134,7 @@ namespace ObsStrawket {
             await CloseInternalAsync().ConfigureAwait(false);
           }
           catch (Exception ex) {
-            PipelineEvent?.Invoke(new CloseExceptionIgnored(ex));
+            EmitPipelineEvent(new CloseExceptionIgnored(ex));
           }
         }
 
@@ -114,8 +143,8 @@ namespace ObsStrawket {
         _cancellation = new();
         _clientWebSocket = new ClientWebSocket();
         _clientWebSocket.Options.AddSubProtocol("obswebsocket.json");
-        _sender = new(_clientWebSocket, PipelineEvent);
-        _receiver = new(_clientWebSocket, PipelineEvent);
+        _sender = new(_clientWebSocket) { Emit = GetPipelineEmitter() };
+        _receiver = new(_clientWebSocket) { Emit = GetPipelineEmitter() };
         var messages = _receiver.Messages;
         SetOptions(_clientWebSocket);
 
@@ -126,7 +155,7 @@ namespace ObsStrawket {
         var hello = await ReceiveMessageAsync(messages, cancellation).ConfigureAwait(false) as Hello
           ?? throw new ObsProtocolException("OBS did not send a Hello message during handshake.");
         if (hello.RpcVersion > _supportedRpcVersion) {
-          PipelineEvent?.Invoke(new UnsupportedRpcVersion(hello.RpcVersion, _supportedRpcVersion));
+          EmitPipelineEvent(new UnsupportedRpcVersion(hello.RpcVersion, _supportedRpcVersion));
         }
 
         var identify = new Identify() {
@@ -141,9 +170,8 @@ namespace ObsStrawket {
           throw new ObsProtocolException($"Identified message expected, but received {identified}.");
         }
 
-        _ = LoopReceiveAsync(messages, _cancellation.Token);
+        MessageLoop = LoopReceiveAsync(messages, _cancellation.Token);
         SetConnectionState(ObsConnectionPhase.Connected, url);
-        PipelineEvent?.Invoke(new PipelineTrace(PipelineLevel.Info, $"ConnectAsync to {url} complete."));
         return true;
       }
       catch (Exception exception) when (GetChannelFailure(exception) is ObsAuthenticationException failure) {
@@ -216,9 +244,6 @@ namespace ObsStrawket {
       using var operationCancellation = LinkInstanceCancellation(cancellation);
       operationCancellation.Token.ThrowIfCancellationRequested();
       request.RequestId = $"{Guid.NewGuid()}";
-      string traceName = request is IRequestBatch ? "batch" : request.GetType().Name;
-      PipelineEvent?.Invoke(new PipelineTrace(PipelineLevel.Info, $"RequestAsync {traceName} start."));
-
       var waiter = new TaskCompletionSource<IHasRequestId>(
         TaskCreationOptions.RunContinuationsAsynchronously
       );
@@ -251,7 +276,6 @@ namespace ObsStrawket {
           );
         }
         var response = await waiter.Task.ConfigureAwait(false);
-        PipelineEvent?.Invoke(new PipelineTrace(PipelineLevel.Info, $"RequestAsync {traceName} finished."));
         return response as TResponse
           ?? throw new ObsProtocolException(
             $"Expected {typeof(TResponse).Name}, but received {response.GetType().Name}."
@@ -267,7 +291,6 @@ namespace ObsStrawket {
     /// <see cref="ObsConnectionClosedException"/>.
     /// </summary>
     public async Task CloseAsync(WebSocketCloseStatus status = WebSocketCloseStatus.NormalClosure, string? description = "Client closed websocket", Exception? exception = null) {
-      PipelineEvent?.Invoke(new PipelineTrace(PipelineLevel.Info, $"CloseAsync exception: {exception?.Message}"));
       await _connectSemaphore.WaitAsync().ConfigureAwait(false);
       try {
         var connectionState = ConnectionState;
@@ -277,7 +300,6 @@ namespace ObsStrawket {
         else if (connectionState.Phase == ObsConnectionPhase.Faulted) {
           SetConnectionState(ObsConnectionPhase.Disconnected, connectionState.Uri);
         }
-        PipelineEvent?.Invoke(new PipelineTrace(PipelineLevel.Info, "CloseAsync complete."));
       }
       finally {
         _ = _connectSemaphore.Release();
@@ -368,7 +390,6 @@ namespace ObsStrawket {
 
     private async Task LoopReceiveAsync(ChannelReader<Task<IOpCodeMessage>> messages, CancellationToken cancellation = default) {
       var token = cancellation;
-      PipelineEvent?.Invoke(new PipelineTrace(PipelineLevel.Debug, "Start"));
 
       try {
         var events = _events.Writer;
@@ -379,15 +400,12 @@ namespace ObsStrawket {
             break;
           }
           var message = await ReceiveMessageAsync(messages, default).ConfigureAwait(false);
-          PipelineEvent?.Invoke(new PipelineTrace(PipelineLevel.Debug, $"Received message: {message?.GetType().Name ?? "null"}"));
           if (message == null) {
             break;
           }
 
           await DispatchAsync(message, events, token).ConfigureAwait(false);
         }
-        PipelineEvent?.Invoke(new PipelineTrace(PipelineLevel.Debug,
-          $"Close. webSocket.State: {_clientWebSocket.State}, cancellation: {token.IsCancellationRequested}"));
         if (!token.IsCancellationRequested) {
           await CloseAsync(exception: new ObsConnectionClosedException(
             "OBS closed the websocket connection.")).ConfigureAwait(false);
@@ -398,9 +416,7 @@ namespace ObsStrawket {
           exception,
           "The OBS websocket connection terminated.");
         await CloseAsync(exception: failure).ConfigureAwait(false);
-        PipelineEvent?.Invoke(new PipelineTrace(PipelineLevel.Debug, $"Queue cancelled: {exception.Message}", exception));
       }
-      PipelineEvent?.Invoke(new PipelineTrace(PipelineLevel.Debug, $"Exit. IsCancellationRequested: {token.IsCancellationRequested}"));
     }
 
     private async Task DispatchAsync(
@@ -408,15 +424,15 @@ namespace ObsStrawket {
     ) {
       switch (message) {
       case IObsEvent ev:
-        if (ev is RawEvent rawEvent && PipelineEvent != null) {
-          PipelineEvent?.Invoke(new RawEventReceived(JsonSerializer.Serialize(rawEvent)));
+        if (ev is RawEvent rawEvent && CanEmitPipelineEvent(PipelineLevel.Warning)) {
+          EmitPipelineEvent(new RawEventReceived(JsonSerializer.Serialize(rawEvent)));
         }
         await events.WriteAsync(ev, token).ConfigureAwait(false);
         break;
 
       case IHasRequestId response:
-        if (response is RawRequestResponse rawResponse && PipelineEvent != null) {
-          PipelineEvent?.Invoke(new RawResponseReceived(JsonSerializer.Serialize(rawResponse)));
+        if (response is RawRequestResponse rawResponse && CanEmitPipelineEvent(PipelineLevel.Warning)) {
+          EmitPipelineEvent(new RawResponseReceived(JsonSerializer.Serialize(rawResponse)));
         }
         bool responseMatched = TryCompletePendingRequest(
           response.RequestId,
@@ -425,14 +441,14 @@ namespace ObsStrawket {
             : request.TrySetResult(response)
         );
         if (!responseMatched) {
-          PipelineEvent?.Invoke(response is IRequestBatchResponse
+          EmitPipelineEvent(response is IRequestBatchResponse
             ? new OrphanBatchResponse(response.RequestId)
             : new OrphanResponse(response.RequestId));
         }
         break;
 
       default:
-        PipelineEvent?.Invoke(new UnknownMessageType(message.GetType()));
+        EmitPipelineEvent(new UnknownMessageType(message.GetType()));
         break;
       }
     }
@@ -479,7 +495,7 @@ namespace ObsStrawket {
         handler?.Invoke(this, args);
       }
       catch (Exception handlerException) {
-        PipelineEvent?.Invoke(new EventHandlerFaulted(
+        EmitPipelineEvent(new EventHandlerFaulted(
           EventHandlerKind.ConnectionStateChanged,
           null,
           handlerException));
@@ -520,6 +536,68 @@ namespace ObsStrawket {
         ObsWebSocketException obsException => obsException,
         _ => new ObsConnectionException(message, failure),
       };
+    }
+
+    private void AddPipelineEventHandler(Action<PipelineEvent>? handler) {
+      if (handler == null) {
+        return;
+      }
+
+      Action<PipelineEvent>? previous;
+      Action<PipelineEvent> next;
+      do {
+        previous = _pipelineEvent;
+        next = (Action<PipelineEvent>)Delegate.Combine(previous, handler);
+      } while (Interlocked.CompareExchange(ref _pipelineEvent, next, previous) != previous);
+    }
+
+    private void RemovePipelineEventHandler(Action<PipelineEvent>? handler) {
+      if (handler == null) {
+        return;
+      }
+
+      Action<PipelineEvent>? previous;
+      Action<PipelineEvent>? next;
+      do {
+        previous = _pipelineEvent;
+        next = (Action<PipelineEvent>?)Delegate.Remove(previous, handler);
+      } while (Interlocked.CompareExchange(ref _pipelineEvent, next, previous) != previous);
+    }
+
+    private Action<PipelineEvent>? GetPipelineEmitter() {
+      return CanEmitPipelineEvent(PipelineLevel.Info) ? EmitPipelineEvent : null;
+    }
+
+    private void UpdatePipelineEmitter() {
+      var emitter = GetPipelineEmitter();
+      _sender.Emit = emitter;
+      _receiver.Emit = emitter;
+    }
+
+    private void EmitPipelineEvent(PipelineEvent diagnostic) {
+      if (!ShouldEmitPipelineEvent(diagnostic.Level)) {
+        return;
+      }
+
+      var handler = _pipelineEvent;
+      if (handler == null) {
+        return;
+      }
+
+      try {
+        handler(diagnostic);
+      }
+      catch {
+        // Diagnostic handler failures must not affect the websocket pipeline.
+      }
+    }
+
+    internal bool ShouldEmitPipelineEvent(PipelineLevel level) {
+      return level >= PipelineEventLevel;
+    }
+
+    private bool CanEmitPipelineEvent(PipelineLevel level) {
+      return _pipelineEvent != null && ShouldEmitPipelineEvent(level);
     }
   }
 }

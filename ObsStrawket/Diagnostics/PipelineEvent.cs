@@ -7,9 +7,7 @@ namespace ObsStrawket.Diagnostics {
   /// consumers can filter with comparisons such as <c>e.Level &gt;= PipelineLevel.Warning</c>.
   /// </summary>
   public enum PipelineLevel {
-    /// <summary>Verbose progress trace, useful only while debugging the library.</summary>
-    Debug = 0,
-    /// <summary>Normal lifecycle milestone (connect, request, close).</summary>
+    /// <summary>Normal lifecycle or operation notification.</summary>
     Info = 1,
     /// <summary>Unexpected but recoverable situation.</summary>
     Warning = 2,

@@ -40,6 +40,7 @@ namespace ObsStrawket.Test {
           ObsConnectionPhase.Disconnected,
         ],
         transitions.Select(e => e.NewState.Phase).ToArray());
+      await client.PipelineCompletion.WaitAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -69,6 +70,32 @@ namespace ObsStrawket.Test {
       await client.CloseAsync();
     }
 
+    [Fact]
+    public async Task LowLevelClientCompletesPipelineTasksAfterServerCloses() {
+      using var server = new MockServer().Run(
+        AcceptAndCloseFromServerAsync,
+        TestContext.Current.CancellationToken);
+      using var client = new ClientSocket();
+      var faulted = new TaskCompletionSource<ObsConnectionState>(
+        TaskCreationOptions.RunContinuationsAsynchronously);
+      client.ConnectionStateChanged += (_, e) => {
+        if (e.NewState.Phase == ObsConnectionPhase.Faulted) {
+          _ = faulted.TrySetResult(e.NewState);
+        }
+      };
+
+      Assert.True(await client.ConnectAsync(
+        server.Uri,
+        MockServer.Password,
+        cancellation: TestContext.Current.CancellationToken));
+
+      var state = await faulted.Task.WaitAsync(TestContext.Current.CancellationToken);
+
+      var exception = Assert.IsType<ObsConnectionClosedException>(state.Exception);
+      Assert.Equal((int)WebSocketCloseStatus.NormalClosure, exception.CloseCode);
+      await client.PipelineCompletion.WaitAsync(TestContext.Current.CancellationToken);
+    }
+
     private static async Task AcceptAndWaitForClientCloseAsync(
       HttpListenerContext context,
       CancellationToken cancellation
@@ -87,6 +114,19 @@ namespace ObsStrawket.Test {
           webSocketContext.WebSocket,
           cancellation).ConfigureAwait(false);
       }
+    }
+
+    private static async Task AcceptAndCloseFromServerAsync(
+      HttpListenerContext context,
+      CancellationToken cancellation
+    ) {
+      var (webSocketContext, session) = await MockServer.HandshakeAsync(
+        context,
+        cancellation).ConfigureAwait(false);
+      using var _ = session;
+      await MockServer.CloseQuietlyAsync(
+        webSocketContext.WebSocket,
+        cancellation).ConfigureAwait(false);
     }
   }
 }

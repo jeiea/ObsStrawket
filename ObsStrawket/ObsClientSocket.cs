@@ -478,6 +478,8 @@ namespace ObsStrawket {
 
     private readonly SemaphoreSlim _connectSemaphore = new(1);
 
+    private Action<PipelineEvent>? _pipelineEvent;
+
     private Task? _dispatch;
 
     /// <summary>
@@ -489,7 +491,6 @@ namespace ObsStrawket {
     /// </param>
     public ObsClientSocket(ClientSocket? client = null, bool useChannel = false) {
       _clientSocket = client ?? new ClientSocket();
-      _clientSocket.PipelineEvent += Emit;
       if (!useChannel) {
         _dispatch = Task.CompletedTask;
       }
@@ -503,7 +504,29 @@ namespace ObsStrawket {
     /// Handlers may run concurrently from several threads and the emission order is not
     /// guaranteed; write them to be thread-safe. See <see cref="Diagnostics.PipelineEvent"/>.
     /// </remarks>
-    public event Action<PipelineEvent>? PipelineEvent;
+    public event Action<PipelineEvent>? PipelineEvent {
+      add {
+        bool subscribe = _pipelineEvent == null && value != null;
+        _pipelineEvent += value;
+        if (subscribe) {
+          _clientSocket.PipelineEvent += Emit;
+        }
+      }
+      remove {
+        _pipelineEvent -= value;
+        if (_pipelineEvent == null) {
+          _clientSocket.PipelineEvent -= Emit;
+        }
+      }
+    }
+
+    /// <summary>
+    /// Minimum severity emitted through <see cref="PipelineEvent"/>.
+    /// </summary>
+    public PipelineLevel PipelineEventLevel {
+      get => _clientSocket.PipelineEventLevel;
+      set => _clientSocket.PipelineEventLevel = value;
+    }
 
     /// <summary>
     /// Fired whenever <see cref="ConnectionState"/> changes. This is independent of the
@@ -628,24 +651,22 @@ namespace ObsStrawket {
     private async Task DispatchEventAsync(Task former, ChannelReader<IObsEvent> events) {
       await former.ConfigureAwait(false);
 
-      Emit(new PipelineTrace(PipelineLevel.Debug, "Start"));
-
       try {
         while (await events.WaitToReadAsync().ConfigureAwait(false)) {
           DispatchEvent(await events.ReadAsync().ConfigureAwait(false));
         }
-        Emit(new PipelineTrace(PipelineLevel.Debug, "Terminated"));
       }
       catch (Exception exception) {
-        var failure = exception is ChannelClosedException { InnerException: { } inner }
-          ? inner
-          : exception;
-        Emit(new PipelineTrace(PipelineLevel.Debug, $"Terminated with exception: {failure.Message}", failure));
+        _ = exception;
       }
     }
 
     private void Emit(PipelineEvent diagnostic) {
-      var handler = PipelineEvent;
+      if (!_clientSocket.ShouldEmitPipelineEvent(diagnostic.Level)) {
+        return;
+      }
+
+      var handler = _pipelineEvent;
       if (handler == null) {
         return;
       }
