@@ -308,7 +308,7 @@ namespace ObsStrawket.Test {
         new GetSpecialInputsFlow(desktop1: null, mic1: null),
         new GetGroupSceneItemListFlow(expectMissingGroup: true),
 
-        new CreateProfileFlow(),
+        new CreateProfileFlow(_obs.ConfirmRemoveProfileAsync),
 
         new SetProfileParameterFlow(), // Config
         new GetProfileParameterFlow(),
@@ -452,7 +452,7 @@ namespace ObsStrawket.Test {
 
         new RemoveInputFlow(), // cleanup input
         new RemoveSceneFlow(),
-        new RemoveProfileFlow(),
+        new RemoveProfileFlow(_obs.ConfirmRemoveProfileAsync),
       };
       foreach (var flow in flows) {
         string flowName = flow.GetType().Name;

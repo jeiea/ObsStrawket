@@ -81,6 +81,10 @@ namespace ObsStrawket.Test.Utilities {
       RecordOperation($"Completed {requestName}");
     }
 
+    public Task ConfirmRemoveProfileAsync(Func<Task> request) {
+      return ClickDialogButtonDuringRequestAsync("Confirm Remove", IdYes, request);
+    }
+
     public async Task RestartAsync() {
       await StopAsync(force: true).ConfigureAwait(false);
       await InitializeAsync().ConfigureAwait(false);
@@ -407,6 +411,47 @@ namespace ObsStrawket.Test.Utilities {
           + $"{Environment.NewLine}Remaining OBS windows: {FormatWindows(remaining)}");
     }
 
+    private async Task ClickDialogButtonDuringRequestAsync(
+      string title,
+      int buttonId,
+      Func<Task> request
+    ) {
+      var requestTask = request();
+      DateTime? completedAt = null;
+      var deadline = DateTime.UtcNow + _windowTimeout;
+      while (DateTime.UtcNow < deadline) {
+        if (ClickDialogButton(title, buttonId)) {
+          break;
+        }
+        if (requestTask.IsCompleted) {
+          completedAt ??= DateTime.UtcNow;
+          if (DateTime.UtcNow - completedAt.Value >= TimeSpan.FromMilliseconds(500)) {
+            break;
+          }
+        }
+        await Task.Delay(100).ConfigureAwait(false);
+      }
+      await requestTask.ConfigureAwait(false);
+    }
+
+    private bool ClickDialogButton(string title, int buttonId) {
+      if (_process is not { HasExited: false } process) {
+        return false;
+      }
+      bool clicked = false;
+      uint processId = checked((uint)process.Id);
+      _ = EnumWindows((window, lParam) => {
+        _ = GetWindowThreadProcessId(window, out uint windowProcessId);
+        if (windowProcessId != processId || GetWindowTitle(window) != title) {
+          return true;
+        }
+        nint button = GetDlgItem(window, buttonId);
+        clicked |= button != 0 && PostMessage(button, BmClick, 0, 0);
+        return !clicked;
+      }, 0);
+      return clicked;
+    }
+
     private List<ObsWindow> GetWindows(bool visibleOnly) {
       var windows = new List<ObsWindow>();
       uint processId = checked((uint)_process!.Id);
@@ -521,21 +566,7 @@ namespace ObsStrawket.Test.Utilities {
     }
 
     private bool DismissCrashDialog() {
-      if (_process is not { HasExited: false } process) {
-        return false;
-      }
-      bool dismissed = false;
-      uint processId = checked((uint)process.Id);
-      _ = EnumWindows((window, lParam) => {
-        _ = GetWindowThreadProcessId(window, out uint windowProcessId);
-        if (windowProcessId != processId || GetWindowTitle(window) != "OBS has crashed!") {
-          return true;
-        }
-        nint noButton = GetDlgItem(window, IdNo);
-        dismissed |= noButton != 0 && PostMessage(noButton, BmClick, 0, 0);
-        return true;
-      }, 0);
-      return dismissed;
+      return ClickDialogButton("OBS has crashed!", IdNo);
     }
 
     private static string GetWindowTitle(nint window) {
@@ -646,6 +677,7 @@ namespace ObsStrawket.Test.Utilities {
     private delegate bool EnumWindowsCallback(nint window, nint parameter);
     private const uint BmClick = 0x00F5;
     private const uint WmClose = 0x0010;
+    private const int IdYes = 6;
     private const int IdNo = 7;
 
     private readonly record struct ObsWindow(

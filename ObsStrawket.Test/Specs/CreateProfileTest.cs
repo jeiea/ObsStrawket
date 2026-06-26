@@ -1,6 +1,7 @@
 using ObsStrawket.DataTypes;
 using ObsStrawket.DataTypes.Predefineds;
 using ObsStrawket.Test.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +16,12 @@ namespace ObsStrawket.Test.Specs {
   }
 
   internal class CreateProfileFlow : ITestFlow {
+    private readonly Func<Func<Task>, Task> _confirmRemoveProfileAsync;
+
+    public CreateProfileFlow(Func<Func<Task>, Task>? confirmRemoveProfileAsync = null) {
+      _confirmRemoveProfileAsync = confirmRemoveProfileAsync ?? (static request => request());
+    }
+
     public static string NewProfileName => "test profile name";
 
     public async Task RequestAsync(ObsClientSocket client) {
@@ -23,10 +30,11 @@ namespace ObsStrawket.Test.Specs {
       }
       catch (ObsRequestException failure)
       when (failure.Response.RequestStatus.Code == RequestStatus.ResourceAlreadyExists) {
-        _ = await client.RemoveProfileAsync(NewProfileName).ConfigureAwait(false);
-        _ = await client.Events.ReadAllAsync()
-          .Where(static (x) => x is CurrentProfileChanging or ProfileListChanged or CurrentProfileChanged)
-          .Take(3).ToListAsync().ConfigureAwait(false);
+        await RemoveProfileFlow.RemoveProfileAsync(
+          client,
+          NewProfileName,
+          _confirmRemoveProfileAsync
+        ).ConfigureAwait(false);
         await CreateProfileAsync(client).ConfigureAwait(false);
       }
     }
