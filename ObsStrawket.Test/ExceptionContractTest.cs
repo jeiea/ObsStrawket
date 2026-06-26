@@ -10,14 +10,18 @@ using Xunit;
 namespace ObsStrawket.Test {
   public class ExceptionContractTest {
     [Fact]
-    public async Task ProtocolFailureIsSharedByRequestAndDisconnectedEvent() {
-      var disconnected = new TaskCompletionSource<Exception?>(
+    public async Task ProtocolFailureIsSharedByRequestAndFaultedState() {
+      var faulted = new TaskCompletionSource<Exception?>(
         TaskCreationOptions.RunContinuationsAsynchronously);
       using var server = new MockServer().Run(
         SendMalformedResponseAsync,
         TestContext.Current.CancellationToken);
       using var client = ClientFlow.GetDebugClient();
-      client.Disconnected += exception => disconnected.TrySetResult(exception);
+      client.ConnectionStateChanged += (_, e) => {
+        if (e.NewState.Phase == ObsConnectionPhase.Faulted) {
+          _ = faulted.TrySetResult(e.NewState.Exception);
+        }
+      };
       Assert.True(await client.ConnectAsync(
         server.Uri,
         MockServer.Password,
@@ -25,10 +29,13 @@ namespace ObsStrawket.Test {
 
       var requestException = await Assert.ThrowsAsync<ObsProtocolException>(
         () => client.GetRecordStatusAsync(TestContext.Current.CancellationToken));
-      var disconnectedException = await disconnected.Task.WaitAsync(
+      var faultedException = await faulted.Task.WaitAsync(
         TestContext.Current.CancellationToken);
 
-      Assert.Same(requestException, disconnectedException);
+      Assert.Same(requestException, faultedException);
+      Assert.Equal(ObsConnectionPhase.Faulted, client.ConnectionState.Phase);
+      Assert.Equal(server.Uri, client.ConnectionState.Uri);
+      Assert.Same(requestException, client.ConnectionState.Exception);
       _ = Assert.IsType<JsonException>(requestException.InnerException);
     }
 
@@ -43,6 +50,9 @@ namespace ObsStrawket.Test {
           cancellation: TestContext.Current.CancellationToken));
 
       Assert.NotNull(exception.InnerException);
+      Assert.Equal(ObsConnectionPhase.Faulted, client.ConnectionState.Phase);
+      Assert.Equal(unavailable, client.ConnectionState.Uri);
+      Assert.Same(exception, client.ConnectionState.Exception);
     }
 
     [Fact]
@@ -63,6 +73,9 @@ namespace ObsStrawket.Test {
           TestContext.Current.CancellationToken).AsTask());
 
       Assert.Same(requestException, channelException.InnerException);
+      Assert.Equal(ObsConnectionPhase.Faulted, client.ConnectionState.Phase);
+      Assert.Equal(server.Uri, client.ConnectionState.Uri);
+      Assert.Same(requestException, client.ConnectionState.Exception);
     }
 
     [Fact]
@@ -80,6 +93,14 @@ namespace ObsStrawket.Test {
         () => client.GetRecordStatusAsync(TestContext.Current.CancellationToken));
 
       Assert.NotNull(exception.InnerException);
+      Assert.Equal(ObsConnectionPhase.Faulted, client.ConnectionState.Phase);
+      Assert.Equal(server.Uri, client.ConnectionState.Uri);
+      Assert.Same(exception, client.ConnectionState.Exception);
+
+      await client.CloseAsync();
+
+      Assert.Equal(ObsConnectionPhase.Disconnected, client.ConnectionState.Phase);
+      Assert.Null(client.ConnectionState.Exception);
     }
 
     private static async Task AbortWithPendingRequestAsync(

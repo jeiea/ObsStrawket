@@ -506,20 +506,27 @@ namespace ObsStrawket {
     public event Action<PipelineEvent>? PipelineEvent;
 
     /// <summary>
-    /// Fired when it is connected to OBS
+    /// Fired whenever <see cref="ConnectionState"/> changes. This is independent of the
+    /// event dispatch mode and also fires when the client is created with <c>useChannel</c>.
     /// </summary>
-    public event Action<Uri> Connected = static delegate { };
-
-    /// <summary>
-    /// Fired when disconnected from OBS. The argument is null after a local graceful close,
-    /// otherwise it is the normalized connection or protocol failure.
-    /// </summary>
-    public event Action<Exception?> Disconnected = static delegate { };
+    /// <remarks>
+    /// Handlers run synchronously during the state transition. Do not synchronously block on
+    /// <see cref="ConnectAsync"/> or <see cref="CloseAsync"/> from a handler.
+    /// </remarks>
+    public event EventHandler<ObsConnectionStateChangedEventArgs>? ConnectionStateChanged {
+      add => _clientSocket.ConnectionStateChanged += value;
+      remove => _clientSocket.ConnectionStateChanged -= value;
+    }
 
     /// <summary>
     /// Whether it is connected to OBS
     /// </summary>
     public bool IsConnected => _clientSocket.IsConnected;
+
+    /// <summary>
+    /// Current lifecycle snapshot of the websocket connection.
+    /// </summary>
+    public ObsConnectionState ConnectionState => _clientSocket.ConnectionState;
 
     /// <summary>
     /// It emits all received OBS events. It can be used only when <see cref="ObsClientSocket"/>
@@ -557,7 +564,7 @@ namespace ObsStrawket {
           cancellation
         ).ConfigureAwait(false);
         if (connected && _dispatch != null) {
-          _dispatch = DispatchEventAsync(_dispatch, _clientSocket.Events, target);
+          _dispatch = DispatchEventAsync(_dispatch, _clientSocket.Events);
         }
         return connected;
       }
@@ -618,40 +625,22 @@ namespace ObsStrawket {
       GC.SuppressFinalize(this);
     }
 
-    private async Task DispatchEventAsync(Task former, ChannelReader<IObsEvent> events, Uri uri) {
+    private async Task DispatchEventAsync(Task former, ChannelReader<IObsEvent> events) {
       await former.ConfigureAwait(false);
 
       Emit(new PipelineTrace(PipelineLevel.Debug, "Start"));
-
-      try {
-        Connected(uri);
-      }
-      catch (Exception exception) {
-        Emit(new EventHandlerFaulted(EventHandlerKind.Connected, null, exception));
-      }
 
       try {
         while (await events.WaitToReadAsync().ConfigureAwait(false)) {
           DispatchEvent(await events.ReadAsync().ConfigureAwait(false));
         }
         Emit(new PipelineTrace(PipelineLevel.Debug, "Terminated"));
-        InvokeCloseSafe(null);
       }
       catch (Exception exception) {
         var failure = exception is ChannelClosedException { InnerException: { } inner }
           ? inner
           : exception;
         Emit(new PipelineTrace(PipelineLevel.Debug, $"Terminated with exception: {failure.Message}", failure));
-        InvokeCloseSafe(failure);
-      }
-    }
-
-    private void InvokeCloseSafe(Exception? info) {
-      try {
-        Disconnected(info);
-      }
-      catch (Exception ex) {
-        Emit(new EventHandlerFaulted(EventHandlerKind.Disconnected, null, ex));
       }
     }
 

@@ -38,18 +38,23 @@ namespace ObsStrawket.Test {
       int openCloseDifference = 0;
       var failures = Channel.CreateUnbounded<string>();
 
-      client.Connected += (uri) => {
-        int difference = Interlocked.Increment(ref openCloseDifference);
-        traces.Enqueue($"Connected: {difference}");
-        if (difference is < 0 or > 1) {
-          Assert.True(failures.Writer.TryWrite($"open close difference {difference}"));
+      client.ConnectionStateChanged += (_, e) => {
+        if (e.NewState.Phase == ObsConnectionPhase.Connected) {
+          int difference = Interlocked.Increment(ref openCloseDifference);
+          traces.Enqueue($"Connected: {difference}");
+          if (difference is < 0 or > 1) {
+            Assert.True(failures.Writer.TryWrite($"open close difference {difference}"));
+          }
         }
-      };
-      client.Disconnected += (o) => {
-        int difference = Interlocked.Decrement(ref openCloseDifference);
-        traces.Enqueue($"Disconnected: {difference}");
-        if (difference is < 0 or > 1) {
-          Assert.True(failures.Writer.TryWrite($"open close difference {difference}"));
+        else if (
+          e.OldState.Phase is ObsConnectionPhase.Connected or ObsConnectionPhase.Closing
+          && e.NewState.Phase is ObsConnectionPhase.Disconnected or ObsConnectionPhase.Faulted
+        ) {
+          int difference = Interlocked.Decrement(ref openCloseDifference);
+          traces.Enqueue($"{e.NewState.Phase}: {difference}");
+          if (difference is < 0 or > 1) {
+            Assert.True(failures.Writer.TryWrite($"open close difference {difference}"));
+          }
         }
       };
 

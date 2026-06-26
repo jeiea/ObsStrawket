@@ -20,9 +20,10 @@ namespace ObsStrawket {
     private const int _supportedRpcVersion = 1;
     private readonly ConcurrentDictionary<string, TaskCompletionSource<IHasRequestId>> _pendingRequests = new();
     private readonly SemaphoreSlim _connectSemaphore = new(1);
+    private readonly object _stateLock = new();
     private ClientWebSocket _clientWebSocket = new();
     private CancellationTokenSource? _cancellation;
-    private bool _isOpen;
+    private ObsConnectionState _connectionState = new(ObsConnectionPhase.Disconnected, null, null);
     private SendPipeline _sender;
     private ReceivePipeline _receiver;
     private Channel<IObsEvent> _events = Channel.CreateUnbounded<IObsEvent>();
@@ -45,9 +46,24 @@ namespace ObsStrawket {
     public event Action<PipelineEvent>? PipelineEvent;
 
     /// <summary>
+    /// Fired whenever <see cref="ConnectionState"/> changes. Handler exceptions are reported
+    /// through <see cref="PipelineEvent"/> and do not interrupt the websocket pipeline.
+    /// </summary>
+    /// <remarks>
+    /// Handlers run synchronously during the state transition. Do not synchronously block on
+    /// <see cref="ConnectAsync"/> or <see cref="CloseAsync"/> from a handler.
+    /// </remarks>
+    public event EventHandler<ObsConnectionStateChangedEventArgs>? ConnectionStateChanged;
+
+    /// <summary>
+    /// Current lifecycle snapshot of the websocket connection.
+    /// </summary>
+    public ObsConnectionState ConnectionState => Volatile.Read(ref _connectionState);
+
+    /// <summary>
     /// Whether it is connected to websocket server
     /// </summary>
-    public bool IsConnected => _isOpen && _clientWebSocket.State == WebSocketState.Open;
+    public bool IsConnected => ConnectionState.Phase == ObsConnectionPhase.Connected;
 
     /// <summary>
     /// It emits all of received OBS events.
@@ -84,7 +100,7 @@ namespace ObsStrawket {
       PipelineEvent?.Invoke(new PipelineTrace(PipelineLevel.Info, $"ConnectAsync to {url}."));
       await _connectSemaphore.WaitAsync(cancellation).ConfigureAwait(false);
       try {
-        if (_isOpen) {
+        if (ConnectionState.Phase == ObsConnectionPhase.Connected) {
           try {
             await CloseInternalAsync().ConfigureAwait(false);
           }
@@ -93,6 +109,7 @@ namespace ObsStrawket {
           }
         }
 
+        SetConnectionState(ObsConnectionPhase.Connecting, url);
         _events = Channel.CreateUnbounded<IObsEvent>();
         _cancellation = new();
         _clientWebSocket = new ClientWebSocket();
@@ -125,16 +142,18 @@ namespace ObsStrawket {
         }
 
         _ = LoopReceiveAsync(messages, _cancellation.Token);
-        _isOpen = true;
+        SetConnectionState(ObsConnectionPhase.Connected, url);
         PipelineEvent?.Invoke(new PipelineTrace(PipelineLevel.Info, $"ConnectAsync to {url} complete."));
         return true;
       }
-      catch (Exception exception) when (GetChannelFailure(exception) is ObsAuthenticationException) {
+      catch (Exception exception) when (GetChannelFailure(exception) is ObsAuthenticationException failure) {
         Reset();
+        SetConnectionState(ObsConnectionPhase.Faulted, url, failure);
         return false;
       }
       catch (OperationCanceledException) when (cancellation.IsCancellationRequested) {
         Reset();
+        SetConnectionState(ObsConnectionPhase.Disconnected, url);
         throw;
       }
       catch (Exception exception) {
@@ -142,6 +161,7 @@ namespace ObsStrawket {
           exception,
           "Failed to connect to the OBS websocket server.");
         Reset(eventException: failure);
+        SetConnectionState(ObsConnectionPhase.Faulted, url, failure);
         throw failure;
       }
       finally {
@@ -250,7 +270,13 @@ namespace ObsStrawket {
       PipelineEvent?.Invoke(new PipelineTrace(PipelineLevel.Info, $"CloseAsync exception: {exception?.Message}"));
       await _connectSemaphore.WaitAsync().ConfigureAwait(false);
       try {
-        await CloseInternalAsync(status, description, exception).ConfigureAwait(false);
+        var connectionState = ConnectionState;
+        if (connectionState.Phase == ObsConnectionPhase.Connected) {
+          await CloseInternalAsync(status, description, exception).ConfigureAwait(false);
+        }
+        else if (connectionState.Phase == ObsConnectionPhase.Faulted) {
+          SetConnectionState(ObsConnectionPhase.Disconnected, connectionState.Uri);
+        }
         PipelineEvent?.Invoke(new PipelineTrace(PipelineLevel.Info, "CloseAsync complete."));
       }
       finally {
@@ -263,7 +289,12 @@ namespace ObsStrawket {
     /// </summary>
     public void Dispose() {
       var exception = new ObsConnectionClosedException("Socket disposed.");
+      var connectionState = ConnectionState;
+      if (connectionState.Phase == ObsConnectionPhase.Connected) {
+        SetConnectionState(ObsConnectionPhase.Closing, connectionState.Uri);
+      }
       Reset(exception, exception);
+      SetConnectionState(ObsConnectionPhase.Disconnected, connectionState.Uri);
       _connectSemaphore.Dispose();
       GC.SuppressFinalize(this);
     }
@@ -303,8 +334,14 @@ namespace ObsStrawket {
     }
 
     private async Task CloseInternalAsync(WebSocketCloseStatus status = WebSocketCloseStatus.NormalClosure, string? description = null, Exception? exception = null) {
-      if (!_isOpen) {
+      var connectionState = ConnectionState;
+      if (connectionState.Phase != ObsConnectionPhase.Connected) {
         return;
+      }
+
+      var uri = connectionState.Uri;
+      if (exception == null) {
+        SetConnectionState(ObsConnectionPhase.Closing, uri);
       }
 
       try {
@@ -322,7 +359,10 @@ namespace ObsStrawket {
         var pendingException = exception
           ?? new ObsConnectionClosedException(description ?? "Client closed the websocket connection.");
         Reset(pendingException, exception);
-        _isOpen = false;
+        SetConnectionState(
+          exception == null ? ObsConnectionPhase.Disconnected : ObsConnectionPhase.Faulted,
+          uri,
+          exception);
       }
     }
 
@@ -408,6 +448,42 @@ namespace ObsStrawket {
       _ = _events.Writer.TryComplete(eventException);
 
       _clientWebSocket.Dispose();
+    }
+
+    private void SetConnectionState(
+      ObsConnectionPhase phase,
+      Uri? uri = null,
+      Exception? exception = null
+    ) {
+      EventHandler<ObsConnectionStateChangedEventArgs>? handler;
+      ObsConnectionStateChangedEventArgs args;
+
+      lock (_stateLock) {
+        var oldState = _connectionState;
+        var newState = new ObsConnectionState(
+          phase,
+          uri ?? oldState.Uri,
+          phase == ObsConnectionPhase.Faulted ? exception : null
+        );
+        if (oldState.Phase == newState.Phase) {
+          _connectionState = newState;
+          return;
+        }
+
+        _connectionState = newState;
+        handler = ConnectionStateChanged;
+        args = new(oldState, newState);
+      }
+
+      try {
+        handler?.Invoke(this, args);
+      }
+      catch (Exception handlerException) {
+        PipelineEvent?.Invoke(new EventHandlerFaulted(
+          EventHandlerKind.ConnectionStateChanged,
+          null,
+          handlerException));
+      }
     }
 
     private bool TryCompletePendingRequest(

@@ -29,6 +29,8 @@
 - ! Remove the `ILogger` constructor parameter and
   Microsoft.Extensions.Logging dependency. Subscribe to `PipelineEvent` for
   structured diagnostics instead.
+- ! Remove `ObsClientSocket.Connected` and `ObsClientSocket.Disconnected`.
+  Subscribe to `ConnectionStateChanged` and inspect `ConnectionState` instead.
 - Multi-target `netstandard2.0` and `net8.0`. On .NET 8+,
   System.Text.Json and System.Threading.Channels come from the framework
   instead of package downloads. The `netstandard2.0` target uses version

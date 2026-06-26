@@ -164,7 +164,7 @@ namespace ObsStrawket.Test.Utilities {
         await RunClientInternalAsync(uri, client, cancellation).ConfigureAwait(false);
       }
       finally {
-        client.Disconnected -= TryComplete;
+        client.ConnectionStateChanged -= TryComplete;
         client.StudioModeStateChanged -= QueueEvent;
         client.Event -= QueueEvent;
       }
@@ -173,7 +173,7 @@ namespace ObsStrawket.Test.Utilities {
     private async Task RunClientInternalAsync(Uri uri, ObsClientSocket client, CancellationToken cancellation) {
       client.Event += QueueEvent;
       client.StudioModeStateChanged += QueueEvent;
-      client.Disconnected += TryComplete;
+      client.ConnectionStateChanged += TryComplete;
 
       _ = await client.ConnectAsync(uri, MockServer.Password, cancellation: cancellation).ConfigureAwait(false);
 
@@ -223,8 +223,10 @@ namespace ObsStrawket.Test.Utilities {
       await client.CloseAsync().ConfigureAwait(false);
     }
 
-    private void TryComplete(Exception? exception) {
-      _ = _events.Writer.TryComplete(exception);
+    private void TryComplete(object? sender, ObsConnectionStateChangedEventArgs e) {
+      if (e.NewState.Phase is ObsConnectionPhase.Disconnected or ObsConnectionPhase.Faulted) {
+        _ = _events.Writer.TryComplete(e.NewState.Exception);
+      }
     }
 
     private async void QueueEvent(IObsEvent @event) {

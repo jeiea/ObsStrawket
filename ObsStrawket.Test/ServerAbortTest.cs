@@ -12,8 +12,10 @@ namespace ObsStrawket.Test {
       var cancellation = new CancellationTokenSource();
       var abort = Task.CompletedTask;
       var client = ClientFlow.GetDebugClient();
-      client.Disconnected += (o) => {
-        Debug.WriteLine(o);
+      client.ConnectionStateChanged += (_, e) => {
+        if (e.NewState.Phase == ObsConnectionPhase.Faulted) {
+          Debug.WriteLine(e.NewState.Exception);
+        }
       };
 
       for (int i = 0; i < 50; i++) {

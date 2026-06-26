@@ -21,10 +21,8 @@ namespace ObsStrawket.Diagnostics {
   /// Which consumer callback threw, for <see cref="EventHandlerFaulted"/>.
   /// </summary>
   public enum EventHandlerKind {
-    /// <summary><see cref="ObsClientSocket.Connected"/> handler.</summary>
-    Connected,
-    /// <summary><see cref="ObsClientSocket.Disconnected"/> handler.</summary>
-    Disconnected,
+    /// <summary><see cref="ClientSocket.ConnectionStateChanged"/> handler.</summary>
+    ConnectionStateChanged,
     /// <summary><see cref="ObsClientSocket.Event"/> handler.</summary>
     Event,
     /// <summary>A type-specific event handler.</summary>
