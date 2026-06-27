@@ -4,11 +4,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SourceGenerator {
-  internal partial class RequestInterfaceGenerator {
+  internal class RequestInterfaceGenerator {
     private readonly IDirectoryHelper _directoryHelper;
     private readonly ISourceFetcher _fetcher;
 
@@ -20,8 +19,8 @@ namespace SourceGenerator {
 
     public async Task GenerateAsync() {
       var json = await _fetcher.GetModifiedProtocolJsonAsync().ConfigureAwait(false);
-      PatchTriggerHotkeyByKeySequence(json.Requests.Find(x => x.RequestType == "TriggerHotkeyByKeySequence")!.RequestFields!);
-      json.Requests.RemoveAt(json.Requests.FindIndex(x => x.RequestType == "Sleep"));
+      PatchTriggerHotkeyByKeySequence(json.Requests.Find(static x => x.RequestType == "TriggerHotkeyByKeySequence")!.RequestFields!);
+      json.Requests.RemoveAt(json.Requests.FindIndex(static x => x.RequestType == "Sleep"));
 
       using var part = new StringWriter();
       part.WriteLine("    #region Requests");
@@ -59,22 +58,33 @@ namespace SourceGenerator {
 
       part.Write("    #endregion");
 
-      string previous = await File.ReadAllTextAsync(_directoryHelper.ObsClientPath).ConfigureAwait(false);
-
-      bool isReplaced = false;
-      string result = RequestsRegionPattern().Replace(previous, (match) => {
-        isReplaced = true;
-        return part.ToString();
-      });
-      if (!isReplaced) {
-        throw new InvalidOperationException("Unexpected file");
-      }
-
-      await File.WriteAllTextAsync(_directoryHelper.ObsClientPath, result).ConfigureAwait(false);
+      await File.WriteAllTextAsync(
+        _directoryHelper.ObsClientRequestsPath,
+        WrapPartialClass(part.ToString())
+      ).ConfigureAwait(false);
     }
 
-    [GeneratedRegex(@"    #region Requests\r?\n.*?#endregion", RegexOptions.Singleline)]
-    private static partial Regex RequestsRegionPattern();
+    private static string WrapPartialClass(string memberSource) {
+      return $$"""
+        #nullable enable
+
+        using ObsStrawket.DataTypes;
+        using ObsStrawket.DataTypes.Predefineds;
+        using System;
+        using System.Collections.Generic;
+        using System.Text.Json;
+        using System.Threading;
+        using System.Threading.Tasks;
+
+        namespace ObsStrawket {
+
+          public partial class ObsClientSocket {
+
+        {{memberSource}}
+          }
+        }
+        """;
+    }
 
     private static void PatchTriggerHotkeyByKeySequence(List<ObsRequestField> requestFields) {
       int index = requestFields.FindIndex(static x => x.ValueName == "keyModifiers");

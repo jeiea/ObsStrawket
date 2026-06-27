@@ -28,12 +28,14 @@ namespace SourceGenerator {
 
       await provider.GetRequiredService<ISourceFetcher>().PrepareAsync(updateUpstream).ConfigureAwait(false);
 
-      await provider.GetRequiredService<EnumGenerator>().GenerateAsync().ConfigureAwait(false);
-      await provider.GetRequiredService<EventGenerator>().GenerateAsync().ConfigureAwait(false);
-      await provider.GetRequiredService<EventInterfaceGenerator>().GenerateAsync().ConfigureAwait(false);
-      await provider.GetRequiredService<RequestInterfaceGenerator>().GenerateAsync().ConfigureAwait(false);
-      await provider.GetRequiredService<RequestResponseGenerator>().GenerateAsync().ConfigureAwait(false);
-      await provider.GetRequiredService<DataTypeMappingGenerator>().GenerateAsync().ConfigureAwait(false);
+      await Task.WhenAll([
+        provider.GetRequiredService<EnumGenerator>().GenerateAsync(),
+        provider.GetRequiredService<EventGenerator>().GenerateAsync(),
+        provider.GetRequiredService<EventInterfaceGenerator>().GenerateAsync(),
+        provider.GetRequiredService<RequestInterfaceGenerator>().GenerateAsync(),
+        provider.GetRequiredService<RequestResponseGenerator>().GenerateAsync(),
+        provider.GetRequiredService<DataTypeMappingGenerator>().GenerateAsync(),
+      ]).ConfigureAwait(false);
     }
 
     internal static bool ParseUpdateUpstream(string[] args) {

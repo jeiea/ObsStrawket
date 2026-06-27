@@ -1,0 +1,2681 @@
+#nullable enable
+
+using ObsStrawket.DataTypes;
+using ObsStrawket.DataTypes.Predefineds;
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace ObsStrawket {
+
+  public partial class ObsClientSocket {
+
+    #region Requests
+
+    /// <summary>
+    /// Gets an array of canvases in OBS.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.7.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetCanvasListResponse> GetCanvasListAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetCanvasList() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets data about the current plugin and RPC version.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetVersionResponse> GetVersionAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetVersion() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets statistics about OBS, obs-websocket, and the current session.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetStatsResponse> GetStatsAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetStats() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Broadcasts a <c>CustomEvent</c> to all WebSocket clients. Receivers are clients which are identified and subscribed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="eventData">Data payload to emit to all receivers</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> BroadcastCustomEventAsync(Dictionary<string, JsonElement?> eventData, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new BroadcastCustomEvent() { EventData = eventData }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Call a request registered to a vendor.<br />
+    /// <br />
+    /// A vendor is a unique name registered by a third-party plugin or script, which allows for custom requests and events to be added to obs-websocket.<br />
+    /// If a plugin or script implements vendor requests or events, documentation is expected to be provided with them.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="vendorName">Name of the vendor to use</param>
+    /// <param name="requestType">The request type to call</param>
+    /// <param name="requestData">Object containing appropriate request data<br />If null, {}</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<CallVendorRequestResponse> CallVendorRequestAsync(string vendorName, string requestType, Dictionary<string, JsonElement?>? requestData = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new CallVendorRequest() { VendorName = vendorName, VendorRequestType = requestType, RequestData = requestData }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets an array of all hotkey names in OBS.<br />
+    /// <br />
+    /// Note: Hotkey functionality in obs-websocket comes as-is, and we do not guarantee support if things are broken. In 9/10 usages of hotkey requests, there exists a better, more reliable method via other requests.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetHotkeyListResponse> GetHotkeyListAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetHotkeyList() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Triggers a hotkey using its name. See <c>GetHotkeyList</c>.<br />
+    /// <br />
+    /// Note: Hotkey functionality in obs-websocket comes as-is, and we do not guarantee support if things are broken. In 9/10 usages of hotkey requests, there exists a better, more reliable method via other requests.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="hotkeyName">Name of the hotkey to trigger</param>
+    /// <param name="contextName">Name of context of the hotkey to trigger<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> TriggerHotkeyByNameAsync(string hotkeyName, string? contextName = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new TriggerHotkeyByName() { HotkeyName = hotkeyName, ContextName = contextName }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Triggers a hotkey using a sequence of keys.<br />
+    /// <br />
+    /// Note: Hotkey functionality in obs-websocket comes as-is, and we do not guarantee support if things are broken. In 9/10 usages of hotkey requests, there exists a better, more reliable method via other requests.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="keyId">The OBS key ID to use. See https://github.com/obsproject/obs-studio/blob/master/libobs/obs-hotkeys.h<br />If null, Not pressed</param>
+    /// <param name="shift">Press Shift<br />If null, Not pressed</param>
+    /// <param name="control">Press CTRL<br />If null, Not pressed</param>
+    /// <param name="alt">Press ALT<br />If null, Not pressed</param>
+    /// <param name="command">Press CMD (Mac)<br />If null, Not pressed</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> TriggerHotkeyByKeySequenceAsync(string? keyId = default, bool? shift = default, bool? control = default, bool? alt = default, bool? command = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new TriggerHotkeyByKeySequence() { KeyId = keyId, KeyModifiers = new KeyModifiers() { Shift = shift, Control = control, Alt = alt, Command = command } }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the value of a "slot" from the selected persistent data realm.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="realm">The data realm to select. <c>OBS_WEBSOCKET_DATA_REALM_GLOBAL</c> or <c>OBS_WEBSOCKET_DATA_REALM_PROFILE</c></param>
+    /// <param name="slotName">The name of the slot to retrieve data from</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetPersistentDataResponse> GetPersistentDataAsync(DataRealm realm, string slotName, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetPersistentData() { Realm = realm, SlotName = slotName }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the value of a "slot" from the selected persistent data realm.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="realm">The data realm to select. <c>OBS_WEBSOCKET_DATA_REALM_GLOBAL</c> or <c>OBS_WEBSOCKET_DATA_REALM_PROFILE</c></param>
+    /// <param name="slotName">The name of the slot to retrieve data from</param>
+    /// <param name="slotValue">The value to apply to the slot</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetPersistentDataAsync(DataRealm realm, string slotName, object? slotValue, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetPersistentData() { Realm = realm, SlotName = slotName, SlotValue = slotValue }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets an array of all scene collections<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetSceneCollectionListResponse> GetSceneCollectionListAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetSceneCollectionList() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Switches to a scene collection.<br />
+    /// <br />
+    /// Note: This will block until the collection has finished changing.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneCollectionName">Name of the scene collection to switch to</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetCurrentSceneCollectionAsync(string sceneCollectionName, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetCurrentSceneCollection() { SceneCollectionName = sceneCollectionName }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Creates a new scene collection, switching to it in the process.<br />
+    /// <br />
+    /// Note: This will block until the collection has finished changing.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneCollectionName">Name for the new scene collection</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> CreateSceneCollectionAsync(string sceneCollectionName, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new CreateSceneCollection() { SceneCollectionName = sceneCollectionName }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets an array of all profiles<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetProfileListResponse> GetProfileListAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetProfileList() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Switches to a profile.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="profileName">Name of the profile to switch to</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetCurrentProfileAsync(string profileName, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetCurrentProfile() { ProfileName = profileName }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Creates a new profile, switching to it in the process<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="profileName">Name for the new profile</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> CreateProfileAsync(string profileName, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new CreateProfile() { ProfileName = profileName }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Removes a profile. If the current profile is chosen, it will change to a different profile first.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="profileName">Name of the profile to remove</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> RemoveProfileAsync(string profileName, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new RemoveProfile() { ProfileName = profileName }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets a parameter from the current profile's configuration.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="parameterCategory">Category of the parameter to get</param>
+    /// <param name="parameterName">Name of the parameter to get</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetProfileParameterResponse> GetProfileParameterAsync(string parameterCategory, string parameterName, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetProfileParameter() { ParameterCategory = parameterCategory, ParameterName = parameterName }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the value of a parameter in the current profile's configuration.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="parameterCategory">Category of the parameter to set</param>
+    /// <param name="parameterName">Name of the parameter to set</param>
+    /// <param name="parameterValue">Value of the parameter to set. Use <c>null</c> to delete</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetProfileParameterAsync(string parameterCategory, string parameterName, string? parameterValue, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetProfileParameter() { ParameterCategory = parameterCategory, ParameterName = parameterName, ParameterValue = parameterValue }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the current video settings.<br />
+    /// <br />
+    /// Note: To get the true FPS value, divide the FPS numerator by the FPS denominator. Example: <c>60000/1001</c><br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetVideoSettingsResponse> GetVideoSettingsAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetVideoSettings() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the current video settings.<br />
+    /// <br />
+    /// Note: Fields must be specified in pairs. For example, you cannot set only <c>baseWidth</c> without needing to specify <c>baseHeight</c>.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="fpsNumerator">Numerator of the fractional FPS value<br />If null, Not changed</param>
+    /// <param name="fpsDenominator">Denominator of the fractional FPS value<br />If null, Not changed</param>
+    /// <param name="baseWidth">Width of the base (canvas) resolution in pixels<br />If null, Not changed</param>
+    /// <param name="baseHeight">Height of the base (canvas) resolution in pixels<br />If null, Not changed</param>
+    /// <param name="outputWidth">Width of the output resolution in pixels<br />If null, Not changed</param>
+    /// <param name="outputHeight">Height of the output resolution in pixels<br />If null, Not changed</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetVideoSettingsAsync(int? fpsNumerator = default, int? fpsDenominator = default, int? baseWidth = default, int? baseHeight = default, int? outputWidth = default, int? outputHeight = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetVideoSettings() { FpsNumerator = fpsNumerator, FpsDenominator = fpsDenominator, BaseWidth = baseWidth, BaseHeight = baseHeight, OutputWidth = outputWidth, OutputHeight = outputHeight }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the current stream service settings (stream destination).<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetStreamServiceSettingsResponse> GetStreamServiceSettingsAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetStreamServiceSettings() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the current stream service settings (stream destination).<br />
+    /// <br />
+    /// Note: Simple RTMP settings can be set with type <c>rtmp_custom</c> and the settings fields <c>server</c> and <c>key</c>.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="streamServiceType">Type of stream service to apply. Example: <c>rtmp_common</c> or <c>rtmp_custom</c></param>
+    /// <param name="streamServiceSettings">Settings to apply to the service</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetStreamServiceSettingsAsync(StreamServiceType streamServiceType, Dictionary<string, JsonElement?> streamServiceSettings, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetStreamServiceSettings() { StreamServiceType = streamServiceType, StreamServiceSettings = streamServiceSettings }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the current directory that the record output is set to.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetRecordDirectoryResponse> GetRecordDirectoryAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetRecordDirectory() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the current directory that the record output writes files to.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.3.0
+    /// </summary>
+    /// <param name="recordDirectory">Output directory</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetRecordDirectoryAsync(string recordDirectory, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetRecordDirectory() { RecordDirectory = recordDirectory }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the active and show state of a source.<br />
+    /// <br />
+    /// **Compatible with inputs and scenes.**<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sourceName">Name of the source to get the active state of<br />If null, Unknown</param>
+    /// <param name="sourceUuid">UUID of the source to get the active state of<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the source is in, if using sourceName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetSourceActiveResponse> GetSourceActiveAsync(string? sourceName = default, string? sourceUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetSourceActive() { SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets a Base64-encoded screenshot of a source.<br />
+    /// <br />
+    /// The <c>imageWidth</c> and <c>imageHeight</c> parameters are treated as "scale to inner", meaning the smallest ratio will be used and the aspect ratio of the original resolution is kept.<br />
+    /// If <c>imageWidth</c> and <c>imageHeight</c> are not specified, the compressed image will use the full resolution of the source.<br />
+    /// <br />
+    /// **Compatible with inputs and scenes.**<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="imageFormat">Image compression format to use. Use <c>GetVersion</c> to get compatible image formats</param>
+    /// <param name="sourceName">Name of the source to take a screenshot of<br />If null, Unknown</param>
+    /// <param name="sourceUuid">UUID of the source to take a screenshot of<br />If null, Unknown</param>
+    /// <param name="imageWidth">Width to scale the screenshot to<br />If null, Source value is used</param>
+    /// <param name="imageHeight">Height to scale the screenshot to<br />If null, Source value is used</param>
+    /// <param name="imageCompressionQuality">Compression quality to use. 0 for high compression, 100 for uncompressed. -1 to use "default" (whatever that means, idk)<br />If null, -1</param>
+    /// <param name="canvasUuid">UUID of the canvas the source is in, if using sourceName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetSourceScreenshotResponse> GetSourceScreenshotAsync(string imageFormat, string? sourceName = default, string? sourceUuid = default, int? imageWidth = default, int? imageHeight = default, int? imageCompressionQuality = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetSourceScreenshot() { ImageFormat = imageFormat, SourceName = sourceName, SourceUuid = sourceUuid, ImageWidth = imageWidth, ImageHeight = imageHeight, ImageCompressionQuality = imageCompressionQuality, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Saves a screenshot of a source to the filesystem.<br />
+    /// <br />
+    /// The <c>imageWidth</c> and <c>imageHeight</c> parameters are treated as "scale to inner", meaning the smallest ratio will be used and the aspect ratio of the original resolution is kept.<br />
+    /// If <c>imageWidth</c> and <c>imageHeight</c> are not specified, the compressed image will use the full resolution of the source.<br />
+    /// <br />
+    /// **Compatible with inputs and scenes.**<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="imageFormat">Image compression format to use. Use <c>GetVersion</c> to get compatible image formats</param>
+    /// <param name="imageFilePath">Path to save the screenshot file to. Eg. <c>C:\Users\user\Desktop\screenshot.png</c></param>
+    /// <param name="sourceName">Name of the source to take a screenshot of<br />If null, Unknown</param>
+    /// <param name="sourceUuid">UUID of the source to take a screenshot of<br />If null, Unknown</param>
+    /// <param name="imageWidth">Width to scale the screenshot to<br />If null, Source value is used</param>
+    /// <param name="imageHeight">Height to scale the screenshot to<br />If null, Source value is used</param>
+    /// <param name="imageCompressionQuality">Compression quality to use. 0 for high compression, 100 for uncompressed. -1 to use "default" (whatever that means, idk)<br />If null, -1</param>
+    /// <param name="canvasUuid">UUID of the canvas the source is in, if using sourceName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SaveSourceScreenshotAsync(string imageFormat, string imageFilePath, string? sourceName = default, string? sourceUuid = default, int? imageWidth = default, int? imageHeight = default, int? imageCompressionQuality = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SaveSourceScreenshot() { ImageFormat = imageFormat, ImageFilePath = imageFilePath, SourceName = sourceName, SourceUuid = sourceUuid, ImageWidth = imageWidth, ImageHeight = imageHeight, ImageCompressionQuality = imageCompressionQuality, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets an array of scenes in OBS.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="canvasUuid">UUID of the canvas the scenes are in<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetSceneListResponse> GetSceneListAsync(string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetSceneList() { CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets an array of all groups in OBS.<br />
+    /// <br />
+    /// Groups in OBS are actually scenes, but renamed and modified. In obs-websocket, we treat them as scenes where we can.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetGroupListResponse> GetGroupListAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetGroupList() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the current program scene.<br />
+    /// <br />
+    /// Note 1: This request is slated to have the <c>currentProgram</c>-prefixed fields removed from in an upcoming RPC version.<br />
+    /// <br />
+    /// Note 2: Canvases do not have any concept of a program or preview scene, so this request does not support canvases.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetCurrentProgramSceneResponse> GetCurrentProgramSceneAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetCurrentProgramScene() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the current program scene.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneName">Scene name to set as the current program scene<br />If null, Unknown</param>
+    /// <param name="sceneUuid">Scene UUID to set as the current program scene<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetCurrentProgramSceneAsync(string? sceneName = default, string? sceneUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetCurrentProgramScene() { SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the current preview scene.<br />
+    /// <br />
+    /// Only available when studio mode is enabled.<br />
+    /// <br />
+    /// Note: This request is slated to have the <c>currentPreview</c>-prefixed fields removed from in an upcoming RPC version.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetCurrentPreviewSceneResponse> GetCurrentPreviewSceneAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetCurrentPreviewScene() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the current preview scene.<br />
+    /// <br />
+    /// Only available when studio mode is enabled.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneName">Scene name to set as the current preview scene<br />If null, Unknown</param>
+    /// <param name="sceneUuid">Scene UUID to set as the current preview scene<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetCurrentPreviewSceneAsync(string? sceneName = default, string? sceneUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetCurrentPreviewScene() { SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Creates a new scene in OBS.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneName">Name for the new scene</param>
+    /// <param name="canvasUuid">UUID of the canvas to create the new scene in. Leave default to assume main canvas<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<CreateSceneResponse> CreateSceneAsync(string sceneName, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new CreateScene() { SceneName = sceneName, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Removes a scene from OBS.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneName">Name of the scene to remove<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene to remove<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> RemoveSceneAsync(string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new RemoveScene() { SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the name of a scene (rename).<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="newSceneName">New name for the scene</param>
+    /// <param name="sceneName">Name of the scene to be renamed<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene to be renamed<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetSceneNameAsync(string newSceneName, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetSceneName() { NewSceneName = newSceneName, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the scene transition overridden for a scene.<br />
+    /// <br />
+    /// Note: A transition UUID response field is not currently able to be implemented as of 2024-1-18.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneName">Name of the scene<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetSceneSceneTransitionOverrideResponse> GetSceneSceneTransitionOverrideAsync(string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetSceneSceneTransitionOverride() { SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the scene transition overridden for a scene.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneName">Name of the scene<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene<br />If null, Unknown</param>
+    /// <param name="transitionName">Name of the scene transition to use as override. Specify <c>null</c> to remove<br />If null, Unchanged</param>
+    /// <param name="transitionDuration">Duration to use for any overridden transition. Specify <c>null</c> to remove<br />If null, Unchanged</param>
+    /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetSceneSceneTransitionOverrideAsync(string? sceneName = default, string? sceneUuid = default, string? transitionName = default, long? transitionDuration = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetSceneSceneTransitionOverride() { SceneName = sceneName, SceneUuid = sceneUuid, TransitionName = transitionName, TransitionDuration = transitionDuration, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets an array of all inputs in OBS.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputKind">Restrict the array to only inputs of the specified kind<br />If null, All kinds included</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetInputListResponse> GetInputListAsync(string? inputKind = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetInputList() { InputKind = inputKind }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets an array of all available input kinds in OBS.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="unversioned">True == Return all kinds as unversioned, False == Return with version suffixes (if available)<br />If null, false</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetInputKindListResponse> GetInputKindListAsync(bool? unversioned = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetInputKindList() { Unversioned = unversioned }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the names of all special inputs.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetSpecialInputsResponse> GetSpecialInputsAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetSpecialInputs() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Creates a new input, adding it as a scene item to the specified scene.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputName">Name of the new input to created</param>
+    /// <param name="inputKind">The kind of input to be created</param>
+    /// <param name="sceneName">Name of the scene to add the input to as a scene item<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene to add the input to as a scene item<br />If null, Unknown</param>
+    /// <param name="inputSettings">Settings object to initialize the input with<br />If null, Default settings used</param>
+    /// <param name="sceneItemEnabled">Whether to set the created scene item to enabled or disabled<br />If null, True</param>
+    /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<CreateInputResponse> CreateInputAsync(string inputName, string inputKind, string? sceneName = default, string? sceneUuid = default, Dictionary<string, JsonElement?>? inputSettings = default, bool? sceneItemEnabled = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new CreateInput() { InputName = inputName, InputKind = inputKind, SceneName = sceneName, SceneUuid = sceneUuid, InputSettings = inputSettings, SceneItemEnabled = sceneItemEnabled, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Removes an existing input.<br />
+    /// <br />
+    /// Note: Will immediately remove all associated scene items.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputName">Name of the input to remove<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input to remove<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> RemoveInputAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new RemoveInput() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the name of an input (rename).<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="newInputName">New name for the input</param>
+    /// <param name="inputName">Current input name<br />If null, Unknown</param>
+    /// <param name="inputUuid">Current input UUID<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetInputNameAsync(string newInputName, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetInputName() { NewInputName = newInputName, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the default settings for an input kind.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputKind">Input kind to get the default settings for</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetInputDefaultSettingsResponse> GetInputDefaultSettingsAsync(string inputKind, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetInputDefaultSettings() { InputKind = inputKind }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the settings of an input.<br />
+    /// <br />
+    /// Note: Does not include defaults. To create the entire settings object, overlay <c>inputSettings</c> over the <c>defaultInputSettings</c> provided by <c>GetInputDefaultSettings</c>.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputName">Name of the input to get the settings of<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input to get the settings of<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetInputSettingsResponse> GetInputSettingsAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetInputSettings() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the settings of an input.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputSettings">Object of settings to apply</param>
+    /// <param name="inputName">Name of the input to set the settings of<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input to set the settings of<br />If null, Unknown</param>
+    /// <param name="overlay">True == apply the settings on top of existing ones, False == reset the input to its defaults, then apply settings.<br />If null, true</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetInputSettingsAsync(Dictionary<string, JsonElement?> inputSettings, string? inputName = default, string? inputUuid = default, bool? overlay = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetInputSettings() { InputSettings = inputSettings, InputName = inputName, InputUuid = inputUuid, Overlay = overlay }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the audio mute state of an input.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputName">Name of input to get the mute state of<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of input to get the mute state of<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetInputMuteResponse> GetInputMuteAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetInputMute() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the audio mute state of an input.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputMuted">Whether to mute the input or not</param>
+    /// <param name="inputName">Name of the input to set the mute state of<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input to set the mute state of<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetInputMuteAsync(bool inputMuted, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetInputMute() { InputMuted = inputMuted, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Toggles the audio mute state of an input.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputName">Name of the input to toggle the mute state of<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input to toggle the mute state of<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<ToggleInputMuteResponse> ToggleInputMuteAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new ToggleInputMute() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the current volume setting of an input.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputName">Name of the input to get the volume of<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input to get the volume of<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetInputVolumeResponse> GetInputVolumeAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetInputVolume() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the volume setting of an input.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputName">Name of the input to set the volume of<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input to set the volume of<br />If null, Unknown</param>
+    /// <param name="inputVolumeMul">Volume setting in mul<br />If null, <c>inputVolumeDb</c> should be specified</param>
+    /// <param name="inputVolumeDb">Volume setting in dB<br />If null, <c>inputVolumeMul</c> should be specified</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetInputVolumeAsync(string? inputName = default, string? inputUuid = default, double? inputVolumeMul = default, double? inputVolumeDb = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetInputVolume() { InputName = inputName, InputUuid = inputUuid, InputVolumeMul = inputVolumeMul, InputVolumeDb = inputVolumeDb }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the audio balance of an input.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputName">Name of the input to get the audio balance of<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input to get the audio balance of<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetInputAudioBalanceResponse> GetInputAudioBalanceAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetInputAudioBalance() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the audio balance of an input.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputAudioBalance">New audio balance value</param>
+    /// <param name="inputName">Name of the input to set the audio balance of<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input to set the audio balance of<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetInputAudioBalanceAsync(double inputAudioBalance, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetInputAudioBalance() { InputAudioBalance = inputAudioBalance, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the audio sync offset of an input.<br />
+    /// <br />
+    /// Note: The audio sync offset can be negative too!<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputName">Name of the input to get the audio sync offset of<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input to get the audio sync offset of<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetInputAudioSyncOffsetResponse> GetInputAudioSyncOffsetAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetInputAudioSyncOffset() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the audio sync offset of an input.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputAudioSyncOffset">New audio sync offset in milliseconds</param>
+    /// <param name="inputName">Name of the input to set the audio sync offset of<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input to set the audio sync offset of<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetInputAudioSyncOffsetAsync(int inputAudioSyncOffset, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetInputAudioSyncOffset() { InputAudioSyncOffset = inputAudioSyncOffset, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the audio monitor type of an input.<br />
+    /// <br />
+    /// The available audio monitor types are:<br />
+    /// <br />
+    /// - <c>OBS_MONITORING_TYPE_NONE</c><br />
+    /// - <c>OBS_MONITORING_TYPE_MONITOR_ONLY</c><br />
+    /// - <c>OBS_MONITORING_TYPE_MONITOR_AND_OUTPUT</c><br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputName">Name of the input to get the audio monitor type of<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input to get the audio monitor type of<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetInputAudioMonitorTypeResponse> GetInputAudioMonitorTypeAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetInputAudioMonitorType() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the audio monitor type of an input.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="monitorType">Audio monitor type</param>
+    /// <param name="inputName">Name of the input to set the audio monitor type of<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input to set the audio monitor type of<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetInputAudioMonitorTypeAsync(MonitoringType monitorType, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetInputAudioMonitorType() { MonitorType = monitorType, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the enable state of all audio tracks of an input.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputName">Name of the input<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetInputAudioTracksResponse> GetInputAudioTracksAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetInputAudioTracks() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the enable state of audio tracks of an input.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputAudioTracks">Track settings to apply</param>
+    /// <param name="inputName">Name of the input<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetInputAudioTracksAsync(Dictionary<string, bool> inputAudioTracks, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetInputAudioTracks() { InputAudioTracks = inputAudioTracks, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the deinterlace mode of an input.<br />
+    /// <br />
+    /// Deinterlace Modes:<br />
+    /// <br />
+    /// - <c>OBS_DEINTERLACE_MODE_DISABLE</c><br />
+    /// - <c>OBS_DEINTERLACE_MODE_DISCARD</c><br />
+    /// - <c>OBS_DEINTERLACE_MODE_RETRO</c><br />
+    /// - <c>OBS_DEINTERLACE_MODE_BLEND</c><br />
+    /// - <c>OBS_DEINTERLACE_MODE_BLEND_2X</c><br />
+    /// - <c>OBS_DEINTERLACE_MODE_LINEAR</c><br />
+    /// - <c>OBS_DEINTERLACE_MODE_LINEAR_2X</c><br />
+    /// - <c>OBS_DEINTERLACE_MODE_YADIF</c><br />
+    /// - <c>OBS_DEINTERLACE_MODE_YADIF_2X</c><br />
+    /// <br />
+    /// Note: Deinterlacing functionality is restricted to async inputs only.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.6.0
+    /// </summary>
+    /// <param name="inputName">Name of the input<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetInputDeinterlaceModeResponse> GetInputDeinterlaceModeAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetInputDeinterlaceMode() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the deinterlace mode of an input.<br />
+    /// <br />
+    /// Note: Deinterlacing functionality is restricted to async inputs only.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.6.0
+    /// </summary>
+    /// <param name="inputDeinterlaceMode">Deinterlace mode for the input</param>
+    /// <param name="inputName">Name of the input<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetInputDeinterlaceModeAsync(string inputDeinterlaceMode, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetInputDeinterlaceMode() { InputDeinterlaceMode = inputDeinterlaceMode, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the deinterlace field order of an input.<br />
+    /// <br />
+    /// Deinterlace Field Orders:<br />
+    /// <br />
+    /// - <c>OBS_DEINTERLACE_FIELD_ORDER_TOP</c><br />
+    /// - <c>OBS_DEINTERLACE_FIELD_ORDER_BOTTOM</c><br />
+    /// <br />
+    /// Note: Deinterlacing functionality is restricted to async inputs only.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.6.0
+    /// </summary>
+    /// <param name="inputName">Name of the input<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetInputDeinterlaceFieldOrderResponse> GetInputDeinterlaceFieldOrderAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetInputDeinterlaceFieldOrder() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the deinterlace field order of an input.<br />
+    /// <br />
+    /// Note: Deinterlacing functionality is restricted to async inputs only.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.6.0
+    /// </summary>
+    /// <param name="inputDeinterlaceFieldOrder">Deinterlace field order for the input</param>
+    /// <param name="inputName">Name of the input<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetInputDeinterlaceFieldOrderAsync(string inputDeinterlaceFieldOrder, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetInputDeinterlaceFieldOrder() { InputDeinterlaceFieldOrder = inputDeinterlaceFieldOrder, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the items of a list property from an input's properties.<br />
+    /// <br />
+    /// Note: Use this in cases where an input provides a dynamic, selectable list of items. For example, display capture, where it provides a list of available displays.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="propertyName">Name of the list property to get the items of</param>
+    /// <param name="inputName">Name of the input<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetInputPropertiesListPropertyItemsResponse> GetInputPropertiesListPropertyItemsAsync(string propertyName, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetInputPropertiesListPropertyItems() { PropertyName = propertyName, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Presses a button in the properties of an input.<br />
+    /// <br />
+    /// Some known <c>propertyName</c> values are:<br />
+    /// <br />
+    /// - <c>refreshnocache</c> - Browser source reload button<br />
+    /// <br />
+    /// Note: Use this in cases where there is a button in the properties of an input that cannot be accessed in any other way. For example, browser sources, where there is a refresh button.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="propertyName">Name of the button property to press</param>
+    /// <param name="inputName">Name of the input<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> PressInputPropertiesButtonAsync(string propertyName, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new PressInputPropertiesButton() { PropertyName = propertyName, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets an array of all available transition kinds.<br />
+    /// <br />
+    /// Similar to <c>GetInputKindList</c><br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetTransitionKindListResponse> GetTransitionKindListAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetTransitionKindList() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets an array of all scene transitions in OBS.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetSceneTransitionListResponse> GetSceneTransitionListAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetSceneTransitionList() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets information about the current scene transition.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetCurrentSceneTransitionResponse> GetCurrentSceneTransitionAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetCurrentSceneTransition() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the current scene transition.<br />
+    /// <br />
+    /// Small note: While the namespace of scene transitions is generally unique, that uniqueness is not a guarantee as it is with other resources like inputs.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="transitionName">Name of the transition to make active</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetCurrentSceneTransitionAsync(string transitionName, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetCurrentSceneTransition() { TransitionName = transitionName }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the duration of the current scene transition, if it is not fixed.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="transitionDuration">Duration in milliseconds</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetCurrentSceneTransitionDurationAsync(long transitionDuration, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetCurrentSceneTransitionDuration() { TransitionDuration = transitionDuration }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the settings of the current scene transition.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="transitionSettings">Settings object to apply to the transition. Can be <c>{}</c></param>
+    /// <param name="overlay">Whether to overlay over the current settings or replace them<br />If null, true</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetCurrentSceneTransitionSettingsAsync(Dictionary<string, JsonElement?> transitionSettings, bool? overlay = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetCurrentSceneTransitionSettings() { TransitionSettings = transitionSettings, Overlay = overlay }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the cursor position of the current scene transition.<br />
+    /// <br />
+    /// Note: <c>transitionCursor</c> will return 1.0 when the transition is inactive.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetCurrentSceneTransitionCursorResponse> GetCurrentSceneTransitionCursorAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetCurrentSceneTransitionCursor() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Triggers the current scene transition. Same functionality as the <c>Transition</c> button in studio mode.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> TriggerStudioModeTransitionAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new TriggerStudioModeTransition() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the position of the TBar.<br />
+    /// <br />
+    /// **Very important note**: This will be deprecated and replaced in a future version of obs-websocket.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="position">New position</param>
+    /// <param name="release">Whether to release the TBar. Only set <c>false</c> if you know that you will be sending another position update<br />If null, <c>true</c></param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetTBarPositionAsync(double position, bool? release = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetTBarPosition() { Position = position, Release = release }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets an array of all available source filter kinds.<br />
+    /// <br />
+    /// Similar to <c>GetInputKindList</c><br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.4.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetSourceFilterKindListResponse> GetSourceFilterKindListAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetSourceFilterKindList() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets an array of all of a source's filters.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sourceName">Name of the source<br />If null, Unknown</param>
+    /// <param name="sourceUuid">UUID of the source<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the source is in, if using the sourceName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetSourceFilterListResponse> GetSourceFilterListAsync(string? sourceName = default, string? sourceUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetSourceFilterList() { SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the default settings for a filter kind.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="filterKind">Filter kind to get the default settings for</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetSourceFilterDefaultSettingsResponse> GetSourceFilterDefaultSettingsAsync(string filterKind, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetSourceFilterDefaultSettings() { FilterKind = filterKind }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Creates a new filter, adding it to the specified source.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="filterName">Name of the new filter to be created</param>
+    /// <param name="filterKind">The kind of filter to be created</param>
+    /// <param name="sourceName">Name of the source to add the filter to<br />If null, Unknown</param>
+    /// <param name="sourceUuid">UUID of the source to add the filter to<br />If null, Unknown</param>
+    /// <param name="filterSettings">Settings object to initialize the filter with<br />If null, Default settings used</param>
+    /// <param name="canvasUuid">UUID of the canvas the source is in, if using the sourceName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> CreateSourceFilterAsync(string filterName, string filterKind, string? sourceName = default, string? sourceUuid = default, Dictionary<string, JsonElement?>? filterSettings = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new CreateSourceFilter() { FilterName = filterName, FilterKind = filterKind, SourceName = sourceName, SourceUuid = sourceUuid, FilterSettings = filterSettings, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Removes a filter from a source.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="filterName">Name of the filter to remove</param>
+    /// <param name="sourceName">Name of the source the filter is on<br />If null, Unknown</param>
+    /// <param name="sourceUuid">UUID of the source the filter is on<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the source is in, if using the sourceName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> RemoveSourceFilterAsync(string filterName, string? sourceName = default, string? sourceUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new RemoveSourceFilter() { FilterName = filterName, SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the name of a source filter (rename).<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="filterName">Current name of the filter</param>
+    /// <param name="newFilterName">New name for the filter</param>
+    /// <param name="sourceName">Name of the source the filter is on<br />If null, Unknown</param>
+    /// <param name="sourceUuid">UUID of the source the filter is on<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the source is in, if using the sourceName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetSourceFilterNameAsync(string filterName, string newFilterName, string? sourceName = default, string? sourceUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetSourceFilterName() { FilterName = filterName, NewFilterName = newFilterName, SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the info for a specific source filter.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="filterName">Name of the filter</param>
+    /// <param name="sourceName">Name of the source<br />If null, Unknown</param>
+    /// <param name="sourceUuid">UUID of the source<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the source is in, if using the sourceName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetSourceFilterResponse> GetSourceFilterAsync(string filterName, string? sourceName = default, string? sourceUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetSourceFilter() { FilterName = filterName, SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the index position of a filter on a source.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="filterName">Name of the filter</param>
+    /// <param name="filterIndex">New index position of the filter</param>
+    /// <param name="sourceName">Name of the source the filter is on<br />If null, Unknown</param>
+    /// <param name="sourceUuid">UUID of the source the filter is on<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the source is in, if using the sourceName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetSourceFilterIndexAsync(string filterName, int filterIndex, string? sourceName = default, string? sourceUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetSourceFilterIndex() { FilterName = filterName, FilterIndex = filterIndex, SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the settings of a source filter.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="filterName">Name of the filter to set the settings of</param>
+    /// <param name="filterSettings">Object of settings to apply</param>
+    /// <param name="sourceName">Name of the source the filter is on<br />If null, Unknown</param>
+    /// <param name="sourceUuid">UUID of the source the filter is on<br />If null, Unknown</param>
+    /// <param name="overlay">True == apply the settings on top of existing ones, False == reset the input to its defaults, then apply settings.<br />If null, true</param>
+    /// <param name="canvasUuid">UUID of the canvas the source is in, if using the sourceName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetSourceFilterSettingsAsync(string filterName, Dictionary<string, JsonElement?> filterSettings, string? sourceName = default, string? sourceUuid = default, bool? overlay = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetSourceFilterSettings() { FilterName = filterName, FilterSettings = filterSettings, SourceName = sourceName, SourceUuid = sourceUuid, Overlay = overlay, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the enable state of a source filter.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="filterName">Name of the filter</param>
+    /// <param name="filterEnabled">New enable state of the filter</param>
+    /// <param name="sourceName">Name of the source the filter is on<br />If null, Unknown</param>
+    /// <param name="sourceUuid">UUID of the source the filter is on<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the source is in, if using the sourceName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetSourceFilterEnabledAsync(string filterName, bool filterEnabled, string? sourceName = default, string? sourceUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetSourceFilterEnabled() { FilterName = filterName, FilterEnabled = filterEnabled, SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets a list of all scene items in a scene.<br />
+    /// <br />
+    /// Scenes only<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneName">Name of the scene to get the items of<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene to get the items of<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetSceneItemListResponse> GetSceneItemListAsync(string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetSceneItemList() { SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Basically GetSceneItemList, but for groups.<br />
+    /// <br />
+    /// Using groups at all in OBS is discouraged, as they are very broken under the hood. Please use nested scenes instead.<br />
+    /// <br />
+    /// Groups only<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneName">Name of the group to get the items of<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the group to get the items of<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the group is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetGroupSceneItemListResponse> GetGroupSceneItemListAsync(string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetGroupSceneItemList() { SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Searches a scene for a source, and returns its id.<br />
+    /// <br />
+    /// Scenes and Groups<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sourceName">Name of the source to find</param>
+    /// <param name="sceneName">Name of the scene or group to search in<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene or group to search in<br />If null, Unknown</param>
+    /// <param name="searchOffset">Number of matches to skip during search. &gt;= 0 means first forward. -1 means last (top) item<br />If null, 0</param>
+    /// <param name="canvasUuid">UUID of the canvas the scene or group is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetSceneItemIdResponse> GetSceneItemIdAsync(string sourceName, string? sceneName = default, string? sceneUuid = default, int? searchOffset = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetSceneItemId() { SourceName = sourceName, SceneName = sceneName, SceneUuid = sceneUuid, SearchOffset = searchOffset, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the source associated with a scene item.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.4.0
+    /// </summary>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetSceneItemSourceResponse> GetSceneItemSourceAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetSceneItemSource() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Creates a new scene item using a source.<br />
+    /// <br />
+    /// Scenes only<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneName">Name of the scene to create the new item in<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene to create the new item in<br />If null, Unknown</param>
+    /// <param name="sourceName">Name of the source to add to the scene<br />If null, Unknown</param>
+    /// <param name="sourceUuid">UUID of the source to add to the scene<br />If null, Unknown</param>
+    /// <param name="sceneItemEnabled">Enable state to apply to the scene item on creation<br />If null, True</param>
+    /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<CreateSceneItemResponse> CreateSceneItemAsync(string? sceneName = default, string? sceneUuid = default, string? sourceName = default, string? sourceUuid = default, bool? sceneItemEnabled = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new CreateSceneItem() { SceneName = sceneName, SceneUuid = sceneUuid, SourceName = sourceName, SourceUuid = sourceUuid, SceneItemEnabled = sceneItemEnabled, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Removes a scene item from a scene.<br />
+    /// <br />
+    /// Scenes only<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> RemoveSceneItemAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new RemoveSceneItem() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Duplicates a scene item, copying all transform and crop info.<br />
+    /// <br />
+    /// Scenes only<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="destinationSceneName">Name of the scene to create the duplicated item in<br />If null, From scene is assumed</param>
+    /// <param name="destinationSceneUuid">UUID of the scene to create the duplicated item in<br />If null, From scene is assumed</param>
+    /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<DuplicateSceneItemResponse> DuplicateSceneItemAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? destinationSceneName = default, string? destinationSceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new DuplicateSceneItem() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, DestinationSceneName = destinationSceneName, DestinationSceneUuid = destinationSceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the transform and crop info of a scene item.<br />
+    /// <br />
+    /// Scenes and Groups<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetSceneItemTransformResponse> GetSceneItemTransformAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetSceneItemTransform() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the transform and crop info of a scene item.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
+    /// <param name="sceneItemTransform">Object containing scene item transform info to update</param>
+    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetSceneItemTransformAsync(int sceneItemId, Dictionary<string, JsonElement?> sceneItemTransform, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetSceneItemTransform() { SceneItemId = sceneItemId, SceneItemTransform = sceneItemTransform, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the enable state of a scene item.<br />
+    /// <br />
+    /// Scenes and Groups<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetSceneItemEnabledResponse> GetSceneItemEnabledAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetSceneItemEnabled() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the enable state of a scene item.<br />
+    /// <br />
+    /// Scenes and Groups<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
+    /// <param name="sceneItemEnabled">New enable state of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetSceneItemEnabledAsync(int sceneItemId, bool sceneItemEnabled, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetSceneItemEnabled() { SceneItemId = sceneItemId, SceneItemEnabled = sceneItemEnabled, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the lock state of a scene item.<br />
+    /// <br />
+    /// Scenes and Groups<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetSceneItemLockedResponse> GetSceneItemLockedAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetSceneItemLocked() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the lock state of a scene item.<br />
+    /// <br />
+    /// Scenes and Group<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
+    /// <param name="sceneItemLocked">New lock state of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetSceneItemLockedAsync(int sceneItemId, bool sceneItemLocked, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetSceneItemLocked() { SceneItemId = sceneItemId, SceneItemLocked = sceneItemLocked, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the index position of a scene item in a scene.<br />
+    /// <br />
+    /// An index of 0 is at the bottom of the source list in the UI.<br />
+    /// <br />
+    /// Scenes and Groups<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetSceneItemIndexResponse> GetSceneItemIndexAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetSceneItemIndex() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the index position of a scene item in a scene.<br />
+    /// <br />
+    /// Scenes and Groups<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
+    /// <param name="sceneItemIndex">New index position of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetSceneItemIndexAsync(int sceneItemId, int sceneItemIndex, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetSceneItemIndex() { SceneItemId = sceneItemId, SceneItemIndex = sceneItemIndex, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the blend mode of a scene item.<br />
+    /// <br />
+    /// Blend modes:<br />
+    /// <br />
+    /// - <c>OBS_BLEND_NORMAL</c><br />
+    /// - <c>OBS_BLEND_ADDITIVE</c><br />
+    /// - <c>OBS_BLEND_SUBTRACT</c><br />
+    /// - <c>OBS_BLEND_SCREEN</c><br />
+    /// - <c>OBS_BLEND_MULTIPLY</c><br />
+    /// - <c>OBS_BLEND_LIGHTEN</c><br />
+    /// - <c>OBS_BLEND_DARKEN</c><br />
+    /// <br />
+    /// Scenes and Groups<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
+    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetSceneItemBlendModeResponse> GetSceneItemBlendModeAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetSceneItemBlendMode() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the blend mode of a scene item.<br />
+    /// <br />
+    /// Scenes and Groups<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sceneItemId">Numeric ID of the scene item</param>
+    /// <param name="sceneItemBlendMode">New blend mode</param>
+    /// <param name="sceneName">Name of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="sceneUuid">UUID of the scene the item is in<br />If null, Unknown</param>
+    /// <param name="canvasUuid">UUID of the canvas the scene is in, if using the sceneName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetSceneItemBlendModeAsync(int sceneItemId, BlendingType sceneItemBlendMode, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetSceneItemBlendMode() { SceneItemId = sceneItemId, SceneItemBlendMode = sceneItemBlendMode, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the status of the virtualcam output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetVirtualCamStatusResponse> GetVirtualCamStatusAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetVirtualCamStatus() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Toggles the state of the virtualcam output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<ToggleVirtualCamResponse> ToggleVirtualCamAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new ToggleVirtualCam() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Starts the virtualcam output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> StartVirtualCamAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new StartVirtualCam() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Stops the virtualcam output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> StopVirtualCamAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new StopVirtualCam() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the status of the replay buffer output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetReplayBufferStatusResponse> GetReplayBufferStatusAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetReplayBufferStatus() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Toggles the state of the replay buffer output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<ToggleReplayBufferResponse> ToggleReplayBufferAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new ToggleReplayBuffer() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Starts the replay buffer output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> StartReplayBufferAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new StartReplayBuffer() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Stops the replay buffer output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> StopReplayBufferAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new StopReplayBuffer() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Saves the contents of the replay buffer output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SaveReplayBufferAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SaveReplayBuffer() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the filename of the last replay buffer save file.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetLastReplayBufferReplayResponse> GetLastReplayBufferReplayAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetLastReplayBufferReplay() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the list of available outputs.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetOutputListResponse> GetOutputListAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetOutputList() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the status of an output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="outputName">Output name</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetOutputStatusResponse> GetOutputStatusAsync(string outputName, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetOutputStatus() { OutputName = outputName }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Toggles the status of an output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="outputName">Output name</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<ToggleOutputResponse> ToggleOutputAsync(string outputName, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new ToggleOutput() { OutputName = outputName }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Starts an output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="outputName">Output name</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> StartOutputAsync(string outputName, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new StartOutput() { OutputName = outputName }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Stops an output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="outputName">Output name</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> StopOutputAsync(string outputName, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new StopOutput() { OutputName = outputName }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the settings of an output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="outputName">Output name</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetOutputSettingsResponse> GetOutputSettingsAsync(string outputName, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetOutputSettings() { OutputName = outputName }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the settings of an output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="outputName">Output name</param>
+    /// <param name="outputSettings">Output settings</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetOutputSettingsAsync(string outputName, Dictionary<string, JsonElement?> outputSettings, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetOutputSettings() { OutputName = outputName, OutputSettings = outputSettings }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the status of the stream output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetStreamStatusResponse> GetStreamStatusAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetStreamStatus() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Toggles the status of the stream output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<ToggleStreamResponse> ToggleStreamAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new ToggleStream() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Starts the stream output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> StartStreamAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new StartStream() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Stops the stream output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> StopStreamAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new StopStream() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends CEA-608 caption text over the stream output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="captionText">Caption text</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SendStreamCaptionAsync(string captionText, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SendStreamCaption() { CaptionText = captionText }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the status of the record output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetRecordStatusResponse> GetRecordStatusAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetRecordStatus() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Toggles the status of the record output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<ToggleRecordResponse> ToggleRecordAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new ToggleRecord() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Starts the record output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> StartRecordAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new StartRecord() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Stops the record output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<StopRecordResponse> StopRecordAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new StopRecord() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Toggles pause on the record output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<ToggleRecordPauseResponse> ToggleRecordPauseAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new ToggleRecordPause() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Pauses the record output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> PauseRecordAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new PauseRecord() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Resumes the record output.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> ResumeRecordAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new ResumeRecord() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Splits the current file being recorded into a new file.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.5.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SplitRecordFileAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SplitRecordFile() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Adds a new chapter marker to the file currently being recorded.<br />
+    /// <br />
+    /// Note: As of OBS 30.2.0, the only file format supporting this feature is Hybrid MP4.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.5.0
+    /// </summary>
+    /// <param name="chapterName">Name of the new chapter<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> CreateRecordChapterAsync(string? chapterName = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new CreateRecordChapter() { ChapterName = chapterName }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the status of a media input.<br />
+    /// <br />
+    /// Media States:<br />
+    /// <br />
+    /// - <c>OBS_MEDIA_STATE_NONE</c><br />
+    /// - <c>OBS_MEDIA_STATE_PLAYING</c><br />
+    /// - <c>OBS_MEDIA_STATE_OPENING</c><br />
+    /// - <c>OBS_MEDIA_STATE_BUFFERING</c><br />
+    /// - <c>OBS_MEDIA_STATE_PAUSED</c><br />
+    /// - <c>OBS_MEDIA_STATE_STOPPED</c><br />
+    /// - <c>OBS_MEDIA_STATE_ENDED</c><br />
+    /// - <c>OBS_MEDIA_STATE_ERROR</c><br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputName">Name of the media input<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the media input<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetMediaInputStatusResponse> GetMediaInputStatusAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetMediaInputStatus() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sets the cursor position of a media input.<br />
+    /// <br />
+    /// This request does not perform bounds checking of the cursor position.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="mediaCursor">New cursor position to set</param>
+    /// <param name="inputName">Name of the media input<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the media input<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetMediaInputCursorAsync(double mediaCursor, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetMediaInputCursor() { MediaCursor = mediaCursor, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Offsets the current cursor position of a media input by the specified value.<br />
+    /// <br />
+    /// This request does not perform bounds checking of the cursor position.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="mediaCursorOffset">Value to offset the current cursor position by</param>
+    /// <param name="inputName">Name of the media input<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the media input<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> OffsetMediaInputCursorAsync(int mediaCursorOffset, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new OffsetMediaInputCursor() { MediaCursorOffset = mediaCursorOffset, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Triggers an action on a media input.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="mediaAction">Identifier of the <c>ObsMediaInputAction</c> enum</param>
+    /// <param name="inputName">Name of the media input<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the media input<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> TriggerMediaInputActionAsync(MediaInputAction mediaAction, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new TriggerMediaInputAction() { MediaAction = mediaAction, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets whether studio is enabled.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetStudioModeEnabledResponse> GetStudioModeEnabledAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetStudioModeEnabled() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Enables or disables studio mode<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="studioModeEnabled">True == Enabled, False == Disabled</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> SetStudioModeEnabledAsync(bool studioModeEnabled, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new SetStudioModeEnabled() { StudioModeEnabled = studioModeEnabled }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Opens the properties dialog of an input.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputName">Name of the input to open the dialog of<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input to open the dialog of<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> OpenInputPropertiesDialogAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new OpenInputPropertiesDialog() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Opens the filters dialog of an input.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputName">Name of the input to open the dialog of<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input to open the dialog of<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> OpenInputFiltersDialogAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new OpenInputFiltersDialog() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Opens the interact dialog of an input.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="inputName">Name of the input to open the dialog of<br />If null, Unknown</param>
+    /// <param name="inputUuid">UUID of the input to open the dialog of<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> OpenInputInteractDialogAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new OpenInputInteractDialog() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets a list of connected monitors and information about them.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<GetMonitorListResponse> GetMonitorListAsync(CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new GetMonitorList() { }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Opens a projector for a specific output video mix.<br />
+    /// <br />
+    /// Mix types:<br />
+    /// <br />
+    /// - <c>OBS_WEBSOCKET_VIDEO_MIX_TYPE_PREVIEW</c><br />
+    /// - <c>OBS_WEBSOCKET_VIDEO_MIX_TYPE_PROGRAM</c><br />
+    /// - <c>OBS_WEBSOCKET_VIDEO_MIX_TYPE_MULTIVIEW</c><br />
+    /// <br />
+    /// Note: This request serves to provide feature parity with 4.x. It is very likely to be changed/deprecated in a future release.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="videoMixType">Type of mix to open</param>
+    /// <param name="monitorIndex">Monitor index, use <c>GetMonitorList</c> to obtain index<br />If null, -1: Opens projector in windowed mode</param>
+    /// <param name="projectorGeometry">Size/Position data for a windowed projector, in Qt Base64 encoded format. Mutually exclusive with <c>monitorIndex</c><br />If null, N/A</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> OpenVideoMixProjectorAsync(VideoMixType videoMixType, int? monitorIndex = default, string? projectorGeometry = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new OpenVideoMixProjector() { VideoMixType = videoMixType, MonitorIndex = monitorIndex, ProjectorGeometry = projectorGeometry }, cancellation).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Opens a projector for a source.<br />
+    /// <br />
+    /// Note: This request serves to provide feature parity with 4.x. It is very likely to be changed/deprecated in a future release.<br />
+    /// Latest supported RPC version: 1<br />
+    /// Added in: 5.0.0
+    /// </summary>
+    /// <param name="sourceName">Name of the source to open a projector for<br />If null, Unknown</param>
+    /// <param name="sourceUuid">UUID of the source to open a projector for<br />If null, Unknown</param>
+    /// <param name="monitorIndex">Monitor index, use <c>GetMonitorList</c> to obtain index<br />If null, -1: Opens projector in windowed mode</param>
+    /// <param name="projectorGeometry">Size/Position data for a windowed projector, in Qt Base64 encoded format. Mutually exclusive with <c>monitorIndex</c><br />If null, N/A</param>
+    /// <param name="canvasUuid">UUID of the canvas the source is in, if using the sourceName field<br />If null, Unknown</param>
+    /// <param name="cancellation">Token for cancellation</param>
+    /// <exception cref="InvalidOperationException">The client is not connected.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancels the operation.</exception>
+    /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
+    /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
+    /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
+    public async Task<RequestResponse> OpenSourceProjectorAsync(string? sourceName = default, string? sourceUuid = default, int? monitorIndex = default, string? projectorGeometry = default, string? canvasUuid = default, CancellationToken cancellation = default) {
+      return await _clientSocket.RequestAsync(new OpenSourceProjector() { SourceName = sourceName, SourceUuid = sourceUuid, MonitorIndex = monitorIndex, ProjectorGeometry = projectorGeometry, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
+    }
+
+    #endregion
+  }
+}

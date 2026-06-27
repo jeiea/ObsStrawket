@@ -202,7 +202,8 @@ namespace SourceGenerator.Test {
       public string SolutionDirectory { get; } = solutionDirectory;
       public string UpstreamDirectory => Path.Combine(SolutionDirectory, "SourceGenerator", "Upstream");
       public string MainProjectDirectory => Path.Combine(SolutionDirectory, "ObsStrawket");
-      public string ObsClientPath => Path.Combine(MainProjectDirectory, "ObsClientSocket.cs");
+      public string ObsClientEventsPath => Path.Combine(MainProjectDirectory, "ObsClientSocket.Events.Generated.cs");
+      public string ObsClientRequestsPath => Path.Combine(MainProjectDirectory, "ObsClientSocket.Requests.Generated.cs");
     }
 
     private sealed class FakeHttpMessageHandler(IEnumerable<HttpResponseMessage> responses)

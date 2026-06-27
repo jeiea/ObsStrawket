@@ -1,11 +1,10 @@
 using System;
 using System.Globalization;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SourceGenerator {
-  internal partial class EventInterfaceGenerator {
+  internal class EventInterfaceGenerator {
     private readonly IDirectoryHelper _directoryHelper;
     private readonly ISourceFetcher _fetcher;
 
@@ -47,22 +46,28 @@ namespace SourceGenerator {
       part.WriteLine();
       part.Write(@"    #endregion");
 
-      string previous = await File.ReadAllTextAsync(_directoryHelper.ObsClientPath).ConfigureAwait(false);
-
-      bool isReplaced = false;
-      string result = EventsRegionPattern().Replace(previous, (match) => {
-        isReplaced = true;
-        return part.ToString();
-      });
-
-      if (!isReplaced) {
-        throw new InvalidOperationException("Unexpected file");
-      }
-
-      await File.WriteAllTextAsync(_directoryHelper.ObsClientPath, result).ConfigureAwait(false);
+      await File.WriteAllTextAsync(
+        _directoryHelper.ObsClientEventsPath,
+        WrapPartialClass(part.ToString())
+      ).ConfigureAwait(false);
     }
 
-    [GeneratedRegex(@"    #region Events\r?\n.*?#endregion", RegexOptions.Singleline)]
-    private static partial Regex EventsRegionPattern();
+    private static string WrapPartialClass(string memberSource) {
+      return $$"""
+        #nullable enable
+
+        using ObsStrawket.DataTypes;
+        using ObsStrawket.DataTypes.Predefineds;
+        using System;
+
+        namespace ObsStrawket {
+
+          public partial class ObsClientSocket {
+
+        {{memberSource}}
+          }
+        }
+        """;
+    }
   }
 }

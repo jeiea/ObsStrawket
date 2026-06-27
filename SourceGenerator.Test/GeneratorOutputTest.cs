@@ -87,6 +87,28 @@ namespace SourceGenerator.Test {
     }
 
     [Fact]
+    public async Task EventInterfaceGeneratorWritesPartialEventFile() {
+      var protocol = new ProtocolJson {
+        Events = [
+          Event("CurrentProgramSceneChanged", "scenes"),
+        ],
+      };
+      var generator = new EventInterfaceGenerator(
+        _directoryHelper,
+        new FakeSourceFetcher(protocol));
+
+      await generator.GenerateAsync();
+
+      string output = File.ReadAllText(_directoryHelper.ObsClientEventsPath);
+      Assert.Contains("public partial class ObsClientSocket", output);
+      Assert.Contains("public event Action<IObsEvent> Event = static delegate { };", output);
+      Assert.Contains("public event Action<ScenesEvent> ScenesEvent = static delegate { };", output);
+      Assert.Contains(
+        "public event Action<CurrentProgramSceneChanged> CurrentProgramSceneChanged = static delegate { };",
+        output);
+    }
+
+    [Fact]
     public async Task RequestInterfaceGeneratorDocumentsPublicFailureContract() {
       var protocol = new ProtocolJson {
         Requests = [
@@ -108,23 +130,14 @@ namespace SourceGenerator.Test {
           Request("Sleep"),
         ],
       };
-      File.WriteAllText(
-        _directoryHelper.ObsClientPath,
-        """
-namespace ObsStrawket {
-  public class ObsClientSocket {
-    #region Requests
-    #endregion
-  }
-}
-""".ReplaceLineEndings("\r\n"));
       var generator = new RequestInterfaceGenerator(
         _directoryHelper,
         new FakeSourceFetcher(protocol));
 
       await generator.GenerateAsync();
 
-      string output = File.ReadAllText(_directoryHelper.ObsClientPath);
+      string output = File.ReadAllText(_directoryHelper.ObsClientRequestsPath);
+      Assert.Contains("public partial class ObsClientSocket", output);
       Assert.Contains(
         """<exception cref="ObsRequestException">OBS rejects the request.</exception>""",
         output);
@@ -169,6 +182,16 @@ namespace ObsStrawket {
         },
       ];
       return request;
+    }
+
+    private static ObsEvent Event(string eventType, string category) {
+      return new ObsEvent {
+        EventType = eventType,
+        Category = category,
+        Description = eventType,
+        RpcVersion = "1",
+        InitialVersion = "5.0.0",
+      };
     }
 
     private static ObsEnumDefinition StringEnum(
@@ -217,7 +240,8 @@ namespace ObsStrawket {
       public string SolutionDirectory { get; } = solutionDirectory;
       public string UpstreamDirectory => Path.Combine(SolutionDirectory, "SourceGenerator", "Upstream");
       public string MainProjectDirectory => Path.Combine(SolutionDirectory, "ObsStrawket");
-      public string ObsClientPath => Path.Combine(MainProjectDirectory, "ObsClientSocket.cs");
+      public string ObsClientEventsPath => Path.Combine(MainProjectDirectory, "ObsClientSocket.Events.Generated.cs");
+      public string ObsClientRequestsPath => Path.Combine(MainProjectDirectory, "ObsClientSocket.Requests.Generated.cs");
     }
   }
 }

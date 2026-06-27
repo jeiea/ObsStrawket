@@ -5,7 +5,8 @@ namespace SourceGenerator {
     string SolutionDirectory { get; }
     string UpstreamDirectory { get; }
     string MainProjectDirectory { get; }
-    string ObsClientPath { get; }
+    string ObsClientEventsPath { get; }
+    string ObsClientRequestsPath { get; }
   }
 
   internal class DirectoryHelper : IDirectoryHelper {
@@ -13,7 +14,8 @@ namespace SourceGenerator {
 
     public string UpstreamDirectory => Path.Combine(SolutionDirectory, "SourceGenerator", "Upstream");
     public string MainProjectDirectory => Path.Combine(SolutionDirectory, "ObsStrawket");
-    public string ObsClientPath => $"{MainProjectDirectory}/ObsClientSocket.cs";
+    public string ObsClientEventsPath => $"{MainProjectDirectory}/ObsClientSocket.Events.Generated.cs";
+    public string ObsClientRequestsPath => $"{MainProjectDirectory}/ObsClientSocket.Requests.Generated.cs";
 
     private static string GetSolutionDirectory() {
       string? current = Directory.GetCurrentDirectory();
