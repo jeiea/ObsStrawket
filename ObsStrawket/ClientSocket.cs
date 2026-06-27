@@ -380,11 +380,14 @@ namespace ObsStrawket {
         // Without this, pending requests outlive the connection and their awaiters hang.
         var pendingException = exception
           ?? new ObsConnectionClosedException(description ?? "Client closed the websocket connection.");
+        if (exception != null) {
+          // Reset completes pending requests, so publish Faulted before request awaiters resume.
+          SetConnectionState(ObsConnectionPhase.Faulted, uri, exception);
+        }
         Reset(pendingException, exception);
-        SetConnectionState(
-          exception == null ? ObsConnectionPhase.Disconnected : ObsConnectionPhase.Faulted,
-          uri,
-          exception);
+        if (exception == null) {
+          SetConnectionState(ObsConnectionPhase.Disconnected, uri);
+        }
       }
     }
 
