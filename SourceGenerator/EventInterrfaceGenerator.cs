@@ -62,7 +62,7 @@ namespace SourceGenerator {
       await File.WriteAllTextAsync(_directoryHelper.ObsClientPath, result).ConfigureAwait(false);
     }
 
-    [GeneratedRegex(@"    #region Events\r\n.*?#endregion", RegexOptions.Singleline)]
+    [GeneratedRegex(@"    #region Events\r?\n.*?#endregion", RegexOptions.Singleline)]
     private static partial Regex EventsRegionPattern();
   }
 }

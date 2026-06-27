@@ -73,7 +73,7 @@ namespace SourceGenerator {
       await File.WriteAllTextAsync(_directoryHelper.ObsClientPath, result).ConfigureAwait(false);
     }
 
-    [GeneratedRegex(@"    #region Requests\r\n.*?#endregion", RegexOptions.Singleline)]
+    [GeneratedRegex(@"    #region Requests\r?\n.*?#endregion", RegexOptions.Singleline)]
     private static partial Regex RequestsRegionPattern();
 
     private static void PatchTriggerHotkeyByKeySequence(List<ObsRequestField> requestFields) {
