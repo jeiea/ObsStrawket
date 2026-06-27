@@ -48,11 +48,11 @@ namespace SourceGenerator {
         part.WriteLine("    /// <exception cref=\"ObsConnectionException\">The connection fails before a response is received.</exception>");
         part.WriteLine("    /// <exception cref=\"ObsProtocolException\">OBS sends an invalid response.</exception>");
 
-        string returnType = request.ResponseFields!.Count > 0 ? $"{request.RequestType}Response" : "RequestResponse";
+        string returnType = TransformHelper.ToResponseType(request);
         string parameters = GetParameters(request.RequestFields);
         part.WriteLine("    public async Task<{0}> {1}Async({2}) {{", returnType, request.RequestType, parameters);
         string assignments = GetAssignments(request.RequestFields);
-        part.WriteLine("      return (await _clientSocket.RequestAsync(new {0}() {1}, cancellation).ConfigureAwait(false) as {2})!;", request.RequestType, assignments, returnType);
+        part.WriteLine("      return await _clientSocket.RequestAsync(new {0}() {1}, cancellation).ConfigureAwait(false);", request.RequestType, assignments);
         part.WriteLine("    }");
         part.WriteLine();
       }

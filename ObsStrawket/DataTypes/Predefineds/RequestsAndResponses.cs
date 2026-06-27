@@ -9,7 +9,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.7.0
   /// </summary>
-  public class GetCanvasList : Request { }
+  public class GetCanvasList : Request<GetCanvasListResponse> { }
 
   /// <summary>
   /// Response of GetCanvasList
@@ -28,7 +28,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetVersion : Request { }
+  public class GetVersion : Request<GetVersionResponse> { }
 
   /// <summary>
   /// Response of GetVersion
@@ -83,7 +83,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetStats : Request { }
+  public class GetStats : Request<GetStatsResponse> { }
 
   /// <summary>
   /// Response of GetStats
@@ -162,7 +162,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class BroadcastCustomEvent : Request {
+  public class BroadcastCustomEvent : Request<RequestResponse> {
 
     /// <summary>
     /// Data payload to emit to all receivers
@@ -179,7 +179,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class CallVendorRequest : Request {
+  public class CallVendorRequest : Request<CallVendorRequestResponse> {
 
     /// <summary>
     /// Name of the vendor to use
@@ -232,7 +232,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetHotkeyList : Request { }
+  public class GetHotkeyList : Request<GetHotkeyListResponse> { }
 
   /// <summary>
   /// Response of GetHotkeyList
@@ -253,7 +253,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class TriggerHotkeyByName : Request {
+  public class TriggerHotkeyByName : Request<RequestResponse> {
 
     /// <summary>
     /// Name of the hotkey to trigger
@@ -276,7 +276,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class TriggerHotkeyByKeySequence : Request {
+  public class TriggerHotkeyByKeySequence : Request<RequestResponse> {
 
     /// <summary>
     /// The OBS key ID to use. See https://github.com/obsproject/obs-studio/blob/master/libobs/obs-hotkeys.h<br />
@@ -298,7 +298,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class Sleep : Request {
+  public class Sleep : Request<RequestResponse> {
 
     /// <summary>
     /// Number of milliseconds to sleep for (if <c>SERIAL_REALTIME</c> mode)<br />
@@ -322,7 +322,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetPersistentData : Request {
+  public class GetPersistentData : Request<GetPersistentDataResponse> {
 
     /// <summary>
     /// The data realm to select. <c>OBS_WEBSOCKET_DATA_REALM_GLOBAL</c> or <c>OBS_WEBSOCKET_DATA_REALM_PROFILE</c>
@@ -354,7 +354,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetPersistentData : Request {
+  public class SetPersistentData : Request<RequestResponse> {
 
     /// <summary>
     /// The data realm to select. <c>OBS_WEBSOCKET_DATA_REALM_GLOBAL</c> or <c>OBS_WEBSOCKET_DATA_REALM_PROFILE</c>
@@ -380,7 +380,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetSceneCollectionList : Request { }
+  public class GetSceneCollectionList : Request<GetSceneCollectionListResponse> { }
 
   /// <summary>
   /// Response of GetSceneCollectionList
@@ -408,7 +408,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
 #pragma warning disable CA1711
-  public class SetCurrentSceneCollection : Request {
+  public class SetCurrentSceneCollection : Request<RequestResponse> {
 
     /// <summary>
     /// Name of the scene collection to switch to
@@ -426,7 +426,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
 #pragma warning disable CA1711
-  public class CreateSceneCollection : Request {
+  public class CreateSceneCollection : Request<RequestResponse> {
 
     /// <summary>
     /// Name for the new scene collection
@@ -441,7 +441,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetProfileList : Request { }
+  public class GetProfileList : Request<GetProfileListResponse> { }
 
   /// <summary>
   /// Response of GetProfileList
@@ -466,7 +466,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetCurrentProfile : Request {
+  public class SetCurrentProfile : Request<RequestResponse> {
 
     /// <summary>
     /// Name of the profile to switch to
@@ -480,7 +480,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class CreateProfile : Request {
+  public class CreateProfile : Request<RequestResponse> {
 
     /// <summary>
     /// Name for the new profile
@@ -494,7 +494,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class RemoveProfile : Request {
+  public class RemoveProfile : Request<RequestResponse> {
 
     /// <summary>
     /// Name of the profile to remove
@@ -508,7 +508,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetProfileParameter : Request {
+  public class GetProfileParameter : Request<GetProfileParameterResponse> {
 
     /// <summary>
     /// Category of the parameter to get
@@ -546,7 +546,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetProfileParameter : Request {
+  public class SetProfileParameter : Request<RequestResponse> {
 
     /// <summary>
     /// Category of the parameter to set
@@ -574,7 +574,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetVideoSettings : Request { }
+  public class GetVideoSettings : Request<GetVideoSettingsResponse> { }
 
   /// <summary>
   /// Response of GetVideoSettings
@@ -625,7 +625,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetVideoSettings : Request {
+  public class SetVideoSettings : Request<RequestResponse> {
 
     /// <summary>
     /// Numerator of the fractional FPS value<br />
@@ -681,7 +681,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetStreamServiceSettings : Request { }
+  public class GetStreamServiceSettings : Request<GetStreamServiceSettingsResponse> { }
 
   /// <summary>
   /// Response of GetStreamServiceSettings
@@ -708,7 +708,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetStreamServiceSettings : Request {
+  public class SetStreamServiceSettings : Request<RequestResponse> {
 
     /// <summary>
     /// Type of stream service to apply. Example: <c>rtmp_common</c> or <c>rtmp_custom</c>
@@ -728,7 +728,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetRecordDirectory : Request { }
+  public class GetRecordDirectory : Request<GetRecordDirectoryResponse> { }
 
   /// <summary>
   /// Response of GetRecordDirectory
@@ -747,7 +747,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.3.0
   /// </summary>
-  public class SetRecordDirectory : Request {
+  public class SetRecordDirectory : Request<RequestResponse> {
 
     /// <summary>
     /// Output directory
@@ -763,7 +763,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetSourceActive : Request {
+  public class GetSourceActive : Request<GetSourceActiveResponse> {
 
     /// <summary>
     /// Name of the source to get the active state of<br />
@@ -815,7 +815,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetSourceScreenshot : Request {
+  public class GetSourceScreenshot : Request<GetSourceScreenshotResponse> {
 
     /// <summary>
     /// Image compression format to use. Use <c>GetVersion</c> to get compatible image formats
@@ -891,7 +891,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SaveSourceScreenshot : Request {
+  public class SaveSourceScreenshot : Request<RequestResponse> {
 
     /// <summary>
     /// Image compression format to use. Use <c>GetVersion</c> to get compatible image formats
@@ -956,7 +956,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetSceneList : Request {
+  public class GetSceneList : Request<GetSceneListResponse> {
 
     /// <summary>
     /// UUID of the canvas the scenes are in<br />
@@ -1009,7 +1009,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetGroupList : Request { }
+  public class GetGroupList : Request<GetGroupListResponse> { }
 
   /// <summary>
   /// Response of GetGroupList
@@ -1032,7 +1032,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetCurrentProgramScene : Request { }
+  public class GetCurrentProgramScene : Request<GetCurrentProgramSceneResponse> { }
 
   /// <summary>
   /// Response of GetCurrentProgramScene
@@ -1069,7 +1069,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetCurrentProgramScene : Request {
+  public class SetCurrentProgramScene : Request<RequestResponse> {
 
     /// <summary>
     /// Scene name to set as the current program scene<br />
@@ -1095,7 +1095,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetCurrentPreviewScene : Request { }
+  public class GetCurrentPreviewScene : Request<GetCurrentPreviewSceneResponse> { }
 
   /// <summary>
   /// Response of GetCurrentPreviewScene
@@ -1134,7 +1134,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetCurrentPreviewScene : Request {
+  public class SetCurrentPreviewScene : Request<RequestResponse> {
 
     /// <summary>
     /// Scene name to set as the current preview scene<br />
@@ -1156,7 +1156,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class CreateScene : Request {
+  public class CreateScene : Request<CreateSceneResponse> {
 
     /// <summary>
     /// Name for the new scene
@@ -1189,7 +1189,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class RemoveScene : Request {
+  public class RemoveScene : Request<RequestResponse> {
 
     /// <summary>
     /// Name of the scene to remove<br />
@@ -1218,7 +1218,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetSceneName : Request {
+  public class SetSceneName : Request<RequestResponse> {
 
     /// <summary>
     /// New name for the scene
@@ -1255,7 +1255,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetSceneSceneTransitionOverride : Request {
+  public class GetSceneSceneTransitionOverride : Request<GetSceneSceneTransitionOverrideResponse> {
 
     /// <summary>
     /// Name of the scene<br />
@@ -1302,7 +1302,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetSceneSceneTransitionOverride : Request {
+  public class SetSceneSceneTransitionOverride : Request<RequestResponse> {
 
     /// <summary>
     /// Name of the scene<br />
@@ -1346,7 +1346,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetInputList : Request {
+  public class GetInputList : Request<GetInputListResponse> {
 
     /// <summary>
     /// Restrict the array to only inputs of the specified kind<br />
@@ -1373,7 +1373,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetInputKindList : Request {
+  public class GetInputKindList : Request<GetInputKindListResponse> {
 
     /// <summary>
     /// True == Return all kinds as unversioned, False == Return with version suffixes (if available)<br />
@@ -1400,7 +1400,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetSpecialInputs : Request { }
+  public class GetSpecialInputs : Request<GetSpecialInputsResponse> { }
 
   /// <summary>
   /// Response of GetSpecialInputs
@@ -1449,7 +1449,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class CreateInput : Request {
+  public class CreateInput : Request<CreateInputResponse> {
 
     /// <summary>
     /// Name of the new input to created
@@ -1524,7 +1524,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class RemoveInput : Request {
+  public class RemoveInput : Request<RequestResponse> {
 
     /// <summary>
     /// Name of the input to remove<br />
@@ -1546,7 +1546,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetInputName : Request {
+  public class SetInputName : Request<RequestResponse> {
 
     /// <summary>
     /// New name for the input
@@ -1574,7 +1574,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetInputDefaultSettings : Request {
+  public class GetInputDefaultSettings : Request<GetInputDefaultSettingsResponse> {
 
     /// <summary>
     /// Input kind to get the default settings for
@@ -1602,7 +1602,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetInputSettings : Request {
+  public class GetInputSettings : Request<GetInputSettingsResponse> {
 
     /// <summary>
     /// Name of the input to get the settings of<br />
@@ -1642,7 +1642,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetInputSettings : Request {
+  public class SetInputSettings : Request<RequestResponse> {
 
     /// <summary>
     /// Object of settings to apply
@@ -1677,7 +1677,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetInputMute : Request {
+  public class GetInputMute : Request<GetInputMuteResponse> {
 
     /// <summary>
     /// Name of input to get the mute state of<br />
@@ -1711,7 +1711,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetInputMute : Request {
+  public class SetInputMute : Request<RequestResponse> {
 
     /// <summary>
     /// Whether to mute the input or not
@@ -1739,7 +1739,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class ToggleInputMute : Request {
+  public class ToggleInputMute : Request<ToggleInputMuteResponse> {
 
     /// <summary>
     /// Name of the input to toggle the mute state of<br />
@@ -1773,7 +1773,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetInputVolume : Request {
+  public class GetInputVolume : Request<GetInputVolumeResponse> {
 
     /// <summary>
     /// Name of the input to get the volume of<br />
@@ -1813,7 +1813,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetInputVolume : Request {
+  public class SetInputVolume : Request<RequestResponse> {
 
     /// <summary>
     /// Name of the input to set the volume of<br />
@@ -1851,7 +1851,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetInputAudioBalance : Request {
+  public class GetInputAudioBalance : Request<GetInputAudioBalanceResponse> {
 
     /// <summary>
     /// Name of the input to get the audio balance of<br />
@@ -1885,7 +1885,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetInputAudioBalance : Request {
+  public class SetInputAudioBalance : Request<RequestResponse> {
 
     /// <summary>
     /// New audio balance value<br />
@@ -1916,7 +1916,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetInputAudioSyncOffset : Request {
+  public class GetInputAudioSyncOffset : Request<GetInputAudioSyncOffsetResponse> {
 
     /// <summary>
     /// Name of the input to get the audio sync offset of<br />
@@ -1950,7 +1950,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetInputAudioSyncOffset : Request {
+  public class SetInputAudioSyncOffset : Request<RequestResponse> {
 
     /// <summary>
     /// New audio sync offset in milliseconds<br />
@@ -1985,7 +1985,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetInputAudioMonitorType : Request {
+  public class GetInputAudioMonitorType : Request<GetInputAudioMonitorTypeResponse> {
 
     /// <summary>
     /// Name of the input to get the audio monitor type of<br />
@@ -2019,7 +2019,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetInputAudioMonitorType : Request {
+  public class SetInputAudioMonitorType : Request<RequestResponse> {
 
     /// <summary>
     /// Audio monitor type
@@ -2047,7 +2047,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetInputAudioTracks : Request {
+  public class GetInputAudioTracks : Request<GetInputAudioTracksResponse> {
 
     /// <summary>
     /// Name of the input<br />
@@ -2081,7 +2081,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetInputAudioTracks : Request {
+  public class SetInputAudioTracks : Request<RequestResponse> {
 
     /// <summary>
     /// Track settings to apply
@@ -2123,7 +2123,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.6.0
   /// </summary>
-  public class GetInputDeinterlaceMode : Request {
+  public class GetInputDeinterlaceMode : Request<GetInputDeinterlaceModeResponse> {
 
     /// <summary>
     /// Name of the input<br />
@@ -2159,7 +2159,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.6.0
   /// </summary>
-  public class SetInputDeinterlaceMode : Request {
+  public class SetInputDeinterlaceMode : Request<RequestResponse> {
 
     /// <summary>
     /// Deinterlace mode for the input
@@ -2194,7 +2194,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.6.0
   /// </summary>
-  public class GetInputDeinterlaceFieldOrder : Request {
+  public class GetInputDeinterlaceFieldOrder : Request<GetInputDeinterlaceFieldOrderResponse> {
 
     /// <summary>
     /// Name of the input<br />
@@ -2230,7 +2230,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.6.0
   /// </summary>
-  public class SetInputDeinterlaceFieldOrder : Request {
+  public class SetInputDeinterlaceFieldOrder : Request<RequestResponse> {
 
     /// <summary>
     /// Deinterlace field order for the input
@@ -2260,7 +2260,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetInputPropertiesListPropertyItems : Request {
+  public class GetInputPropertiesListPropertyItems : Request<GetInputPropertiesListPropertyItemsResponse> {
 
     /// <summary>
     /// Name of the list property to get the items of
@@ -2306,7 +2306,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class PressInputPropertiesButton : Request {
+  public class PressInputPropertiesButton : Request<RequestResponse> {
 
     /// <summary>
     /// Name of the button property to press
@@ -2336,7 +2336,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetTransitionKindList : Request { }
+  public class GetTransitionKindList : Request<GetTransitionKindListResponse> { }
 
   /// <summary>
   /// Response of GetTransitionKindList
@@ -2355,7 +2355,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetSceneTransitionList : Request { }
+  public class GetSceneTransitionList : Request<GetSceneTransitionListResponse> { }
 
   /// <summary>
   /// Response of GetSceneTransitionList
@@ -2392,7 +2392,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetCurrentSceneTransition : Request { }
+  public class GetCurrentSceneTransition : Request<GetCurrentSceneTransitionResponse> { }
 
   /// <summary>
   /// Response of GetCurrentSceneTransition
@@ -2449,7 +2449,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetCurrentSceneTransition : Request {
+  public class SetCurrentSceneTransition : Request<RequestResponse> {
 
     /// <summary>
     /// Name of the transition to make active
@@ -2463,7 +2463,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetCurrentSceneTransitionDuration : Request {
+  public class SetCurrentSceneTransitionDuration : Request<RequestResponse> {
 
     /// <summary>
     /// Duration in milliseconds<br />
@@ -2478,7 +2478,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetCurrentSceneTransitionSettings : Request {
+  public class SetCurrentSceneTransitionSettings : Request<RequestResponse> {
 
     /// <summary>
     /// Settings object to apply to the transition. Can be <c>{}</c>
@@ -2501,7 +2501,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetCurrentSceneTransitionCursor : Request { }
+  public class GetCurrentSceneTransitionCursor : Request<GetCurrentSceneTransitionCursorResponse> { }
 
   /// <summary>
   /// Response of GetCurrentSceneTransitionCursor
@@ -2520,7 +2520,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class TriggerStudioModeTransition : Request { }
+  public class TriggerStudioModeTransition : Request<RequestResponse> { }
 
   /// <summary>
   /// Sets the position of the TBar.<br />
@@ -2529,7 +2529,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetTBarPosition : Request {
+  public class SetTBarPosition : Request<RequestResponse> {
 
     /// <summary>
     /// New position<br />
@@ -2553,7 +2553,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.4.0
   /// </summary>
-  public class GetSourceFilterKindList : Request { }
+  public class GetSourceFilterKindList : Request<GetSourceFilterKindListResponse> { }
 
   /// <summary>
   /// Response of GetSourceFilterKindList
@@ -2572,7 +2572,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetSourceFilterList : Request {
+  public class GetSourceFilterList : Request<GetSourceFilterListResponse> {
 
     /// <summary>
     /// Name of the source<br />
@@ -2613,7 +2613,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetSourceFilterDefaultSettings : Request {
+  public class GetSourceFilterDefaultSettings : Request<GetSourceFilterDefaultSettingsResponse> {
 
     /// <summary>
     /// Filter kind to get the default settings for
@@ -2639,7 +2639,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class CreateSourceFilter : Request {
+  public class CreateSourceFilter : Request<RequestResponse> {
 
     /// <summary>
     /// Name of the new filter to be created
@@ -2687,7 +2687,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class RemoveSourceFilter : Request {
+  public class RemoveSourceFilter : Request<RequestResponse> {
 
     /// <summary>
     /// Name of the filter to remove
@@ -2722,7 +2722,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetSourceFilterName : Request {
+  public class SetSourceFilterName : Request<RequestResponse> {
 
     /// <summary>
     /// Current name of the filter
@@ -2763,7 +2763,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetSourceFilter : Request {
+  public class GetSourceFilter : Request<GetSourceFilterResponse> {
 
     /// <summary>
     /// Name of the filter
@@ -2828,7 +2828,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetSourceFilterIndex : Request {
+  public class SetSourceFilterIndex : Request<RequestResponse> {
 
     /// <summary>
     /// Name of the filter
@@ -2870,7 +2870,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetSourceFilterSettings : Request {
+  public class SetSourceFilterSettings : Request<RequestResponse> {
 
     /// <summary>
     /// Name of the filter to set the settings of
@@ -2918,7 +2918,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetSourceFilterEnabled : Request {
+  public class SetSourceFilterEnabled : Request<RequestResponse> {
 
     /// <summary>
     /// Name of the filter
@@ -2961,7 +2961,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetSceneItemList : Request {
+  public class GetSceneItemList : Request<GetSceneItemListResponse> {
 
     /// <summary>
     /// Name of the scene to get the items of<br />
@@ -3006,7 +3006,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetGroupSceneItemList : Request {
+  public class GetGroupSceneItemList : Request<GetGroupSceneItemListResponse> {
 
     /// <summary>
     /// Name of the group to get the items of<br />
@@ -3049,7 +3049,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetSceneItemId : Request {
+  public class GetSceneItemId : Request<GetSceneItemIdResponse> {
 
     /// <summary>
     /// Name of the source to find
@@ -3104,7 +3104,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.4.0
   /// </summary>
-  public class GetSceneItemSource : Request {
+  public class GetSceneItemSource : Request<GetSceneItemSourceResponse> {
 
     /// <summary>
     /// Numeric ID of the scene item<br />
@@ -3160,7 +3160,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class CreateSceneItem : Request {
+  public class CreateSceneItem : Request<CreateSceneItemResponse> {
 
     /// <summary>
     /// Name of the scene to create the new item in<br />
@@ -3224,7 +3224,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class RemoveSceneItem : Request {
+  public class RemoveSceneItem : Request<RequestResponse> {
 
     /// <summary>
     /// Numeric ID of the scene item<br />
@@ -3262,7 +3262,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class DuplicateSceneItem : Request {
+  public class DuplicateSceneItem : Request<DuplicateSceneItemResponse> {
 
     /// <summary>
     /// Numeric ID of the scene item<br />
@@ -3326,7 +3326,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetSceneItemTransform : Request {
+  public class GetSceneItemTransform : Request<GetSceneItemTransformResponse> {
 
     /// <summary>
     /// Numeric ID of the scene item<br />
@@ -3374,7 +3374,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetSceneItemTransform : Request {
+  public class SetSceneItemTransform : Request<RequestResponse> {
 
     /// <summary>
     /// Numeric ID of the scene item<br />
@@ -3418,7 +3418,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetSceneItemEnabled : Request {
+  public class GetSceneItemEnabled : Request<GetSceneItemEnabledResponse> {
 
     /// <summary>
     /// Numeric ID of the scene item<br />
@@ -3468,7 +3468,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetSceneItemEnabled : Request {
+  public class SetSceneItemEnabled : Request<RequestResponse> {
 
     /// <summary>
     /// Numeric ID of the scene item<br />
@@ -3512,7 +3512,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetSceneItemLocked : Request {
+  public class GetSceneItemLocked : Request<GetSceneItemLockedResponse> {
 
     /// <summary>
     /// Numeric ID of the scene item<br />
@@ -3562,7 +3562,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetSceneItemLocked : Request {
+  public class SetSceneItemLocked : Request<RequestResponse> {
 
     /// <summary>
     /// Numeric ID of the scene item<br />
@@ -3608,7 +3608,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetSceneItemIndex : Request {
+  public class GetSceneItemIndex : Request<GetSceneItemIndexResponse> {
 
     /// <summary>
     /// Numeric ID of the scene item<br />
@@ -3658,7 +3658,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetSceneItemIndex : Request {
+  public class SetSceneItemIndex : Request<RequestResponse> {
 
     /// <summary>
     /// Numeric ID of the scene item<br />
@@ -3713,7 +3713,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetSceneItemBlendMode : Request {
+  public class GetSceneItemBlendMode : Request<GetSceneItemBlendModeResponse> {
 
     /// <summary>
     /// Numeric ID of the scene item<br />
@@ -3763,7 +3763,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetSceneItemBlendMode : Request {
+  public class SetSceneItemBlendMode : Request<RequestResponse> {
 
     /// <summary>
     /// Numeric ID of the scene item<br />
@@ -3805,7 +3805,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetVirtualCamStatus : Request { }
+  public class GetVirtualCamStatus : Request<GetVirtualCamStatusResponse> { }
 
   /// <summary>
   /// Response of GetVirtualCamStatus
@@ -3824,7 +3824,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class ToggleVirtualCam : Request { }
+  public class ToggleVirtualCam : Request<ToggleVirtualCamResponse> { }
 
   /// <summary>
   /// Response of ToggleVirtualCam
@@ -3843,21 +3843,21 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class StartVirtualCam : Request { }
+  public class StartVirtualCam : Request<RequestResponse> { }
 
   /// <summary>
   /// Stops the virtualcam output.<br />
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class StopVirtualCam : Request { }
+  public class StopVirtualCam : Request<RequestResponse> { }
 
   /// <summary>
   /// Gets the status of the replay buffer output.<br />
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetReplayBufferStatus : Request { }
+  public class GetReplayBufferStatus : Request<GetReplayBufferStatusResponse> { }
 
   /// <summary>
   /// Response of GetReplayBufferStatus
@@ -3876,7 +3876,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class ToggleReplayBuffer : Request { }
+  public class ToggleReplayBuffer : Request<ToggleReplayBufferResponse> { }
 
   /// <summary>
   /// Response of ToggleReplayBuffer
@@ -3895,28 +3895,28 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class StartReplayBuffer : Request { }
+  public class StartReplayBuffer : Request<RequestResponse> { }
 
   /// <summary>
   /// Stops the replay buffer output.<br />
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class StopReplayBuffer : Request { }
+  public class StopReplayBuffer : Request<RequestResponse> { }
 
   /// <summary>
   /// Saves the contents of the replay buffer output.<br />
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SaveReplayBuffer : Request { }
+  public class SaveReplayBuffer : Request<RequestResponse> { }
 
   /// <summary>
   /// Gets the filename of the last replay buffer save file.<br />
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetLastReplayBufferReplay : Request { }
+  public class GetLastReplayBufferReplay : Request<GetLastReplayBufferReplayResponse> { }
 
   /// <summary>
   /// Response of GetLastReplayBufferReplay
@@ -3935,7 +3935,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetOutputList : Request { }
+  public class GetOutputList : Request<GetOutputListResponse> { }
 
   /// <summary>
   /// Response of GetOutputList
@@ -3954,7 +3954,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetOutputStatus : Request {
+  public class GetOutputStatus : Request<GetOutputStatusResponse> {
 
     /// <summary>
     /// Output name
@@ -4022,7 +4022,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class ToggleOutput : Request {
+  public class ToggleOutput : Request<ToggleOutputResponse> {
 
     /// <summary>
     /// Output name
@@ -4048,7 +4048,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class StartOutput : Request {
+  public class StartOutput : Request<RequestResponse> {
 
     /// <summary>
     /// Output name
@@ -4062,7 +4062,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class StopOutput : Request {
+  public class StopOutput : Request<RequestResponse> {
 
     /// <summary>
     /// Output name
@@ -4076,7 +4076,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetOutputSettings : Request {
+  public class GetOutputSettings : Request<GetOutputSettingsResponse> {
 
     /// <summary>
     /// Output name
@@ -4102,7 +4102,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetOutputSettings : Request {
+  public class SetOutputSettings : Request<RequestResponse> {
 
     /// <summary>
     /// Output name
@@ -4122,7 +4122,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetStreamStatus : Request { }
+  public class GetStreamStatus : Request<GetStreamStatusResponse> { }
 
   /// <summary>
   /// Response of GetStreamStatus
@@ -4184,7 +4184,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
 #pragma warning disable CA1711
-  public class ToggleStream : Request { }
+  public class ToggleStream : Request<ToggleStreamResponse> { }
 #pragma warning restore CA1711
 
   /// <summary>
@@ -4205,7 +4205,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
 #pragma warning disable CA1711
-  public class StartStream : Request { }
+  public class StartStream : Request<RequestResponse> { }
 #pragma warning restore CA1711
 
   /// <summary>
@@ -4214,7 +4214,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Added in: 5.0.0
   /// </summary>
 #pragma warning disable CA1711
-  public class StopStream : Request { }
+  public class StopStream : Request<RequestResponse> { }
 #pragma warning restore CA1711
 
   /// <summary>
@@ -4222,7 +4222,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SendStreamCaption : Request {
+  public class SendStreamCaption : Request<RequestResponse> {
 
     /// <summary>
     /// Caption text
@@ -4236,7 +4236,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetRecordStatus : Request { }
+  public class GetRecordStatus : Request<GetRecordStatusResponse> { }
 
   /// <summary>
   /// Response of GetRecordStatus
@@ -4279,7 +4279,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class ToggleRecord : Request { }
+  public class ToggleRecord : Request<ToggleRecordResponse> { }
 
   /// <summary>
   /// Response of ToggleRecord
@@ -4298,14 +4298,14 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class StartRecord : Request { }
+  public class StartRecord : Request<RequestResponse> { }
 
   /// <summary>
   /// Stops the record output.<br />
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class StopRecord : Request { }
+  public class StopRecord : Request<StopRecordResponse> { }
 
   /// <summary>
   /// Response of StopRecord
@@ -4324,7 +4324,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class ToggleRecordPause : Request { }
+  public class ToggleRecordPause : Request<ToggleRecordPauseResponse> { }
 
   /// <summary>
   /// Response of ToggleRecordPause
@@ -4343,21 +4343,21 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class PauseRecord : Request { }
+  public class PauseRecord : Request<RequestResponse> { }
 
   /// <summary>
   /// Resumes the record output.<br />
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class ResumeRecord : Request { }
+  public class ResumeRecord : Request<RequestResponse> { }
 
   /// <summary>
   /// Splits the current file being recorded into a new file.<br />
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.5.0
   /// </summary>
-  public class SplitRecordFile : Request { }
+  public class SplitRecordFile : Request<RequestResponse> { }
 
   /// <summary>
   /// Adds a new chapter marker to the file currently being recorded.<br />
@@ -4366,7 +4366,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.5.0
   /// </summary>
-  public class CreateRecordChapter : Request {
+  public class CreateRecordChapter : Request<RequestResponse> {
 
     /// <summary>
     /// Name of the new chapter<br />
@@ -4392,7 +4392,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetMediaInputStatus : Request {
+  public class GetMediaInputStatus : Request<GetMediaInputStatusResponse> {
 
     /// <summary>
     /// Name of the media input<br />
@@ -4440,7 +4440,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetMediaInputCursor : Request {
+  public class SetMediaInputCursor : Request<RequestResponse> {
 
     /// <summary>
     /// New cursor position to set<br />
@@ -4471,7 +4471,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class OffsetMediaInputCursor : Request {
+  public class OffsetMediaInputCursor : Request<RequestResponse> {
 
     /// <summary>
     /// Value to offset the current cursor position by
@@ -4499,7 +4499,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class TriggerMediaInputAction : Request {
+  public class TriggerMediaInputAction : Request<RequestResponse> {
 
     /// <summary>
     /// Identifier of the <c>ObsMediaInputAction</c> enum
@@ -4527,7 +4527,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetStudioModeEnabled : Request { }
+  public class GetStudioModeEnabled : Request<GetStudioModeEnabledResponse> { }
 
   /// <summary>
   /// Response of GetStudioModeEnabled
@@ -4546,7 +4546,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class SetStudioModeEnabled : Request {
+  public class SetStudioModeEnabled : Request<RequestResponse> {
 
     /// <summary>
     /// True == Enabled, False == Disabled
@@ -4560,7 +4560,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class OpenInputPropertiesDialog : Request {
+  public class OpenInputPropertiesDialog : Request<RequestResponse> {
 
     /// <summary>
     /// Name of the input to open the dialog of<br />
@@ -4582,7 +4582,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class OpenInputFiltersDialog : Request {
+  public class OpenInputFiltersDialog : Request<RequestResponse> {
 
     /// <summary>
     /// Name of the input to open the dialog of<br />
@@ -4604,7 +4604,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class OpenInputInteractDialog : Request {
+  public class OpenInputInteractDialog : Request<RequestResponse> {
 
     /// <summary>
     /// Name of the input to open the dialog of<br />
@@ -4626,7 +4626,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class GetMonitorList : Request { }
+  public class GetMonitorList : Request<GetMonitorListResponse> { }
 
   /// <summary>
   /// Response of GetMonitorList
@@ -4653,7 +4653,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class OpenVideoMixProjector : Request {
+  public class OpenVideoMixProjector : Request<RequestResponse> {
 
     /// <summary>
     /// Type of mix to open
@@ -4683,7 +4683,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
   /// Latest supported RPC version: 1<br />
   /// Added in: 5.0.0
   /// </summary>
-  public class OpenSourceProjector : Request {
+  public class OpenSourceProjector : Request<RequestResponse> {
 
     /// <summary>
     /// Name of the source to open a projector for<br />

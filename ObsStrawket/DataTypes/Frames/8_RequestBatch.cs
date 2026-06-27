@@ -28,7 +28,7 @@ namespace ObsStrawket.DataTypes {
     /// Requests in the requests array follow the same structure as the Request payload data format,
     /// however requestId is an optional field.
     /// </summary>
-    List<IRequest> Requests { get; }
+    List<IRequest<IRequestResponse>> Requests { get; }
   }
 
   /// <summary>
@@ -70,6 +70,6 @@ namespace ObsStrawket.DataTypes {
     /// </summary>
     [JsonPropertyName("requests")]
     [JsonConverter(typeof(BatchRequestConverter))]
-    public List<IRequest> Requests { get; set; } = [];
+    public List<IRequest<IRequestResponse>> Requests { get; set; } = [];
   }
 }

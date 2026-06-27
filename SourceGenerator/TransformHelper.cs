@@ -30,6 +30,10 @@ namespace SourceGenerator {
       return !s2.EndsWith('?') && nullPattern.IsMatch(description) ? $"{s2}?" : s2;
     }
 
+    public static string ToResponseType(ObsRequest request) {
+      return request.ResponseFields.Count > 0 ? $"{request.RequestType}Response" : "RequestResponse";
+    }
+
     public static string EscapeForXml(string unescaped) {
       var doc = new XmlDocument();
       var node = doc.CreateElement("root");

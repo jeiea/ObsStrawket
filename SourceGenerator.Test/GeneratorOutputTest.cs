@@ -25,6 +25,7 @@ namespace SourceGenerator.Test {
         Requests = [
           Request("StartStream"),
           Request("OrdinaryRequest"),
+          RequestWithResponse("SpecificRequest"),
         ],
       };
       var generator = new RequestResponseGenerator(
@@ -41,11 +42,13 @@ namespace SourceGenerator.Test {
       Assert.Contains(
         """
 #pragma warning disable CA1711
-  public class StartStream : Request { }
+  public class StartStream : Request<RequestResponse> { }
 #pragma warning restore CA1711
 """.ReplaceLineEndings("\n"),
         output);
-      Assert.Contains("  public class OrdinaryRequest : Request { }", output);
+      Assert.Contains("  public class OrdinaryRequest : Request<RequestResponse> { }", output);
+      Assert.Contains("  public class SpecificRequest : Request<SpecificRequestResponse> { }", output);
+      Assert.Contains("  public class SpecificRequestResponse : RequestResponse {", output);
       Assert.Equal(1, Count(output, "#pragma warning disable CA1711"));
     }
 
@@ -101,6 +104,7 @@ namespace SourceGenerator.Test {
             ],
           },
           Request("OrdinaryRequest"),
+          RequestWithResponse("SpecificRequest"),
           Request("Sleep"),
         ],
       };
@@ -130,6 +134,16 @@ namespace ObsStrawket {
       Assert.Contains(
         """<exception cref="ObsProtocolException">OBS sends an invalid response.</exception>""",
         output);
+      Assert.Contains(
+        "return await _clientSocket.RequestAsync(new OrdinaryRequest() { }, cancellation).ConfigureAwait(false);",
+        output);
+      Assert.Contains(
+        "public async Task<SpecificRequestResponse> SpecificRequestAsync(CancellationToken cancellation = default)",
+        output);
+      Assert.Contains(
+        "return await _clientSocket.RequestAsync(new SpecificRequest() { }, cancellation).ConfigureAwait(false);",
+        output);
+      Assert.DoesNotContain(" as RequestResponse)!", output);
     }
 
     public void Dispose() {
@@ -143,6 +157,18 @@ namespace ObsStrawket {
         RpcVersion = "1",
         InitialVersion = "5.0.0",
       };
+    }
+
+    private static ObsRequest RequestWithResponse(string requestType) {
+      var request = Request(requestType);
+      request.ResponseFields = [
+        new ObsDataField {
+          ValueName = "value",
+          ValueType = "String",
+          ValueDescription = "Generated value",
+        },
+      ];
+      return request;
     }
 
     private static ObsEnumDefinition StringEnum(

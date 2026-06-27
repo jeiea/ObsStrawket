@@ -31,6 +31,7 @@
   structured diagnostics instead.
 - ! Remove `ObsClientSocket.Connected` and `ObsClientSocket.Disconnected`.
   Subscribe to `ConnectionStateChanged` and inspect `ConnectionState` instead.
+- Type request objects with their response type for safer custom request code.
 - Multi-target `netstandard2.0` and `net8.0`. On .NET 8+,
   System.Text.Json and System.Threading.Channels come from the framework
   instead of package downloads. The `netstandard2.0` target uses version

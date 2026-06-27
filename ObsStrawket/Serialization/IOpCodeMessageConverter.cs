@@ -104,14 +104,14 @@ namespace ObsStrawket.Serialization {
     }
   }
 
-  internal class BatchRequestConverter : JsonConverter<List<IRequest>> {
+  internal class BatchRequestConverter : JsonConverter<List<IRequest<IRequestResponse>>> {
 
-    public override List<IRequest>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+    public override List<IRequest<IRequestResponse>>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
       throw new NotSupportedException(
         $"{nameof(BatchRequestConverter)} only supports writing batch requests.");
     }
 
-    public override void Write(Utf8JsonWriter writer, List<IRequest> value, JsonSerializerOptions options) {
+    public override void Write(Utf8JsonWriter writer, List<IRequest<IRequestResponse>> value, JsonSerializerOptions options) {
       writer.WriteStartArray();
 
       foreach (var request in value) {
@@ -123,9 +123,9 @@ namespace ObsStrawket.Serialization {
   }
 
   // for batch
-  internal class IRequestConverter : JsonConverter<IRequest> {
+  internal class IRequestConverter : JsonConverter<IRequest<IRequestResponse>> {
 
-    public static void WritePayload(Utf8JsonWriter writer, IRequest request, JsonSerializerOptions options) {
+    public static void WritePayload(Utf8JsonWriter writer, IRequest<IRequestResponse> request, JsonSerializerOptions options) {
       writer.WriteStartObject();
 
       writer.WriteString("requestType", request.RequestType);
@@ -140,7 +140,7 @@ namespace ObsStrawket.Serialization {
       writer.WriteEndObject();
     }
 
-    public static IRequest Deserialize(ref Utf8JsonReader reader, JsonSerializerOptions options) {
+    public static IRequest<IRequestResponse> Deserialize(ref Utf8JsonReader reader, JsonSerializerOptions options) {
       var rawReader = reader;
       JsonConverterHelper.CheckObjectStart(ref reader);
 
@@ -156,8 +156,8 @@ namespace ObsStrawket.Serialization {
         var requestType = mapping.Request;
         bool hasEventData = JsonConverterHelper.SeekByKey(ref dataReader, "requestData");
         var request = hasEventData
-          ? (JsonSerializer.Deserialize(ref dataReader, requestType, options) as IRequest ?? JsonConverterHelper.CreateInstance<IRequest>(requestType))
-          : JsonConverterHelper.CreateInstance<IRequest>(requestType);
+          ? (JsonSerializer.Deserialize(ref dataReader, requestType, options) as IRequest<IRequestResponse> ?? JsonConverterHelper.CreateInstance<IRequest<IRequestResponse>>(requestType))
+          : JsonConverterHelper.CreateInstance<IRequest<IRequestResponse>>(requestType);
         reader.Skip();
         request.RequestId = requestId ?? "(null)";
         return request;
@@ -170,7 +170,7 @@ namespace ObsStrawket.Serialization {
       }
     }
 
-    public override IRequest? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+    public override IRequest<IRequestResponse>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
       JsonConverterHelper.CheckObjectStart(ref reader);
 
       var dataReader = JsonConverterHelper.SeekByKey(reader, "d");
@@ -179,11 +179,11 @@ namespace ObsStrawket.Serialization {
       return Deserialize(ref dataReader, options);
     }
 
-    public override void Write(Utf8JsonWriter writer, IRequest request, JsonSerializerOptions options) {
+    public override void Write(Utf8JsonWriter writer, IRequest<IRequestResponse> request, JsonSerializerOptions options) {
       WritePayload(writer, request, options);
     }
 
-    internal static void WriteFull(Utf8JsonWriter writer, IRequest request, JsonSerializerOptions options) {
+    internal static void WriteFull(Utf8JsonWriter writer, IRequest<IRequestResponse> request, JsonSerializerOptions options) {
       writer.WriteStartObject();
 
       writer.WritePropertyName("d");
@@ -232,7 +232,7 @@ namespace ObsStrawket.Serialization {
 
     public override void Write(Utf8JsonWriter writer, IOpCodeMessage value, JsonSerializerOptions options) {
       switch (value) {
-      case IRequest request:
+      case IRequest<IRequestResponse> request:
         IRequestConverter.WriteFull(writer, request, options);
         return;
 

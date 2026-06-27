@@ -24,7 +24,7 @@ namespace ObsStrawket.DataTypes {
     /// </summary>
     Event = 5,
     /// <summary>
-    /// <see cref="DataTypes.Request"/>
+    /// <see cref="IRequest{TResponse}"/>
     /// </summary>
     Request = 6,
     /// <summary>

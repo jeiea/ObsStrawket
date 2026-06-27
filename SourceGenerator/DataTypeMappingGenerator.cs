@@ -46,7 +46,7 @@ namespace ObsStrawket.DataTypes {
           _ = builder.AppendLine(CultureInfo.InvariantCulture, $"      // {TransformHelper.ToPascalCase(request.Category!)} Requests");
           previousCategory = request.Category;
         }
-        string response = request.ResponseFields.Count > 0 ? $"{request.RequestType}Response" : "RequestResponse";
+        string response = TransformHelper.ToResponseType(request);
         string isRequestEmpty = request.RequestFields.Count == 0 ? ", true" : "";
         _ = builder.AppendLine(CultureInfo.InvariantCulture, $"      new (typeof({request.RequestType}), typeof({response}){isRequestEmpty}),");
       }

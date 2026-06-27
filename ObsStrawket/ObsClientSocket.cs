@@ -608,8 +608,9 @@ namespace ObsStrawket {
     }
 
     /// <summary>
-    /// Low level request method. It can send <see cref="RawRequest"/>.
+    /// Low level typed request method.
     /// </summary>
+    /// <typeparam name="TResponse">Expected response type.</typeparam>
     /// <param name="request">Request data.</param>
     /// <param name="cancellation">Token for cancellation</param>
     /// <returns>Response from websocket server.</returns>
@@ -619,7 +620,10 @@ namespace ObsStrawket {
     /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
-    public Task<IRequestResponse> RequestAsync(IRequest request, CancellationToken cancellation = default) {
+    public Task<TResponse> RequestAsync<TResponse>(
+      IRequest<TResponse> request,
+      CancellationToken cancellation = default
+    ) where TResponse : class, IRequestResponse {
       return _clientSocket.RequestAsync(request, cancellation);
     }
 
@@ -692,7 +696,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetCanvasListResponse> GetCanvasListAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetCanvasList() { }, cancellation).ConfigureAwait(false) as GetCanvasListResponse)!;
+      return await _clientSocket.RequestAsync(new GetCanvasList() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -707,7 +711,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetVersionResponse> GetVersionAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetVersion() { }, cancellation).ConfigureAwait(false) as GetVersionResponse)!;
+      return await _clientSocket.RequestAsync(new GetVersion() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -722,7 +726,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetStatsResponse> GetStatsAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetStats() { }, cancellation).ConfigureAwait(false) as GetStatsResponse)!;
+      return await _clientSocket.RequestAsync(new GetStats() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -738,7 +742,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> BroadcastCustomEventAsync(Dictionary<string, JsonElement?> eventData, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new BroadcastCustomEvent() { EventData = eventData }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new BroadcastCustomEvent() { EventData = eventData }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -759,7 +763,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<CallVendorRequestResponse> CallVendorRequestAsync(string vendorName, string requestType, Dictionary<string, JsonElement?>? requestData = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new CallVendorRequest() { VendorName = vendorName, VendorRequestType = requestType, RequestData = requestData }, cancellation).ConfigureAwait(false) as CallVendorRequestResponse)!;
+      return await _clientSocket.RequestAsync(new CallVendorRequest() { VendorName = vendorName, VendorRequestType = requestType, RequestData = requestData }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -776,7 +780,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetHotkeyListResponse> GetHotkeyListAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetHotkeyList() { }, cancellation).ConfigureAwait(false) as GetHotkeyListResponse)!;
+      return await _clientSocket.RequestAsync(new GetHotkeyList() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -795,7 +799,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> TriggerHotkeyByNameAsync(string hotkeyName, string? contextName = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new TriggerHotkeyByName() { HotkeyName = hotkeyName, ContextName = contextName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new TriggerHotkeyByName() { HotkeyName = hotkeyName, ContextName = contextName }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -817,7 +821,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> TriggerHotkeyByKeySequenceAsync(string? keyId = default, bool? shift = default, bool? control = default, bool? alt = default, bool? command = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new TriggerHotkeyByKeySequence() { KeyId = keyId, KeyModifiers = new KeyModifiers() { Shift = shift, Control = control, Alt = alt, Command = command } }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new TriggerHotkeyByKeySequence() { KeyId = keyId, KeyModifiers = new KeyModifiers() { Shift = shift, Control = control, Alt = alt, Command = command } }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -834,7 +838,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetPersistentDataResponse> GetPersistentDataAsync(DataRealm realm, string slotName, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetPersistentData() { Realm = realm, SlotName = slotName }, cancellation).ConfigureAwait(false) as GetPersistentDataResponse)!;
+      return await _clientSocket.RequestAsync(new GetPersistentData() { Realm = realm, SlotName = slotName }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -852,7 +856,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetPersistentDataAsync(DataRealm realm, string slotName, object? slotValue, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetPersistentData() { Realm = realm, SlotName = slotName, SlotValue = slotValue }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetPersistentData() { Realm = realm, SlotName = slotName, SlotValue = slotValue }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -867,7 +871,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneCollectionListResponse> GetSceneCollectionListAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSceneCollectionList() { }, cancellation).ConfigureAwait(false) as GetSceneCollectionListResponse)!;
+      return await _clientSocket.RequestAsync(new GetSceneCollectionList() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -885,7 +889,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetCurrentSceneCollectionAsync(string sceneCollectionName, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetCurrentSceneCollection() { SceneCollectionName = sceneCollectionName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetCurrentSceneCollection() { SceneCollectionName = sceneCollectionName }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -903,7 +907,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> CreateSceneCollectionAsync(string sceneCollectionName, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new CreateSceneCollection() { SceneCollectionName = sceneCollectionName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new CreateSceneCollection() { SceneCollectionName = sceneCollectionName }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -918,7 +922,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetProfileListResponse> GetProfileListAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetProfileList() { }, cancellation).ConfigureAwait(false) as GetProfileListResponse)!;
+      return await _clientSocket.RequestAsync(new GetProfileList() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -934,7 +938,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetCurrentProfileAsync(string profileName, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetCurrentProfile() { ProfileName = profileName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetCurrentProfile() { ProfileName = profileName }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -950,7 +954,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> CreateProfileAsync(string profileName, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new CreateProfile() { ProfileName = profileName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new CreateProfile() { ProfileName = profileName }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -966,7 +970,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> RemoveProfileAsync(string profileName, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new RemoveProfile() { ProfileName = profileName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new RemoveProfile() { ProfileName = profileName }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -983,7 +987,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetProfileParameterResponse> GetProfileParameterAsync(string parameterCategory, string parameterName, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetProfileParameter() { ParameterCategory = parameterCategory, ParameterName = parameterName }, cancellation).ConfigureAwait(false) as GetProfileParameterResponse)!;
+      return await _clientSocket.RequestAsync(new GetProfileParameter() { ParameterCategory = parameterCategory, ParameterName = parameterName }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1001,7 +1005,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetProfileParameterAsync(string parameterCategory, string parameterName, string? parameterValue, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetProfileParameter() { ParameterCategory = parameterCategory, ParameterName = parameterName, ParameterValue = parameterValue }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetProfileParameter() { ParameterCategory = parameterCategory, ParameterName = parameterName, ParameterValue = parameterValue }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1018,7 +1022,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetVideoSettingsResponse> GetVideoSettingsAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetVideoSettings() { }, cancellation).ConfigureAwait(false) as GetVideoSettingsResponse)!;
+      return await _clientSocket.RequestAsync(new GetVideoSettings() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1041,7 +1045,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetVideoSettingsAsync(int? fpsNumerator = default, int? fpsDenominator = default, int? baseWidth = default, int? baseHeight = default, int? outputWidth = default, int? outputHeight = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetVideoSettings() { FpsNumerator = fpsNumerator, FpsDenominator = fpsDenominator, BaseWidth = baseWidth, BaseHeight = baseHeight, OutputWidth = outputWidth, OutputHeight = outputHeight }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetVideoSettings() { FpsNumerator = fpsNumerator, FpsDenominator = fpsDenominator, BaseWidth = baseWidth, BaseHeight = baseHeight, OutputWidth = outputWidth, OutputHeight = outputHeight }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1056,7 +1060,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetStreamServiceSettingsResponse> GetStreamServiceSettingsAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetStreamServiceSettings() { }, cancellation).ConfigureAwait(false) as GetStreamServiceSettingsResponse)!;
+      return await _clientSocket.RequestAsync(new GetStreamServiceSettings() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1075,7 +1079,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetStreamServiceSettingsAsync(StreamServiceType streamServiceType, Dictionary<string, JsonElement?> streamServiceSettings, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetStreamServiceSettings() { StreamServiceType = streamServiceType, StreamServiceSettings = streamServiceSettings }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetStreamServiceSettings() { StreamServiceType = streamServiceType, StreamServiceSettings = streamServiceSettings }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1090,7 +1094,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetRecordDirectoryResponse> GetRecordDirectoryAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetRecordDirectory() { }, cancellation).ConfigureAwait(false) as GetRecordDirectoryResponse)!;
+      return await _clientSocket.RequestAsync(new GetRecordDirectory() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1106,7 +1110,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetRecordDirectoryAsync(string recordDirectory, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetRecordDirectory() { RecordDirectory = recordDirectory }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetRecordDirectory() { RecordDirectory = recordDirectory }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1126,7 +1130,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSourceActiveResponse> GetSourceActiveAsync(string? sourceName = default, string? sourceUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSourceActive() { SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSourceActiveResponse)!;
+      return await _clientSocket.RequestAsync(new GetSourceActive() { SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1153,7 +1157,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSourceScreenshotResponse> GetSourceScreenshotAsync(string imageFormat, string? sourceName = default, string? sourceUuid = default, int? imageWidth = default, int? imageHeight = default, int? imageCompressionQuality = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSourceScreenshot() { ImageFormat = imageFormat, SourceName = sourceName, SourceUuid = sourceUuid, ImageWidth = imageWidth, ImageHeight = imageHeight, ImageCompressionQuality = imageCompressionQuality, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSourceScreenshotResponse)!;
+      return await _clientSocket.RequestAsync(new GetSourceScreenshot() { ImageFormat = imageFormat, SourceName = sourceName, SourceUuid = sourceUuid, ImageWidth = imageWidth, ImageHeight = imageHeight, ImageCompressionQuality = imageCompressionQuality, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1181,7 +1185,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SaveSourceScreenshotAsync(string imageFormat, string imageFilePath, string? sourceName = default, string? sourceUuid = default, int? imageWidth = default, int? imageHeight = default, int? imageCompressionQuality = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SaveSourceScreenshot() { ImageFormat = imageFormat, ImageFilePath = imageFilePath, SourceName = sourceName, SourceUuid = sourceUuid, ImageWidth = imageWidth, ImageHeight = imageHeight, ImageCompressionQuality = imageCompressionQuality, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SaveSourceScreenshot() { ImageFormat = imageFormat, ImageFilePath = imageFilePath, SourceName = sourceName, SourceUuid = sourceUuid, ImageWidth = imageWidth, ImageHeight = imageHeight, ImageCompressionQuality = imageCompressionQuality, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1197,7 +1201,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneListResponse> GetSceneListAsync(string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSceneList() { CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSceneListResponse)!;
+      return await _clientSocket.RequestAsync(new GetSceneList() { CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1214,7 +1218,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetGroupListResponse> GetGroupListAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetGroupList() { }, cancellation).ConfigureAwait(false) as GetGroupListResponse)!;
+      return await _clientSocket.RequestAsync(new GetGroupList() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1233,7 +1237,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetCurrentProgramSceneResponse> GetCurrentProgramSceneAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetCurrentProgramScene() { }, cancellation).ConfigureAwait(false) as GetCurrentProgramSceneResponse)!;
+      return await _clientSocket.RequestAsync(new GetCurrentProgramScene() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1250,7 +1254,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetCurrentProgramSceneAsync(string? sceneName = default, string? sceneUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetCurrentProgramScene() { SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetCurrentProgramScene() { SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1269,7 +1273,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetCurrentPreviewSceneResponse> GetCurrentPreviewSceneAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetCurrentPreviewScene() { }, cancellation).ConfigureAwait(false) as GetCurrentPreviewSceneResponse)!;
+      return await _clientSocket.RequestAsync(new GetCurrentPreviewScene() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1288,7 +1292,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetCurrentPreviewSceneAsync(string? sceneName = default, string? sceneUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetCurrentPreviewScene() { SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetCurrentPreviewScene() { SceneName = sceneName, SceneUuid = sceneUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1305,7 +1309,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<CreateSceneResponse> CreateSceneAsync(string sceneName, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new CreateScene() { SceneName = sceneName, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as CreateSceneResponse)!;
+      return await _clientSocket.RequestAsync(new CreateScene() { SceneName = sceneName, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1323,7 +1327,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> RemoveSceneAsync(string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new RemoveScene() { SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new RemoveScene() { SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1342,7 +1346,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSceneNameAsync(string newSceneName, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetSceneName() { NewSceneName = newSceneName, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetSceneName() { NewSceneName = newSceneName, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1362,7 +1366,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneSceneTransitionOverrideResponse> GetSceneSceneTransitionOverrideAsync(string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSceneSceneTransitionOverride() { SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSceneSceneTransitionOverrideResponse)!;
+      return await _clientSocket.RequestAsync(new GetSceneSceneTransitionOverride() { SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1382,7 +1386,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSceneSceneTransitionOverrideAsync(string? sceneName = default, string? sceneUuid = default, string? transitionName = default, long? transitionDuration = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetSceneSceneTransitionOverride() { SceneName = sceneName, SceneUuid = sceneUuid, TransitionName = transitionName, TransitionDuration = transitionDuration, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetSceneSceneTransitionOverride() { SceneName = sceneName, SceneUuid = sceneUuid, TransitionName = transitionName, TransitionDuration = transitionDuration, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1398,7 +1402,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputListResponse> GetInputListAsync(string? inputKind = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetInputList() { InputKind = inputKind }, cancellation).ConfigureAwait(false) as GetInputListResponse)!;
+      return await _clientSocket.RequestAsync(new GetInputList() { InputKind = inputKind }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1414,7 +1418,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputKindListResponse> GetInputKindListAsync(bool? unversioned = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetInputKindList() { Unversioned = unversioned }, cancellation).ConfigureAwait(false) as GetInputKindListResponse)!;
+      return await _clientSocket.RequestAsync(new GetInputKindList() { Unversioned = unversioned }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1429,7 +1433,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSpecialInputsResponse> GetSpecialInputsAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSpecialInputs() { }, cancellation).ConfigureAwait(false) as GetSpecialInputsResponse)!;
+      return await _clientSocket.RequestAsync(new GetSpecialInputs() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1451,7 +1455,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<CreateInputResponse> CreateInputAsync(string inputName, string inputKind, string? sceneName = default, string? sceneUuid = default, Dictionary<string, JsonElement?>? inputSettings = default, bool? sceneItemEnabled = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new CreateInput() { InputName = inputName, InputKind = inputKind, SceneName = sceneName, SceneUuid = sceneUuid, InputSettings = inputSettings, SceneItemEnabled = sceneItemEnabled, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as CreateInputResponse)!;
+      return await _clientSocket.RequestAsync(new CreateInput() { InputName = inputName, InputKind = inputKind, SceneName = sceneName, SceneUuid = sceneUuid, InputSettings = inputSettings, SceneItemEnabled = sceneItemEnabled, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1470,7 +1474,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> RemoveInputAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new RemoveInput() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new RemoveInput() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1488,7 +1492,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetInputNameAsync(string newInputName, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetInputName() { NewInputName = newInputName, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetInputName() { NewInputName = newInputName, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1504,7 +1508,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputDefaultSettingsResponse> GetInputDefaultSettingsAsync(string inputKind, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetInputDefaultSettings() { InputKind = inputKind }, cancellation).ConfigureAwait(false) as GetInputDefaultSettingsResponse)!;
+      return await _clientSocket.RequestAsync(new GetInputDefaultSettings() { InputKind = inputKind }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1523,7 +1527,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputSettingsResponse> GetInputSettingsAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetInputSettings() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetInputSettingsResponse)!;
+      return await _clientSocket.RequestAsync(new GetInputSettings() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1542,7 +1546,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetInputSettingsAsync(Dictionary<string, JsonElement?> inputSettings, string? inputName = default, string? inputUuid = default, bool? overlay = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetInputSettings() { InputSettings = inputSettings, InputName = inputName, InputUuid = inputUuid, Overlay = overlay }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetInputSettings() { InputSettings = inputSettings, InputName = inputName, InputUuid = inputUuid, Overlay = overlay }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1559,7 +1563,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputMuteResponse> GetInputMuteAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetInputMute() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetInputMuteResponse)!;
+      return await _clientSocket.RequestAsync(new GetInputMute() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1577,7 +1581,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetInputMuteAsync(bool inputMuted, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetInputMute() { InputMuted = inputMuted, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetInputMute() { InputMuted = inputMuted, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1594,7 +1598,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<ToggleInputMuteResponse> ToggleInputMuteAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new ToggleInputMute() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as ToggleInputMuteResponse)!;
+      return await _clientSocket.RequestAsync(new ToggleInputMute() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1611,7 +1615,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputVolumeResponse> GetInputVolumeAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetInputVolume() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetInputVolumeResponse)!;
+      return await _clientSocket.RequestAsync(new GetInputVolume() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1630,7 +1634,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetInputVolumeAsync(string? inputName = default, string? inputUuid = default, double? inputVolumeMul = default, double? inputVolumeDb = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetInputVolume() { InputName = inputName, InputUuid = inputUuid, InputVolumeMul = inputVolumeMul, InputVolumeDb = inputVolumeDb }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetInputVolume() { InputName = inputName, InputUuid = inputUuid, InputVolumeMul = inputVolumeMul, InputVolumeDb = inputVolumeDb }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1647,7 +1651,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputAudioBalanceResponse> GetInputAudioBalanceAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetInputAudioBalance() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetInputAudioBalanceResponse)!;
+      return await _clientSocket.RequestAsync(new GetInputAudioBalance() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1665,7 +1669,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetInputAudioBalanceAsync(double inputAudioBalance, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetInputAudioBalance() { InputAudioBalance = inputAudioBalance, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetInputAudioBalance() { InputAudioBalance = inputAudioBalance, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1684,7 +1688,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputAudioSyncOffsetResponse> GetInputAudioSyncOffsetAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetInputAudioSyncOffset() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetInputAudioSyncOffsetResponse)!;
+      return await _clientSocket.RequestAsync(new GetInputAudioSyncOffset() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1702,7 +1706,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetInputAudioSyncOffsetAsync(int inputAudioSyncOffset, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetInputAudioSyncOffset() { InputAudioSyncOffset = inputAudioSyncOffset, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetInputAudioSyncOffset() { InputAudioSyncOffset = inputAudioSyncOffset, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1725,7 +1729,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputAudioMonitorTypeResponse> GetInputAudioMonitorTypeAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetInputAudioMonitorType() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetInputAudioMonitorTypeResponse)!;
+      return await _clientSocket.RequestAsync(new GetInputAudioMonitorType() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1743,7 +1747,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetInputAudioMonitorTypeAsync(MonitoringType monitorType, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetInputAudioMonitorType() { MonitorType = monitorType, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetInputAudioMonitorType() { MonitorType = monitorType, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1760,7 +1764,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputAudioTracksResponse> GetInputAudioTracksAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetInputAudioTracks() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetInputAudioTracksResponse)!;
+      return await _clientSocket.RequestAsync(new GetInputAudioTracks() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1778,7 +1782,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetInputAudioTracksAsync(Dictionary<string, bool> inputAudioTracks, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetInputAudioTracks() { InputAudioTracks = inputAudioTracks, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetInputAudioTracks() { InputAudioTracks = inputAudioTracks, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1809,7 +1813,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputDeinterlaceModeResponse> GetInputDeinterlaceModeAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetInputDeinterlaceMode() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetInputDeinterlaceModeResponse)!;
+      return await _clientSocket.RequestAsync(new GetInputDeinterlaceMode() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1829,7 +1833,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetInputDeinterlaceModeAsync(string inputDeinterlaceMode, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetInputDeinterlaceMode() { InputDeinterlaceMode = inputDeinterlaceMode, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetInputDeinterlaceMode() { InputDeinterlaceMode = inputDeinterlaceMode, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1853,7 +1857,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputDeinterlaceFieldOrderResponse> GetInputDeinterlaceFieldOrderAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetInputDeinterlaceFieldOrder() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetInputDeinterlaceFieldOrderResponse)!;
+      return await _clientSocket.RequestAsync(new GetInputDeinterlaceFieldOrder() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1873,7 +1877,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetInputDeinterlaceFieldOrderAsync(string inputDeinterlaceFieldOrder, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetInputDeinterlaceFieldOrder() { InputDeinterlaceFieldOrder = inputDeinterlaceFieldOrder, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetInputDeinterlaceFieldOrder() { InputDeinterlaceFieldOrder = inputDeinterlaceFieldOrder, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1893,7 +1897,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetInputPropertiesListPropertyItemsResponse> GetInputPropertiesListPropertyItemsAsync(string propertyName, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetInputPropertiesListPropertyItems() { PropertyName = propertyName, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetInputPropertiesListPropertyItemsResponse)!;
+      return await _clientSocket.RequestAsync(new GetInputPropertiesListPropertyItems() { PropertyName = propertyName, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1917,7 +1921,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> PressInputPropertiesButtonAsync(string propertyName, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new PressInputPropertiesButton() { PropertyName = propertyName, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new PressInputPropertiesButton() { PropertyName = propertyName, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1934,7 +1938,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetTransitionKindListResponse> GetTransitionKindListAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetTransitionKindList() { }, cancellation).ConfigureAwait(false) as GetTransitionKindListResponse)!;
+      return await _clientSocket.RequestAsync(new GetTransitionKindList() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1949,7 +1953,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneTransitionListResponse> GetSceneTransitionListAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSceneTransitionList() { }, cancellation).ConfigureAwait(false) as GetSceneTransitionListResponse)!;
+      return await _clientSocket.RequestAsync(new GetSceneTransitionList() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1964,7 +1968,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetCurrentSceneTransitionResponse> GetCurrentSceneTransitionAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetCurrentSceneTransition() { }, cancellation).ConfigureAwait(false) as GetCurrentSceneTransitionResponse)!;
+      return await _clientSocket.RequestAsync(new GetCurrentSceneTransition() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1982,7 +1986,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetCurrentSceneTransitionAsync(string transitionName, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetCurrentSceneTransition() { TransitionName = transitionName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetCurrentSceneTransition() { TransitionName = transitionName }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1998,7 +2002,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetCurrentSceneTransitionDurationAsync(long transitionDuration, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetCurrentSceneTransitionDuration() { TransitionDuration = transitionDuration }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetCurrentSceneTransitionDuration() { TransitionDuration = transitionDuration }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2015,7 +2019,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetCurrentSceneTransitionSettingsAsync(Dictionary<string, JsonElement?> transitionSettings, bool? overlay = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetCurrentSceneTransitionSettings() { TransitionSettings = transitionSettings, Overlay = overlay }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetCurrentSceneTransitionSettings() { TransitionSettings = transitionSettings, Overlay = overlay }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2032,7 +2036,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetCurrentSceneTransitionCursorResponse> GetCurrentSceneTransitionCursorAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetCurrentSceneTransitionCursor() { }, cancellation).ConfigureAwait(false) as GetCurrentSceneTransitionCursorResponse)!;
+      return await _clientSocket.RequestAsync(new GetCurrentSceneTransitionCursor() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2047,7 +2051,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> TriggerStudioModeTransitionAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new TriggerStudioModeTransition() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new TriggerStudioModeTransition() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2066,7 +2070,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetTBarPositionAsync(double position, bool? release = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetTBarPosition() { Position = position, Release = release }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetTBarPosition() { Position = position, Release = release }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2083,7 +2087,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSourceFilterKindListResponse> GetSourceFilterKindListAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSourceFilterKindList() { }, cancellation).ConfigureAwait(false) as GetSourceFilterKindListResponse)!;
+      return await _clientSocket.RequestAsync(new GetSourceFilterKindList() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2101,7 +2105,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSourceFilterListResponse> GetSourceFilterListAsync(string? sourceName = default, string? sourceUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSourceFilterList() { SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSourceFilterListResponse)!;
+      return await _clientSocket.RequestAsync(new GetSourceFilterList() { SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2117,7 +2121,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSourceFilterDefaultSettingsResponse> GetSourceFilterDefaultSettingsAsync(string filterKind, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSourceFilterDefaultSettings() { FilterKind = filterKind }, cancellation).ConfigureAwait(false) as GetSourceFilterDefaultSettingsResponse)!;
+      return await _clientSocket.RequestAsync(new GetSourceFilterDefaultSettings() { FilterKind = filterKind }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2138,7 +2142,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> CreateSourceFilterAsync(string filterName, string filterKind, string? sourceName = default, string? sourceUuid = default, Dictionary<string, JsonElement?>? filterSettings = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new CreateSourceFilter() { FilterName = filterName, FilterKind = filterKind, SourceName = sourceName, SourceUuid = sourceUuid, FilterSettings = filterSettings, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new CreateSourceFilter() { FilterName = filterName, FilterKind = filterKind, SourceName = sourceName, SourceUuid = sourceUuid, FilterSettings = filterSettings, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2157,7 +2161,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> RemoveSourceFilterAsync(string filterName, string? sourceName = default, string? sourceUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new RemoveSourceFilter() { FilterName = filterName, SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new RemoveSourceFilter() { FilterName = filterName, SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2177,7 +2181,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSourceFilterNameAsync(string filterName, string newFilterName, string? sourceName = default, string? sourceUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetSourceFilterName() { FilterName = filterName, NewFilterName = newFilterName, SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetSourceFilterName() { FilterName = filterName, NewFilterName = newFilterName, SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2196,7 +2200,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSourceFilterResponse> GetSourceFilterAsync(string filterName, string? sourceName = default, string? sourceUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSourceFilter() { FilterName = filterName, SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSourceFilterResponse)!;
+      return await _clientSocket.RequestAsync(new GetSourceFilter() { FilterName = filterName, SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2216,7 +2220,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSourceFilterIndexAsync(string filterName, int filterIndex, string? sourceName = default, string? sourceUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetSourceFilterIndex() { FilterName = filterName, FilterIndex = filterIndex, SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetSourceFilterIndex() { FilterName = filterName, FilterIndex = filterIndex, SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2237,7 +2241,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSourceFilterSettingsAsync(string filterName, Dictionary<string, JsonElement?> filterSettings, string? sourceName = default, string? sourceUuid = default, bool? overlay = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetSourceFilterSettings() { FilterName = filterName, FilterSettings = filterSettings, SourceName = sourceName, SourceUuid = sourceUuid, Overlay = overlay, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetSourceFilterSettings() { FilterName = filterName, FilterSettings = filterSettings, SourceName = sourceName, SourceUuid = sourceUuid, Overlay = overlay, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2257,7 +2261,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSourceFilterEnabledAsync(string filterName, bool filterEnabled, string? sourceName = default, string? sourceUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetSourceFilterEnabled() { FilterName = filterName, FilterEnabled = filterEnabled, SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetSourceFilterEnabled() { FilterName = filterName, FilterEnabled = filterEnabled, SourceName = sourceName, SourceUuid = sourceUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2277,7 +2281,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneItemListResponse> GetSceneItemListAsync(string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSceneItemList() { SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSceneItemListResponse)!;
+      return await _clientSocket.RequestAsync(new GetSceneItemList() { SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2299,7 +2303,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetGroupSceneItemListResponse> GetGroupSceneItemListAsync(string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetGroupSceneItemList() { SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetGroupSceneItemListResponse)!;
+      return await _clientSocket.RequestAsync(new GetGroupSceneItemList() { SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2321,7 +2325,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneItemIdResponse> GetSceneItemIdAsync(string sourceName, string? sceneName = default, string? sceneUuid = default, int? searchOffset = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSceneItemId() { SourceName = sourceName, SceneName = sceneName, SceneUuid = sceneUuid, SearchOffset = searchOffset, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSceneItemIdResponse)!;
+      return await _clientSocket.RequestAsync(new GetSceneItemId() { SourceName = sourceName, SceneName = sceneName, SceneUuid = sceneUuid, SearchOffset = searchOffset, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2340,7 +2344,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneItemSourceResponse> GetSceneItemSourceAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSceneItemSource() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSceneItemSourceResponse)!;
+      return await _clientSocket.RequestAsync(new GetSceneItemSource() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2363,7 +2367,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<CreateSceneItemResponse> CreateSceneItemAsync(string? sceneName = default, string? sceneUuid = default, string? sourceName = default, string? sourceUuid = default, bool? sceneItemEnabled = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new CreateSceneItem() { SceneName = sceneName, SceneUuid = sceneUuid, SourceName = sourceName, SourceUuid = sourceUuid, SceneItemEnabled = sceneItemEnabled, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as CreateSceneItemResponse)!;
+      return await _clientSocket.RequestAsync(new CreateSceneItem() { SceneName = sceneName, SceneUuid = sceneUuid, SourceName = sourceName, SourceUuid = sourceUuid, SceneItemEnabled = sceneItemEnabled, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2384,7 +2388,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> RemoveSceneItemAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new RemoveSceneItem() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new RemoveSceneItem() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2407,7 +2411,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<DuplicateSceneItemResponse> DuplicateSceneItemAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? destinationSceneName = default, string? destinationSceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new DuplicateSceneItem() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, DestinationSceneName = destinationSceneName, DestinationSceneUuid = destinationSceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as DuplicateSceneItemResponse)!;
+      return await _clientSocket.RequestAsync(new DuplicateSceneItem() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, DestinationSceneName = destinationSceneName, DestinationSceneUuid = destinationSceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2428,7 +2432,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneItemTransformResponse> GetSceneItemTransformAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSceneItemTransform() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSceneItemTransformResponse)!;
+      return await _clientSocket.RequestAsync(new GetSceneItemTransform() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2448,7 +2452,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSceneItemTransformAsync(int sceneItemId, Dictionary<string, JsonElement?> sceneItemTransform, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetSceneItemTransform() { SceneItemId = sceneItemId, SceneItemTransform = sceneItemTransform, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetSceneItemTransform() { SceneItemId = sceneItemId, SceneItemTransform = sceneItemTransform, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2469,7 +2473,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneItemEnabledResponse> GetSceneItemEnabledAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSceneItemEnabled() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSceneItemEnabledResponse)!;
+      return await _clientSocket.RequestAsync(new GetSceneItemEnabled() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2491,7 +2495,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSceneItemEnabledAsync(int sceneItemId, bool sceneItemEnabled, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetSceneItemEnabled() { SceneItemId = sceneItemId, SceneItemEnabled = sceneItemEnabled, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetSceneItemEnabled() { SceneItemId = sceneItemId, SceneItemEnabled = sceneItemEnabled, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2512,7 +2516,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneItemLockedResponse> GetSceneItemLockedAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSceneItemLocked() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSceneItemLockedResponse)!;
+      return await _clientSocket.RequestAsync(new GetSceneItemLocked() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2534,7 +2538,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSceneItemLockedAsync(int sceneItemId, bool sceneItemLocked, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetSceneItemLocked() { SceneItemId = sceneItemId, SceneItemLocked = sceneItemLocked, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetSceneItemLocked() { SceneItemId = sceneItemId, SceneItemLocked = sceneItemLocked, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2557,7 +2561,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneItemIndexResponse> GetSceneItemIndexAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSceneItemIndex() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSceneItemIndexResponse)!;
+      return await _clientSocket.RequestAsync(new GetSceneItemIndex() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2579,7 +2583,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSceneItemIndexAsync(int sceneItemId, int sceneItemIndex, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetSceneItemIndex() { SceneItemId = sceneItemId, SceneItemIndex = sceneItemIndex, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetSceneItemIndex() { SceneItemId = sceneItemId, SceneItemIndex = sceneItemIndex, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2610,7 +2614,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetSceneItemBlendModeResponse> GetSceneItemBlendModeAsync(int sceneItemId, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetSceneItemBlendMode() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as GetSceneItemBlendModeResponse)!;
+      return await _clientSocket.RequestAsync(new GetSceneItemBlendMode() { SceneItemId = sceneItemId, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2632,7 +2636,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetSceneItemBlendModeAsync(int sceneItemId, BlendingType sceneItemBlendMode, string? sceneName = default, string? sceneUuid = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetSceneItemBlendMode() { SceneItemId = sceneItemId, SceneItemBlendMode = sceneItemBlendMode, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetSceneItemBlendMode() { SceneItemId = sceneItemId, SceneItemBlendMode = sceneItemBlendMode, SceneName = sceneName, SceneUuid = sceneUuid, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2647,7 +2651,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetVirtualCamStatusResponse> GetVirtualCamStatusAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetVirtualCamStatus() { }, cancellation).ConfigureAwait(false) as GetVirtualCamStatusResponse)!;
+      return await _clientSocket.RequestAsync(new GetVirtualCamStatus() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2662,7 +2666,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<ToggleVirtualCamResponse> ToggleVirtualCamAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new ToggleVirtualCam() { }, cancellation).ConfigureAwait(false) as ToggleVirtualCamResponse)!;
+      return await _clientSocket.RequestAsync(new ToggleVirtualCam() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2677,7 +2681,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> StartVirtualCamAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new StartVirtualCam() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new StartVirtualCam() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2692,7 +2696,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> StopVirtualCamAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new StopVirtualCam() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new StopVirtualCam() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2707,7 +2711,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetReplayBufferStatusResponse> GetReplayBufferStatusAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetReplayBufferStatus() { }, cancellation).ConfigureAwait(false) as GetReplayBufferStatusResponse)!;
+      return await _clientSocket.RequestAsync(new GetReplayBufferStatus() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2722,7 +2726,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<ToggleReplayBufferResponse> ToggleReplayBufferAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new ToggleReplayBuffer() { }, cancellation).ConfigureAwait(false) as ToggleReplayBufferResponse)!;
+      return await _clientSocket.RequestAsync(new ToggleReplayBuffer() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2737,7 +2741,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> StartReplayBufferAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new StartReplayBuffer() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new StartReplayBuffer() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2752,7 +2756,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> StopReplayBufferAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new StopReplayBuffer() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new StopReplayBuffer() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2767,7 +2771,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SaveReplayBufferAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SaveReplayBuffer() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SaveReplayBuffer() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2782,7 +2786,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetLastReplayBufferReplayResponse> GetLastReplayBufferReplayAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetLastReplayBufferReplay() { }, cancellation).ConfigureAwait(false) as GetLastReplayBufferReplayResponse)!;
+      return await _clientSocket.RequestAsync(new GetLastReplayBufferReplay() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2797,7 +2801,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetOutputListResponse> GetOutputListAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetOutputList() { }, cancellation).ConfigureAwait(false) as GetOutputListResponse)!;
+      return await _clientSocket.RequestAsync(new GetOutputList() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2813,7 +2817,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetOutputStatusResponse> GetOutputStatusAsync(string outputName, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetOutputStatus() { OutputName = outputName }, cancellation).ConfigureAwait(false) as GetOutputStatusResponse)!;
+      return await _clientSocket.RequestAsync(new GetOutputStatus() { OutputName = outputName }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2829,7 +2833,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<ToggleOutputResponse> ToggleOutputAsync(string outputName, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new ToggleOutput() { OutputName = outputName }, cancellation).ConfigureAwait(false) as ToggleOutputResponse)!;
+      return await _clientSocket.RequestAsync(new ToggleOutput() { OutputName = outputName }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2845,7 +2849,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> StartOutputAsync(string outputName, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new StartOutput() { OutputName = outputName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new StartOutput() { OutputName = outputName }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2861,7 +2865,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> StopOutputAsync(string outputName, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new StopOutput() { OutputName = outputName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new StopOutput() { OutputName = outputName }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2877,7 +2881,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetOutputSettingsResponse> GetOutputSettingsAsync(string outputName, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetOutputSettings() { OutputName = outputName }, cancellation).ConfigureAwait(false) as GetOutputSettingsResponse)!;
+      return await _clientSocket.RequestAsync(new GetOutputSettings() { OutputName = outputName }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2894,7 +2898,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetOutputSettingsAsync(string outputName, Dictionary<string, JsonElement?> outputSettings, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetOutputSettings() { OutputName = outputName, OutputSettings = outputSettings }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetOutputSettings() { OutputName = outputName, OutputSettings = outputSettings }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2909,7 +2913,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetStreamStatusResponse> GetStreamStatusAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetStreamStatus() { }, cancellation).ConfigureAwait(false) as GetStreamStatusResponse)!;
+      return await _clientSocket.RequestAsync(new GetStreamStatus() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2924,7 +2928,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<ToggleStreamResponse> ToggleStreamAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new ToggleStream() { }, cancellation).ConfigureAwait(false) as ToggleStreamResponse)!;
+      return await _clientSocket.RequestAsync(new ToggleStream() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2939,7 +2943,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> StartStreamAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new StartStream() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new StartStream() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2954,7 +2958,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> StopStreamAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new StopStream() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new StopStream() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2970,7 +2974,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SendStreamCaptionAsync(string captionText, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SendStreamCaption() { CaptionText = captionText }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SendStreamCaption() { CaptionText = captionText }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -2985,7 +2989,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetRecordStatusResponse> GetRecordStatusAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetRecordStatus() { }, cancellation).ConfigureAwait(false) as GetRecordStatusResponse)!;
+      return await _clientSocket.RequestAsync(new GetRecordStatus() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -3000,7 +3004,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<ToggleRecordResponse> ToggleRecordAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new ToggleRecord() { }, cancellation).ConfigureAwait(false) as ToggleRecordResponse)!;
+      return await _clientSocket.RequestAsync(new ToggleRecord() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -3015,7 +3019,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> StartRecordAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new StartRecord() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new StartRecord() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -3030,7 +3034,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<StopRecordResponse> StopRecordAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new StopRecord() { }, cancellation).ConfigureAwait(false) as StopRecordResponse)!;
+      return await _clientSocket.RequestAsync(new StopRecord() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -3045,7 +3049,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<ToggleRecordPauseResponse> ToggleRecordPauseAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new ToggleRecordPause() { }, cancellation).ConfigureAwait(false) as ToggleRecordPauseResponse)!;
+      return await _clientSocket.RequestAsync(new ToggleRecordPause() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -3060,7 +3064,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> PauseRecordAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new PauseRecord() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new PauseRecord() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -3075,7 +3079,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> ResumeRecordAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new ResumeRecord() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new ResumeRecord() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -3090,7 +3094,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SplitRecordFileAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SplitRecordFile() { }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SplitRecordFile() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -3108,7 +3112,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> CreateRecordChapterAsync(string? chapterName = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new CreateRecordChapter() { ChapterName = chapterName }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new CreateRecordChapter() { ChapterName = chapterName }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -3136,7 +3140,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetMediaInputStatusResponse> GetMediaInputStatusAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetMediaInputStatus() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as GetMediaInputStatusResponse)!;
+      return await _clientSocket.RequestAsync(new GetMediaInputStatus() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -3156,7 +3160,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetMediaInputCursorAsync(double mediaCursor, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetMediaInputCursor() { MediaCursor = mediaCursor, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetMediaInputCursor() { MediaCursor = mediaCursor, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -3176,7 +3180,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> OffsetMediaInputCursorAsync(int mediaCursorOffset, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new OffsetMediaInputCursor() { MediaCursorOffset = mediaCursorOffset, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new OffsetMediaInputCursor() { MediaCursorOffset = mediaCursorOffset, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -3194,7 +3198,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> TriggerMediaInputActionAsync(MediaInputAction mediaAction, string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new TriggerMediaInputAction() { MediaAction = mediaAction, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new TriggerMediaInputAction() { MediaAction = mediaAction, InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -3209,7 +3213,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetStudioModeEnabledResponse> GetStudioModeEnabledAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetStudioModeEnabled() { }, cancellation).ConfigureAwait(false) as GetStudioModeEnabledResponse)!;
+      return await _clientSocket.RequestAsync(new GetStudioModeEnabled() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -3225,7 +3229,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> SetStudioModeEnabledAsync(bool studioModeEnabled, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new SetStudioModeEnabled() { StudioModeEnabled = studioModeEnabled }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new SetStudioModeEnabled() { StudioModeEnabled = studioModeEnabled }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -3242,7 +3246,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> OpenInputPropertiesDialogAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new OpenInputPropertiesDialog() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new OpenInputPropertiesDialog() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -3259,7 +3263,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> OpenInputFiltersDialogAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new OpenInputFiltersDialog() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new OpenInputFiltersDialog() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -3276,7 +3280,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> OpenInputInteractDialogAsync(string? inputName = default, string? inputUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new OpenInputInteractDialog() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new OpenInputInteractDialog() { InputName = inputName, InputUuid = inputUuid }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -3291,7 +3295,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<GetMonitorListResponse> GetMonitorListAsync(CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new GetMonitorList() { }, cancellation).ConfigureAwait(false) as GetMonitorListResponse)!;
+      return await _clientSocket.RequestAsync(new GetMonitorList() { }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -3317,7 +3321,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> OpenVideoMixProjectorAsync(VideoMixType videoMixType, int? monitorIndex = default, string? projectorGeometry = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new OpenVideoMixProjector() { VideoMixType = videoMixType, MonitorIndex = monitorIndex, ProjectorGeometry = projectorGeometry }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new OpenVideoMixProjector() { VideoMixType = videoMixType, MonitorIndex = monitorIndex, ProjectorGeometry = projectorGeometry }, cancellation).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -3339,7 +3343,7 @@ namespace ObsStrawket {
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
     public async Task<RequestResponse> OpenSourceProjectorAsync(string? sourceName = default, string? sourceUuid = default, int? monitorIndex = default, string? projectorGeometry = default, string? canvasUuid = default, CancellationToken cancellation = default) {
-      return (await _clientSocket.RequestAsync(new OpenSourceProjector() { SourceName = sourceName, SourceUuid = sourceUuid, MonitorIndex = monitorIndex, ProjectorGeometry = projectorGeometry, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false) as RequestResponse)!;
+      return await _clientSocket.RequestAsync(new OpenSourceProjector() { SourceName = sourceName, SourceUuid = sourceUuid, MonitorIndex = monitorIndex, ProjectorGeometry = projectorGeometry, CanvasUuid = canvasUuid }, cancellation).ConfigureAwait(false);
     }
 
     #endregion Requests

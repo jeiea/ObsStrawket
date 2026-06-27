@@ -17,7 +17,8 @@ namespace ObsStrawket.DataTypes {
   /// Sent to: obs-websocket<br />
   /// Description: Client is making a request to obs-websocket.Eg get current scene, create source.
   /// </summary>
-  public interface IRequest : IHasRequestId {
+  public interface IRequest<out TResponse> : IHasRequestId
+    where TResponse : class, IRequestResponse {
     /// <summary>
     /// The string identifying request type.
     /// </summary>
@@ -27,9 +28,10 @@ namespace ObsStrawket.DataTypes {
   /// <summary>
   /// Sent from: Identified client<br />
   /// Sent to: obs-websocket<br />
-  /// Description: Client is making a request to obs-websocket.Eg get current scene, create source.
+  /// Description: Client is making a typed request to obs-websocket.
   /// </summary>
-  public class Request : IRequest {
+  public class Request<TResponse> : IRequest<TResponse>
+    where TResponse : class, IRequestResponse {
 
     /// <summary>
     /// Request (OpCode 6)
@@ -55,7 +57,7 @@ namespace ObsStrawket.DataTypes {
   /// Sent to: obs-websocket<br />
   /// Description: Client is making a request to obs-websocket.Eg get current scene, create source.
   /// </summary>
-  public class RawRequest : IRequest {
+  public class RawRequest : IRequest<IRequestResponse> {
 
     /// <summary>
     /// Request (OpCode 6)

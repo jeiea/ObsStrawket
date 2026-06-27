@@ -50,7 +50,8 @@ namespace ObsStrawket.DataTypes.Predefineds {");
       if (suppressCa1711) {
         file.WriteLine("#pragma warning disable CA1711");
       }
-      file.Write("  public class {0} : Request {{", request.RequestType);
+      string responseType = TransformHelper.ToResponseType(request);
+      file.Write("  public class {0} : Request<{1}> {{", request.RequestType, responseType);
       if (request.RequestFields.Count == 0) {
         file.WriteLine(" }");
       }

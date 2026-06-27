@@ -198,8 +198,9 @@ namespace ObsStrawket {
     }
 
     /// <summary>
-    /// Low level request method. It can send <see cref="RawRequest"/>.
+    /// Low level typed request method.
     /// </summary>
+    /// <typeparam name="TResponse">Expected response type.</typeparam>
     /// <param name="request">Request data.</param>
     /// <param name="cancellation">Token for cancellation</param>
     /// <returns>Response from websocket server.</returns>
@@ -209,8 +210,11 @@ namespace ObsStrawket {
     /// <exception cref="ObsRequestException">OBS rejects the request.</exception>
     /// <exception cref="ObsConnectionException">The connection fails before a response is received.</exception>
     /// <exception cref="ObsProtocolException">OBS sends an invalid response.</exception>
-    public Task<IRequestResponse> RequestAsync(IRequest request, CancellationToken cancellation = default) {
-      return RequestAsync<IRequestResponse>(request, cancellation);
+    public Task<TResponse> RequestAsync<TResponse>(
+      IRequest<TResponse> request,
+      CancellationToken cancellation = default
+    ) where TResponse : class, IRequestResponse {
+      return RequestAsync<TResponse>((IHasRequestId)request, cancellation);
     }
 
     /// <summary>
