@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
@@ -16,7 +15,7 @@ namespace SourceGenerator {
     public async Task GenerateAsync() {
       var json = await _fetcher.GetModifiedProtocolJsonAsync().ConfigureAwait(false);
 
-      using var part = new StringWriter();
+      using var part = GeneratedText.CreateStringWriter();
       part.WriteLine(@"    #region Events");
 
       part.WriteLine();
@@ -36,7 +35,7 @@ namespace SourceGenerator {
           part.WriteLine("    public event Action<{0}Event> {0}Event = static delegate {{ }};", TransformHelper.ToPascalCase(ev.Category));
         }
         part.WriteLine("    /// <summary>");
-        part.WriteLine("    /// {0}<br />", TransformHelper.EscapeForXml(ev.Description).Replace(Environment.NewLine, $"<br />{Environment.NewLine}    /// "));
+        part.WriteLine("    /// {0}<br />", TransformHelper.EscapeForXml(ev.Description).Replace(GeneratedText.NewLine, $"<br />{GeneratedText.NewLine}    /// "));
         part.WriteLine("    /// Latest supported RPC version: {0}<br />", ev.RpcVersion);
         part.WriteLine("    /// Added in: {0}", ev.InitialVersion);
         part.WriteLine("    /// </summary>");
@@ -48,7 +47,7 @@ namespace SourceGenerator {
 
       await File.WriteAllTextAsync(
         _directoryHelper.ObsClientEventsPath,
-        WrapPartialClass(part.ToString())
+        GeneratedText.NormalizeNewLine(WrapPartialClass(part.ToString()))
       ).ConfigureAwait(false);
     }
 

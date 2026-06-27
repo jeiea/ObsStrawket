@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -19,17 +18,17 @@ namespace SourceGenerator {
 
     public async Task GenerateAsync() {
       var json = await fetcher.GetModifiedProtocolJsonAsync().ConfigureAwait(false);
-      using var file = File.CreateText($"{directoryHelper.MainProjectDirectory}/DataTypes/Predefineds/RequestsAndResponses.cs");
+      using var file = GeneratedText.CreateText($"{directoryHelper.MainProjectDirectory}/DataTypes/Predefineds/RequestsAndResponses.cs");
 
       WriteRequestsAndResponses(json, file);
     }
 
     private static void WriteRequestsAndResponses(ProtocolJson json, TextWriter file) {
-      file.WriteLine(@"using System.Collections.Generic;
+      file.WriteLine(GeneratedText.NormalizeNewLine(@"using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace ObsStrawket.DataTypes.Predefineds {");
+namespace ObsStrawket.DataTypes.Predefineds {"));
 
       foreach (var request in json.Requests) {
         WriteRequestAndResponse(file, request);
@@ -41,7 +40,7 @@ namespace ObsStrawket.DataTypes.Predefineds {");
     private static void WriteRequestAndResponse(TextWriter file, ObsRequest request) {
       file.WriteLine();
       file.WriteLine("  /// <summary>");
-      file.WriteLine("  /// {0}<br />", TransformHelper.EscapeForXml(request.Description!).Replace(Environment.NewLine, $"<br />{Environment.NewLine}  /// "));
+      file.WriteLine("  /// {0}<br />", TransformHelper.EscapeForXml(request.Description!).Replace(GeneratedText.NewLine, $"<br />{GeneratedText.NewLine}  /// "));
       file.WriteLine("  /// Latest supported RPC version: {0}<br />", request.RpcVersion);
       file.WriteLine("  /// Added in: {0}", request.InitialVersion);
       file.WriteLine("  /// </summary>");

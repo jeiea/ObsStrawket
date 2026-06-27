@@ -22,13 +22,13 @@ namespace SourceGenerator {
       PatchTriggerHotkeyByKeySequence(json.Requests.Find(static x => x.RequestType == "TriggerHotkeyByKeySequence")!.RequestFields!);
       json.Requests.RemoveAt(json.Requests.FindIndex(static x => x.RequestType == "Sleep"));
 
-      using var part = new StringWriter();
+      using var part = GeneratedText.CreateStringWriter();
       part.WriteLine("    #region Requests");
       part.WriteLine();
 
       foreach (var request in json.Requests) {
         part.WriteLine("    /// <summary>");
-        part.WriteLine("    /// {0}<br />", TransformHelper.EscapeForXml(request.Description!).Replace(Environment.NewLine, $"<br />{Environment.NewLine}    /// "));
+        part.WriteLine("    /// {0}<br />", TransformHelper.EscapeForXml(request.Description!).Replace(GeneratedText.NewLine, $"<br />{GeneratedText.NewLine}    /// "));
         part.WriteLine("    /// Latest supported RPC version: {0}<br />", request.RpcVersion);
         part.WriteLine("    /// Added in: {0}", request.InitialVersion);
         part.WriteLine("    /// </summary>");
@@ -60,7 +60,7 @@ namespace SourceGenerator {
 
       await File.WriteAllTextAsync(
         _directoryHelper.ObsClientRequestsPath,
-        WrapPartialClass(part.ToString())
+        GeneratedText.NormalizeNewLine(WrapPartialClass(part.ToString()))
       ).ConfigureAwait(false);
     }
 

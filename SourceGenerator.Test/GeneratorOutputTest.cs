@@ -38,7 +38,9 @@ namespace SourceGenerator.Test {
         _directoryHelper.MainProjectDirectory,
         "DataTypes",
         "Predefineds",
-        "RequestsAndResponses.cs")).ReplaceLineEndings("\n");
+        "RequestsAndResponses.cs"));
+      Assert.DoesNotContain("\r", output);
+      output = output.ReplaceLineEndings("\n");
       Assert.Contains(
         """
 #pragma warning disable CA1711
@@ -77,6 +79,7 @@ namespace SourceGenerator.Test {
         "DataTypes",
         "Predefineds",
         "Enums.cs"));
+      Assert.DoesNotContain("\r", output);
       Assert.Contains(
         "[JsonConverter(typeof(JsonStringEnumConverter<ObsOutputState>))]",
         output);
@@ -100,6 +103,7 @@ namespace SourceGenerator.Test {
       await generator.GenerateAsync();
 
       string output = File.ReadAllText(_directoryHelper.ObsClientEventsPath);
+      Assert.DoesNotContain("\r", output);
       Assert.Contains("public partial class ObsClientSocket", output);
       Assert.Contains("public event Action<IObsEvent> Event = static delegate { };", output);
       Assert.Contains("public event Action<ScenesEvent> ScenesEvent = static delegate { };", output);
@@ -137,6 +141,7 @@ namespace SourceGenerator.Test {
       await generator.GenerateAsync();
 
       string output = File.ReadAllText(_directoryHelper.ObsClientRequestsPath);
+      Assert.DoesNotContain("\r", output);
       Assert.Contains("public partial class ObsClientSocket", output);
       Assert.Contains(
         """<exception cref="ObsRequestException">OBS rejects the request.</exception>""",

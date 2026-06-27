@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -34,18 +32,18 @@ namespace SourceGenerator {
         { "ObsOutputState", "Represents output sending state." },
       };
 
-      using var file = File.CreateText($"{_directoryHelper.MainProjectDirectory}/DataTypes/Predefineds/Enums.cs");
-      file.Write(@"using System;
+      using var file = GeneratedText.CreateText($"{_directoryHelper.MainProjectDirectory}/DataTypes/Predefineds/Enums.cs");
+      file.Write(GeneratedText.NormalizeNewLine(@"using System;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace ObsStrawket.DataTypes.Predefineds {
-");
+"));
 
       foreach (var en in json.Enums) {
         file.WriteLine();
         file.WriteLine("  /// <summary>");
-        file.WriteLine("  /// {0}", TransformHelper.EscapeForXml(descriptions[en.EnumType]).Replace(Environment.NewLine, $"<br />{Environment.NewLine}  /// "));
+        file.WriteLine("  /// {0}", TransformHelper.EscapeForXml(descriptions[en.EnumType]).Replace(GeneratedText.NewLine, $"<br />{GeneratedText.NewLine}  /// "));
         file.WriteLine("  /// </summary>");
         if (en.EnumType == "EventSubscription") {
           file.WriteLine("  [Flags]");
@@ -59,7 +57,7 @@ namespace ObsStrawket.DataTypes.Predefineds {
         foreach (var identifier in en.EnumIdentifiers) {
           file.WriteLine();
           file.WriteLine("    /// <summary>");
-          file.WriteLine("    /// <para>{0}</para>", TransformHelper.EscapeForXml(identifier.Description).Replace(Environment.NewLine, $"<br />{Environment.NewLine}    /// "));
+          file.WriteLine("    /// <para>{0}</para>", TransformHelper.EscapeForXml(identifier.Description).Replace(GeneratedText.NewLine, $"<br />{GeneratedText.NewLine}    /// "));
           file.WriteLine("    /// <para>Latest Supported RPC Version: {0}<br />", identifier.RpcVersion);
           file.WriteLine("    /// Added in v{0}</para>", identifier.InitialVersion);
           file.WriteLine("    /// </summary>");

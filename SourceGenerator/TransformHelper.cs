@@ -37,7 +37,7 @@ namespace SourceGenerator {
     public static string EscapeForXml(string unescaped) {
       var doc = new XmlDocument();
       var node = doc.CreateElement("root");
-      node.InnerText = CrossPlatformNewLine().Replace(unescaped, Environment.NewLine);
+      node.InnerText = CrossPlatformNewLine().Replace(unescaped, GeneratedText.NewLine);
       string xml = node.InnerXml;
       xml = CodeQuotePattern().Replace(xml, "<c>$1</c>");
       return xml;

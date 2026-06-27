@@ -1,6 +1,5 @@
 using System;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,12 +18,12 @@ namespace SourceGenerator {
     public async Task GenerateAsync() {
       var json = await _fetcher.GetModifiedProtocolJsonAsync().ConfigureAwait(false);
 
-      using var file = File.CreateText($"{_directoryHelper.MainProjectDirectory}/DataTypes/Predefineds/Events.cs");
-      file.Write(@"using System.Text.Json.Serialization;
+      using var file = GeneratedText.CreateText($"{_directoryHelper.MainProjectDirectory}/DataTypes/Predefineds/Events.cs");
+      file.Write(GeneratedText.NormalizeNewLine(@"using System.Text.Json.Serialization;
 using System.Collections.Generic;
 using System.Text.Json;
 
-namespace ObsStrawket.DataTypes.Predefineds {");
+namespace ObsStrawket.DataTypes.Predefineds {"));
 
       foreach (string category in json.Events.Select(static x => x.Category).Distinct()) {
         file.WriteLine();
@@ -38,7 +37,7 @@ namespace ObsStrawket.DataTypes.Predefineds {");
       foreach (var ev in json.Events) {
         file.WriteLine();
         file.WriteLine("  /// <summary>");
-        file.WriteLine("  /// {0}<br />", TransformHelper.EscapeForXml(ev.Description!).Replace(Environment.NewLine, $"<br />{Environment.NewLine}  /// "));
+        file.WriteLine("  /// {0}<br />", TransformHelper.EscapeForXml(ev.Description!).Replace(GeneratedText.NewLine, $"<br />{GeneratedText.NewLine}  /// "));
         file.WriteLine("  /// Latest supported RPC version: {0}<br />", ev.RpcVersion);
         file.WriteLine("  /// Added in: {0}", ev.InitialVersion);
         file.WriteLine("  /// </summary>");
