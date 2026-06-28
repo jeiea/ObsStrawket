@@ -401,7 +401,7 @@ namespace ObsStrawket {
       try {
         var events = _events.Writer;
 
-        while (_clientWebSocket.State != WebSocketState.Closed && !token.IsCancellationRequested) {
+        while (!token.IsCancellationRequested) {
           bool isAvailable = await messages.WaitToReadAsync(default).ConfigureAwait(false);
           if (!isAvailable) {
             break;

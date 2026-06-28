@@ -17,7 +17,10 @@ namespace ObsStrawket.Test.Utilities {
     private readonly Channel<IObsEvent> _events = Channel.CreateUnbounded<IObsEvent>();
 
     public static ObsClientSocket GetDebugClient(ClientSocket? socket = null, bool useChannel = false) {
-      return new ObsClientSocket(socket, useChannel);
+      _ = useChannel;
+      var client = new ObsClientSocket(socket);
+      _ = client.Events;
+      return client;
     }
 
     /// <summary>Reads events until one of type <typeparamref name="T"/> arrives, discarding others.</summary>

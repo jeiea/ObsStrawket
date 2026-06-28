@@ -19,6 +19,8 @@ namespace ObsStrawket.Test.Utilities {
         try {
           var (webSocketContext, session) = await MockServer.HandshakeAsync(context, cancellation).ConfigureAwait(false);
           await flow.RespondAsync(session).ConfigureAwait(false);
+          // Give the client receive loop a turn before the mock server starts the close handshake.
+          await Task.Delay(TimeSpan.FromMilliseconds(50), cancellation).ConfigureAwait(false);
           await MockServer.CloseQuietlyAsync(webSocketContext.WebSocket, cancellation).ConfigureAwait(false);
           taskSource.SetResult();
         }

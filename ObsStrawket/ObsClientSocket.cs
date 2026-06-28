@@ -12,27 +12,38 @@ namespace ObsStrawket {
   /// High level client interface.
   /// </summary>
   public partial class ObsClientSocket : IDisposable {
+    private sealed record class ConnectionParameters(
+      Uri Uri,
+      string? Password,
+      EventSubscription Events
+    );
 
     private readonly ClientSocket _clientSocket;
 
     private readonly SemaphoreSlim _connectSemaphore = new(1);
+    private readonly object _dispatchLock = new();
+    private readonly object _channelLock = new();
 
     private Action<PipelineEvent>? _pipelineEvent;
 
-    private Task? _dispatch;
+    private Channel<IObsEvent> _events = CreateChannel<IObsEvent>();
+    private Channel<ObsConnectionStateChangedEventArgs> _connectionStates =
+      CreateChannel<ObsConnectionStateChangedEventArgs>();
+    private bool _channelsCompleted;
+    private int _eventsSubscribed;
+    private int _connectionStatesSubscribed;
+    private Task _dispatch = Task.CompletedTask;
+    private CancellationTokenSource? _reconnectCancellation;
+    private ConnectionParameters? _connectionParameters;
+    private int _isReconnecting;
 
     /// <summary>
     /// Create OBS websocket client. It can be reused unless <see cref="Dispose"/> is called.
     /// </summary>
     /// <param name="client">Lower level client for custom behavior.</param>
-    /// <param name="useChannel">Use channel for event receive.<br />
-    /// Caution: If <see cref="Events"/> is not consumed it will cause memory leak.
-    /// </param>
-    public ObsClientSocket(ClientSocket? client = null, bool useChannel = false) {
+    public ObsClientSocket(ClientSocket? client = null) {
       _clientSocket = client ?? new ClientSocket();
-      if (!useChannel) {
-        _dispatch = Task.CompletedTask;
-      }
+      _clientSocket.ConnectionStateChanged += HandleConnectionStateChanged;
     }
 
     /// <summary>
@@ -68,8 +79,12 @@ namespace ObsStrawket {
     }
 
     /// <summary>
-    /// Fired whenever <see cref="ConnectionState"/> changes. This is independent of the
-    /// event dispatch mode and also fires when the client is created with <c>useChannel</c>.
+    /// Automatic reconnect settings used after an established connection is lost unexpectedly.
+    /// </summary>
+    public ObsReconnectOptions ReconnectOptions { get; } = new();
+
+    /// <summary>
+    /// Fired whenever <see cref="ConnectionState"/> changes.
     /// </summary>
     /// <remarks>
     /// Handlers run synchronously during the state transition. Do not synchronously block on
@@ -86,18 +101,37 @@ namespace ObsStrawket {
     public bool IsConnected => _clientSocket.IsConnected;
 
     /// <summary>
+    /// Whether the high-level client is trying to restore an unexpectedly lost connection.
+    /// </summary>
+    public bool IsReconnecting => Volatile.Read(ref _isReconnecting) != 0;
+
+    /// <summary>
     /// Current lifecycle snapshot of the websocket connection.
     /// </summary>
     public ObsConnectionState ConnectionState => _clientSocket.ConnectionState;
 
     /// <summary>
-    /// It emits all received OBS events. It can be used only when <see cref="ObsClientSocket"/>
-    /// is created with <c>useChannel</c>. Abnormal completion throws a
+    /// It emits OBS events received after this reader is requested. Abnormal completion throws a
     /// <see cref="ChannelClosedException"/> whose inner exception contains the normalized cause.
+    /// Keep consuming the reader while connected; unread events are buffered.
     /// </summary>
-    public ChannelReader<IObsEvent> Events => _dispatch != null
-          ? throw new InvalidOperationException("Create first ObsClientSocket with useChannel: true")
-          : _clientSocket.Events;
+    public ChannelReader<IObsEvent> Events {
+      get {
+        Volatile.Write(ref _eventsSubscribed, 1);
+        return _events.Reader;
+      }
+    }
+
+    /// <summary>
+    /// It emits connection state transitions observed after this reader is requested.
+    /// Keep consuming the reader while connected; unread transitions are buffered.
+    /// </summary>
+    public ChannelReader<ObsConnectionStateChangedEventArgs> ConnectionStates {
+      get {
+        Volatile.Write(ref _connectionStatesSubscribed, 1);
+        return _connectionStates.Reader;
+      }
+    }
 
     /// <summary>
     /// Connect to OBS websocket server.
@@ -119,16 +153,27 @@ namespace ObsStrawket {
       var target = uri ?? ClientSocket.DefaultUri;
       await _connectSemaphore.WaitAsync(cancellation).ConfigureAwait(false);
       try {
-        bool connected = await _clientSocket.ConnectAsync(
-          target,
-          password,
-          events,
-          cancellation
-        ).ConfigureAwait(false);
-        if (connected && _dispatch != null) {
-          _dispatch = DispatchEventAsync(_dispatch, _clientSocket.Events);
+        StopReconnectLoop();
+        SetIsReconnecting(false);
+        _connectionParameters = null;
+        EnsureChannelsOpen();
+        try {
+          bool connected = await _clientSocket.ConnectAsync(
+            target,
+            password,
+            events,
+            cancellation
+          ).ConfigureAwait(false);
+          _connectionParameters = connected
+            ? new(target, password, events)
+            : null;
+          return connected;
         }
-        return connected;
+        catch {
+          StopReconnectLoop();
+          SetIsReconnecting(false);
+          throw;
+        }
       }
       finally {
         _ = _connectSemaphore.Release();
@@ -140,10 +185,12 @@ namespace ObsStrawket {
     /// <see cref="ObsConnectionClosedException"/>.
     /// </summary>
     public async Task CloseAsync() {
+      StopReconnectLoop();
+      SetIsReconnecting(false);
+      _connectionParameters = null;
       await _clientSocket.CloseAsync().ConfigureAwait(false);
-      if (_dispatch != null) {
-        await _dispatch.ConfigureAwait(false);
-      }
+      await _dispatch.ConfigureAwait(false);
+      CompleteChannels();
     }
 
     /// <summary>
@@ -185,23 +232,235 @@ namespace ObsStrawket {
     /// Dispose this forever.
     /// </summary>
     public void Dispose() {
+      StopReconnectLoop();
+      _connectionParameters = null;
+      _clientSocket.ConnectionStateChanged -= HandleConnectionStateChanged;
       _clientSocket.PipelineEvent -= Emit;
       _clientSocket.Dispose();
+      CompleteChannels(new ObsConnectionClosedException("Socket disposed."));
       _connectSemaphore.Dispose();
       GC.SuppressFinalize(this);
     }
 
-    private async Task DispatchEventAsync(Task former, ChannelReader<IObsEvent> events) {
+    private void HandleConnectionStateChanged(object? sender, ObsConnectionStateChangedEventArgs e) {
+      if (Volatile.Read(ref _connectionStatesSubscribed) != 0) {
+        _ = _connectionStates.Writer.TryWrite(e);
+      }
+
+      if (e.NewState.Phase == ObsConnectionPhase.Connected) {
+        SetIsReconnecting(false);
+        RestartDispatch();
+        return;
+      }
+
+      if (e.NewState.Phase == ObsConnectionPhase.Faulted && !IsReconnecting) {
+        StartReconnectLoop(e.NewState.Exception);
+        if (!IsReconnecting) {
+          CompleteChannels(e.NewState.Exception);
+        }
+      }
+    }
+
+    private void RestartDispatch() {
+      lock (_dispatchLock) {
+        _dispatch = DispatchEventAsync(_dispatch, _clientSocket.Events, _events);
+      }
+    }
+
+    private void StartReconnectLoop(Exception? exception) {
+      var parameters = _connectionParameters;
+      if (parameters == null
+        || exception == null
+        || !ShouldAutoReconnect(exception)
+        || ReconnectOptions.MaxAttempts == 0) {
+        SetIsReconnecting(false);
+        return;
+      }
+
+      SetIsReconnecting(true);
+      var cancellation = new CancellationTokenSource();
+      var previous = Interlocked.Exchange(ref _reconnectCancellation, cancellation);
+      CancelReconnectLoop(previous);
+      _ = LoopReconnectAsync(parameters, cancellation);
+    }
+
+    private void StopReconnectLoop() {
+      var cancellation = Interlocked.Exchange(ref _reconnectCancellation, null);
+      CancelReconnectLoop(cancellation);
+    }
+
+    private static void CancelReconnectLoop(CancellationTokenSource? cancellation) {
+      try {
+        cancellation?.Cancel();
+      }
+      catch (ObjectDisposedException) { }
+    }
+
+    private async Task LoopReconnectAsync(
+      ConnectionParameters parameters,
+      CancellationTokenSource cancellation
+    ) {
+      var token = cancellation.Token;
+      int attempts = 0;
+      var delay = ReconnectOptions.InitialDelay;
+
+      try {
+        while (!token.IsCancellationRequested && CanAttemptReconnect(attempts)) {
+          attempts++;
+          if (delay > TimeSpan.Zero) {
+            await Task.Delay(delay, token).ConfigureAwait(false);
+          }
+
+          await _connectSemaphore.WaitAsync(token).ConfigureAwait(false);
+          try {
+            bool connected = await _clientSocket.ConnectAsync(
+              parameters.Uri,
+              parameters.Password,
+              parameters.Events,
+              token).ConfigureAwait(false);
+            if (connected) {
+              _connectionParameters = parameters;
+              return;
+            }
+
+            SetIsReconnecting(false);
+            CompleteChannels(_clientSocket.ConnectionState.Exception);
+            return;
+          }
+          catch (OperationCanceledException) when (token.IsCancellationRequested) {
+            return;
+          }
+          catch (Exception caught) {
+            if (!ShouldAutoReconnect(caught)) {
+              SetIsReconnecting(false);
+              CompleteChannels(caught);
+              return;
+            }
+            delay = NextReconnectDelay(delay);
+          }
+          finally {
+            _ = _connectSemaphore.Release();
+          }
+        }
+
+        SetIsReconnecting(false);
+        CompleteChannels(_clientSocket.ConnectionState.Exception);
+      }
+      catch (OperationCanceledException) when (token.IsCancellationRequested) { }
+      finally {
+        if (ReferenceEquals(_reconnectCancellation, cancellation)) {
+          _ = Interlocked.CompareExchange(ref _reconnectCancellation, null, cancellation);
+        }
+        cancellation.Dispose();
+      }
+    }
+
+    private bool CanAttemptReconnect(int attempts) {
+      int? maxAttempts = ReconnectOptions.MaxAttempts;
+      return maxAttempts == null || attempts < maxAttempts.Value;
+    }
+
+    private TimeSpan NextReconnectDelay(TimeSpan delay) {
+      var maxDelay = ReconnectOptions.MaxDelay;
+      if (delay >= maxDelay) {
+        return maxDelay;
+      }
+
+      double nextMilliseconds = delay.TotalMilliseconds * ReconnectOptions.BackoffMultiplier;
+      if (nextMilliseconds <= 0) {
+        return maxDelay < TimeSpan.FromSeconds(1)
+          ? maxDelay
+          : TimeSpan.FromSeconds(1);
+      }
+
+      var nextDelay = TimeSpan.FromMilliseconds(nextMilliseconds);
+      return nextDelay > maxDelay ? maxDelay : nextDelay;
+    }
+
+    private bool ShouldAutoReconnect(Exception exception) {
+      return ReconnectOptions.Enabled && exception switch {
+        ObsAuthenticationException => false,
+        ObsProtocolException => false,
+        ObsConnectionClosedException closed => ShouldAutoReconnect(closed),
+        ObsConnectionException { InnerException: ObsConnectionClosedException closed } =>
+          ShouldAutoReconnect(closed),
+        _ => true,
+      };
+    }
+
+    private static bool ShouldAutoReconnect(ObsConnectionClosedException exception) {
+      return exception.CloseCode is not (int)WebSocketCloseCode.AuthenticationFailed
+        and not (int)WebSocketCloseCode.SessionInvalidated
+        and not (int)WebSocketCloseCode.UnsupportedRpcVersion;
+    }
+
+    private void SetIsReconnecting(bool value) {
+      Volatile.Write(ref _isReconnecting, value ? 1 : 0);
+    }
+
+    private void EnsureChannelsOpen() {
+      lock (_channelLock) {
+        if (!_channelsCompleted) {
+          return;
+        }
+
+        _events = CreateChannel<IObsEvent>();
+        _connectionStates = CreateChannel<ObsConnectionStateChangedEventArgs>();
+        _channelsCompleted = false;
+        Volatile.Write(ref _eventsSubscribed, 0);
+        Volatile.Write(ref _connectionStatesSubscribed, 0);
+      }
+    }
+
+    private void CompleteChannels(Exception? exception = null) {
+      lock (_channelLock) {
+        _channelsCompleted = true;
+        _ = _events.Writer.TryComplete(exception);
+        _ = _connectionStates.Writer.TryComplete(exception);
+      }
+    }
+
+    private static Channel<T> CreateChannel<T>() {
+      return Channel.CreateUnbounded<T>();
+    }
+
+    private async Task DispatchEventAsync(
+      Task former,
+      ChannelReader<IObsEvent> events,
+      Channel<IObsEvent> output
+    ) {
       await former.ConfigureAwait(false);
 
       try {
         while (await events.WaitToReadAsync().ConfigureAwait(false)) {
-          DispatchEvent(await events.ReadAsync().ConfigureAwait(false));
+          var ev = await events.ReadAsync().ConfigureAwait(false);
+          if (Volatile.Read(ref _eventsSubscribed) != 0) {
+            await output.Writer.WriteAsync(ev).ConfigureAwait(false);
+          }
+          DispatchEvent(ev);
         }
       }
       catch (Exception exception) {
-        _ = exception;
+        if (!IsReconnecting) {
+          CompleteEventChannel(output, GetChannelFailure(exception));
+        }
       }
+    }
+
+    private void CompleteEventChannel(Channel<IObsEvent> channel, Exception? exception) {
+      lock (_channelLock) {
+        if (ReferenceEquals(_events, channel)) {
+          CompleteChannels(exception);
+          return;
+        }
+        _ = channel.Writer.TryComplete(exception);
+      }
+    }
+
+    private static Exception? GetChannelFailure(Exception exception) {
+      return exception is ChannelClosedException { InnerException: { } inner }
+        ? inner
+        : exception;
     }
 
     private void Emit(PipelineEvent diagnostic) {
