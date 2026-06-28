@@ -10,6 +10,7 @@ env:
 jobs:
   ubuntu-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     env:
       DOTNET_NOLOGO: true
     outputs:
@@ -21,7 +22,16 @@ jobs:
       - uses: actions/setup-dotnet@main
         with:
           dotnet-version: "10.0"
-      - run: dotnet test
+      - run: dotnet test --results-directory "${{ runner.temp }}/dotnet-test-results" --blame-hang --blame-hang-timeout 5m --blame-hang-dump-type mini
+        timeout-minutes: 15
+      - name: Upload dotnet test diagnostics
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: dotnet-test-results-ubuntu
+          path: ${{ runner.temp }}/dotnet-test-results
+          if-no-files-found: ignore
+          retention-days: 7
       - name: dotnet format style
         shell: pwsh
         run: |
@@ -45,6 +55,7 @@ jobs:
 
   windows-test:
     runs-on: windows-latest
+    timeout-minutes: 45
     env:
       DOTNET_NOLOGO: true
     steps:
@@ -78,15 +89,18 @@ jobs:
           }
           Expand-Archive $archive $pluginRoot
           "OBSSTRAWKET_TEST_PLUGIN_ROOT=$pluginRoot" >> $env:GITHUB_ENV
-      - run: dotnet test
+      - run: dotnet test --results-directory "${{ runner.temp }}/dotnet-test-results" --blame-hang --blame-hang-timeout 5m --blame-hang-dump-type mini
+        timeout-minutes: 20
         env:
           OBSSTRAWKET_TEST_ARTIFACTS: ${{ runner.temp }}/obsstrawket-diagnostics
-      - name: Upload OBS diagnostics
+      - name: Upload diagnostics
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: obs-diagnostics
-          path: ${{ runner.temp }}/obsstrawket-diagnostics
+          name: windows-diagnostics
+          path: |
+            ${{ runner.temp }}/dotnet-test-results
+            ${{ runner.temp }}/obsstrawket-diagnostics
           if-no-files-found: ignore
           retention-days: 7
 
