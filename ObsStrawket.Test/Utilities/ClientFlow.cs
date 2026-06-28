@@ -23,12 +23,18 @@ namespace ObsStrawket.Test.Utilities {
     }
 
     /// <summary>Reads events until one of type <typeparamref name="T"/> arrives, discarding others.</summary>
-    public static async Task<T> WaitEventAsync<T>(ObsClientSocket client) where T : class, IObsEvent {
-      while (true) {
-        if (await client.Events.ReadAsync().ConfigureAwait(false) is T typed) {
-          return typed;
-        }
-      }
+    public static async Task<T> WaitEventAsync<T>(
+      ObsClientSocket client,
+      Func<T, bool>? match = null,
+      CancellationToken cancellation = default
+    ) where T : class, IObsEvent {
+      var events = await WaitEventsAsync(
+        client,
+        DefaultEventWaitTimeout,
+        cancellation,
+        ev => ev is T typed && (match?.Invoke(typed) ?? true)
+      ).ConfigureAwait(false);
+      return (T)events[0];
     }
 
     /// <summary>

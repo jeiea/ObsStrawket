@@ -16,13 +16,10 @@ namespace ObsStrawket.Test.Specs {
       _ = await client.SetStudioModeEnabledAsync(studioModeEnabled: false).ConfigureAwait(false);
       _ = ClientFlow.DrainEvents(client);
       _ = await client.SetStudioModeEnabledAsync(studioModeEnabled: true).ConfigureAwait(false);
-      while (true) {
-        var ev = await client.Events.ReadAsync().ConfigureAwait(false);
-        if (ev is StudioModeStateChanged modeChanged) {
-          Assert.True(modeChanged.StudioModeEnabled);
-          break;
-        }
-      }
+      _ = await ClientFlow.WaitEventAsync<StudioModeStateChanged>(
+        client,
+        static ev => ev.StudioModeEnabled
+      ).ConfigureAwait(false);
     }
 
     public async Task RespondAsync(MockServerSession session) {
@@ -66,6 +63,18 @@ namespace ObsStrawket.Test.Specs {
 }
 """).ConfigureAwait(false);
 
+      await session.SendAsync(/*lang=json,strict*/ """
+{
+  "d": {
+    "eventData": {
+      "studioModeEnabled": false
+    },
+    "eventIntent": 1024,
+    "eventType": "StudioModeStateChanged"
+  },
+  "op": 5
+}
+""").ConfigureAwait(false);
       await session.SendAsync(/*lang=json,strict*/ """
 {
   "d": {
