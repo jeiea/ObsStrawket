@@ -16,8 +16,7 @@ namespace ObsStrawket.Test.Utilities {
     private static readonly TimeSpan DefaultEventWaitTimeout = TimeSpan.FromSeconds(30);
     private readonly Channel<IObsEvent> _events = Channel.CreateUnbounded<IObsEvent>();
 
-    public static ObsClientSocket GetDebugClient(ClientSocket? socket = null, bool useChannel = false) {
-      _ = useChannel;
+    public static ObsClientSocket GetDebugClient(ClientSocket? socket = null) {
       var client = new ObsClientSocket(socket);
       _ = client.Events;
       return client;

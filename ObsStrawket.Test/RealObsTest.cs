@@ -32,7 +32,7 @@ namespace ObsStrawket.Test {
 
     [Fact]
     public async Task TestBadRequestAsync() {
-      var client = GetDebugClient(useChannel: true);
+      var client = GetDebugClient();
       _ = await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
 
       _ = await Assert.ThrowsAsync<ObsRequestException>(async () => {
@@ -49,7 +49,7 @@ namespace ObsStrawket.Test {
 
     [Fact]
     public async Task TestMissingVendorRequestAsync() {
-      var client = GetDebugClient(useChannel: true);
+      var client = GetDebugClient();
       _ = await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
       var exception = await Assert.ThrowsAsync<ObsRequestException>(
         () => client.CallVendorRequestAsync(
@@ -217,7 +217,7 @@ namespace ObsStrawket.Test {
 
     [Fact]
     public async Task TestbedAsync() {
-      var client = GetDebugClient(useChannel: true);
+      var client = GetDebugClient();
       bool connected = await client.ConnectAsync(
         Uri,
         "a",
@@ -228,7 +228,7 @@ namespace ObsStrawket.Test {
 
     [Fact(Timeout = 60 * 1000)]
     public async Task TestUiAsync() {
-      var client = GetDebugClient(useChannel: true);
+      var client = GetDebugClient();
       try {
         _ = await client.ConnectAsync(
           Uri,
@@ -291,7 +291,7 @@ namespace ObsStrawket.Test {
         }
       }
 
-      var client = GetDebugClient(useChannel: true);
+      var client = GetDebugClient();
       _ = await client.ConnectAsync(Uri, MockServer.Password, cancellation: TestContext.Current.CancellationToken);
       var flows = new List<ITestFlow>() {
         //new CallVendorRequestFlow(), // test how?
@@ -484,8 +484,8 @@ namespace ObsStrawket.Test {
       return;
     }
 
-    private ObsClientSocket GetDebugClient(bool useChannel = false) {
-      var client = ClientFlow.GetDebugClient(useChannel: useChannel);
+    private ObsClientSocket GetDebugClient() {
+      var client = ClientFlow.GetDebugClient();
       client.PipelineEvent += e => _obs.RecordOperation($"Pipeline {e}");
       return client;
     }

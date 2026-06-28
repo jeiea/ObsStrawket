@@ -7,7 +7,7 @@ namespace ObsStrawket.Test.Specs {
     [Fact]
     public async Task DispatchesNewEventsAsync() {
       var flow = new ProtocolEventFlow();
-      await SpecTester.TestAsync(flow, useChannel: false);
+      await SpecTester.TestAsync(flow);
       Assert.True(flow.CanvasGroupDispatched);
       Assert.True(flow.CanvasCreatedDispatched);
       Assert.True(flow.CanvasRemovedDispatched);

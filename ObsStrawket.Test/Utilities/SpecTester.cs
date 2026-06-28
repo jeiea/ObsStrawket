@@ -13,7 +13,7 @@ namespace ObsStrawket.Test.Utilities {
 
   internal class SpecTester {
 
-    public static async Task TestAsync(ITestFlow flow, bool useChannel = true) {
+    public static async Task TestAsync(ITestFlow flow) {
       var taskSource = new TaskCompletionSource();
       using var server = new MockServer().Run(handler: async (context, cancellation) => {
         try {
@@ -30,7 +30,7 @@ namespace ObsStrawket.Test.Utilities {
       });
 
       async Task RunClientAsync() {
-        var client = ClientFlow.GetDebugClient(useChannel: useChannel);
+        var client = ClientFlow.GetDebugClient();
         _ = await client.ConnectAsync(server.Uri, MockServer.Password).ConfigureAwait(false);
         await flow.RequestAsync(client).ConfigureAwait(false);
         await client.CloseAsync().ConfigureAwait(false);

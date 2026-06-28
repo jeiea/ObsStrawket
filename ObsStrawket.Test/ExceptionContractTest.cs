@@ -60,7 +60,7 @@ namespace ObsStrawket.Test {
       using var server = new MockServer().Run(
         SendMalformedResponseAsync,
         TestContext.Current.CancellationToken);
-      using var client = ClientFlow.GetDebugClient(useChannel: true);
+      using var client = ClientFlow.GetDebugClient();
       Assert.True(await client.ConnectAsync(
         server.Uri,
         MockServer.Password,
@@ -83,7 +83,7 @@ namespace ObsStrawket.Test {
       using var server = new MockServer().Run(
         AbortWithPendingRequestAsync,
         TestContext.Current.CancellationToken);
-      using var client = ClientFlow.GetDebugClient(useChannel: true);
+      using var client = ClientFlow.GetDebugClient();
       Assert.True(await client.ConnectAsync(
         server.Uri,
         MockServer.Password,

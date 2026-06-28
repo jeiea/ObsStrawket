@@ -48,7 +48,7 @@ namespace ObsStrawket.Test {
       using var server = new MockServer().Run(
         AcceptAndWaitForClientCloseAsync,
         TestContext.Current.CancellationToken);
-      using var client = ClientFlow.GetDebugClient(useChannel: true);
+      using var client = ClientFlow.GetDebugClient();
       var connected = new TaskCompletionSource<ObsConnectionStateChangedEventArgs>(
         TaskCreationOptions.RunContinuationsAsynchronously);
       client.ConnectionStateChanged += (_, e) => {

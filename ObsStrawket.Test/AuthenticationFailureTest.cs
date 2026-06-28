@@ -13,7 +13,7 @@ namespace ObsStrawket.Test {
     [Fact]
     public async Task ConnectAsyncReturnsFalseWhenAuthenticationFails() {
       using var server = new MockServer().Run(AlwaysRejectAuth, TestContext.Current.CancellationToken);
-      using var client = ClientFlow.GetDebugClient(useChannel: true);
+      using var client = ClientFlow.GetDebugClient();
 
       bool connected = await client.ConnectAsync(
         server.Uri,

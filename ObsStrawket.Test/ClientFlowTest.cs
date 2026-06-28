@@ -29,7 +29,7 @@ namespace ObsStrawket.Test {
         },
         TestContext.Current.CancellationToken
       );
-      var client = ClientFlow.GetDebugClient(useChannel: true);
+      var client = ClientFlow.GetDebugClient();
       bool connected = await client.ConnectAsync(
         server.Uri,
         MockServer.Password,
